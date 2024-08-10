@@ -4,17 +4,22 @@
    "description": "Awesome project developed with TypeORM.",
    "type": "commonjs",
    "devDependencies": {
+      "@types/node": "^22.2.0",
       "ts-node": "10.9.1",
-      "@types/node": "^16.11.10",
-      "typescript": "4.5.2"
+      "typescript": "^5.5.4"
    },
    "dependencies": {
-      "typeorm": "0.3.20",
+      "mysql2": "^3.11.0",
       "reflect-metadata": "^0.1.13",
-      "mysql": "^2.14.1"
+      "typeorm": "0.3.20",
+      "uuid": "^10.0.0"
    },
    "scripts": {
       "start": "ts-node src/index.ts",
-      "typeorm": "typeorm-ts-node-commonjs"
+      "typeorm": "typeorm-ts-node-commonjs",
+      "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
+      "migration:revert": "ts-node ./node_modules/typeorm/cli.js migration:revert",
+      "migration:create": "ts-node ./node_modules/typeorm/cli.js migration:create",
+      "migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate"
    }
 }
