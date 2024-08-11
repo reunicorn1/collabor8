@@ -13,7 +13,7 @@ import LanguageSelector from './LanguageSelector';
 import ConnectionForm from './ConnectionForm';
 import { WebsocketProvider } from 'y-websocket';
 
-const languageModes = {
+const languageModes: Record<string, string> = {
   javascript: 'javascript',
   python: 'python',
   c: 'text/x-csrc',
@@ -22,14 +22,14 @@ const languageModes = {
   html: 'xml',
 };
 
-function CodeEditor() {
+const CodeEditor = () => {
   const [language, setLanguage] = useState('typescript');
   const [value, setValue] = useState('// TypeScript code');
   const [connected, setConnected] = useState(false);
   const [username, setUsername] = useState('');
   const [roomName, setRoomName] = useState('');
   const editorRef = useRef(null);
-  const ydoc = new Y.Doc();
+  const ydoc = useRef(new Y.Doc()).current;
 
   useEffect(() => {
     if (connected) {
@@ -38,44 +38,33 @@ function CodeEditor() {
         roomName,
         ydoc,
       );
-
       const awareness = provider.awareness;
       const color = RandomColor();
 
-      awareness.setLocalStateField('user', {
-        name: username,
-        color: color,
-      });
+      awareness.setLocalStateField('user', { name: username, color });
 
-      if (editorRef.current && connected) {
-        const editor = editorRef.current;
-        if (editor) {
-          const yText = ydoc.getText('codemirror');
-          const yUndoManager = new Y.UndoManager(yText);
-          const awareness = provider.awareness;
+      const editor = editorRef.current;
+      if (editor) {
+        const yText = ydoc.getText('codemirror');
+        const yUndoManager = new Y.UndoManager(yText);
 
-          const bindingRef = new CodemirrorBinding(yText, editor, awareness, {
-            yUndoManager,
-          });
-          return () => {
-            bindingRef.destroy();
-          };
-        }
+        const binding = new CodemirrorBinding(yText, editor, awareness, {
+          yUndoManager,
+        });
+        return () => {
+          binding.destroy();
+          provider.disconnect();
+        };
       }
-
-      return () => {
-        provider.disconnect();
-        console.log('Disconnected from WebsocketProvider');
-      };
     }
-  }, [connected, roomName, username]);
+  }, [connected, roomName, username, ydoc]);
 
-  const handleLanguageChange = (selectedLanguage) => {
+  const handleLanguageChange = (selectedLanguage: string) => {
     setLanguage(selectedLanguage);
     setValue('// New code');
   };
 
-  const handleConnect = (username, roomName) => {
+  const handleConnect = (username: string, roomName: string) => {
     setUsername(username);
     setRoomName(roomName);
     setConnected(true);
@@ -93,19 +82,12 @@ function CodeEditor() {
       />
       <CodeMirror
         value={value}
-        options={{
-          mode: languageModes[language],
-          lineNumbers: true,
-        }}
-        editorDidMount={(editor) => {
-          editorRef.current = editor;
-        }}
-        onChange={(editor, data, value) => {
-          setValue(value);
-        }}
+        options={{ mode: languageModes[language], lineNumbers: true }}
+        editorDidMount={(editor) => (editorRef.current = editor)}
+        onChange={(editor, data, value) => setValue(value)}
       />
     </div>
   );
-}
+};
 
 export default CodeEditor;
