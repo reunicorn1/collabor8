@@ -6,14 +6,22 @@ import 'codemirror/mode/python/python';
 import 'codemirror/mode/clike/clike';
 import 'codemirror/mode/markdown/markdown';
 import 'codemirror/mode/xml/xml';
+import 'codemirror/theme/dracula.css';
+import 'codemirror/theme/eclipse.css';
+import 'codemirror/theme/material.css';
+import 'codemirror/theme/monokai.css';
+import 'codemirror/theme/solarized.css';
+import 'codemirror/theme/twilight.css';
+import 'codemirror/theme/zenburn.css';
 import * as Y from 'yjs';
 import { CodemirrorBinding } from 'y-codemirror';
 import RandomColor from 'randomcolor';
-import LanguageSelector from './LanguageSelector';
-import ConnectionForm from './ConnectionForm';
+import { LanguageSelector, ThemeSelector, ConnectionForm } from './index';
 import { WebsocketProvider } from 'y-websocket';
+import { codeExamples, LanguageCode } from '../../utils/codeExamples';
+import { Editor } from 'codemirror';
 
-const languageModes: Record<string, string> = {
+const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
   python: 'python',
   c: 'text/x-csrc',
@@ -23,12 +31,13 @@ const languageModes: Record<string, string> = {
 };
 
 const CodeEditor = () => {
-  const [language, setLanguage] = useState('typescript');
-  const [value, setValue] = useState('// TypeScript code');
+  const [language, setLanguage] = useState<LanguageCode>('typescript');
+  const [value, setValue] = useState(codeExamples['typescript']);
+  const [theme, setTheme] = useState('dracula');
   const [connected, setConnected] = useState(false);
   const [username, setUsername] = useState('');
   const [roomName, setRoomName] = useState('');
-  const editorRef = useRef(null);
+  const editorRef = useRef<Editor | null>(null);
   const ydoc = useRef(new Y.Doc()).current;
 
   useEffect(() => {
@@ -59,9 +68,13 @@ const CodeEditor = () => {
     }
   }, [connected, roomName, username, ydoc]);
 
-  const handleLanguageChange = (selectedLanguage: string) => {
+  const handleLanguageChange = (selectedLanguage: LanguageCode) => {
     setLanguage(selectedLanguage);
-    setValue('// New code');
+    setValue(codeExamples[selectedLanguage]);
+  };
+
+  const handleThemeChange = (selectedTheme: string) => {
+    setTheme(selectedTheme);
   };
 
   const handleConnect = (username: string, roomName: string) => {
@@ -75,17 +88,26 @@ const CodeEditor = () => {
   }
 
   return (
-    <div className="p-4 space-y-4">
-      <LanguageSelector
-        language={language}
-        onLanguageChange={handleLanguageChange}
-      />
-      <CodeMirror
-        value={value}
-        options={{ mode: languageModes[language], lineNumbers: true }}
-        editorDidMount={(editor) => (editorRef.current = editor)}
-        onChange={(editor, data, value) => setValue(value)}
-      />
+    <div className="code-editor-container">
+      <div className="selectors">
+        <LanguageSelector
+          language={language}
+          onLanguageChange={handleLanguageChange}
+        />
+        <ThemeSelector theme={theme} onThemeChange={handleThemeChange} />
+      </div>
+      <div className="editor">
+        <CodeMirror
+          value={value}
+          options={{
+            mode: languageModes[language],
+            theme: theme,
+            lineNumbers: true,
+          }}
+          editorDidMount={(editor) => (editorRef.current = editor)}
+          onChange={(editor, data, value) => setValue(value)}
+        />
+      </div>
     </div>
   );
 };

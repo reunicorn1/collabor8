@@ -20,6 +20,7 @@
     "@uiw/codemirror-themes-all": "^4.23.0",
     "@uiw/react-codemirror": "^4.23.0",
     "codemirror": "^5.65.17",
+    "framer-motion": "^11.3.24",
     "randomcolor": "^0.6.2",
     "react": "^18.3.1",
     "react-codemirror2": "^8.0.0",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
+    "@types/codemirror": "^5.60.15",
     "@types/randomcolor": "^0.5.9",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
