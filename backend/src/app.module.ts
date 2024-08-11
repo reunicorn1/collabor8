@@ -1,11 +1,21 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { ProjectsModule } from './projects/projects.module';
+import { UsersModule } from '@users/users.module';
+import { ProjectsModule } from '@projects/projects.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProjectSharesModule } from './project-shares/project-shares.module';
+import { ProjectSharesModule } from '@project-shares/project-shares.module';
+import { Users } from '@users/user.entity';
+import { Projects } from '@projects/project.entity';
 
+/**
+ * TODO:
+ * 1. probably this file needs to be revisit for
+ *  - DB name
+ *  - DB psw
+ *  - username setup
+ *  - kitchen sink
+ */
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -16,7 +26,7 @@ import { ProjectSharesModule } from './project-shares/project-shares.module';
       username: 'root',
       password: 'password',
       database: 'users_db',
-      entities: [User],
+      entities: [Users],
       synchronize: true,
     }),
     TypeOrmModule.forRoot({
@@ -24,7 +34,7 @@ import { ProjectSharesModule } from './project-shares/project-shares.module';
       type: 'mongodb',
       url: 'mongodb://localhost:27017/projects_db',
       database: 'projects_db',
-      entities: [Project],
+      entities: [Projects, ProjectSharesModule],
       synchronize: true,
     }),
     UsersModule,
@@ -34,5 +44,4 @@ import { ProjectSharesModule } from './project-shares/project-shares.module';
   controllers: [AppController],
   providers: [AppService],
 })
-
 export class AppModule {}
