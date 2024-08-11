@@ -9,14 +9,6 @@ import { Users } from '@users/user.entity';
 import { Projects } from '@projects/project.entity';
 import { Environment } from '@environment/environment-document.entity';
 
-/**
- * TODO:
- * 1. probably this file needs to be revisit for
- *  - DB name
- *  - DB psw
- *  - username setup
- *  - kitchen sink
- */
 @Module({
   imports: [
     TypeOrmModule.forRoot({
