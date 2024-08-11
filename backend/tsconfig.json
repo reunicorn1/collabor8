@@ -20,7 +20,8 @@
     "paths": {
        "@users/*": ["src/users/*"],
        "@projects/*": ["src/projects/*"],
-       "@project-shares/*": ["src/project-shares/*"]
+       "@project-shares/*": ["src/project-shares/*"],
+       "@environment/*": ["src/environment/*"]
     }
   }
 }

@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from '@users/users.module';
@@ -8,7 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectSharesModule } from '@project-shares/project-shares.module';
 import { Users } from '@users/user.entity';
 import { Projects } from '@projects/project.entity';
-import configuration from './config/configuration';
+import { Environment } from '@environment/environment-document.entity';
 
 /**
  * TODO:
@@ -23,25 +22,26 @@ import configuration from './config/configuration';
     TypeOrmModule.forRoot({
       name: 'mysqlConnection',
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
+      host: process.env.HOST,
+      port: Number(process.env.PORT_MYSQL),
+      username: process.env.USER_MYSQL,
       password: process.env.PSW_MYSQL,
-      database: process.env.PSW_MYSQL,
-      entities: [Users],
+      database: process.env.DB_NAME,
+      entities: [Users, Projects, ProjectSharesModule],
       synchronize: true,
     }),
     TypeOrmModule.forRoot({
       name: 'mongoConnection',
       type: 'mongodb',
-      url: 'mongodb://localhost:27017/collabor8',
-      database: 'projects_db',
-      entities: [Projects, ProjectSharesModule],
+      url: `mongodb://${process.env.HOST}:${process.env.PORT_MONGO}/${process.env.DB_NAME}`,
+      database: process.env.DB_NAME,
+      entities: [Environment],
       synchronize: true,
     }),
     UsersModule,
     ProjectsModule,
     ProjectSharesModule,
+    Environment,
   ],
   controllers: [AppController],
   providers: [AppService],
