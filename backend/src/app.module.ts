@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from '@users/users.module';
@@ -7,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectSharesModule } from '@project-shares/project-shares.module';
 import { Users } from '@users/user.entity';
 import { Projects } from '@projects/project.entity';
+import configuration from './config/configuration';
 
 /**
  * TODO:
@@ -24,15 +26,15 @@ import { Projects } from '@projects/project.entity';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: 'password',
-      database: 'users_db',
+      password: process.env.PSW_MYSQL,
+      database: process.env.PSW_MYSQL,
       entities: [Users],
       synchronize: true,
     }),
     TypeOrmModule.forRoot({
       name: 'mongoConnection',
       type: 'mongodb',
-      url: 'mongodb://localhost:27017/projects_db',
+      url: 'mongodb://localhost:27017/collabor8',
       database: 'projects_db',
       entities: [Projects, ProjectSharesModule],
       synchronize: true,
