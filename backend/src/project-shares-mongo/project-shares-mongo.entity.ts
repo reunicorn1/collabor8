@@ -1,11 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { ProjectDocument } from './project-document.entity';
+import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 
 /**
  * SharedWith entity - a mongodb collection
  */
-@Entity({ name: 'SharedWith' })
-export class SharedWith {
+@Entity('project_shares')
+export class ProjectSharesMongo {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -15,6 +15,6 @@ export class SharedWith {
   @Column()
   access_level: 'read' | 'write';
 
-  @ManyToOne(() => ProjectDocument, (project) => project.shared_with)
-  project: ProjectDocument;
+  @ManyToOne(() => ProjectMongo, (project) => project.shared_with)
+  project: ProjectMongo;
 }

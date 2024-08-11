@@ -21,7 +21,12 @@
        "@users/*": ["src/users/*"],
        "@projects/*": ["src/projects/*"],
        "@project-shares/*": ["src/project-shares/*"],
-       "@environment/*": ["src/environment/*"]
+       "@environment/*": ["src/environment/*"],
+       "@envrionment-mongo/*": ["src/envrionment-mongo/*"],
+       "@project-mongo/*": ["src/project-mongo/*"],
+       "@project-shares-mongo/*": ["src/project-shares-mongo/*"],
+       "@directory-mongo/*": ["src/directory-mongo/*"],
+       "@file-mongo/*": ["src/file-mongo/*"]
     }
   }
 }

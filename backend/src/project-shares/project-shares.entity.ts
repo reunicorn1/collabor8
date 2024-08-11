@@ -11,7 +11,7 @@ import {
 import { Projects } from '@projects/project.entity';
 import { Users } from '@users/user.entity';
 
-@Entity({ name: 'ProjectShares' })
+@Entity('project_shares')
 @Index('IDX_PROJECT_USER', ['project_id', 'user_id'], { unique: true }) // Composite unique index on project_id and user_id
 export class ProjectShares {
   @PrimaryGeneratedColumn('uuid')

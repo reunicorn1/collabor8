@@ -52,7 +52,7 @@ generate_service=false
 generate_controller=false
 generate_entity=false
 
-while getopts "mscea-:" opt; do
+while getopts "hmscea-:" opt; do
   case $opt in
     -)
       case $OPTARG in
