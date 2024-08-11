@@ -1,4 +1,22 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
+import { EnvironmentMongoService } from './envrionment-mongo.service';
 
-@Controller('envrionment-mongo')
-export class EnvrionmentMongoController {}
+@Controller('environment')
+export class EnvrionmentMongoController {
+  constructor(private readonly environService: EnvironmentMongoService) {}
+
+  @Get()
+  findAll() {
+    return this.environService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.environService.findOne(id);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.environService.remove(id);
+  }
+}
