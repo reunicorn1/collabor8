@@ -12,6 +12,7 @@ import { CodemirrorBinding } from 'y-codemirror';
 import RandomColor from 'randomcolor';
 import LanguageSelector from './LanguageSelector';
 import ConnectionForm from './ConnectionForm';
+import { WebsocketProvider } from 'y-websocket';
 
 const languageModes = {
   javascript: 'javascript',
@@ -37,11 +38,11 @@ function CodeEditor() {
     if (connected) {
       console.log('Initializing HocuspocusProvider with', roomName, username);
       console.log('ydoc Obj: ', ydoc);
-      hocuspocusProviderRef.current = new HocuspocusProvider({
-        url: 'ws://localhost:9090',
-        name: roomName,
-        document: ydoc,
-      });
+      hocuspocusProviderRef.current = new WebsocketProvider(
+        'ws://localhost:9090',
+        roomName,
+        ydoc,
+      );
 
       const awareness = hocuspocusProviderRef.current.awareness;
       console.log('Awareness:', awareness);
