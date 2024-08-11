@@ -7,7 +7,6 @@ import 'codemirror/mode/clike/clike';
 import 'codemirror/mode/markdown/markdown';
 import 'codemirror/mode/xml/xml';
 import * as Y from 'yjs';
-import { HocuspocusProvider } from '@hocuspocus/provider';
 import { CodemirrorBinding } from 'y-codemirror';
 import RandomColor from 'randomcolor';
 import LanguageSelector from './LanguageSelector';
@@ -30,62 +29,46 @@ function CodeEditor() {
   const [username, setUsername] = useState('');
   const [roomName, setRoomName] = useState('');
   const editorRef = useRef(null);
-  const ydoc = useRef(new Y.Doc()).current;
-  const hocuspocusProviderRef = useRef(null);
-  const bindingRef = useRef(null);
+  const ydoc = new Y.Doc();
 
   useEffect(() => {
     if (connected) {
-      console.log('Initializing HocuspocusProvider with', roomName, username);
-      console.log('ydoc Obj: ', ydoc);
-      hocuspocusProviderRef.current = new WebsocketProvider(
+      const provider = new WebsocketProvider(
         'ws://localhost:9090',
         roomName,
         ydoc,
       );
 
-      const awareness = hocuspocusProviderRef.current.awareness;
-      console.log('Awareness:', awareness);
+      const awareness = provider.awareness;
       const color = RandomColor();
-
-      console.log(
-        'Setting awareness state with name:',
-        username,
-        'and color:',
-        color,
-      );
 
       awareness.setLocalStateField('user', {
         name: username,
         color: color,
       });
 
+      if (editorRef.current && connected) {
+        const editor = editorRef.current;
+        if (editor) {
+          const yText = ydoc.getText('codemirror');
+          const yUndoManager = new Y.UndoManager(yText);
+          const awareness = provider.awareness;
+
+          const bindingRef = new CodemirrorBinding(yText, editor, awareness, {
+            yUndoManager,
+          });
+          return () => {
+            bindingRef.destroy();
+          };
+        }
+      }
+
       return () => {
-        hocuspocusProviderRef.current.disconnect();
-        console.log('Disconnected from HocuspocusProvider');
+        provider.disconnect();
+        console.log('Disconnected from WebsocketProvider');
       };
     }
   }, [connected, roomName, username]);
-
-  useEffect(() => {
-    if (editorRef.current && !bindingRef.current && connected) {
-      const editor = editorRef.current.editor;
-      if (editor) {
-        const yText = ydoc.getText('codemirror');
-        const yUndoManager = new Y.UndoManager(yText);
-        const awareness = hocuspocusProviderRef.current.awareness;
-
-        bindingRef.current = new CodemirrorBinding(yText, editor, awareness, {
-          yUndoManager,
-        });
-
-        return () => {
-          bindingRef.current.destroy();
-          bindingRef.current = null;
-        };
-      }
-    }
-  }, [editorRef.current, connected]);
 
   const handleLanguageChange = (selectedLanguage) => {
     setLanguage(selectedLanguage);

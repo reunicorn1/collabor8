@@ -92,7 +92,7 @@ const server = new Hocuspocus({
 server
   .listen()
   .then(() => {
-    console.log('Hocuspocus server is running on port 1234');
+    console.log('Hocuspocus server is running on port 9090');
   })
   .catch((error) => {
     console.error('Failed to start the server:', error);
