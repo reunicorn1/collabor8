@@ -26,10 +26,10 @@ export class ProjectShares {
   @Column({ type: 'enum', enum: ['read', 'write'] })
   access_level: 'read' | 'write'; // Access level granted
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn()
   created_at: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn()
   updated_at: Date;
 
   @ManyToOne(() => Projects, (project) => project.projectShares)

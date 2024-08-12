@@ -28,7 +28,7 @@ gen_entity() {
   fi
 
   echo "Generating entity: $entity_file"
-  cat <<EOL > "$entity_file"
+  cat << EOF > "$entity_file"
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
@@ -41,7 +41,7 @@ export class ${module_name} {
 
   // Add other columns here
 }
-EOL
+EOF
 }
 
 

@@ -25,10 +25,10 @@ export class Projects {
   @Column('uuid')
   environment_id: string;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn()
   created_at: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn()
   updated_at: Date;
 
   @ManyToOne(() => Users, (user) => user.ownedProjects)

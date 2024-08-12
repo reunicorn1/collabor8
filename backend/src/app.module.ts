@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from '@users/users.module';
@@ -21,6 +22,7 @@ import { FileMongo } from '@file-mongo/file-mongo.entity';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(), //  load .env
     TypeOrmModule.forRoot({
       name: 'mysqlConnection',
       type: 'mysql',
