@@ -55,16 +55,16 @@ const CodeEditor = () => {
         awareness,
         {
           yUndoManager,
-        });
+        },
+      );
 
-        // if (yText.length === 0) {
-        //   yText.insert(0, codeExamples[language]);
-        // }
-        return () => {
-          binding.destroy();
-          provider.disconnect();
-        };
-      }
+      // if (yText.length === 0) {
+      //   yText.insert(0, codeExamples[language]);
+      // }
+      return () => {
+        binding.destroy();
+        provider.disconnect();
+      };
     }
   }, [connected, language, roomName, username]);
 
