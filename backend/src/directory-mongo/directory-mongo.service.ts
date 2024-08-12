@@ -6,7 +6,7 @@ import { DirectoryMongo } from './directory-mongo.entity';
 @Injectable()
 export class DirectoryMongoService {
   constructor(
-    @InjectRepository(DirectoryMongo)
+    @InjectRepository(DirectoryMongo, 'mongoConnection')
     private dirRepository: Repository<DirectoryMongo>,
   ) {}
 

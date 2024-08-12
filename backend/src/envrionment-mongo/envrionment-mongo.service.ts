@@ -7,7 +7,7 @@ import { EnvironmentMongo } from './envrionment-mongo.entity';
 export class EnvironmentMongoService {
   // injecting the repository for data operations
   constructor(
-    @InjectRepository(EnvironmentMongo)
+    @InjectRepository(EnvironmentMongo, 'mongoConnection')
     private environRepository: Repository<EnvironmentMongo>,
   ) {}
 

@@ -6,19 +6,19 @@ import { FileMongo } from './file-mongo.entity';
 @Injectable()
 export class FileMongoService {
   constructor(
-    @InjectRepository(FileMongo)
-    private dirRepository: Repository<FileMongo>,
+    @InjectRepository(FileMongo, 'mongoConnection')
+    private fileRepository: Repository<FileMongo>,
   ) {}
 
   findAll(): Promise<FileMongo[]> {
-    return this.dirRepository.find();
+    return this.fileRepository.find();
   }
 
   findOne(id: string): Promise<FileMongo | null> {
-    return this.dirRepository.findOneBy({ id });
+    return this.fileRepository.findOneBy({ id });
   }
 
   async remove(id: string): Promise<void> {
-    await this.dirRepository.delete(id);
+    await this.fileRepository.delete(id);
   }
 }
