@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ProjectSharesService } from './project-shares.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProjectShares } from './project-shares.entity';
 import { ProjectSharesController } from './project-shares.controller';
+import { ProjectSharesService } from './project-shares.service';
 
 @Module({
+  imports: [TypeOrmModule.forFeature([ProjectShares])],
   providers: [ProjectSharesService],
   controllers: [ProjectSharesController],
 })

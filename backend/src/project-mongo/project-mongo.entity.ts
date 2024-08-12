@@ -5,7 +5,7 @@ import {
   OneToMany,
   ManyToOne,
 } from 'typeorm';
-import { EnvironmentMongo } from '@envrionment-mongo/envrionment-mongo.entity';
+import { EnvironmentMongo } from '@environment-mongo/environment-mongo.entity';
 import { FileMongo } from '@file-mongo/file-mongo.entity';
 import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
 

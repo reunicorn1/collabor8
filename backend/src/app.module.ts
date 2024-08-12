@@ -13,8 +13,8 @@ import { ProjectSharesMongo } from '@project-shares-mongo/project-shares-mongo.e
 import { Projects } from '@projects/project.entity';
 import { FileMongoModule } from '@file-mongo/file-mongo.module';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
-import { EnvironmentMongo } from '@envrionment-mongo/envrionment-mongo.entity';
-import { EnvironmentMongoModule } from '@envrionment-mongo/envrionment-mongo.module';
+import { EnvironmentMongo } from '@environment-mongo/environment-mongo.entity';
+import { EnvironmentMongoModule } from '@environment-mongo/environment-mongo.module';
 import { DirectoryMongoModule } from '@directory-mongo/directory-mongo.module';
 import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
 import { ProjectMongoModule } from '@project-mongo/project-mongo.module';

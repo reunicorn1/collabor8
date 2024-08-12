@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EnvironmentMongoService } from './envrionment-mongo.service';
+import { EnvironmentMongoService } from './environment-mongo.service';
 
-describe('EnvrionmentMongoService', () => {
+describe('EnvironmentMongoService', () => {
   let service: EnvironmentMongoService;
 
   beforeEach(async () => {

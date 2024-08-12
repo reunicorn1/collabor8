@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EnvironmentMongoController } from './envrionment-mongo.controller';
+import { EnvironmentMongoController } from './environment-mongo.controller';
 
-describe('EnvrionmentMongoController', () => {
+describe('EnvironmentMongoController', () => {
   let controller: EnvironmentMongoController;
 
   beforeEach(async () => {

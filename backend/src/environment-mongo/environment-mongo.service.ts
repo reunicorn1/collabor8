@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EnvironmentMongo } from './envrionment-mongo.entity';
+import { EnvironmentMongo } from './environment-mongo.entity';
 
 @Injectable()
 export class EnvironmentMongoService {
@@ -10,6 +10,14 @@ export class EnvironmentMongoService {
     @InjectRepository(EnvironmentMongo, 'mongoConnection')
     private environRepository: Repository<EnvironmentMongo>,
   ) {}
+
+  async create(
+    createEnvironmentDto: Partial<EnvironmentMongo>,
+  ): Promise<EnvironmentMongo> {
+    // TODO: create validation for createEnvironmentDto
+    const newEnvironment = this.environRepository.create(createEnvironmentDto);
+    return this.environRepository.save(newEnvironment);
+  }
 
   findAll(): Promise<EnvironmentMongo[]> {
     return this.environRepository.find();
