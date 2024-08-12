@@ -10,10 +10,7 @@ const collectionName = 'documents';
 let db, collection;
 
 // Connect to MongoDB
-MongoClient.connect(mongoUrl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+MongoClient.connect(mongoUrl)
   .then((client) => {
     db = client.db(dbName);
     collection = db.collection(collectionName);

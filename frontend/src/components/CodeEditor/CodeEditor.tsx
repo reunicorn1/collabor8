@@ -29,7 +29,7 @@ const CodeEditor = () => {
   const ydoc = useRef(new Y.Doc()).current;
 
   useEffect(() => {
-    if (connected) {
+    if (connected && editorRef.current) {
       const provider = new WebsocketProvider(
         'ws://localhost:9090',
         roomName,
@@ -40,19 +40,21 @@ const CodeEditor = () => {
 
       awareness.setLocalStateField('user', { name: username, color });
 
-      const editor = editorRef.current;
-      if (editor) {
-        const yText = ydoc.getText('codemirror');
-        const yUndoManager = new Y.UndoManager(yText);
+      const yText = ydoc.getText('codemirror');
+      const yUndoManager = new Y.UndoManager(yText);
 
-        const binding = new CodemirrorBinding(yText, editor, awareness, {
+      const binding = new CodemirrorBinding(
+        yText,
+        editorRef.current,
+        awareness,
+        {
           yUndoManager,
-        });
-        return () => {
-          binding.destroy();
-          provider.disconnect();
-        };
-      }
+        },
+      );
+      return () => {
+        binding.destroy();
+        provider.disconnect();
+      };
     }
   }, [connected, roomName, username, ydoc]);
 
@@ -92,7 +94,11 @@ const CodeEditor = () => {
             theme: theme,
             lineNumbers: true,
           }}
-          editorDidMount={(editor) => (editorRef.current = editor)}
+          editorDidMount={(editor) => {
+            if (!editorRef.current) {
+              editorRef.current = editor;
+            }
+          }}
           onChange={(editor, data, value) => setValue(value)}
         />
       </div>
