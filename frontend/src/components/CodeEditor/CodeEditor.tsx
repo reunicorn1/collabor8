@@ -20,21 +20,27 @@ const languageModes: Record<LanguageCode, string> = {
 
 const CodeEditor = () => {
   const [language, setLanguage] = useState<LanguageCode>('typescript');
-  const [value, setValue] = useState(codeExamples['typescript']);
+  // const [value, setValue] = useState(codeExamples['typescript']);
   const [theme, setTheme] = useState('dracula');
   const [connected, setConnected] = useState(false);
   const [username, setUsername] = useState('');
   const [roomName, setRoomName] = useState('');
   const editorRef = useRef<Editor | null>(null);
-  const ydoc = useRef(new Y.Doc()).current;
 
   useEffect(() => {
     if (connected) {
+      const ydoc = new Y.Doc();
       const provider = new WebsocketProvider(
         'ws://localhost:9090',
         roomName,
         ydoc,
       );
+      // Event listeners
+      provider.on('status', (event: { status: unknown }) => {
+        console.log(event.status); // logs "connected" or "disconnected"
+      });
+      provider.on('sync', (isSynced: boolean) => console.log(isSynced));
+
       const awareness = provider.awareness;
       const color = RandomColor();
 
@@ -48,17 +54,21 @@ const CodeEditor = () => {
         const binding = new CodemirrorBinding(yText, editor, awareness, {
           yUndoManager,
         });
+
+        // if (yText.length === 0) {
+        //   yText.insert(0, codeExamples[language]);
+        // }
         return () => {
           binding.destroy();
           provider.disconnect();
         };
       }
     }
-  }, [connected, roomName, username, ydoc]);
+  }, [connected, language, roomName, username]);
 
   const handleLanguageChange = (selectedLanguage: LanguageCode) => {
     setLanguage(selectedLanguage);
-    setValue(codeExamples[selectedLanguage]);
+    // setValue(codeExamples[selectedLanguage]);
   };
 
   const handleThemeChange = (selectedTheme: string) => {
@@ -86,14 +96,14 @@ const CodeEditor = () => {
       </div>
       <div className="editor">
         <CodeMirror
-          value={value}
+          // value={value}
           options={{
             mode: languageModes[language],
             theme: theme,
             lineNumbers: true,
           }}
           editorDidMount={(editor) => (editorRef.current = editor)}
-          onChange={(editor, data, value) => setValue(value)}
+          // onChange={(editor, data, value) => setValue(value)}
         />
       </div>
     </div>
