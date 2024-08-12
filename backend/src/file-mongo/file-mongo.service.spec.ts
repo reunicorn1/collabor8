@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EnvironmentService } from './environment.service';
+import { FileMongoService } from './file-mongo.service';
 
-describe('EnvironmentService', () => {
-  let service: EnvironmentService;
+describe('FileMongoService', () => {
+  let service: FileMongoService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EnvironmentService],
+      providers: [FileMongoService],
     }).compile();
 
-    service = module.get<EnvironmentService>(EnvironmentService);
+    service = module.get<FileMongoService>(FileMongoService);
   });
 
   it('should be defined', () => {

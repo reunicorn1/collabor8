@@ -28,10 +28,10 @@ export class Users {
   @Column({ type: 'uuid', nullable: true })
   environment_id: string | null;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn()
   created_at: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn()
   updated_at: Date;
 
   @OneToMany(() => Projects, (project) => project.owner)

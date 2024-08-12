@@ -11,7 +11,7 @@ import {
 import { Projects } from '@projects/project.entity';
 import { Users } from '@users/user.entity';
 
-@Entity({ name: 'ProjectShares' })
+@Entity('project_shares')
 @Index('IDX_PROJECT_USER', ['project_id', 'user_id'], { unique: true }) // Composite unique index on project_id and user_id
 export class ProjectShares {
   @PrimaryGeneratedColumn('uuid')
@@ -26,10 +26,10 @@ export class ProjectShares {
   @Column({ type: 'enum', enum: ['read', 'write'] })
   access_level: 'read' | 'write'; // Access level granted
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn()
   created_at: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn()
   updated_at: Date;
 
   @ManyToOne(() => Projects, (project) => project.projectShares)
