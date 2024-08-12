@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
 import './codemirrorSetup';
 import * as Y from 'yjs';
@@ -18,9 +18,12 @@ const languageModes: Record<LanguageCode, string> = {
   html: 'xml',
 };
 
-const CodeEditor = () => {
+interface CodeEditorProps {
+  fileContent: string;
+}
+
+const CodeEditor: React.FC<CodeEditorProps> = ({ fileContent }) => {
   const [language, setLanguage] = useState<LanguageCode>('typescript');
-  // const [value, setValue] = useState(codeExamples['typescript']);
   const [theme, setTheme] = useState('dracula');
   const [connected, setConnected] = useState(false);
   const [username, setUsername] = useState('');
@@ -35,10 +38,11 @@ const CodeEditor = () => {
         roomName,
         ydoc,
       );
-      // Event listeners
-      provider.on('status', (event: { status: unknown }) => {
+
+      provider.on('status', (event: { status: string }) => {
         console.log(event.status); // logs "connected" or "disconnected"
       });
+
       provider.on('sync', (isSynced: boolean) => console.log(isSynced));
 
       const awareness = provider.awareness;
@@ -47,6 +51,7 @@ const CodeEditor = () => {
       awareness.setLocalStateField('user', { name: username, color });
 
       const yText = ydoc.getText('codemirror');
+      yText.insert(0, fileContent); // Initialize the editor with the file content
       const yUndoManager = new Y.UndoManager(yText);
 
       const binding = new CodemirrorBinding(
@@ -58,19 +63,15 @@ const CodeEditor = () => {
         },
       );
 
-      // if (yText.length === 0) {
-      //   yText.insert(0, codeExamples[language]);
-      // }
       return () => {
         binding.destroy();
         provider.disconnect();
       };
     }
-  }, [connected, language, roomName, username]);
+  }, [connected, language, roomName, username, fileContent]);
 
   const handleLanguageChange = (selectedLanguage: LanguageCode) => {
     setLanguage(selectedLanguage);
-    // setValue(codeExamples[selectedLanguage]);
   };
 
   const handleThemeChange = (selectedTheme: string) => {
@@ -98,14 +99,12 @@ const CodeEditor = () => {
       </div>
       <div className="editor">
         <CodeMirror
-          // value={value}
           options={{
             mode: languageModes[language],
             theme: theme,
             lineNumbers: true,
           }}
           editorDidMount={(editor) => (editorRef.current = editor)}
-          // onChange={(editor, data, value) => setValue(value)}
         />
       </div>
     </div>

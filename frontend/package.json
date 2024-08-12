@@ -19,6 +19,7 @@
     "@uiw/codemirror-themes": "^4.23.0",
     "@uiw/codemirror-themes-all": "^4.23.0",
     "@uiw/react-codemirror": "^4.23.0",
+    "axios": "^1.7.3",
     "codemirror": "^5.65.17",
     "framer-motion": "^11.3.24",
     "mdb-react-ui-kit": "^8.0.0",
