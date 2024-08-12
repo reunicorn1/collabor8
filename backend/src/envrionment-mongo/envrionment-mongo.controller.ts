@@ -1,7 +1,7 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { EnvironmentMongoService } from './envrionment-mongo.service';
 
-@Controller('environment')
+@Controller('environments')
 export class EnvironmentMongoController {
   constructor(private readonly environService: EnvironmentMongoService) {}
 
