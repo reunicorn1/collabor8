@@ -1,15 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EnvrionmentMongoController } from './envrionment-mongo.controller';
+import { EnvironmentMongoController } from './envrionment-mongo.controller';
 
 describe('EnvrionmentMongoController', () => {
-  let controller: EnvrionmentMongoController;
+  let controller: EnvironmentMongoController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [EnvrionmentMongoController],
+      controllers: [EnvironmentMongoController],
     }).compile();
 
-    controller = module.get<EnvrionmentMongoController>(EnvrionmentMongoController);
+    controller = module.get<EnvironmentMongoController>(
+      EnvironmentMongoController,
+    );
   });
 
   it('should be defined', () => {

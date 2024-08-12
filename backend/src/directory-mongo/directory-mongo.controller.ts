@@ -1,7 +1,7 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { DirectoryMongoService } from './directory-mongo.service';
 
-@Controller('directories')
+@Controller('directory-docs')
 export class DirectoryMongoController {
   constructor(private readonly dirService: DirectoryMongoService) {}
 

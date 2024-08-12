@@ -1,7 +1,7 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ProjectSharesMongoService } from './project-shares-mongo.service';
 
-@Controller('project-shares')
+@Controller('project-shares-docs')
 export class ProjectSharesMongoController {
   constructor(private readonly shareService: ProjectSharesMongoService) {}
 

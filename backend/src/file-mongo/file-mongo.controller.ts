@@ -1,7 +1,7 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { FileMongoService } from './file-mongo.service';
 
-@Controller('files')
+@Controller('file-docs')
 export class FileMongoController {
   constructor(private readonly fileService: FileMongoService) {}
 
