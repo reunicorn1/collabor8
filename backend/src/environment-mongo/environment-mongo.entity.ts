@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, ObjectIdColumn, ObjectId } from 'typeorm';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 /**
  * Environments entity - a mongodb collection managing the environments
@@ -8,8 +8,8 @@ import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 
 @Entity('environment')
 export class EnvironmentMongo {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @ObjectIdColumn()
+  _id: ObjectId;
 
   @Column()
   username: string;

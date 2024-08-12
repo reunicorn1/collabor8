@@ -3,24 +3,31 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Users } from './user.entity';
 import { EnvironmentMongoService } from '@environment-mongo/environment-mongo.service';
+import { MYSQL_CONN } from '@constants';
 
 // TODO: complete all DB QUERY/MUTATION
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(Users)
+    @InjectRepository(Users, MYSQL_CONN)
     private readonly usersRepository: Repository<Users>,
     private readonly environmentService: EnvironmentMongoService,
   ) {}
 
   async create(user: Partial<Users>): Promise<Users> {
-    const newUser = this.usersRepository.create(user);
-    const userEnvironment = await this.environmentService.create({
-      username: newUser.username,
-    });
-    newUser.environment_id = userEnvironment.id;
+    try {
+      const newUser = this.usersRepository.create(user);
+      if (this.environmentService) {
+        const userEnvironment = await this.environmentService.create({
+          username: newUser.username,
+        });
+        newUser.environment_id = userEnvironment._id.toString();
+      }
 
-    return this.usersRepository.save(newUser);
+      return this.usersRepository.save(newUser);
+    } catch (err) {
+      console.log({ err });
+    }
   }
 
   async findAll(): Promise<Users[]> {

@@ -4,24 +4,24 @@ import { Repository } from 'typeorm';
 import { Projects } from './project.entity';
 import { parseCreateProjectDto } from './dto/create-project.dto';
 import { BadRequestException } from '@nestjs/common';
+import { MYSQL_CONN } from '@constants';
 
 @Injectable()
 export class ProjectsService {
   constructor(
-    @InjectRepository(Projects)
+    @InjectRepository(Projects, MYSQL_CONN)
     private projectsRepository: Repository<Projects>,
   ) {}
 
   // Create a new project
   async create(createProjectDto: Partial<Projects>): Promise<Projects> {
     try {
-    const parsedDto = parseCreateProjectDto(createProjectDto);
+      const parsedDto = parseCreateProjectDto(createProjectDto);
+      const newProject = this.projectsRepository.create(parsedDto);
+      return this.projectsRepository.save(newProject);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
-
-    const newProject = this.projectsRepository.create(parsedDto);
-    return this.projectsRepository.save(newProject);
   }
 
   // Retrieve all projects

@@ -26,8 +26,9 @@
        "@project-shares-mongo/*": ["src/project-shares-mongo/*"],
        "@directory-mongo/*": ["src/directory-mongo/*"],
        "@file-mongo/*": ["src/file-mongo/*"],
-	   "@utils/*": ["src/utils/*"],
-	   "@filters/*": ["src/filters/*"]
+       "@utils/*": ["src/utils/*"],
+       "@filters/*": ["src/filters/*"],
+       "@constants": ["src/constants"]
     }
   }
 }
