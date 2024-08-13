@@ -1,5 +1,6 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Body } from '@nestjs/common';
 import { FileMongoService } from './file-mongo.service';
+import { FileMongo } from './file-mongo.entity';
 
 @Controller('file-docs')
 export class FileMongoController {
@@ -8,6 +9,11 @@ export class FileMongoController {
   @Get()
   findAll() {
     return this.fileService.findAll();
+  }
+
+  @Post()
+  create(@Body() createFileDto: Partial<FileMongo>) {
+    return this.fileService.create(createFileDto);
   }
 
   @Get(':id')

@@ -30,37 +30,49 @@ export class UsersService {
     }
   }
 
+  async login(loginDto: { username: string; password: string }) {
+    const user = await this.usersRepository.findOne({
+      where: { username: loginDto.username },
+    });
+    if (!user) {
+      throw new NotFoundException(
+        `User with username ${loginDto.username} not found`,
+      );
+    }
+    if (user.password_hash !== loginDto.password) {
+      throw new NotFoundException('Invalid password');
+    }
+    return user;
+  }
+
   async findAll(): Promise<Users[]> {
     return this.usersRepository.find({
       relations: ['ownedProjects', 'projectShares'],
     });
   }
 
-  async findOneById(user_id: string): Promise<Users> {
-    const user = await this.usersRepository.findOne({
-      where: { user_id },
-      relations: ['ownedProjects', 'projectShares'],
-    });
+  async findOneBy(query: Partial<Users>): Promise<Users> {
+    const user = await this.usersRepository.findOne({ where: query });
     if (!user) {
-      throw new NotFoundException(`User with ID ${user_id} not found`);
+      throw new NotFoundException(`User with query ${query} not found`);
     }
     return user;
   }
 
-  async findOneByUsername(username: string): Promise<Users> {
-    const user = await this.usersRepository.findOne({
-      where: { username },
-      relations: ['ownedProjects', 'projectShares'],
-    });
-    if (!user) {
-      throw new NotFoundException(`User with username ${username} not found`);
-    }
-    return user;
-  }
-
-  async update(user_id: string, updateUserDto: Partial<Users>): Promise<Users> {
+  async updateById(
+    user_id: string,
+    updateUserDto: Partial<Users>,
+  ): Promise<Users> {
     await this.usersRepository.update(user_id, updateUserDto);
-    return this.findOneById(user_id);
+    return this.findOneBy({ user_id });
+  }
+
+  async updateByUsername(
+    username: string,
+    updateUserDto: Partial<Users>,
+  ): Promise<Users> {
+    await this.usersRepository.update({ username }, updateUserDto);
+    return this.findOneBy({ username });
   }
 
   async remove(user_id: string): Promise<void> {

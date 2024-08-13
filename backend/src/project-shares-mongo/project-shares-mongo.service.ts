@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ObjectId } from 'typeorm';
 import { ProjectSharesMongo } from './project-shares-mongo.entity';
 
 @Injectable()
@@ -15,7 +15,8 @@ export class ProjectSharesMongoService {
   }
 
   findOne(id: string): Promise<ProjectSharesMongo | null> {
-    return this.shareRepository.findOneBy({ id });
+    const _id = new ObjectId(id);
+    return this.shareRepository.findOneBy({ _id });
   }
 
   async remove(id: string): Promise<void> {

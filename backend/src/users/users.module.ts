@@ -8,10 +8,11 @@ import { EnvironmentMongo } from '@environment-mongo/environment-mongo.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([EnvironmentMongo], 'mongoConnection'),
     TypeOrmModule.forFeature([Users], 'mysqlConnection'),
+    TypeOrmModule.forFeature([EnvironmentMongo], 'mongoConnection'),
   ],
   providers: [UsersService, EnvironmentMongoService],
   controllers: [UsersController],
+  exports: [UsersService],
 })
 export class UsersModule {}
