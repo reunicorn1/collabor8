@@ -7,6 +7,8 @@ import { FileMongo } from '@file-mongo/file-mongo.entity';
 import { UsersService } from '@users/users.service';
 import { InjectRepository } from '@nestjs/typeorm';
 
+// TODO: refactor to move helper functions to relevant service providers
+// to avoid code duplication and make code more modular
 @Injectable()
 export class ProjectMongoService {
   constructor(

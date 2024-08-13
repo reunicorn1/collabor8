@@ -34,7 +34,6 @@ export class ProjectMongoController {
     @Query('startDepth') startDepth: number,
     @Query('endDepth') endDepth: number,
   ) {
-    console.log({ username, startDepth, endDepth });
     return this.projectService.findProjectsWithPaging(
       username,
       startDepth,

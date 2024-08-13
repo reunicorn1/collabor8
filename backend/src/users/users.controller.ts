@@ -40,12 +40,12 @@ export class UsersController {
     return this.usersService.updateById(user_id, updateUserDto);
   }
 
-  @Get()
+  @Get(':username')
   async findOneByUsername(@Param('username') username: string): Promise<Users> {
     return this.usersService.findOneBy({ username });
   }
 
-  @Patch('username/:username')
+  @Patch(':username')
   async updateByUsername(
     @Param('username') username: string,
     @Body() updateUserDto: Partial<Users>,
