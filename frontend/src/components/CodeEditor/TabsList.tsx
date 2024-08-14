@@ -7,17 +7,15 @@ type YMapValueType = Y.Text | null | Y.Map<YMapValueType>;
 
 interface DocumentManagerProps {
   projectlist: Y.Map<YMapValueType> | null;
+  render: boolean;
 }
-const DocumentManager: React.FC<DocumentManagerProps> = ({ projectlist }) => {
+const DocumentManager: React.FC<DocumentManagerProps> = ({
+  projectlist,
+  // render,
+}) => {
   const [documentList, setDocumentList] = useState(projectlist);
   const [counter, setCounter] = useState(1);
   const { setFileSelected } = useFile()!;
-
-  projectlist?.observe(() => {
-    if (projectlist) {
-      setDocumentList(projectlist);
-    }
-  });
 
   // Creating documents in the future will require the name of the file + parent directory
   // parent directory can be root or any other nested direcotry

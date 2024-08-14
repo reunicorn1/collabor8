@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
 import './codemirrorSetup';
 import * as Y from 'yjs';
@@ -30,6 +30,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
   const { fileSelected, fileTree, setFileTree } = useFile()!;
   const editorRef = useRef<Editor | null>();
   const [binding, setBinding] = useState<CodemirrorBinding | null>(null);
+  const [render, setRender] = useState(true);
   const [aware, setAware] = useState();
 
   // Type guard to check if a value is Y.Text
@@ -37,64 +38,61 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
     return value instanceof Y.Text;
   };
 
-  useEffect(() => {
+  const initializeDocument = useCallback(() => {
     const ydoc = new Y.Doc();
     const projectRoot = ydoc.getMap('root');
-    projectRoot.observeDeep((arg0, arg1) => {
-      console.log(arg0, arg1);
-    });
-    setFileTree(projectRoot); // Fix Type Error
+    projectRoot.observe(() => setRender(!render));
+    setFileTree(projectRoot);
 
     const provider = new WebsocketProvider(
       'ws://localhost:9090',
       projectId,
       ydoc,
     );
+    setAware(provider.awareness);
 
-    provider.on('status', (event: { status: string }) => {
-      console.log(`WebSocket status: ${event.status}`);
+    provider.awareness.setLocalStateField('user', {
+      name: 'User',
+      color: RandomColor(),
     });
 
-    const awareness = provider.awareness;
-    setAware(awareness); // Fix type error
-
-    const color = RandomColor();
-    awareness.setLocalStateField('user', { name: 'User', color }); //TODO: Use a default until we implement the redux store
-
+    // If the y.map is empty and new with no files
     // TODO: An API request can be done in this part to create a corresponding file
     // But the editor in a new project always had to come with an empty file
-    // But you have to check if this is a new project or not. projetRoot.keys is of type iterableIterator
-    const firstItem = projectRoot.keys().next();
-    if (firstItem.done) {
+    // But you have to check if this is a new project or not.
+    if (projectRoot.size === 0 && editorRef.current) {
       const yText = ydoc.getText('main-file');
       projectRoot.set('main-file', yText);
-
-      const yUndoManager = new Y.UndoManager(yText);
-      if (editorRef.current)
-        setBinding(
-          new CodemirrorBinding(yText, editorRef.current, awareness, {
-            yUndoManager,
-          }),
-        );
-    }
-
-    return () => {
-      if (binding) binding.destroy();
-      provider.disconnect();
-    };
-  }, [editorRef.current]);
-
-  useEffect(() => {
-    console.log('a file has been selected', fileSelected);
-    if (isYText(fileSelected) && editorRef.current) {
-      const yUndoManager = new Y.UndoManager(fileSelected);
       setBinding(
-        new CodemirrorBinding(fileSelected, editorRef.current, aware, {
-          yUndoManager,
+        new CodemirrorBinding(yText, editorRef.current, provider.awareness, {
+          yUndoManager: new Y.UndoManager(yText),
+        }),
+      );
+    } else {
+      const key = Array.from(projectRoot.keys())[0];
+      const text = projectRoot.get(key);
+      setBinding(
+        new CodemirrorBinding(text, editorRef.current, provider.awareness, {
+          yUndoManager: new Y.UndoManager(text),
         }),
       );
     }
-  }, [aware, fileSelected]);
+
+    return () => {
+      binding?.destroy();
+      provider.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (fileSelected && editorRef.current && fileSelected instanceof Y.Text) {
+      setBinding(
+        new CodemirrorBinding(fileSelected, editorRef.current, aware, {
+          yUndoManager: new Y.UndoManager(fileSelected),
+        }),
+      );
+    }
+  }, [fileSelected, aware]);
 
   // const handleLanguageChange = (selectedLanguage: LanguageCode) => {
   //   setLanguage(selectedLanguage);
@@ -106,7 +104,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
 
   return (
     <div>
-      <DocumentManager projectlist={fileTree} />
+      <DocumentManager projectlist={fileTree} render={render} />
       {/* <div className="selectors">
         <LanguageSelector
           language={language}
@@ -121,7 +119,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
             theme: theme,
             lineNumbers: true,
           }}
-          editorDidMount={(editor) => (editorRef.current = editor)}
+          editorDidMount={(editor) => {
+            editorRef.current = editor;
+            initializeDocument();
+          }}
         />
       </div>
     </div>
