@@ -21,16 +21,12 @@ const languageModes: Record<LanguageCode, string> = {
 interface CodeEditorProps {
   projectId: string;
   fileId: string;
-  fileContent: string;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({
-  projectId,
-  fileId,
-  fileContent,
-}) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, fileId }) => {
   const [language, setLanguage] = useState<LanguageCode>('typescript');
   const [theme, setTheme] = useState('dracula');
+  const [initialValue, setInitialValue] = useState<string>('');
   const editorRef = useRef<Editor | null>(null);
 
   useEffect(() => {
@@ -49,10 +45,22 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     const color = RandomColor();
     awareness.setLocalStateField('user', { name: 'User', color }); //TODO: Use a default until we implement the redux store
 
-    let yText = ydoc.getText(fileId);
-    if (yText.length === 0) {
-      yText.insert(0, fileContent);
+    const yMap = ydoc.getMap('files');
+    let yText = yMap.get(fileId) as Y.Text;
+    if (!(yText instanceof Y.Text)) {
+      yText = new Y.Text();
+      yMap.set(fileId, yText);
     }
+
+    const metadata = {
+      fileId,
+      language,
+      theme,
+    };
+
+    yMap.set(`${fileId}_metadata`, metadata);
+
+    setInitialValue(yText.toString());
 
     const yUndoManager = new Y.UndoManager(yText);
     const binding = new CodemirrorBinding(yText, editorRef.current, awareness, {
@@ -63,7 +71,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       binding.destroy();
       provider.disconnect();
     };
-  }, [projectId, fileId, fileContent]);
+  }, [projectId, fileId, language, theme]);
 
   const handleLanguageChange = (selectedLanguage: LanguageCode) => {
     setLanguage(selectedLanguage);
@@ -84,6 +92,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       </div>
       <div className="editor">
         <CodeMirror
+          value={initialValue}
           options={{
             mode: languageModes[language],
             theme: theme,

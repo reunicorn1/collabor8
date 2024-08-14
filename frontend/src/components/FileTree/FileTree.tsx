@@ -82,15 +82,7 @@ const FileTree: React.FC<FileTreeProps> = ({ projectId }) => {
         onTabClick={handleTabClick}
         onTabClose={handleCloseTab}
       />
-      {activeTabId && (
-        <CodeEditor
-          projectId={projectId}
-          fileId={activeTabId}
-          fileContent={
-            tabs.find((tab) => tab.id === activeTabId)?.content || ''
-          }
-        />
-      )}
+      {activeTabId && <CodeEditor projectId={projectId} fileId={activeTabId} />}
     </div>
   );
 };
