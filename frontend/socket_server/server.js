@@ -199,21 +199,33 @@ async function updateDocumentInDb(context, projectId, key, metadata) {
     console.error('Metadata is missing fileId:', metadata);
     return;
   }
-
-  const yText = context.document.getMap('files').get(fileId);
+  console.log('----------------------------------------------------');
+  const yText = context.document.getText(fileId);
+  // log yText to see the content
+  console.log('init', yText.toJSON());
+  // check context.document type
   if (yText instanceof Y.Text) {
-    const update = Y.encodeStateAsUpdate(yText);
-    Y.applyUpdate(yText, update);
+    // convert content to string and log it
+    console.log(`Document content: ${Y.encodeStateAsUpdate(context.document).toString().length}`);
+
+    const update = Y.encodeStateAsUpdate(context.document);
+    Y.applyUpdate(context.document, update);
+    const yjson = yText.toJSON();
+    // console.log(`yjson: ${yjson}`);
+    // console.log('update', update);
     const client = await MongoClient.connect(mongoUrl);
     const db = client.db(dbName);
     const collection = db.collection('projects');
     await collection.updateOne(
       { projectId, fileId },
-      { $set: { file_content: update, metadata } },
+      { $set: { file_content: yjson, metadata } },
       { upsert: true },
     );
     console.log(`Document updated: ${projectId}/${fileId}`);
+  } else {
+    console.error('Value is not a Y.Text:', yText);
   }
+
 }
 
 async function handleLoadDocument(context, projectId) {
@@ -223,9 +235,8 @@ async function handleLoadDocument(context, projectId) {
     const db = client.db(dbName);
     const collection = db.collection('projects');
     const project = await collection.findOne({ project_id: projectId });
-
     if (project) {
-      loadProjectFiles(yMap, project);
+      loadProjectFiles(context.document, project);
     } else {
       console.error(`Project not found: ${projectId}`);
     }
@@ -234,18 +245,36 @@ async function handleLoadDocument(context, projectId) {
   }
 }
 
-function loadProjectFiles(yMap, project) {
+function loadProjectFiles(ydoc, project) {
   const files = [];
+  const yMap = ydoc.getMap('files');
   traverseChildren(project.children, files);
   for (const file of files) {
     const fileId = file.file_id;
     const content = file.file_content;
-    const metadata = file.metadata;
+    const metadata = {
+      fileId,
+      projectId: project.project_id,
+    }
+    // check if the content is a string
+    console.log(`Processing fileId: ${fileId}`);
+    console.log(`File content: ${content}`);
+    console.log(`File metadata: ${JSON.stringify(metadata)}`);
+    // console.log(`File content: ${content}`);
+    // console.log(`File metadata: ${JSON.stringify(metadata)}`);
     if (content) {
-      const yText = new Y.Text();
-      yText.insert(0, content);
-      yMap.set(fileId, yText);
-      yMap.set(`${fileId}_metadata`, metadata);
+      if (ydoc.getText(fileId)) {
+        console.log(`File already exists: ${fileId}`);
+      }
+      const yText = ydoc.getText(fileId) || new Y.Text();
+      // console.log(`the content is ${content}`);
+      console.log(`yText content itself: ${yText}`);
+      const yjson = yText.toJSON();
+      const ystring = yText.toString();
+      console.log(`yText content: ${yjson}`);
+      console.log(`yText string: ${ystring}`);
+      // console.log(`yMap props: ${JSON.stringify(yMap)}`);
+
     } else {
       console.error(`File content is undefined for fileId: ${fileId}`);
     }

@@ -30,12 +30,18 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, fileId }) => {
   const editorRef = useRef<Editor | null>(null);
 
   useEffect(() => {
+    console.log('Connecting to WebSocket server...');
     const ydoc = new Y.Doc();
     const provider = new WebsocketProvider(
       'ws://localhost:9090',
       projectId,
       ydoc,
     );
+
+    ydoc.on('update', (update) => {
+      Y.applyUpdate(ydoc, update);
+      console.log('Y.Doc updated');
+    });
 
     provider.on('status', (event: { status: string }) => {
       console.log(`WebSocket status: ${event.status}`);
@@ -44,32 +50,40 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, fileId }) => {
     const awareness = provider.awareness;
     const color = RandomColor();
     awareness.setLocalStateField('user', { name: 'User', color }); //TODO: Use a default until we implement the redux store
-
     const yMap = ydoc.getMap('files');
-    let yText = yMap.get(fileId) as Y.Text;
+    let yText = ydoc.getText(fileId);
+
     if (!(yText instanceof Y.Text)) {
+      console.log('Creating new Y.Text');
       yText = new Y.Text();
       yMap.set(fileId, yText);
     }
 
     const metadata = {
       fileId,
-      language,
-      theme,
+      projectId,
     };
 
     yMap.set(`${fileId}_metadata`, metadata);
-
     setInitialValue(yText.toString());
+    // if (!yText.length) {
+    //   yText.insert(0, 'tester');
+    // }
 
     const yUndoManager = new Y.UndoManager(yText);
     const binding = new CodemirrorBinding(yText, editorRef.current, awareness, {
       yUndoManager,
     });
 
+    const handleYTextUpdate = () => {
+      setInitialValue(yText.toString());
+    };
+    yText.observe(handleYTextUpdate);
+
     return () => {
       binding.destroy();
       provider.disconnect();
+      yText.unobserve(handleYTextUpdate);
     };
   }, [projectId, fileId, language, theme]);
 
@@ -92,7 +106,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, fileId }) => {
       </div>
       <div className="editor">
         <CodeMirror
-          value={initialValue}
           options={{
             mode: languageModes[language],
             theme: theme,
