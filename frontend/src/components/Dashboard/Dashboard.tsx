@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import FileTree from '../FileTree/FileTree';
 import { Project } from '../FileTree/types';
 import './Dashboard.css';
 import Spinner from '../../utils/Spinner';
+import { useNavigate } from 'react-router-dom';
 
 interface DashboardProps {
   userId: string;
@@ -11,10 +11,11 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ userId }) => {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
-    null,
-  );
+  // const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+  //   null,
+  // );
   const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -34,8 +35,8 @@ const Dashboard: React.FC<DashboardProps> = ({ userId }) => {
     fetchProjects();
   }, [userId]);
 
-  const handleProjectSelect = (projectId: string) => {
-    setSelectedProjectId(projectId);
+  const handleClick = (id: string) => {
+    navigate(`/editor/${id}`);
   };
 
   return (
@@ -50,8 +51,8 @@ const Dashboard: React.FC<DashboardProps> = ({ userId }) => {
               projects.map((project) => (
                 <li
                   key={project.project_id}
-                  className={`project-item ${project.project_id === selectedProjectId ? 'selected' : ''}`}
-                  onClick={() => handleProjectSelect(project.project_id)}
+                  className={`project-item`}
+                  onClick={() => handleClick(project.project_id)}
                 >
                   {project.project_name}
                 </li>
@@ -63,11 +64,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userId }) => {
         )}
       </div>
       <div className="file-tree-container">
-        {selectedProjectId ? (
-          <FileTree projectId={selectedProjectId} />
-        ) : (
-          <div className="placeholder">Select a project to view files</div>
-        )}
+        <div className="placeholder">Select a project to view files</div>
       </div>
     </div>
   );
