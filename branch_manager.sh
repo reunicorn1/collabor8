@@ -93,7 +93,7 @@ fi
 if [ "$create_branch" = true ]; then
     echo "Creating branch: $branch_name"
     git checkout -b "$branch_name"
-    git push -u origin "$branch_name"
+    # git push -u origin "$branch_name"
 fi
 
 # Fetch branches and select one to switch/checkout

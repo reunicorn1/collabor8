@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, ObjectIdColumn, ObjectId, Column, ManyToOne } from 'typeorm';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 
 /**
@@ -6,8 +6,8 @@ import { ProjectMongo } from '@project-mongo/project-mongo.entity';
  */
 @Entity('project_shares')
 export class ProjectSharesMongo {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @ObjectIdColumn()
+  _id: ObjectId;
 
   @Column()
   user_id: string;

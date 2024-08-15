@@ -6,9 +6,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  // OneToOne,
+  // JoinColumn,
 } from 'typeorm';
 import { Projects } from '@projects/project.entity';
 import { ProjectShares } from '@project-shares/project-shares.entity';
+// import { EnvironmentMongo } from '@environment-mongo/environment-mongo.entity';
 
 @Entity({ name: 'Users' })
 @Index('idx_username', ['username'], { unique: true })
@@ -25,7 +28,7 @@ export class Users {
   @Column({ type: 'varchar', length: 255 })
   password_hash: string;
 
-  @Column({ type: 'uuid', nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   environment_id: string | null;
 
   @CreateDateColumn()
@@ -33,6 +36,13 @@ export class Users {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  // @OneToOne(() => EnvironmentMongo, (environment) => environment.user, {
+  //   nullable: true,
+  //   cascade: true,
+  // })
+  // @JoinColumn({ name: 'environment_id', referencedColumnName: '_id' })
+  // environment: EnvironmentMongo | null; // User's environment
 
   @OneToMany(() => Projects, (project) => project.owner)
   ownedProjects: Projects[]; // Projects owned by the user

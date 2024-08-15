@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { Projects } from './project.entity';
+import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 
 @Controller('projects')
 export class ProjectsController {
@@ -22,6 +23,13 @@ export class ProjectsController {
   @Get()
   async findAll(): Promise<Projects[]> {
     return this.projectsService.findAll();
+  }
+
+  @Get(':username')
+  async findAllByUsername(
+    @Param('username') username: string,
+  ): Promise<ProjectMongo[]> {
+    return this.projectsService.findAllByUsername(username);
   }
 
   @Get(':id')

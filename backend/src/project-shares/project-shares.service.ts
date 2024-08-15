@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProjectShares } from './project-shares.entity';
+import { MYSQL_CONN } from '@constants';
 
 @Injectable()
 export class ProjectSharesService {
   constructor(
-    @InjectRepository(ProjectShares)
+    @InjectRepository(ProjectShares, MYSQL_CONN)
     private projectSharesRepository: Repository<ProjectShares>,
   ) {}
 

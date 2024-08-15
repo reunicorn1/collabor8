@@ -1,9 +1,10 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  ObjectIdColumn,
   Column,
   ManyToOne,
   OneToMany,
+  ObjectId,
 } from 'typeorm';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { FileMongo } from '@file-mongo/file-mongo.entity';
@@ -13,14 +14,17 @@ import { FileMongo } from '@file-mongo/file-mongo.entity';
  */
 @Entity('directories')
 export class DirectoryMongo {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @ObjectIdColumn()
+  _id: ObjectId;
 
   @Column()
-  directoryName: string;
+  directory_name: string;
 
   @Column()
-  createdAt: Date;
+  created_at: Date;
+
+  @Column({ type: 'string', nullable: true })
+  parent_id?: string; // Use string for ObjectId
 
   @ManyToOne(() => ProjectMongo, (project) => project.directories)
   project: ProjectMongo;
@@ -31,6 +35,8 @@ export class DirectoryMongo {
   @OneToMany(() => DirectoryMongo, (directory) => directory.parent)
   children: DirectoryMongo[];
 
-  @ManyToOne(() => DirectoryMongo, { nullable: true })
+  @ManyToOne(() => DirectoryMongo, (directory) => directory.children, {
+    nullable: true,
+  })
   parent: DirectoryMongo;
 }
