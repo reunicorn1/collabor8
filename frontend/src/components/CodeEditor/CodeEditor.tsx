@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
 import './codemirrorSetup';
 import * as Y from 'yjs';
 import { CodemirrorBinding } from 'y-codemirror';
 import RandomColor from 'randomcolor';
-// import { LanguageSelector, ThemeSelector } from './index';
 import { WebsocketProvider } from 'y-websocket';
 import { LanguageCode } from '../../utils/codeExamples';
 import { Editor } from 'codemirror';
 import { useFile, useSettings } from '../../context/EditorContext';
 import DocumentManager from './TabsList';
+import { Awareness } from 'y-protocols/awareness.js';
+import { useYMap } from 'zustand-yjs';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -23,76 +24,95 @@ const languageModes: Record<LanguageCode, string> = {
 interface CodeEditorProps {
   projectId: string;
 }
+
 type YMapValueType = Y.Text | null | Y.Map<YMapValueType>;
 
 const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
   const { theme, language } = useSettings()!;
-  const { fileSelected, fileTree, setFileTree } = useFile()!;
-  const editorRef = useRef<Editor | null>();
-  const [binding, setBinding] = useState<CodemirrorBinding | null>(null);
-  const [render, setRender] = useState(true);
-  const [aware, setAware] = useState();
+  const { fileSelected } = useFile()!;
+  const editorRef = useRef<Editor | null>(null);
+  // const [render, setRender] = useState(true);
+  const projectRoot = useRef<Y.Map<YMapValueType> | null>(null);
+  const binding = useRef<CodemirrorBinding | null>(null);
+  const ydoc = useRef(new Y.Doc());
+  projectRoot.current = ydoc.current.getMap('root');
 
-  // Type guard to check if a value is Y.Text
-  const isYText = (value: YMapValueType): value is Y.Text => {
-    return value instanceof Y.Text;
-  };
+  const { data, set, entries } = useYMap<
+    Y.Map<YMapValueType> | Y.Text,
+    Record<string, Y.Map<YMapValueType> | Y.Text>
+  >(projectRoot.current); // Type Error
+  const awareness = useRef<Awareness | null>(null);
 
-  const initializeDocument = useCallback(() => {
-    const ydoc = new Y.Doc();
-    const projectRoot = ydoc.getMap('root');
-    projectRoot.observe(() => setRender(!render));
-    setFileTree(projectRoot);
-
+  useEffect(() => {
+    if (!editorRef.current) return;
+    console.log(projectRoot.current);
     const provider = new WebsocketProvider(
       'ws://localhost:9090',
       projectId,
-      ydoc,
+      ydoc.current,
     );
-    setAware(provider.awareness);
 
-    provider.awareness.setLocalStateField('user', {
+    awareness.current = provider.awareness;
+
+    awareness.current.setLocalStateField('user', {
       name: 'User',
       color: RandomColor(),
     });
 
-    // If the y.map is empty and new with no files
-    // TODO: An API request can be done in this part to create a corresponding file
-    // But the editor in a new project always had to come with an empty file
-    // But you have to check if this is a new project or not.
-    if (projectRoot.size === 0 && editorRef.current) {
-      const yText = ydoc.getText('main-file');
-      projectRoot.set('main-file', yText);
-      setBinding(
-        new CodemirrorBinding(yText, editorRef.current, provider.awareness, {
-          yUndoManager: new Y.UndoManager(yText),
-        }),
-      );
-    } else {
-      const key = Array.from(projectRoot.keys())[0];
-      const text = projectRoot.get(key);
-      setBinding(
-        new CodemirrorBinding(text, editorRef.current, provider.awareness, {
+    const setupCodemirrorBinding = (text: Y.Text) => {
+      return new CodemirrorBinding(
+        text,
+        editorRef.current!,
+        awareness.current,
+        {
           yUndoManager: new Y.UndoManager(text),
-        }),
+        },
       );
+    };
+
+    if (projectRoot.current && provider) {
+      if (projectRoot.current.size === 0) {
+        const yText = ydoc.current.getText('main-file');
+        projectRoot.current.set('main-file', yText);
+        binding.current = setupCodemirrorBinding(yText);
+        console.log(binding.current);
+      } else {
+        const key = Array.from(projectRoot.current.keys())[0];
+        const text = projectRoot.current.get(key);
+
+        if (text instanceof Y.Text) {
+          binding.current = setupCodemirrorBinding(text);
+        } else {
+          console.error('Error occurred during the setup of the binding');
+        }
+      }
     }
 
     return () => {
-      binding?.destroy();
+      binding.current?.destroy();
       provider.disconnect();
     };
-  }, []);
+  }, [projectId]);
 
   useEffect(() => {
     if (fileSelected && editorRef.current && fileSelected instanceof Y.Text) {
-      setBinding(
-        new CodemirrorBinding(fileSelected, editorRef.current, aware, {
-          yUndoManager: new Y.UndoManager(fileSelected),
-        }),
-      );
+      try {
+        binding.current?.destroy();
+        binding.current = new CodemirrorBinding(
+          fileSelected,
+          editorRef.current,
+          awareness.current,
+          {
+            yUndoManager: new Y.UndoManager(fileSelected),
+          },
+        );
+      } catch (err) {
+        console.error('Error occured during binding, but this is serious', err);
+      }
+    } else {
+      console.error('Error occured during binding of the file', fileSelected);
     }
-  }, [fileSelected, aware]);
+  }, [fileSelected]);
 
   // const handleLanguageChange = (selectedLanguage: LanguageCode) => {
   //   setLanguage(selectedLanguage);
@@ -104,7 +124,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
 
   return (
     <div>
-      <DocumentManager projectlist={fileTree} render={render} />
+      <DocumentManager data={data} set={set} entries={entries} />
       {/* <div className="selectors">
         <LanguageSelector
           language={language}
@@ -121,7 +141,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
           }}
           editorDidMount={(editor) => {
             editorRef.current = editor;
-            initializeDocument();
           }}
         />
       </div>
