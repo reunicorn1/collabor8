@@ -43,6 +43,14 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
   >(projectRoot.current); // Type Error
   const awareness = useRef<Awareness | null>(null);
 
+  ydoc.current.on('update', (update) => {
+    console.log('Yjs update', update);
+  });
+  const setupCodemirrorBinding = (text: Y.Text) => {
+    return new CodemirrorBinding(text, editorRef.current!, awareness.current, {
+      yUndoManager: new Y.UndoManager(text),
+    });
+  };
   useEffect(() => {
     if (!editorRef.current) return;
     console.log(projectRoot.current);
@@ -62,35 +70,24 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
       color: RandomColor(),
     });
 
-    const setupCodemirrorBinding = (text: Y.Text) => {
-      return new CodemirrorBinding(
-        text,
-        editorRef.current!,
-        awareness.current,
-        {
-          yUndoManager: new Y.UndoManager(text),
-        },
-      );
-    };
-
-    if (projectRoot.current && provider) {
-      if (projectRoot.current.size === 0) {
-        const yText = ydoc.current.getText('main-file');
-        projectRoot.current.set('main-file', yText);
-        binding.current = setupCodemirrorBinding(yText);
-        console.log('this is because file is brand new', binding.current);
-      } else {
-        const key = Array.from(projectRoot.current.keys())[0];
-        const text = projectRoot.current.get(key);
-
-        if (text instanceof Y.Text) {
-          binding.current = setupCodemirrorBinding(text);
-          console.log('this is because file is not new', binding.current);
+    const weirdFunction = () => {
+      if (projectRoot.current && provider) {
+        if (projectRoot.current.size === 0) {
+          const yText = ydoc.current.getText('main-file');
+          projectRoot.current.set('main-file', yText);
+          binding.current = setupCodemirrorBinding(yText);
+          console.log('this is because file is brand new', binding.current);
         } else {
-          console.error('Error occurred during the setup of the binding');
+          const key = Array.from(projectRoot.current.keys())[0];
+          const text = projectRoot.current.get(key);
+
+          if (text instanceof Y.Text) {
+            binding.current = setupCodemirrorBinding(text);
+            console.log('this is because file is not new', binding.current);
+          }
         }
       }
-    }
+    };
 
     return () => {
       binding.current?.destroy();
@@ -102,14 +99,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
     if (fileSelected && editorRef.current && fileSelected instanceof Y.Text) {
       try {
         binding.current?.destroy();
-        binding.current = new CodemirrorBinding(
-          fileSelected,
-          editorRef.current,
-          awareness.current,
-          {
-            yUndoManager: new Y.UndoManager(fileSelected),
-          },
-        );
+        binding.current = setupCodemirrorBinding(fileSelected);
       } catch (err) {
         console.error('Error occured during binding, but this is serious', err);
       }
@@ -128,14 +118,19 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
 
   return (
     <div>
-      <DocumentManager data={data} set={set} entries={entries} />
+      <DocumentManager
+        data={data}
+        set={set}
+        entries={entries}
+        yMap={projectRoot.current}
+      />
       {/* <div className="selectors">
         <LanguageSelector
-          language={language}
-          onLanguageChange={handleLanguageChange}
+        language={language}
+        onLanguageChange={handleLanguageChange}
         />
         <ThemeSelector theme={theme} onThemeChange={handleThemeChange} />
-      </div> */}
+        </div> */}
       <div
         style={{
           width: '100%',

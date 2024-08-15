@@ -161,6 +161,9 @@ const server = new Hocuspocus({
     await handleLoadDocument(context, projectId);
     return context.document
   },
+  async afterLoadDocument(context) {
+    console.log('AfterLoad -------->', context.document.getMap('root').get('main-file').toJSON());
+  },
   onConnect: (context) => {
     handleConnect(context);
   },
@@ -179,35 +182,215 @@ const server = new Hocuspocus({
 async function handleStoreDocument(context, projectId) {
   try {
     const yMap = context.document.getMap('root');
-    console.log(Array.from(yMap.entries()).length);
+    const metaArray = {};
+    Array.from(yMap.entries()).map(([key, value]) => {
+      if (key.endsWith('_metadata')) {
+        metaArray[key] = value;
+      }
+    });
+    // console.log('MetaArray:', metaArray);
+    const yTextArray = Array.from(yMap.entries()).map(([key, value]) => {
+      if (!key.endsWith('_metadata')) {
+        return { key, value };
+      }
+    }
+    );
+    // console.log('MetaArray:', metaArray);
+
+    console.log(Array.from(yTextArray.length));
     for (const [key, value] of Array.from(yMap.entries())) {
       // metdata is undefined!!
-      await updateDocumentInDb(projectId, key, value);
+      await updateDocumentInDb(projectId, key, value, metaArray);
+      console.log(yMap.get(`${key}_metadata`));
     }
   } catch (error) {
     console.error(`Failed to store document ${projectId}:`, error);
   }
 }
 
-async function updateDocumentInDb(projectId, key, value) {
+async function insertProjectToDb(projectId) {
+  const client = await MongoClient.connect(mongoUrl);
+  const db = client.db(dbName);
+  const collection = db.collection('projects');
+  console.log('Inserting project:', projectId);
+  const result = await collection.insertOne({
+    project_id: projectId,
+    children: [],
+  });
+  const project = await collection.findOne({ _id: result.insertedId });
+  await client.close();
+  return project;
+}
+
+async function loadprojectFromDb(projectId) {
+  const client = await MongoClient.connect(mongoUrl);
+  const db = client.db(dbName);
+  const collection = db.collection('projects');
+  let project = await collection.findOne({ projectId });
+  if (!project) {
+    // create a new project
+    project = await insertProjectToDb(projectId);
+  }
+  await client.close();
+  return project;
+}
+
+async function insertFileToDb(projectId, fileId, yText) {
+  const client = await MongoClient.connect(mongoUrl);
+  const db = client.db(dbName);
+  const collection = db.collection('projects');
+  const dbupdate = {
+    file_id: fileId,
+    project_id: projectId,
+    file_content: yText.toDelta(),
+  };
+
+  await collection.updateOne(
+    // Filter criteria
+    { projectId: projectId },
+    // Update operation
+    { $push: { children: dbupdate } },
+    // Options (optional)
+    { upsert: true }
+  );
+  const project = await collection.findOne({
+    project_id: projectId,
+  });
+  const file = project.children.find((child) => child.file_id === fileId);
+  await client.close();
+  return file;
+}
+
+// updates the file content of existing file in the database
+async function updateFileInDb(projectId, fileId, yText) {
+  const client = await MongoClient.connect(mongoUrl);
+  const db = client.db(dbName);
+  const collection = db.collection('projects');
+  const update = yText.toDelta(); // Saving the changes as delta rather than using encodeStateAsUpdate
+
+  const result = await collection.updateOne(
+    {
+      projectId: projectId,
+      'children.file_id': fileId, // Find the document and array element to update
+    },
+    {
+      $set: {
+        'children.$.file_content': update, // Update the file_content of the matched array element
+      },
+    }
+  );
+
+  if (result.matchedCount === 0) {
+    console.error(`No file found with fileId: ${fileId} in projectId: ${projectId}`);
+  } else {
+    console.log(`File with fileId: ${fileId} updated successfully in projectId: ${projectId}`);
+  }
+
+  await client.close();
+
+}
+
+
+async function loadfileFromDb(projectId, fileId, yText) {
+  const project = await loadprojectFromDb(projectId);
+  let file = project.children.find((child) => child.file_id === fileId);
+  if (!file) {
+    file = await insertFileToDb(projectId, fileId, yText);
+    yText.applyDelta(yText.toDelta());
+  } else {
+    const content = file.file_content;
+    if (content) {
+      yText.applyDelta(content);
+    } else {
+      console.error(`File content is undefined for fileId: ${fileId}`);
+    }
+    return file;
+  }
+  // if (!project) {
+  //   console.error(`Project not found: ${projectId}`);
+  //   // create a new project
+  //   await collection.insertOne({
+  //     project_id: projectId,
+  //     children: [],
+  //   });
+  //   // insert a new file
+  //   await collection.updateOne(
+  //     { projectId: projectId },
+  //     {
+  //       $push: {
+  //         children: {
+  //           file_id: fileId,
+  //           project_id: projectId,
+  //           file_content: yText.toDelta(),
+  //         },
+  //       },
+  //     },
+  //     { upsert: true }
+  //   );
+  //   yText.applyDelta(yText.toDelta());
+  //   return;
+  // } else {
+  //   const file = project.children.find((child) => child.file_id === fileId);
+
+  //   if (file) {
+  //     const content = file.file_content;
+  //     if (content) {
+  //       yText.applyDelta(content);
+  //     } else {
+  //       console.error(`File content is undefined for fileId: ${fileId}`);
+  //     }
+  //   } else {
+  //     console.error(`File not found: ${fileId}`);
+  //   }
+  // }
+}
+
+
+async function updateDocumentInDb(projectId, key, value, metaArray) {
   if (key === null) {
     console.error('Cannot store date');
     return;
   }
-
+  // console.log('Updating document:', value.toJSON());
   const fileId = key
-  const yText = value; 
+  const yText = value;
+  console.log(`FileId: ${fileId}`);
   if (yText instanceof Y.Text) {
-    const update = yText.toDelta(); // Saving the changes as delta rather than using encodeStateAsUpdate 
-    const client = await MongoClient.connect(mongoUrl);
-    const db = client.db(dbName);
-    const collection = db.collection('projects');
-    await collection.updateOne(// saving the binary data
-      { projectId, fileId },
-      { $set: { file_content: update } },
-      { upsert: true },
-    );
-    console.log(`Document updated: ${projectId}/${fileId}`);
+    const fileMeta = metaArray[`${key}_metadata`];
+    console.log('FileMeta:', fileMeta);
+    if (fileMeta['new']) {
+      // update the file from the database
+      const file = await loadfileFromDb(projectId, fileId, yText);
+      fileMeta['new'] = false;
+    } else {
+      // normal behavior
+      await updateFileInDb(projectId, fileId, yText);
+
+
+      // const update = yText.toDelta(); // Saving the changes as delta rather than using encodeStateAsUpdate
+      // const client = await MongoClient.connect(mongoUrl);
+      // const db = client.db(dbName);
+      // const collection = db.collection('projects');
+      // const dbupdate = {
+      //   file_id: fileId,
+      //   project_id: projectId,
+      //   file_content: update,
+      // };
+
+      // await collection.updateOne(
+      //   // Filter criteria
+      //   { projectId: projectId },
+      //   // Update operation
+      //   { $push: { children: dbupdate } },
+      //   // Options (optional)
+      //   { upsert: true }
+      // );
+
+
+      console.log(`Document updated: ${projectId}/${fileId}`);
+    }
+
+
   }
 }
 
@@ -223,7 +406,14 @@ async function handleLoadDocument(context, projectId) {
       loadProjectFiles(yMap, project);
     } else {
       console.error(`Project not found: ${projectId}`);
+      // create a new project
+      await collection.insertOne({
+        project_id: projectId,
+        children: [],
+      });
+
     }
+    await client.close();
   } catch (error) {
     console.error(`Failed to load document ${projectId}:`, error);
   }
@@ -235,9 +425,14 @@ function loadProjectFiles(yMap, project) {
   for (const file of files) {
     const fileId = file.file_id;
     const content = file.file_content;
+    if (!content) {
+      console.error(`File content is undefined for fileId: ${fileId}`);
+      continue;
+    }
     if (content) {
       const yText = new Y.Text();
       yText.applyDelta(content);
+      console.log('YText:', yText.toJSON());
       yMap.set(fileId, yText);
     } else {
       console.error(`File content is undefined for fileId: ${fileId}`);
