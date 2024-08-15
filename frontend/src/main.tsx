@@ -7,9 +7,9 @@ import './index.css';
 // Define custom colors for the theme
 const colors = {
   brand: {
-    900: '#333232',
-    800: '#B5B1B0',
-    700: '#D53EDF',
+    900: '#001845',
+    800: '#001233',
+    700: '#002855',
     600: '#E6E85C',
     200: '#6BE3E1',
   },

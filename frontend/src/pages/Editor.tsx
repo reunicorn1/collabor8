@@ -7,16 +7,22 @@ import { useParams } from 'react-router-dom';
 // import FileTree from '../components/FileTree/FileTree';
 import { EditorProvider } from '../context/EditorContext';
 import CodeEditor from '../components/CodeEditor/CodeEditor';
+import Shares from '../components/Shares/Shares';
 
 export default function Editor() {
   const { projectId = '' } = useParams();
 
   return (
     <EditorProvider>
-      <Grid templateColumns="1fr 19fr" h="100vh">
+      <Grid templateColumns="1fr 20fr" h="100vh">
         {/* First Section */}
-        <GridItem bg="tomato" h="100%">
-          hi
+        <GridItem
+          background="linear-gradient(to bottom, #001845, #524175)"
+          h="100%"
+          borderRight="2px solid #524175"
+        >
+          {/* Here the awareness will be made */}
+          <Shares />
         </GridItem>
 
         {/* Second Section */}

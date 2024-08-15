@@ -11,9 +11,7 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
-.CodeMirror {
-  height: 100%;
-}
+
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -36,20 +34,15 @@
 .read-the-docs {
   @apply text-gray-500;
 }
-
-.code-editor-container {
-  display: flex;
-  padding: 1rem;
-  gap: 1rem;
+.CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
 }
+
 
 .selectors {
   flex: 0 0 12rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-.editor {
-  flex: 1;
 }

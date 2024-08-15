@@ -47,10 +47,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
     if (!editorRef.current) return;
     console.log(projectRoot.current);
     const provider = new WebsocketProvider(
-      'ws://localhost:9090',
+      'ws://localhost:1234',
       projectId,
       ydoc.current,
     );
+    provider.on('status', (event) => {
+      console.log(event.status); // logs "connected" or "disconnected"
+    });
 
     awareness.current = provider.awareness;
 
@@ -75,13 +78,14 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
         const yText = ydoc.current.getText('main-file');
         projectRoot.current.set('main-file', yText);
         binding.current = setupCodemirrorBinding(yText);
-        console.log(binding.current);
+        console.log('this is because file is brand new', binding.current);
       } else {
         const key = Array.from(projectRoot.current.keys())[0];
         const text = projectRoot.current.get(key);
 
         if (text instanceof Y.Text) {
           binding.current = setupCodemirrorBinding(text);
+          console.log('this is because file is not new', binding.current);
         } else {
           console.error('Error occurred during the setup of the binding');
         }
@@ -132,7 +136,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
         />
         <ThemeSelector theme={theme} onThemeChange={handleThemeChange} />
       </div> */}
-      <div>
+      <div
+        style={{
+          width: '100%',
+        }}
+      >
         <CodeMirror
           options={{
             mode: languageModes[language],

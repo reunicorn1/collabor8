@@ -26,7 +26,7 @@ const DocumentManager = <T, U extends Record<string, T>>({
     if (data) {
       const text = new Y.Text();
       set(String(counter), text);
-      console.log('New document has been added', data);
+      console.log('New document has been added',);
       // setDocumentList(projectlist);
       setCounter((c) => c + 1);
     }
