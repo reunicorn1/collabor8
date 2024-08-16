@@ -31,7 +31,7 @@ export class UsersController {
   async findAll(): Promise<Users[]> {
     return this.usersService.findAll();
   }
-
+  // TODO: regular user should not be able to set roles
   @Put('update')
   async update(
     @Request() req,
