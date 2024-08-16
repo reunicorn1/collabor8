@@ -2,8 +2,16 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import apiConfig from '../config/apiConfig';
 
 export const api = createApi({
-  reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: apiConfig.baseUrl }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'http://127.0.0.1:3000',
+    credentials: 'same-origin',
+    mode: 'cors',
+    prepareHeaders(headers, api) {
+      headers.set('content-type', 'application/json');
+      console.log({ headers, api });
+      return headers;
+    },
+  }),
   endpoints: (builder) => ({
     loginUser: builder.mutation<
       { accessToken: string },
