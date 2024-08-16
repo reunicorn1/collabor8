@@ -48,6 +48,18 @@ check_and_install_dependencies() {
     done
 }
 
+# Function to handle merge conflicts by opening the conflicting files in Neovim
+handle_merge_conflicts() {
+    local conflicts=$(git diff --name-only --diff-filter=U)
+    if [ -n "$conflicts" ]; then
+        echo "Merge conflicts detected in the following files:"
+        echo "$conflicts"
+        nvim $conflicts
+    else
+        echo "No merge conflicts detected."
+    fi
+}
+
 # Function to fetch branches and select one interactively
 fetch_and_select_branch() {
     echo "Fetching all branches..."
@@ -90,13 +102,15 @@ pull_and_check_dependencies() {
         echo "Pulling latest changes for branch: $branch_name"
         git pull origin "$branch_name"
         
+        # Handle merge conflicts if any
+        handle_merge_conflicts
+
         # Check and install dependencies
         check_and_install_dependencies "$branch_name"
     else
         echo "No updates to pull for branch: $branch_name"
     fi
 }
-
 # Parse options
 while getopts "cfprh-" opt; do
     case ${opt} in

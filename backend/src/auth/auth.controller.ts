@@ -14,7 +14,8 @@ import { Public } from '@auth/decorators/isPublic.decorator';
 // import { RolesGuard } from '@auth/guards/roles.guard';
 import { CreateUserDto, LoginUserDto } from '@users/dto/create-user.dto';
 import { Users } from '@users/user.entity';
-
+// TODO: Add guards and roles where necessary
+// TODO: replace all endpoints that contain username with @Request() req
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

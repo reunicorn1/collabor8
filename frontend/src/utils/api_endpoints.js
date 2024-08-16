@@ -4,36 +4,35 @@ const API_URL = 'http://localhost:3000';
 
 class APIEndpoints {
   constructor() {
-    this.headers = {
-    }
+
+    this.headers = {};
     this.run_axios = async (method, url, data, headers) => {
       return axios({
         method: method,
         url: url,
         data: data,
-        headers: headers ? headers : this.headers
+        headers: headers ? headers : this.headers,
       })
-        .then(response => {
-          console.log('response data:', response.data);
+        .then((response) => {
+          console.log(response.data);
           return response.data;
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error.response.data);
           return error.response.data;
-        })
-    }
+        });
+    };
 
-   this.signInUser =  async (user) => {
-      return this.run_axios('post', `${API_URL}/auth/signin`, user)
-        .then(data => {
+    this.signInUser = async (user) => {
+      return this.run_axios('post', `${API_URL}/auth/signin`, user).then(
+        (data) => {
           this.headers['Authorization'] = `Bearer ${data.accessToken}`;
           return data;
-        }
-        );
-  }
+        },
+      );
+    };
   }
 }
-
 
 export class UserAPI extends APIEndpoints {
   constructor() {
@@ -48,8 +47,6 @@ export class UserAPI extends APIEndpoints {
     return this.run_axios('post', `${API_URL}/auth/signup`, user);
   }
 
-
-
   async updateUser(user) {
     return this.run_axios('put', `${API_URL}/users/update`, user, this.headers);
   }
@@ -60,7 +57,6 @@ export class UserAPI extends APIEndpoints {
     }
     return this.run_axios('get', `${API_URL}/auth/profile`, null, headers);
   }
-
 }
 
 class ProjectAPI extends APIEndpoints {
@@ -68,7 +64,12 @@ class ProjectAPI extends APIEndpoints {
     super();
   }
   async getUserProjects(username, headers) {
-    return this.run_axios('get', `${API_URL}/projects/${username}`, null, headers);
+    return this.run_axios(
+      'get',
+      `${API_URL}/projects/${username}`,
+      null,
+      headers,
+    );
   }
 
   async getProjects() {
@@ -92,8 +93,6 @@ class ProjectAPI extends APIEndpoints {
   }
 }
 
-
-
 // test data
 const user = {
   username: 'mo',
@@ -101,8 +100,8 @@ const user = {
   last_name: 'Ali',
   email: 'mo@gmail.com',
   password: 'password',
-  favorite_languages: ['javascript', 'python']
-}
+  favorite_languages: ['javascript', 'python'],
+};
 
 const admin = {
   username: 'admin',
@@ -121,12 +120,11 @@ const user_login = {
 
 
 // const userAPI = new UserAPI();
-// create admin
-// await userAPI.createUser(admin)
+// // create admin
+// // await userAPI.createUser(admin)
 // await userAPI.signInUser(admin)
-// await userAPI.signInUser(user_login)
-// await userAPI.updateUser({favorite_languages: ['javascript', 'python', 'java'], roles: 'admin'})
-// await userAPI.getUsers()
+// // await userAPI.signInUser(user_login)
+// // await userAPI.updateUser({favorite_languages: ['javascript', 'python', 'java'], roles: 'admin'})
 
 //test
 // await createUser(user).then(data => console.log(data));

@@ -10,7 +10,7 @@ import { corsConfig } from '@config/configuration';
 // TODO: add cookie-parser https://docs.nestjs.com/techniques/cookies
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    cors: corsConfig,
+    // cors: corsConfig,
     logger: ['error', 'warn', 'log'],
   });
   app.useGlobalFilters(new HttpExceptionFilter());
