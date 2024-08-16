@@ -33,7 +33,8 @@ define kill_session
 @echo -e '$(1) app has $(RED)stopped!$(RESET)'
 endef
 
-setup: check-dependencies # setup the project and install core tools system-level
+setup: ## setup the project and install core tools on system-level as well as application dependencies
+	@$(MAKE) -s check-dependencies
 
 check-dependencies:
 ifndef TMUX
@@ -44,36 +45,30 @@ endif
 ifndef NPM
 	sudo apt-get update
 	sudo apt-get install -y npm
-	# insall backend, frontend plugins
+	# install app-level dependencies
 	$(NPM) $(FRONTEND) i
 	$(NPM) $(BACKEND) i
 endif
 
-ifeq ($(MAKECMDGOALS), run)
-run:
-		$(call run_session,$(REACT),$(FRONTEND))
-		$(call run_session,$(NEST),$(BACKEND))
-endif
-
-ifeq ($(MAKECMDGOALS), stop)
-stop:
+run: ## runs the whole application sesions (front/back)
+	$(call run_session,$(REACT),$(FRONTEND))
+	$(call run_session,$(NEST),$(BACKEND))
+run_react: ## runs react app only on tmux detached session
+	$(call run_session,$(REACT),$(FRONTEND))
+run_nest: ## runs nestjs app only on tmux detached session
+	$(call run_session,$(NEST),$(BACKEND))
+stop: ## stop the whole application sessions (front/back)
 	$(call kill_session,$(REACT))
 	$(call kill_session,$(NEST))
-endif
-ifeq ($(MAKECMDGOALS), stop_react)
-stop_react:
+stop_react: ## stop react app session
 	$(call kill_session,$(REACT))
-endif
-ifeq ($(MAKECMDGOALS), stop_nest)
-stop_nest:
+stop_nest: ## stop nestjs app session 
 	$(call kill_session,$(NEST))
-endif
 
-list:
+list: ## list running sessions
 	@$(TMUX) ls # list running processes
-restart: stop run
-	@echo "$(BOLD)Restarted$(RESET)"
-run_react: run
-run_nest: run
-stop_react: stop
-stop_nest: stop
+restart: ## restart the whole application
+	@$(MAKE) -s stop run && \
+	echo "$(BOLD)Restarted$(RESET)"
+help: ## Show this help message
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
