@@ -1,6 +1,6 @@
 const env: { [key: string]: string } = {
-  development: import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:3000',
-  test: 'http://0.0.0.0:3000',
+  development: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1',
+  test: 'http://localhost:3000/api/v1',
   production: 'https://www.collabor8.com',
 };
 

@@ -4,6 +4,7 @@ const API_URL = 'http://localhost:3000';
 
 class APIEndpoints {
   constructor() {
+
     this.headers = {};
     this.run_axios = async (method, url, data, headers) => {
       return axios({
@@ -109,13 +110,14 @@ const admin = {
   email: 'admin@gmail.com',
   password: 'admin',
   roles: 'admin',
-  favorite_languages: ['javascript', 'python'],
-};
+  favorite_languages: ['javascript', 'python']
+}
 
 const user_login = {
   username: 'mo',
-  password: 'password',
-};
+  password: 'password'
+}
+
 
 // const userAPI = new UserAPI();
 // // create admin
@@ -123,7 +125,6 @@ const user_login = {
 // await userAPI.signInUser(admin)
 // // await userAPI.signInUser(user_login)
 // // await userAPI.updateUser({favorite_languages: ['javascript', 'python', 'java'], roles: 'admin'})
-// await userAPI.getUsers()
 
 //test
 // await createUser(user).then(data => console.log(data));
