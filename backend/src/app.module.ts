@@ -20,9 +20,9 @@ import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
 import { ProjectMongoModule } from '@project-mongo/project-mongo.module';
 import { FileMongo } from '@file-mongo/file-mongo.entity';
 import { AuthModule } from '@auth/auth.module';
-// import { AuthGuard } from '@auth/guards/auth.guard';
+import { AuthGuard } from '@auth/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from '@auth/guards/roles.guard';
+// import { RolesGuard } from '@auth/guards/roles.guard';
 
 @Module({
   imports: [
@@ -67,7 +67,7 @@ import { RolesGuard } from '@auth/guards/roles.guard';
     AppService,
     {
       provide: APP_GUARD,
-      useClass: RolesGuard,
+      useClass: AuthGuard,
     },
   ],
 })

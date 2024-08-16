@@ -12,11 +12,7 @@ import {
 import { Projects } from '@projects/project.entity';
 import { ProjectShares } from '@project-shares/project-shares.entity';
 // import { EnvironmentMongo } from '@environment-mongo/environment-mongo.entity';
-
-export enum UserRole {
-  ADMIN = 'admin',
-  USER = 'user',
-}
+import { Role } from '@auth/enums/role.enum';
 
 @Entity({ name: 'Users' })
 @Index('idx_username', ['username'], { unique: true })
@@ -38,8 +34,8 @@ export class Users {
   favorite_languages: string[];
 
   // default 'user'
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
-  roles: string[]; // User roles
+  @Column({ type: 'enum', enum: Role, default: Role.User })
+  roles: Role[]; // User roles
 
   @Column({ type: 'varchar', length: 100, unique: true })
   email: string;

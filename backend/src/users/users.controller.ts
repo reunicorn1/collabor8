@@ -1,49 +1,43 @@
 import {
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Post,
   Body,
   Param,
   Delete,
   Put,
   Patch,
+  Request,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from '@users/users.service';
 import { Users } from './user.entity';
-import { CreateUserDto, LoginUserDto } from './dto/create-user.dto';
+import { Roles } from '@auth/decorators/roles.decorator';
+import { RolesGuard } from '@auth/guards/roles.guard';
+import { Role } from '@auth/enums/role.enum';
+// import { Public } from '@auth/decorators/isPublic.decorator';
 
 // TODO: complete RESTful API for user entity
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('register')
-  async create(@Body() createUserDto: CreateUserDto): Promise<Users> {
-    try {
-      return this.usersService.create(createUserDto);
-    } catch (error) {
-      // console.error(error);
-      return error;
-    }
-  }
-
-  @Post('login')
-  async login(@Body() loginDto: LoginUserDto) {
-    return this.usersService.login(loginDto);
-  }
-
   @Get('all')
+  @UseGuards(RolesGuard)
+  @Roles(Role.Admin)
   async findAll(): Promise<Users[]> {
     return this.usersService.findAll();
   }
 
-  @Put()
+  @Put('update')
   async update(
-    @Query('id') user_id: string,
+    @Request() req,
     @Body() updateUserDto: Partial<Users>,
   ): Promise<Users> {
-    return this.usersService.updateById(user_id, updateUserDto);
+    return this.usersService.updateByUsername(req.user.username, updateUserDto);
   }
 
   @Get(':username')

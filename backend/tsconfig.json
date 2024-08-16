@@ -29,7 +29,9 @@
 		"@file-mongo/*": ["src/file-mongo/*"],
 		"@utils/*": ["src/utils/*"],
 		"@filters/*": ["src/filters/*"],
-		"@constants": ["src/constants"]
+		"@constants": ["src/constants"],
+		"@config/*": ["src/config/*"]
+
 	}
   }
 }
