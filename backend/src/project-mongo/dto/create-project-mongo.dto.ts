@@ -32,4 +32,4 @@ function parseCreateProjectMongoDto(requestBody: any): CreateProjectMongoDto {
   return validated;
 }
 
-export { parseCreateProjectMongoDto };
+export { parseCreateProjectMongoDto, CreateProjectMongoDto };

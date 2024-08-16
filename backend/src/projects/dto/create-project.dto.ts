@@ -31,4 +31,4 @@ function parseCreateProjectDto(requestBody: any): CreateProjectDto {
   return validated;
 }
 
-export { parseCreateProjectDto };
+export { parseCreateProjectDto, CreateProjectDto };

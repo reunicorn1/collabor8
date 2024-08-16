@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '@users/users.service';
 import { Users } from './user.entity';
+import { CreateUserDto, LoginUserDto } from './dto/create-user.dto';
 
 // TODO: complete RESTful API for user entity
 @Controller('users')
@@ -18,12 +19,17 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('register')
-  async create(@Body() createUserDto: Partial<Users>): Promise<Users> {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto): Promise<Users> {
+    try {
+      return this.usersService.create(createUserDto);
+    } catch (error) {
+      // console.error(error);
+      return error;
+    }
   }
 
   @Post('login')
-  async login(@Body() loginDto: { username: string; password: string }) {
+  async login(@Body() loginDto: LoginUserDto) {
     return this.usersService.login(loginDto);
   }
 

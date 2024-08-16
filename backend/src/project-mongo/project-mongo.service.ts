@@ -6,6 +6,7 @@ import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
 import { FileMongo } from '@file-mongo/file-mongo.entity';
 import { UsersService } from '@users/users.service';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateProjectMongoDto } from './dto/create-project-mongo.dto';
 
 // TODO: refactor to move helper functions to relevant service providers
 // to avoid code duplication and make code more modular
@@ -22,7 +23,7 @@ export class ProjectMongoService {
     private readonly usersService: UsersService,
   ) {}
 
-  async create(createProjectDto: ProjectMongo): Promise<ProjectMongo> {
+  async create(createProjectDto: CreateProjectMongoDto): Promise<ProjectMongo> {
     return this.projectRepository.save(createProjectDto);
   }
 
@@ -34,11 +35,11 @@ export class ProjectMongoService {
   }
 
   async findAllByEnvironment(environment_id: string): Promise<ProjectMongo[]> {
-    const environmentId = new ObjectId(environment_id);
     const projs = await this.projectRepository.find({
-      where: { environment: { _id: environmentId } },
+      where: { environment_id: environment_id },
       relations: ['environment'],
     });
+    console.log(projs);
     return projs;
   }
 

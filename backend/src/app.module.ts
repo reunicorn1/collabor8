@@ -19,6 +19,10 @@ import { DirectoryMongoModule } from '@directory-mongo/directory-mongo.module';
 import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
 import { ProjectMongoModule } from '@project-mongo/project-mongo.module';
 import { FileMongo } from '@file-mongo/file-mongo.entity';
+import { AuthModule } from '@auth/auth.module';
+// import { AuthGuard } from '@auth/guards/auth.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from '@auth/guards/roles.guard';
 
 @Module({
   imports: [
@@ -56,8 +60,15 @@ import { FileMongo } from '@file-mongo/file-mongo.entity';
     ProjectSharesMongoModule,
     FileMongoModule,
     EnvironmentMongoModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}
