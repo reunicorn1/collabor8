@@ -34,6 +34,7 @@ const DocumentManager = <T, U extends Record<string, T>>({
         type: 'file',
         new: true,
       };
+      // TODO: condition to check if the text is in yMap then load it instead of creating a new one
       set(`${counter}_metadata`, metadata);
       set(String(counter), text);
       console.log('New document has been added');

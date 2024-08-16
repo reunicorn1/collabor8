@@ -158,7 +158,7 @@ const server = new Hocuspocus({
     const projectId = context.document.name;
     console.log('OnLoad -------->', projectId);
 
-    await handleLoadDocument(context, projectId);
+    await loadprojectFromDb(projectId);
     return context.document
   },
   async afterLoadDocument(context) {
@@ -366,27 +366,6 @@ async function updateDocumentInDb(projectId, key, value, metaArray) {
       // normal behavior
       await updateFileInDb(projectId, fileId, yText);
 
-
-      // const update = yText.toDelta(); // Saving the changes as delta rather than using encodeStateAsUpdate
-      // const client = await MongoClient.connect(mongoUrl);
-      // const db = client.db(dbName);
-      // const collection = db.collection('projects');
-      // const dbupdate = {
-      //   file_id: fileId,
-      //   project_id: projectId,
-      //   file_content: update,
-      // };
-
-      // await collection.updateOne(
-      //   // Filter criteria
-      //   { projectId: projectId },
-      //   // Update operation
-      //   { $push: { children: dbupdate } },
-      //   // Options (optional)
-      //   { upsert: true }
-      // );
-
-
       console.log(`Document updated: ${projectId}/${fileId}`);
     }
 
@@ -394,62 +373,6 @@ async function updateDocumentInDb(projectId, key, value, metaArray) {
   }
 }
 
-async function handleLoadDocument(context, projectId) {
-  try {
-    const yMap = context.document.getMap('root');
-    const client = await MongoClient.connect(mongoUrl);
-    const db = client.db(dbName);
-    const collection = db.collection('projects');
-    const project = await collection.findOne({ project_id: projectId });
-
-    if (project) {
-      loadProjectFiles(yMap, project);
-    } else {
-      console.error(`Project not found: ${projectId}`);
-      // create a new project
-      await collection.insertOne({
-        project_id: projectId,
-        children: [],
-      });
-
-    }
-    await client.close();
-  } catch (error) {
-    console.error(`Failed to load document ${projectId}:`, error);
-  }
-}
-
-function loadProjectFiles(yMap, project) {
-  const files = [];
-  traverseChildren(project.children, files);
-  for (const file of files) {
-    const fileId = file.file_id;
-    const content = file.file_content;
-    if (!content) {
-      console.error(`File content is undefined for fileId: ${fileId}`);
-      continue;
-    }
-    if (content) {
-      const yText = new Y.Text();
-      yText.applyDelta(content);
-      console.log('YText:', yText.toJSON());
-      yMap.set(fileId, yText);
-    } else {
-      console.error(`File content is undefined for fileId: ${fileId}`);
-    }
-  }
-  // return ydoc
-}
-
-function traverseChildren(children, files) {
-  for (const child of children) {
-    if (child.file_id) {
-      files.push(child);
-    } else if (child.children) {
-      traverseChildren(child.children, files);
-    }
-  }
-}
 
 // Connection Handlers
 function handleConnect(context) {

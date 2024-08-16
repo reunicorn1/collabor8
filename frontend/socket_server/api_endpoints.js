@@ -5,7 +5,6 @@ const API_URL = 'http://localhost:3000';
 class APIEndpoints {
   constructor() {
     this.headers = {
-      // 'Content-Type': 'application/json'
     }
     this.run_axios = async (method, url, data, headers) => {
       return axios({
@@ -23,6 +22,15 @@ class APIEndpoints {
           return error.response.data;
         })
     }
+
+   this.signInUser =  async (user) => {
+      return this.run_axios('post', `${API_URL}/auth/signin`, user)
+        .then(data => {
+          this.headers['Authorization'] = `Bearer ${data.accessToken}`;
+          return data;
+        }
+        );
+  }
   }
 }
 
@@ -40,18 +48,9 @@ export class UserAPI extends APIEndpoints {
     return this.run_axios('post', `${API_URL}/auth/signup`, user);
   }
 
-  async signInUser(user) {
-    return this.run_axios('post', `${API_URL}/auth/signin`, user)
-    .then(data => {
-    this.headers['Authorization'] = `Bearer ${data.accessToken}`;
-      console.log('Headers:', this.headers);
-    return data;
-    }
-    );
-  }
+
 
   async updateUser(user) {
-    console.log('Headers:', this.headers);
     return this.run_axios('put', `${API_URL}/users/update`, user, this.headers);
   }
 
@@ -124,8 +123,8 @@ const user_login = {
 const userAPI = new UserAPI();
 // create admin
 // await userAPI.createUser(admin)
-// await userAPI.signInUser(admin)
-await userAPI.signInUser(user_login)
+await userAPI.signInUser(admin)
+// await userAPI.signInUser(user_login)
 // await userAPI.updateUser({favorite_languages: ['javascript', 'python', 'java'], roles: 'admin'})
 await userAPI.getUsers()
 

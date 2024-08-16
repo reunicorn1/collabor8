@@ -19,7 +19,11 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     // TODO: add JWT logic instead of returning user
-    const payload = { username: user.username, sub: user.user_id, roles: user.roles };
+    const payload = {
+      username: user.username,
+      sub: user.user_id,
+      roles: user.roles,
+    };
     return {
       accessToken: await this.jwtService.signAsync(payload),
     };

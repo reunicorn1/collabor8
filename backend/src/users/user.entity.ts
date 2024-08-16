@@ -33,6 +33,8 @@ export class Users {
   @Column('simple-array')
   favorite_languages: string[];
 
+  // TODO: add profile picture and other user details as needed
+
   // default 'user'
   @Column({ type: 'enum', enum: Role, default: Role.User })
   roles: Role[]; // User roles
