@@ -30,8 +30,8 @@ export class Users {
   last_name: string;
 
   // favorite languages list
-  @Column('simple-array')
-  favorite_languages: string[];
+  @Column('simple-array', { nullable: true })
+  favorite_languages: string[] | null;
 
   // TODO: add profile picture and other user details as needed
 
