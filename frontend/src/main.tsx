@@ -1,6 +1,8 @@
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import { Provider } from 'react-redux';
+import store from './store/store.ts';
 import App from './App.tsx';
 import './index.css';
 
@@ -19,9 +21,11 @@ const colors = {
 const theme = extendTheme({ colors });
 
 createRoot(document.getElementById('root')!).render(
-  <ChakraProvider theme={theme}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </ChakraProvider>,
+  <Provider store={store}>
+    <ChakraProvider theme={theme}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ChakraProvider>
+  </Provider>,
 );
