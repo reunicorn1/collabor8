@@ -8,5 +8,6 @@ import { FileMongo } from './file-mongo.entity';
   imports: [TypeOrmModule.forFeature([FileMongo], 'mongoConnection')],
   providers: [FileMongoService],
   controllers: [FileMongoController],
+  exports: [FileMongoService],
 })
 export class FileMongoModule {}
