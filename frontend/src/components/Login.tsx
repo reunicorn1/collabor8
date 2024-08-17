@@ -1,32 +1,41 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
 import { useLoginUserMutation } from '../services/auth';
+import { useDispatch } from 'react-redux';
 import { setCredentials } from '../slices/authSlice';
-import { UserAPI } from '../utils/api_endpoints';
 
 const Login: React.FC = () => {
-  const api = new UserAPI();
+  const [loginUser, { data, error, isLoading }] = useLoginUserMutation();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const dispatch = useDispatch();
-  const [loginUser] = useLoginUserMutation();
-  const user_login = {
-    username: 'mo',
-    password: 'password',
-  };
 
-  const handleLogin = async (username: string, password: string) => {
-    try {
-      const { accessToken } = await loginUser({ username, password }).unwrap();
-      // const { accessToken } = await api.signInUser(user_login);
-      console.log('accessToken:', accessToken);
-      dispatch(setCredentials({ accessToken }));
-    } catch (error) {
-      console.error('Login failed:', error);
+  const handleLogin = async () => {
+    const result = await loginUser({ username, password });
+    if ('data' in result) {
+      dispatch(setCredentials({ accessToken: result.data.accessToken }));
     }
   };
 
   return (
     <div>
-      <button onClick={() => handleLogin('qqqq', '123')}>Login</button>
+      <h2>Login</h2>
+      <input
+        type="text"
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button onClick={handleLogin} disabled={isLoading}>
+        Login
+      </button>
+      {data && <p>Access Token: {data.accessToken}</p>}
+      {error && <p>Error: {error.message}</p>}
     </div>
   );
 };

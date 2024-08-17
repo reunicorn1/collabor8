@@ -6,7 +6,7 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  accessToken: null,
+  accessToken: localStorage.getItem('accessToken') || null,
 };
 
 const authSlice = createSlice({
@@ -15,9 +15,11 @@ const authSlice = createSlice({
   reducers: {
     setCredentials(state, action: PayloadAction<{ accessToken: string }>) {
       state.accessToken = action.payload.accessToken;
+      localStorage.setItem('accessToken', action.payload.accessToken);
     },
     unsetCredentials(state) {
       state.accessToken = null;
+      localStorage.removeItem('accessToken');
     },
   },
   extraReducers: (builder) => {
@@ -25,9 +27,11 @@ const authSlice = createSlice({
       .addMatcher(api.endpoints.loginUser.matchFulfilled, (state, action) => {
         const { accessToken } = action.payload;
         state.accessToken = accessToken;
+        localStorage.setItem('accessToken', accessToken);
       })
       .addMatcher(api.endpoints.loginUser.matchRejected, (state) => {
         state.accessToken = null;
+        localStorage.removeItem('accessToken');
       });
   },
 });

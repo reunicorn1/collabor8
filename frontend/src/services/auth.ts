@@ -1,32 +1,46 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { RootState } from '../store/store';
 import apiConfig from '../config/apiConfig';
+import { LoginUserDto, CreateUserDto, User } from '../types';
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://127.0.0.1:3000',
-    credentials: 'same-origin',
-    mode: 'cors',
-    prepareHeaders(headers, api) {
-      headers.set('content-type', 'application/json');
-      console.log({ headers, api });
+    baseUrl: apiConfig.baseUrl,
+    prepareHeaders: (headers, { getState }) => {
+      const state = getState() as RootState;
+      const token = state.auth.accessToken;
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
       return headers;
     },
   }),
   endpoints: (builder) => ({
-    loginUser: builder.mutation<
-      { accessToken: string },
-      { username: string; password: string }
-    >({
+    // Login user
+    loginUser: builder.mutation<{ accessToken: string }, LoginUserDto>({
       query: (credentials) => ({
         url: '/auth/signin',
         method: 'POST',
         body: credentials,
       }),
     }),
-    getUser: builder.query<any, string>({
-      query: (username) => `/users/${username}`,
+    // Get user profile (for authenticated user)
+    getProfile: builder.query<User, void>({
+      query: () => '/auth/profile',
+    }),
+    // Register new user
+    createUser: builder.mutation<User, CreateUserDto>({
+      query: (newUser) => ({
+        url: '/auth/signup',
+        method: 'POST',
+        body: newUser,
+      }),
     }),
   }),
 });
 
-export const { useLoginUserMutation, useGetUserQuery } = api;
+export const {
+  useLoginUserMutation,
+  useGetProfileQuery,
+  useCreateUserMutation,
+} = api;
