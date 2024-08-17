@@ -1,74 +1,143 @@
-# Makefile for the Application front & back
-.PHONY: run setup stop restart
+# Makefile for the Application (Frontend & Backend)
+
+# Default target
 .DEFAULT_GOAL := help
 
-# commands
-TMUX := $(shell command -v tmux 2> /dev/null)
-NPM := $(shell command -v npm 2> /dev/null)
-# colors
+# Commands
+TMUX := $(shell which tmux 2> /dev/null)
+NPM := $(shell which npm 2> /dev/null)
+
+# Colors
 RED := \e[31m
 GREEN := \e[32m
 BOLD := \e[1m
 RESET := \e[0m
-# sessions
-REACT := ReactJS
-NEST := NestJS
 
-# scripts
-FRONTEND := npm --prefix frontend run dev
-BACKEND := npm --prefix backend run start:dev
+# Sessions
+REACT_SESSION := ReactTS
+NEST_SESSION := NestJS
 
-# run define (kinda like procedure)
-# 1st argument is the session name
-# 2nd argument is the script associated w/ the session
+# Scripts
+FRONTEND_SCRIPT := npm --prefix frontend run dev
+BACKEND_SCRIPT := npm --prefix backend run start:dev
+
+# Define run session
 define run_session
-@$(TMUX) new-session -d -s "$(1)" "$(2)"
-@echo -e '$(1) app is $(GREEN)running \e[5m\e[1m...\e[0m$(RESET)'
+	@$(TMUX) new-session -d -s "$(1)" "$(2) > $(1)_log.txt 2>&1"
+	@echo -e '$(1) app is $(GREEN)running \e[5m\e[1m...\e[0m$(RESET)'
 endef
 
-# kill session base on its name
-# 1st argument is the session's name
+# Define kill session
 define kill_session
-@$(TMUX) kill-session -t "$(1)"
-@echo -e '$(1) app has $(RED)stopped!$(RESET)'
+	@if $(TMUX) ls | grep -q "$(1)"; then \
+		$(TMUX) kill-session -t "$(1)"; \
+		echo '$(1) app has $(RED)stopped!$(RESET)'; \
+	else \
+		echo 'No tmux session named "$(1)" found.'; \
+	fi
 endef
 
-setup: ## setup the project and install core tools on system-level as well as application dependencies
-	@$(MAKE) -s check-dependencies
+# Check environment
+check-environment:
+	@if [ -z "$(TMUX)" ]; then \
+		echo "Error: tmux is not installed. Please install tmux."; \
+		exit 1; \
+	fi
+	@if [ -z "$(NPM)" ]; then \
+		echo "Error: npm is not installed. Please install npm."; \
+		exit 1; \
+	fi
 
+# Target to set up the project
+setup: ## Setup project and install core tools and dependencies
+	@$(MAKE) -s check-environment
+	@$(MAKE) -s check-dependencies || exit 1
+
+# Check and install dependencies
 check-dependencies:
-ifndef TMUX
-	sudo apt-get update
-	sudo apt-get install -y tmux
-endif
+	@if [ -z "$(TMUX)" ]; then \
+		echo "Installing tmux..."; \
+		sudo apt-get update && sudo apt-get install -y tmux; \
+	fi
+	@if [ -z "$(NPM)" ]; then \
+		echo "Installing npm..."; \
+		sudo apt-get update && sudo apt-get install -y npm; \
+		echo "Installing project dependencies..."; \
+		$(NPM) --prefix frontend install; \
+		$(NPM) --prefix backend install; \
+	fi
 
-ifndef NPM
-	sudo apt-get update
-	sudo apt-get install -y npm
-	# install app-level dependencies
-	$(NPM) $(FRONTEND) i
-	$(NPM) $(BACKEND) i
-endif
+# Clean project dependencies
+clean: ## Clean project dependencies
+	@echo "Removing node_modules and reinstalling dependencies..."
+	@rm -rf frontend/node_modules
+	@rm -rf backend/node_modules
+	@$(MAKE) setup
 
-run: ## runs the whole application sesions (front/back)
-	$(call run_session,$(REACT),$(FRONTEND))
-	$(call run_session,$(NEST),$(BACKEND))
-run_react: ## runs react app only on tmux detached session
-	$(call run_session,$(REACT),$(FRONTEND))
-run_nest: ## runs nestjs app only on tmux detached session
-	$(call run_session,$(NEST),$(BACKEND))
-stop: ## stop the whole application sessions (front/back)
-	$(call kill_session,$(REACT))
-	$(call kill_session,$(NEST))
-stop_react: ## stop react app session
-	$(call kill_session,$(REACT))
-stop_nest: ## stop nestjs app session 
-	$(call kill_session,$(NEST))
+# Run sessions
+run: ## Run frontend and backend in tmux sessions
+	$(call run_session,$(REACT_SESSION),$(FRONTEND_SCRIPT))
+	$(call run_session,$(NEST_SESSION),$(BACKEND_SCRIPT))
 
-list: ## list running sessions
-	@$(TMUX) ls # list running processes
-restart: ## restart the whole application
+run_react: ## Run React app in a tmux session
+	$(call run_session,$(REACT_SESSION),$(FRONTEND_SCRIPT))
+
+run_nest: ## Run NestJS app in a tmux session
+	$(call run_session,$(NEST_SESSION),$(BACKEND_SCRIPT))
+
+# Stop sessions
+stop: ## Stop all running sessions
+	$(call kill_session,$(REACT_SESSION))
+	$(call kill_session,$(NEST_SESSION))
+
+stop_react: ## Stop React app session
+	$(call kill_session,$(REACT_SESSION))
+
+stop_nest: ## Stop NestJS app session
+	$(call kill_session,$(NEST_SESSION))
+
+# List running tmux sessions
+list: ## List all running tmux sessions
+	@$(TMUX) ls
+
+# Check status
+status: ## Check the status of tmux sessions
+	@$(TMUX) ls || echo "No tmux sessions running."
+
+# Restart application
+restart: ## Restart all sessions
 	@$(MAKE) -s stop run && \
 	echo "$(BOLD)Restarted$(RESET)"
+
+# Test targets
+test_frontend: ## Run frontend tests
+	@$(NPM) --prefix frontend run test
+
+test_backend: ## Run backend tests
+	@$(NPM) --prefix backend run test
+
+test: ## Run all tests
+	$(MAKE) test_frontend
+	$(MAKE) test_backend
+
+# Docker targets
+docker-build: ## Build Docker images for frontend and backend
+	@docker build -t my-frontend-image frontend/
+	@docker build -t my-backend-image backend/
+
+docker-push: ## Push Docker images to repository
+	@docker push my-frontend-image
+	@docker push my-backend-image
+
+# Version and info
+version: ## Display project version
+	@echo "Project Version: 1.0.0"
+
+info: ## Display project information
+	@echo "Frontend script: $(FRONTEND_SCRIPT)"
+	@echo "Backend script: $(BACKEND_SCRIPT)"
+
+# Help message
 help: ## Show this help message
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+	awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
