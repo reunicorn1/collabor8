@@ -1,11 +1,21 @@
 import { FETCH_USER, UPDATE_USER } from '../actions/types';
 
-const initialState = {
+interface UserState {
+  userDetails: object | null;
+  loading: boolean;
+}
+
+// Define the initial state
+const initialState: UserState = {
   userDetails: null,
   loading: true,
 };
 
-const userReducer = (state = initialState, action) => {
+// Define the user reducer
+const userReducer = (
+  state: UserState = initialState,
+  action: { type: string; payload?: any },
+): UserState => {
   switch (action.type) {
     case FETCH_USER:
       return {
