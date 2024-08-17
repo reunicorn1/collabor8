@@ -9,5 +9,6 @@ import { MYSQL_CONN } from '@constants';
   imports: [TypeOrmModule.forFeature([ProjectShares], MYSQL_CONN)],
   providers: [ProjectSharesService],
   controllers: [ProjectSharesController],
+  exports: [ProjectSharesService],
 })
 export class ProjectSharesModule {}

@@ -32,18 +32,18 @@ export class ProjectMongoController {
     return this.projectService.findAllByUsernameDepth(username, depth);
   }
 
-  @Get(':username/pagination')
-  findProjectsWithPaging(
-    @Param('username') username: string,
-    @Query('startDepth') startDepth: number,
-    @Query('endDepth') endDepth: number,
-  ) {
-    return this.projectService.findProjectsWithPaging(
-      username,
-      startDepth,
-      endDepth,
-    );
-  }
+  // @Get(':username/pagination')
+  // findProjectsWithPaging(
+  //   @Param('username') username: string,
+  //   @Query('startDepth') startDepth: number,
+  //   @Query('endDepth') endDepth: number,
+  // ) {
+  //   return this.projectService.findProjectsWithPaging(
+  //     username,
+  //     startDepth,
+  //     endDepth,
+  //   );
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
