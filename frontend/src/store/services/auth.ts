@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { RootState } from '../store/store';
-import apiConfig from '../config/apiConfig';
-import { LoginUserDto, CreateUserDto, User } from '../types';
+import { RootState } from '../store';
+import apiConfig from '../../config/apiConfig';
+import { LoginUserDto, CreateUserDto, User } from '../../types';
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({

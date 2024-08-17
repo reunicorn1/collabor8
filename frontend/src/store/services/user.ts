@@ -1,7 +1,7 @@
 import { api } from './auth';
-import { CreateUserDto, User } from '../types';
+import { CreateUserDto, User } from '../../types';
 
-const userApi = api.injectEndpoints({
+export const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // Get user by username
     getUserByUsername: builder.query<User, string>({

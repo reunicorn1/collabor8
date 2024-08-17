@@ -1,7 +1,7 @@
 import { api } from './auth';
-import { ProjectMongo } from '../types';
+import { ProjectMongo } from '../../types';
 
-const projectDocApi = api.injectEndpoints({
+export const projectDocApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // Fetch all projects
     getAllProjects: builder.query<ProjectMongo[], void>({
