@@ -8,6 +8,11 @@
     "@hocuspocus/server": "^1.0.0",
     "axios": "^1.7.4",
     "mongodb": "^6.8.0",
+    "nodemon": "^3.1.4",
     "yjs": "^13.6.18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   }
 }

@@ -5,7 +5,7 @@ import * as Y from 'yjs';
 
 // Constants
 const mongoUrl = 'mongodb://localhost:27017';
-const dbName = 'collabor8';
+const dbName = 'demo-1-collabor8';
 const collectionName = 'documents';
 const port = 1234;
 let connectionCount = 0;
@@ -157,8 +157,9 @@ const server = new Hocuspocus({
   async onLoadDocument(context) {
     const projectId = context.document.name;
     console.log('OnLoad -------->', projectId);
-
-    await loadprojectFromDb(projectId);
+    // I want to load only metadata stored for this project
+    await handleLoadDocument(context, projectId);
+    console.log('Array loaded from house', Array.from(context.document.getMap('root')));
     return context.document
   },
   async afterLoadDocument(context) {
@@ -188,18 +189,15 @@ async function handleStoreDocument(context, projectId) {
         metaArray[key] = value;
       }
     });
-    // console.log('MetaArray:', metaArray);
     const yTextArray = Array.from(yMap.entries()).map(([key, value]) => {
       if (!key.endsWith('_metadata')) {
         return { key, value };
       }
     }
     );
-    // console.log('MetaArray:', metaArray);
 
     console.log(Array.from(yTextArray.length));
     for (const [key, value] of Array.from(yMap.entries())) {
-      // metdata is undefined!!
       await updateDocumentInDb(projectId, key, value, metaArray);
       console.log(yMap.get(`${key}_metadata`));
     }
@@ -356,16 +354,15 @@ async function updateDocumentInDb(projectId, key, value, metaArray) {
   const yText = value;
   console.log(`FileId: ${fileId}`);
   if (yText instanceof Y.Text) {
-    const fileMeta = metaArray[`${key}_metadata`];
+    const fileMeta = metaArray[`${key}_metadata`]; // Is metadata never stored in database a9lan!
     console.log('FileMeta:', fileMeta);
-    if (fileMeta['new']) {
+    if (fileMeta && fileMeta['new']) {
       // update the file from the database
       const file = await loadfileFromDb(projectId, fileId, yText);
       fileMeta['new'] = false;
     } else {
       // normal behavior
       await updateFileInDb(projectId, fileId, yText);
-
       console.log(`Document updated: ${projectId}/${fileId}`);
     }
 
@@ -373,6 +370,59 @@ async function updateDocumentInDb(projectId, key, value, metaArray) {
   }
 }
 
+async function handleLoadDocument(context, projectId) {
+  try {
+    const yMap = context.document.getMap('root');
+    const project = await loadprojectFromDb(projectId)
+
+    if (project) {
+      loadProjectFiles(yMap, project);
+    } else {
+      console.error(`Project not found: ${projectId}`);
+      // create a new project
+      await collection.insertOne({
+        project_id: projectId,
+        children: [],
+      });
+
+    }
+  } catch (error) {
+    console.error(`Failed to load document ${projectId}:`, error);
+  }
+}
+
+function loadProjectFiles(yMap, project) {
+  const files = [];
+  console.log(project);
+  traverseChildren(project.children, files);
+  for (const file of files) {
+    const fileId = file.file_id;
+    const content = file.file_content;
+    if (!content) {
+      console.error(`File content is undefined for fileId: ${fileId}`);
+      continue;
+    }
+    if (content) {
+      const yText = new Y.Text();
+      yText.applyDelta(content);
+      console.log('YText:', yText.toJSON());
+      yMap.set(fileId, yText);
+    } else {
+      console.error(`File content is undefined for fileId: ${fileId}`);
+    }
+  }
+  // return ydoc
+}
+
+function traverseChildren(children, files) {
+  for (const child of children) {
+    if (child.file_id) {
+      files.push(child);
+    } else if (child.children) {
+      traverseChildren(child.children, files);
+    }
+  }
+}
 
 // Connection Handlers
 function handleConnect(context) {
@@ -408,39 +458,6 @@ server
   .catch((error) => {
     console.error('Failed to start the server:', error);
   });
-
-// Periodic Document Update
-// setInterval(async () => {
-//   try {
-//     const client = await MongoClient.connect(mongoUrl);
-//     const db = client.db(dbName);
-//     const collection = db.collection(collectionName);
-//     const documents = await collection.find().toArray();
-//     for (const doc of documents) {
-//       if (doc.content) {
-//         await updateDocumentContent(collection, doc);
-//       }
-//     }
-//   } catch (error) {
-//     console.error('Error during periodic document update:', error);
-//   }
-// // }, 10000);
-
-// async function updateDocumentContent(collection, doc) {
-//   try {
-//     const ydoc = new Y.Doc();
-//     Y.applyUpdate(ydoc, new Uint8Array(doc.content.buffer));
-//     const documentName = doc.name;
-//     await collection.updateOne(
-//       { name: documentName },
-//       { $set: { content: Buffer.from(Y.encodeStateAsUpdate(ydoc)) } },
-//       { upsert: true },
-//     );
-//     console.log(`Document updated: ${documentName}`);
-//   } catch (error) {
-//     console.error(`Failed to update document ${doc.name}:`, error);
-//   }
-// }
 
 // Initialize database
 initializeDatabase();

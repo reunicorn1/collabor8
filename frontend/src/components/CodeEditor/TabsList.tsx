@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { HStack, Button, Box } from '@chakra-ui/react';
 import { useFile } from '../../context/EditorContext';
 import * as Y from 'yjs';
@@ -16,7 +16,6 @@ const DocumentManager = <T, U extends Record<string, T>>({
   data,
   set,
   entries,
-  yMap,
 }: YMapProps<T, U>) => {
   // const [documentList, setDocumentList] = useState(projectlist);
   const [counter, setCounter] = useState(1);

@@ -34,11 +34,14 @@
 .read-the-docs {
   @apply text-gray-500;
 }
-.CodeMirror {
-  border: 1px solid #eee;
-  height: auto;
+
+.react-codemirror2 {
+  overflow: scroll;
 }
 
+.CodeMirror {
+  min-height: 678px;
+}
 
 .selectors {
   flex: 0 0 12rem;
