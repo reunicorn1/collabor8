@@ -54,7 +54,7 @@ handle_merge_conflicts() {
     if [ -n "$conflicts" ]; then
         echo "Merge conflicts detected in the following files:"
         echo "$conflicts"
-        nvim $conflicts
+        meld $conflicts
     else
         echo "No merge conflicts detected."
     fi

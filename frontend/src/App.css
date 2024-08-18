@@ -46,3 +46,11 @@
   flex-direction: column;
   gap: 1rem;
 }
+
+.data-panel {
+  overflow: auto;
+}
+
+.CodeMirror {
+  min-height: 678px;
+}

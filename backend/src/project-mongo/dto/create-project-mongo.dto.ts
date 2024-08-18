@@ -4,6 +4,8 @@ import { BadRequestException } from '@nestjs/common';
 interface CreateProjectMongoDto {
   project_name: string;
   owner_id: string;
+  project_id?: string;
+  environment_id?: string;
 }
 
 function validateCreateProjectDto(dto: any): CreateProjectMongoDto {
