@@ -1,0 +1,77 @@
+import { Grid, GridItem } from '@chakra-ui/react';
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import { useParams } from 'react-router-dom';
+import { useState } from 'react';
+// import FileTree from '../components/FileTree/FileTree';
+import { EditorProvider } from '../context/EditorContext';
+import CodeEditor from '../components/CodeEditor/CodeEditor';
+import Shares from '../components/Bars/Shares';
+import MenuBar from '../components/Bars/MenuBar';
+import Tree from '../components/Tree/Tree';
+
+export default function Editor() {
+  const { projectId = '' } = useParams();
+  const [isDragging, setIsDragging] = useState(false);
+
+  return (
+    <EditorProvider>
+      <Grid templateColumns="1fr 20fr" h="100vh">
+        {/* First Section */}
+        <GridItem
+          background="linear-gradient(to bottom, #001845, #524175)"
+          h="100%"
+          borderRight="2px solid #524175"
+        >
+          <Shares />
+        </GridItem>
+
+        {/* Second Section */}
+        <GridItem>
+          <Grid templateRows="auto 1fr" h="100%">
+            {/* Banner */}
+            <GridItem
+              bg="brand.900"
+              borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
+              p={1}
+            >
+              <MenuBar />
+            </GridItem>
+
+            {/* Content */}
+            <GridItem bg="gray.100">
+              <PanelGroup direction="horizontal">
+                {/* Top Panel Group with horizontal panels */}
+                <Panel defaultSize={20} minSize={20} maxSize={50}>
+                  {/* <FileTree /> */}
+                  <Tree />
+                </Panel>
+                <PanelResizeHandle
+                  style={{
+                    backgroundColor: isDragging ? 'blue' : 'grey',
+                    width: '0.5px',
+                    opacity: '1',
+                  }}
+                  onMouseDown={() => setIsDragging(true)}
+                  onMouseUp={() => setIsDragging(false)}
+                  onMouseLeave={() => setIsDragging(false)}
+                />
+                <Panel>
+                  <PanelGroup direction="vertical">
+                    <Panel minSize={20}>
+                      <CodeEditor projectId={projectId} />
+                    </Panel>
+                    <PanelResizeHandle
+                      style={{ backgroundColor: 'grey', height: '2px' }}
+                    />
+                    <Panel defaultSize={20}>Terminal</Panel>
+                  </PanelGroup>
+                </Panel>
+                {/* Bottom Panel */}
+              </PanelGroup>
+            </GridItem>
+          </Grid>
+        </GridItem>
+      </Grid>
+    </EditorProvider>
+  );
+}

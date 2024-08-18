@@ -10,6 +10,11 @@ export class EnvironmentMongoController {
     return this.environService.findAll();
   }
 
+  @Get('projects/:username')
+  getEnvironmentProjects(@Param('username') username: string) {
+    return this.environService.getEnvironmentProjects(username);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.environService.findOne(id);

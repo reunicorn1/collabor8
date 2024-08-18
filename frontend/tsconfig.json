@@ -1,7 +1,18 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
+		},
+		{
+			"path": "./tsconfig.node.json"
+		}
+	],
+	"compilerOptions": {
+		"typeRoots": [
+			"./node_modules/@types",
+			"./src/types"
+		],
+		"allowJs": true,
+	}
 }

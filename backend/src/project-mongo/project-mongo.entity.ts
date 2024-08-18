@@ -1,6 +1,7 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  ObjectIdColumn,
+  ObjectId,
   Column,
   OneToMany,
   ManyToOne,
@@ -11,14 +12,17 @@ import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
 
 @Entity('projects')
 export class ProjectMongo {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @ObjectIdColumn()
+  _id: ObjectId;
 
   @Column()
-  projectName: string;
+  project_name: string;
 
   @Column()
-  createdAt: Date;
+  created_at: Date;
+
+  @Column({ nullable: true })
+  environment_id: string;
 
   @ManyToOne(() => EnvironmentMongo, (environment) => environment.projects)
   environment: EnvironmentMongo;
