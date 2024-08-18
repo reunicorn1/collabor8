@@ -8,9 +8,11 @@ import { WebsocketProvider } from 'y-websocket';
 import { LanguageCode } from '../../utils/codeExamples';
 import { Editor } from 'codemirror';
 import { useFile, useSettings } from '../../context/EditorContext';
-import DocumentManager from './TabsList';
+// import DocumentManager from './TabsList';
 import { Awareness } from 'y-protocols/awareness.js';
 import { useYMap } from 'zustand-yjs';
+import { getRandomUsername } from './names';
+import Tabs from './Tabs';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -21,6 +23,7 @@ const languageModes: Record<LanguageCode, string> = {
   html: 'xml',
 };
 
+// Definition of interfaces and types
 interface CodeEditorProps {
   projectId: string;
 }
@@ -28,76 +31,100 @@ interface CodeEditorProps {
 type YMapValueType = Y.Text | null | Y.Map<YMapValueType>;
 
 const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
-  const { theme, language } = useSettings()!;
-  const { fileSelected } = useFile()!;
+  const websocket = import.meta.env.VITE_WS_SERVER;
+  const { theme, language, mode, setMode } = useSettings()!;
+  const { fileSelected, setAwareness } = useFile()!;
   const editorRef = useRef<Editor | null>(null);
-  // const [render, setRender] = useState(true);
   const projectRoot = useRef<Y.Map<YMapValueType> | null>(null);
   const binding = useRef<CodemirrorBinding | null>(null);
   const ydoc = useRef(new Y.Doc());
+  const awareness = useRef<Awareness | null>(null);
+  
   projectRoot.current = ydoc.current.getMap('root');
-
   const { data, set, entries } = useYMap<
     Y.Map<YMapValueType> | Y.Text,
     Record<string, Y.Map<YMapValueType> | Y.Text>
   >(projectRoot.current); // Type Error
-  const awareness = useRef<Awareness | null>(null);
 
+  // An event listener for updates happneing in the ydoc
   ydoc.current.on('update', (update) => {
     console.log('Yjs update', update);
   });
+
+  // A function to create a binding between file selected from the file tree and the editor
   const setupCodemirrorBinding = (text: Y.Text) => {
     return new CodemirrorBinding(text, editorRef.current!, awareness.current, {
       yUndoManager: new Y.UndoManager(text),
     });
   };
+
   useEffect(() => {
     if (!editorRef.current) return;
-    console.log(projectRoot.current);
-    const provider = new WebsocketProvider(
-      'ws://localhost:1234',
-      projectId,
-      ydoc.current,
-    );
-    provider.on('status', (event) => {
+    // Creation of the connction with the websocket
+    const provider = new WebsocketProvider(websocket, projectId, ydoc.current);
+    provider.on('status', (event: { status: unknown }) => {
       console.log(event.status); // logs "connected" or "disconnected"
     });
 
-    awareness.current = provider.awareness;
+    // An event listener to clean up once the user is removed
+    provider.on('close', () => {
+      provider.awareness.setLocalState(null); // Removes the local awareness state
+    });
 
+    // Awareness information related to the presence of the user's cursor
+    awareness.current = provider.awareness;
     awareness.current.setLocalStateField('user', {
-      name: 'User',
+      name: getRandomUsername(), // TODO: import the username from the context and use it here else use Random
       color: RandomColor(),
     });
 
-    const weirdFunction = () => {
-      if (projectRoot.current && provider) {
-        if (projectRoot.current.size === 0) {
-          const yText = ydoc.current.getText('main-file');
-          projectRoot.current.set('main-file', yText);
-          binding.current = setupCodemirrorBinding(yText);
-          console.log('this is because file is brand new', binding.current);
-        } else {
-          const key = Array.from(projectRoot.current.keys())[0];
-          const text = projectRoot.current.get(key);
+    // Awareness data is shared among different components so it's stored in a state
 
-          if (text instanceof Y.Text) {
-            binding.current = setupCodemirrorBinding(text);
-            console.log('this is because file is not new', binding.current);
-          }
+    const updateAwareness = () => {
+      const aware = Array.from(awareness.current?.states);
+      setAwareness(aware);
+    };
+    updateAwareness();
+
+    //Observations and changes to awarness are tracked using these observers
+    awareness.current.on('update', ({ added, removed }) => {
+      if (awareness.current) {
+        // Log added users
+        if (added.length > 0) {
+          added.forEach((clientId: number) => {
+            const user = awareness.current?.getStates().get(clientId);
+            console.log('User joined:', user);
+            console.log(awareness.current?.getStates());
+            updateAwareness();
+          });
+        }
+
+        // Log removed users
+        if (removed.length > 0) {
+          removed.forEach((clientId) => {
+            console.log('User left:', clientId);
+            console.log(awareness.current?.getStates());
+            updateAwareness();
+          });
         }
       }
-    };
+    });
+    // Clean up before the user leaves
+    window.addEventListener('beforeunload', () => {
+      provider.awareness.setLocalState(null);
+    });
 
     return () => {
       binding.current?.destroy();
       provider.disconnect();
     };
-  }, [projectId]);
+  }, [projectId, websocket]);
+
 
   useEffect(() => {
     if (fileSelected && editorRef.current && fileSelected instanceof Y.Text) {
       try {
+        setMode(false);
         binding.current?.destroy();
         binding.current = setupCodemirrorBinding(fileSelected);
       } catch (err) {
@@ -108,39 +135,22 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
     }
   }, [fileSelected]);
 
-  // const handleLanguageChange = (selectedLanguage: LanguageCode) => {
-  //   setLanguage(selectedLanguage);
-  // };
-
-  // const handleThemeChange = (selectedTheme: string) => {
-  //   setTheme(selectedTheme);
-  // };
-
   return (
     <div>
-      <DocumentManager
+      {/* <DocumentManager
         data={data}
         set={set}
         entries={entries}
         yMap={projectRoot.current}
-      />
-      {/* <div className="selectors">
-        <LanguageSelector
-        language={language}
-        onLanguageChange={handleLanguageChange}
-        />
-        <ThemeSelector theme={theme} onThemeChange={handleThemeChange} />
-        </div> */}
-      <div
-        style={{
-          width: '100%',
-        }}
-      >
+      /> */}
+      <Tabs />
+      <div>
         <CodeMirror
           options={{
             mode: languageModes[language],
             theme: theme,
             lineNumbers: true,
+            readOnly: mode,
           }}
           editorDidMount={(editor) => {
             editorRef.current = editor;

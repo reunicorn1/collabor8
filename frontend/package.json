@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@chakra-ui/anatomy": "^2.2.2",
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.13.0",
@@ -40,7 +41,9 @@
     "react-router-dom": "^6.26.0",
     "socket.io-client": "^4.7.5",
     "tailwindcss": "^3.4.9",
+    "use-sync-external-store": "^1.2.2",
     "y-codemirror": "^3.0.1",
+    "y-presence": "^0.2.3",
     "y-websocket": "^2.0.4",
     "yjs": "^13.6.18",
     "zustand": "^4.5.5",
@@ -53,6 +56,7 @@
     "@types/randomcolor": "^0.5.9",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@types/use-sync-external-store": "^0.0.6",
     "@typescript-eslint/eslint-plugin": "^8.0.1",
     "@typescript-eslint/parser": "^8.0.1",
     "@vitejs/plugin-react": "^4.3.1",

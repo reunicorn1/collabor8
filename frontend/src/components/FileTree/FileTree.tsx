@@ -11,18 +11,17 @@ interface FileTreeProps {
   projectId: string;
 }
 
-interface Tab {
-  id: string;
-  name: string;
-  content: string;
-}
+// interface Tab {
+//   id: string;
+//   name: string;
+//   content: string;
+// }
 
 const FileTree: React.FC<FileTreeProps> = () => {
   // const { fileTree, loading, error } = useFileTreeData(projectId);
   // const { fetchFileContent } = useFileContentData();
-  const { fileSelected, setFileSelected, filetree } = useFile();
-  const [tabs, setTabs] = useState<Tab[]>([]);
-  const [activeTabId, setActiveTabId] = useState<string | null>(null);
+  // const { fileSelected, setFileSelected, filetree } = useFile();
+  // const [activeTabId, setActiveTabId] = useState<string | null>(null);
 
   // useEffect(() => {
   //   if (projectId) {
@@ -32,16 +31,16 @@ const FileTree: React.FC<FileTreeProps> = () => {
   //   }
   // }, [projectId]);
 
-  const handleFileClick = async (fileId: string) => {
-    // For now remove tabs
-    const existingTab = tabs.find((tab) => tab.id === fileId);
-    if (existingTab) {
-      setActiveTabId(fileId);
-      return;
-    }
-    // TODO create a method to retrieve the ytext of the selected file and then this file content
-    // Will be sent to the editor to be bound
-  };
+  // const handleFileClick = async (fileId: string) => {
+  //   // For now remove tabs
+  //   const existingTab = tabs.find((tab) => tab.id === fileId);
+  //   if (existingTab) {
+  //     setActiveTabId(fileId);
+  //     return;
+  //   }
+  // TODO create a method to retrieve the ytext of the selected file and then this file content
+  // Will be sent to the editor to be bound
+  // };
 
   // const handleCloseTab = (tabId: string) => {
   //   setTabs((prevTabs) => {
@@ -69,12 +68,6 @@ const FileTree: React.FC<FileTreeProps> = () => {
           onFileClick={handleFileClick}
         />
       )}
-      <TabBar
-        tabs={tabs}
-        activeTabId={activeTabId}
-        // onTabClick={handleTabClick}
-        // onTabClose={handleCloseTab}
-      />
     </div>
   );
 };
