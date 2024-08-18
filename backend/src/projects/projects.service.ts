@@ -24,6 +24,7 @@ export class ProjectsService {
   ) {}
 
   // Create a new project
+  // TODO: TODAY modify env to be obtained from user object
   async create(createProjectDto: Partial<Projects>): Promise<Projects> {
     try {
       const parsedDto = parseCreateProjectDto(createProjectDto);

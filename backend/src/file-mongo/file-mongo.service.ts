@@ -24,6 +24,14 @@ export class FileMongoService {
     return this.fileRepository.find();
   }
 
+  async findFilesByParent(parent_id: string): Promise<FileMongo[] | null> {
+    const files = await this.fileRepository.find({
+            where: { parent_id: parent_id },
+          });
+          return files;
+  }
+
+
   findOne(id: string): Promise<FileMongo | null> {
     const _id = new ObjectId(id);
     return this.fileRepository.findOneBy({ _id });

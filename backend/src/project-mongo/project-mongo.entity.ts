@@ -18,6 +18,9 @@ export class ProjectMongo {
   @Column()
   project_name: string;
 
+  @Column() // passed from mysql
+  project_id: string;
+
   @Column()
   created_at: Date;
 

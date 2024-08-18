@@ -8,5 +8,6 @@ import { ProjectSharesMongo } from './project-shares-mongo.entity';
   imports: [TypeOrmModule.forFeature([ProjectSharesMongo], 'mongoConnection')],
   providers: [ProjectSharesMongoService],
   controllers: [ProjectSharesMongoController],
+  exports: [ProjectSharesMongoService],
 })
 export class ProjectSharesMongoModule {}

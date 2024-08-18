@@ -3,15 +3,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from './user.entity';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { EnvironmentMongoService } from '@environment-mongo/environment-mongo.service';
-import { EnvironmentMongo } from '@environment-mongo/environment-mongo.entity';
+import { EnvironmentMongoModule } from '@environment-mongo/environment-mongo.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from '@auth/guards/roles.guard';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Users], 'mysqlConnection'),
-    TypeOrmModule.forFeature([EnvironmentMongo], 'mongoConnection'),
+    EnvironmentMongoModule,
   ],
   providers: [
     {
@@ -19,7 +18,6 @@ import { RolesGuard } from '@auth/guards/roles.guard';
       useClass: RolesGuard,
     },
     UsersService,
-    EnvironmentMongoService,
   ],
   controllers: [UsersController],
   exports: [UsersService],
