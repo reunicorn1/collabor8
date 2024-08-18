@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  ObjectIdColumn,
+  ObjectId,
+  Column,
+  ManyToOne,
+} from 'typeorm';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
 
@@ -7,20 +13,23 @@ import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
  */
 @Entity('files')
 export class FileMongo {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @ObjectIdColumn()
+  _id: ObjectId;
 
   @Column()
-  fileName: string;
+  file_name: string;
 
   @Column('text')
-  fileContent: string;
+  file_content: string;
+
+  @Column({ type: 'string', nullable: true })
+  parent_id?: string;
 
   @Column()
-  createdAt: Date;
+  created_at: Date;
 
   @Column()
-  updatedAt: Date;
+  updated_at: Date;
 
   @ManyToOne(() => ProjectMongo, (project) => project.files)
   project: ProjectMongo;

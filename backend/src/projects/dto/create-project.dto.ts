@@ -3,7 +3,7 @@ import { BadRequestException } from '@nestjs/common';
 //
 interface CreateProjectDto {
   project_name: string;
-  owner_id: string;
+  username: string;
 }
 
 function validateCreateProjectDto(dto: any): CreateProjectDto {
@@ -11,7 +11,7 @@ function validateCreateProjectDto(dto: any): CreateProjectDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { project_name, owner_id } = dto;
+  const { project_name, username } = dto;
 
   if (typeof project_name !== 'string' || project_name.trim() === '') {
     throw new BadRequestException(
@@ -19,11 +19,10 @@ function validateCreateProjectDto(dto: any): CreateProjectDto {
     );
   }
 
-  if (typeof owner_id !== 'string' || owner_id.trim() === '') {
-    throw new BadRequestException('Owner ID is required and must be a string');
+  if (typeof username !== 'string' || username.trim() === '') {
+    throw new BadRequestException('Username is required and must be a string');
   }
-
-  return { project_name, owner_id };
+  return { project_name, username };
 }
 
 function parseCreateProjectDto(requestBody: any): CreateProjectDto {
@@ -32,4 +31,4 @@ function parseCreateProjectDto(requestBody: any): CreateProjectDto {
   return validated;
 }
 
-export { parseCreateProjectDto };
+export { parseCreateProjectDto, CreateProjectDto };

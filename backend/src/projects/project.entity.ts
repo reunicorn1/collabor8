@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
@@ -13,7 +13,7 @@ import { ProjectShares } from '@project-shares/project-shares.entity';
 
 @Entity({ name: 'Projects' })
 export class Projects {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn({ type: 'varchar', length: 100, nullable: false })
   project_id: string;
 
   @Column({ type: 'varchar', length: 100 })
@@ -22,8 +22,8 @@ export class Projects {
   @Column('uuid')
   owner_id: string;
 
-  @Column('uuid')
-  environment_id: string;
+  @Column({ type: 'varchar', nullable: true })
+  environment_id: string | null;
 
   @CreateDateColumn()
   created_at: Date;

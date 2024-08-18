@@ -1,5 +1,6 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Body } from '@nestjs/common';
 import { DirectoryMongoService } from './directory-mongo.service';
+import { DirectoryMongo } from './directory-mongo.entity';
 
 @Controller('directory-docs')
 export class DirectoryMongoController {
@@ -8,6 +9,11 @@ export class DirectoryMongoController {
   @Get()
   findAll() {
     return this.dirService.findAll();
+  }
+
+  @Post()
+  create(@Body() createDirectoryDto: Partial<DirectoryMongo>) {
+    return this.dirService.create(createDirectoryDto);
   }
 
   @Get(':id')
