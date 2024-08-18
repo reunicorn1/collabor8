@@ -1,13 +1,11 @@
-import { Grid, GridItem, Flex, IconButton, Spacer } from '@chakra-ui/react';
-import { MdBuild } from 'react-icons/md';
-import { ChatIcon, ArrowRightIcon } from '@chakra-ui/icons';
-import { Button } from '@chakra-ui/react';
+import { Grid, GridItem } from '@chakra-ui/react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useParams } from 'react-router-dom';
 // import FileTree from '../components/FileTree/FileTree';
 import { EditorProvider } from '../context/EditorContext';
 import CodeEditor from '../components/CodeEditor/CodeEditor';
-import Shares from '../components/Shares/Shares';
+import Shares from '../components/Bars/Shares';
+import MenuBar from '../components/Bars/MenuBar';
 
 export default function Editor() {
   const { projectId = '' } = useParams();
@@ -30,55 +28,7 @@ export default function Editor() {
           <Grid templateRows="auto 1fr" h="100%">
             {/* Banner */}
             <GridItem bg="brand.900" p={1}>
-              <Flex justifyContent="space-between" alignItems="center">
-                <Flex>
-                  <Button
-                    colorScheme="whiteAlpha"
-                    color="white"
-                    variant="ghost"
-                    size="xs"
-                  >
-                    Theme
-                  </Button>
-                  <Button
-                    colorScheme="whiteAlpha"
-                    color="white"
-                    variant="ghost"
-                    size="xs"
-                    ml={10}
-                  >
-                    Language
-                  </Button>
-                </Flex>
-                <Spacer />
-                <Button
-                  leftIcon={<MdBuild />}
-                  size="xs"
-                  colorScheme="green"
-                  variant="solid"
-                >
-                  Run
-                </Button>
-                <IconButton
-                  isRound={true}
-                  variant="outline"
-                  colorScheme="brand"
-                  aria-label="Done"
-                  fontSize="12px"
-                  size="xs"
-                  icon={<ChatIcon />}
-                  ml={4}
-                />
-                <IconButton
-                  isRound={true}
-                  variant="outline"
-                  colorScheme="brand"
-                  aria-label="Done"
-                  fontSize="12px"
-                  size="xs"
-                  icon={<ArrowRightIcon />}
-                />
-              </Flex>
+              <MenuBar />
             </GridItem>
 
             {/* Content */}
@@ -100,7 +50,7 @@ export default function Editor() {
                     <PanelResizeHandle
                       style={{ backgroundColor: 'grey', height: '2px' }}
                     />
-                    <Panel defaultSize={20}>Left Panel</Panel>
+                    <Panel defaultSize={20}>Terminal</Panel>
                   </PanelGroup>
                 </Panel>
                 {/* Bottom Panel */}

@@ -6,9 +6,12 @@ import * as Y from 'yjs';
 type YMapValueType = Y.Text | null | Y.Map<YMapValueType>;
 type Theme = string;
 type Language = string;
-interface Awareness {
-  [key: string]: object;
-}
+type Awareness = [
+  number,
+  {
+    [x: string]: any;
+  },
+][];
 
 // Update SettingsContextType to include the proper types
 interface SettingsContextType {
@@ -16,6 +19,8 @@ interface SettingsContextType {
   setTheme: (theme: Theme) => void;
   language: Language;
   setLanguage: (language: Language) => void;
+  mode: boolean;
+  setMode: (mode: boolean) => void;
 }
 
 // Update FileContextType to include the proper types
@@ -48,12 +53,13 @@ export function EditorProvider({ children }: EditorProviderProps) {
   const [theme, setTheme] = useState<Theme>('dracula');
   const [language, setLanguage] = useState<Language>('typescript');
   const [fileSelected, setFileSelected] = useState<YMapValueType>(null);
-  const [awareness, setAwareness] = useState<Awareness>({});
+  const [awareness, setAwareness] = useState<Awareness>([]);
   const [fileTree, setFileTree] = useState<Y.Map<YMapValueType> | null>(null);
+  const [mode, setMode] = useState<boolean>(true);
 
   return (
     <SettingsContext.Provider
-      value={{ theme, setTheme, language, setLanguage }}
+      value={{ theme, setTheme, language, setLanguage, mode, setMode }}
     >
       <FileContext.Provider
         value={{
