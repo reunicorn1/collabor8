@@ -1,11 +1,12 @@
 import { api } from './auth';
-import { CreateUserDto, User } from '../types';
+import { CreateUserDto, User } from '../../types';
 
-const userApi = api.injectEndpoints({
+export const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // Get user by username
     getUserByUsername: builder.query<User, string>({
       query: (username) => `/users/${username}`,
+      providesTags: (_, __, username) => [{ type: 'User', id: username }],
     }),
     // Update user by username
     updateUserByUsername: builder.mutation<
@@ -17,6 +18,9 @@ const userApi = api.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
+      invalidatesTags: (_, __, { username }) => [
+        { type: 'User', id: username },
+      ],
     }),
     // Update user by ID
     updateUserById: builder.mutation<
@@ -28,6 +32,7 @@ const userApi = api.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
+      invalidatesTags: (_, __, { id }) => [{ type: 'User', id }],
     }),
     // Delete user by ID
     deleteUserById: builder.mutation<void, string>({
@@ -35,6 +40,7 @@ const userApi = api.injectEndpoints({
         url: `/users/${id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: (_, __, id) => [{ type: 'User', id }],
     }),
   }),
   overrideExisting: false,

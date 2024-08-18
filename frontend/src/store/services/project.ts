@@ -1,7 +1,7 @@
 import { api } from './auth';
-import { Project, CreateProjectDto } from '../types';
+import { Project, CreateProjectDto } from '../../types';
 
-const projectApi = api.injectEndpoints({
+export const projectApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // Create a new project
     createProject: builder.mutation<Project, CreateProjectDto>({

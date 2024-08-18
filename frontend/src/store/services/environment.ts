@@ -1,7 +1,7 @@
 import { api } from './auth';
-import { Project, Environment } from '../types';
+import { Project, Environment } from '../../types';
 
-const environmentApi = api.injectEndpoints({
+export const environmentApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // Get all environments
     getAllEnvironments: builder.query<Environment[], void>({

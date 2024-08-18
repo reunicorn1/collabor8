@@ -1,19 +1,13 @@
 import React, { useState } from 'react';
-import { useLoginUserMutation } from '../services/auth';
-import { useDispatch } from 'react-redux';
-import { setCredentials } from '../slices/authSlice';
+import { useLoginUserMutation } from '../store/services/auth';
 
 const Login: React.FC = () => {
   const [loginUser, { data, error, isLoading }] = useLoginUserMutation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const dispatch = useDispatch();
 
   const handleLogin = async () => {
-    const result = await loginUser({ username, password });
-    if ('data' in result) {
-      dispatch(setCredentials({ accessToken: result.data.accessToken }));
-    }
+    await loginUser({ username, password });
   };
 
   return (
@@ -35,7 +29,7 @@ const Login: React.FC = () => {
         Login
       </button>
       {data && <p>Access Token: {data.accessToken}</p>}
-      {error && <p>Error: {error.message}</p>}
+      {error && <p>Error: {error.data.message}</p>}
     </div>
   );
 };

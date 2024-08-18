@@ -1,7 +1,7 @@
 import { api } from './auth';
-import { DirectoryMongo } from '../types';
+import { DirectoryMongo } from '../../types';
 
-const projectDocDirApi = api.injectEndpoints({
+export const projectDocDirApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // Fetch all directories
     getAllDirectories: builder.query<DirectoryMongo[], void>({

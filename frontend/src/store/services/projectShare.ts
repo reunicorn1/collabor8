@@ -1,7 +1,7 @@
 import { api } from './auth';
-import { ProjectShares } from '../types';
+import { ProjectShares } from '../../types';
 
-const projectShareApi = api.injectEndpoints({
+export const projectShareApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // Create a new project share
     createProjectShare: builder.mutation<ProjectShares, Partial<ProjectShares>>(

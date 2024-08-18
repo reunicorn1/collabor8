@@ -1,7 +1,7 @@
 import { api } from './auth';
-import { FileMongo } from '../types';
+import { FileMongo } from '../../types';
 
-const projectDocFilesApi = api.injectEndpoints({
+export const projectDocFilesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // Fetch all files
     getAllFiles: builder.query<FileMongo[], void>({
