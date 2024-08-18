@@ -33,20 +33,18 @@ type YMapValueType = Y.Text | null | Y.Map<YMapValueType>;
 const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
   const websocket = import.meta.env.VITE_WS_SERVER;
   const { theme, language, mode, setMode } = useSettings()!;
-  const { fileSelected, setAwareness, setSetting } = useFile()!;
+  const { fileSelected, setAwareness } = useFile()!;
   const editorRef = useRef<Editor | null>(null);
   const projectRoot = useRef<Y.Map<YMapValueType> | null>(null);
   const binding = useRef<CodemirrorBinding | null>(null);
   const ydoc = useRef(new Y.Doc());
   const awareness = useRef<Awareness | null>(null);
-
+  
   projectRoot.current = ydoc.current.getMap('root');
   const { data, set, entries } = useYMap<
     Y.Map<YMapValueType> | Y.Text,
     Record<string, Y.Map<YMapValueType> | Y.Text>
   >(projectRoot.current); // Type Error
-
-  setSetting(set);
 
   // An event listener for updates happneing in the ydoc
   ydoc.current.on('update', (update) => {
@@ -122,6 +120,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
     };
   }, [projectId, websocket]);
 
+
   useEffect(() => {
     if (fileSelected && editorRef.current && fileSelected instanceof Y.Text) {
       try {
@@ -145,13 +144,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
         yMap={projectRoot.current}
       /> */}
       <Tabs />
-      <div className="literally-anything">
+      <div>
         <CodeMirror
           options={{
             mode: languageModes[language],
             theme: theme,
             lineNumbers: true,
-            readOnly: false,
+            readOnly: mode,
           }}
           editorDidMount={(editor) => {
             editorRef.current = editor;
