@@ -31,6 +31,8 @@ interface FileContextType {
   setAwareness: (awareness: Awareness) => void;
   fileTree: Y.Map<YMapValueType> | null;
   setFileTree: (fileTree: Y.Map<YMapValueType> | null) => void;
+  setting: (() => void) | null;
+  setSetting: (setting: (() => void) | null) => void;
 }
 
 // Initialize contexts with null as default
@@ -56,6 +58,7 @@ export function EditorProvider({ children }: EditorProviderProps) {
   const [awareness, setAwareness] = useState<Awareness>([]);
   const [fileTree, setFileTree] = useState<Y.Map<YMapValueType> | null>(null);
   const [mode, setMode] = useState<boolean>(true);
+  const [setting, setSetting] = useState<(() => void) | null>(null);
 
   return (
     <SettingsContext.Provider
@@ -69,6 +72,8 @@ export function EditorProvider({ children }: EditorProviderProps) {
           setAwareness,
           fileTree,
           setFileTree,
+          setting,
+          setSetting,
         }}
       >
         {children}

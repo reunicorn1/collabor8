@@ -8,10 +8,11 @@ import { WebsocketProvider } from 'y-websocket';
 import { LanguageCode } from '../../utils/codeExamples';
 import { Editor } from 'codemirror';
 import { useFile, useSettings } from '../../context/EditorContext';
-import DocumentManager from './TabsList';
+// import DocumentManager from './TabsList';
 import { Awareness } from 'y-protocols/awareness.js';
 import { useYMap } from 'zustand-yjs';
 import { getRandomUsername } from './names';
+import Tabs from './Tabs';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -32,18 +33,20 @@ type YMapValueType = Y.Text | null | Y.Map<YMapValueType>;
 const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
   const websocket = import.meta.env.VITE_WS_SERVER;
   const { theme, language, mode, setMode } = useSettings()!;
-  const { fileSelected, setAwareness } = useFile()!;
+  const { fileSelected, setAwareness, setSetting } = useFile()!;
   const editorRef = useRef<Editor | null>(null);
   const projectRoot = useRef<Y.Map<YMapValueType> | null>(null);
   const binding = useRef<CodemirrorBinding | null>(null);
   const ydoc = useRef(new Y.Doc());
   const awareness = useRef<Awareness | null>(null);
-  
+
   projectRoot.current = ydoc.current.getMap('root');
   const { data, set, entries } = useYMap<
     Y.Map<YMapValueType> | Y.Text,
     Record<string, Y.Map<YMapValueType> | Y.Text>
   >(projectRoot.current); // Type Error
+
+  setSetting(set);
 
   // An event listener for updates happneing in the ydoc
   ydoc.current.on('update', (update) => {
@@ -80,9 +83,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
     // Awareness data is shared among different components so it's stored in a state
 
     const updateAwareness = () => {
-      const aware = Array.from(awareness.current?.states); // Type Error
+      const aware = Array.from(awareness.current?.states);
       setAwareness(aware);
     };
+    updateAwareness();
 
     //Observations and changes to awarness are tracked using these observers
     awareness.current.on('update', ({ added, removed }) => {
@@ -92,6 +96,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
           added.forEach((clientId: number) => {
             const user = awareness.current?.getStates().get(clientId);
             console.log('User joined:', user);
+            console.log(awareness.current?.getStates());
             updateAwareness();
           });
         }
@@ -100,6 +105,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
         if (removed.length > 0) {
           removed.forEach((clientId) => {
             console.log('User left:', clientId);
+            console.log(awareness.current?.getStates());
             updateAwareness();
           });
         }
@@ -115,7 +121,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
       provider.disconnect();
     };
   }, [projectId, websocket]);
-
 
   useEffect(() => {
     if (fileSelected && editorRef.current && fileSelected instanceof Y.Text) {
@@ -133,30 +138,20 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
 
   return (
     <div>
-      <DocumentManager
+      {/* <DocumentManager
         data={data}
         set={set}
         entries={entries}
         yMap={projectRoot.current}
-      />
-      {/* <div className="selectors">
-        <LanguageSelector
-        language={language}
-        onLanguageChange={handleLanguageChange}
-        />
-        <ThemeSelector theme={theme} onThemeChange={handleThemeChange} />
-        </div> */}
-      <div
-        style={{
-          width: '100%',
-        }}
-      >
+      /> */}
+      <Tabs />
+      <div className="literally-anything">
         <CodeMirror
           options={{
             mode: languageModes[language],
             theme: theme,
             lineNumbers: true,
-            readOnly: mode,
+            readOnly: false,
           }}
           editorDidMount={(editor) => {
             editorRef.current = editor;

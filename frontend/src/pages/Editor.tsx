@@ -1,14 +1,17 @@
 import { Grid, GridItem } from '@chakra-ui/react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useParams } from 'react-router-dom';
+import { useState } from 'react';
 // import FileTree from '../components/FileTree/FileTree';
 import { EditorProvider } from '../context/EditorContext';
 import CodeEditor from '../components/CodeEditor/CodeEditor';
 import Shares from '../components/Bars/Shares';
 import MenuBar from '../components/Bars/MenuBar';
+import Tree from '../components/Tree/Tree';
 
 export default function Editor() {
   const { projectId = '' } = useParams();
+  const [isDragging, setIsDragging] = useState(false);
 
   return (
     <EditorProvider>
@@ -19,7 +22,6 @@ export default function Editor() {
           h="100%"
           borderRight="2px solid #524175"
         >
-          {/* Here the awareness will be made */}
           <Shares />
         </GridItem>
 
@@ -27,7 +29,11 @@ export default function Editor() {
         <GridItem>
           <Grid templateRows="auto 1fr" h="100%">
             {/* Banner */}
-            <GridItem bg="brand.900" p={1}>
+            <GridItem
+              bg="brand.900"
+              borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
+              p={1}
+            >
               <MenuBar />
             </GridItem>
 
@@ -37,10 +43,17 @@ export default function Editor() {
                 {/* Top Panel Group with horizontal panels */}
                 <Panel defaultSize={20} minSize={20} maxSize={50}>
                   {/* <FileTree /> */}
-                  filetree
+                  <Tree />
                 </Panel>
                 <PanelResizeHandle
-                  style={{ backgroundColor: 'grey', width: '2px' }}
+                  style={{
+                    backgroundColor: isDragging ? 'blue' : 'grey',
+                    width: '0.5px',
+                    opacity: '1',
+                  }}
+                  onMouseDown={() => setIsDragging(true)}
+                  onMouseUp={() => setIsDragging(false)}
+                  onMouseLeave={() => setIsDragging(false)}
                 />
                 <Panel>
                   <PanelGroup direction="vertical">
