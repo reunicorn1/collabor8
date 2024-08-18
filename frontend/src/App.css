@@ -34,12 +34,11 @@
 .read-the-docs {
   @apply text-gray-500;
 }
-
-.code-editor-container {
-  display: flex;
-  padding: 1rem;
-  gap: 1rem;
+.CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
 }
+
 
 .selectors {
   flex: 0 0 12rem;
@@ -48,6 +47,10 @@
   gap: 1rem;
 }
 
-.editor {
-  flex: 1;
+.data-panel {
+  overflow: auto;
+}
+
+.CodeMirror {
+  min-height: 678px;
 }

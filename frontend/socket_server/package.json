@@ -6,6 +6,7 @@
   "dependencies": {
     "@hocuspocus/extension-logger": "^1.0.0",
     "@hocuspocus/server": "^1.0.0",
+    "axios": "^1.7.4",
     "mongodb": "^6.8.0",
     "yjs": "^13.6.18"
   }
