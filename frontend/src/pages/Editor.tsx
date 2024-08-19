@@ -8,8 +8,12 @@ import CodeEditor from '../components/CodeEditor/CodeEditor';
 import Shares from '../components/Bars/Shares';
 import MenuBar from '../components/Bars/MenuBar';
 import Tree from '../components/Tree/Tree';
+import * as Y from 'yjs';
 
 export default function Editor() {
+  // The only thing to fix my issues is to avoid using context and use direct passing instead
+  const ydoc = new Y.Doc();
+
   const { projectId = '' } = useParams();
   const [isDragging, setIsDragging] = useState(false);
 
@@ -43,7 +47,7 @@ export default function Editor() {
                 {/* Top Panel Group with horizontal panels */}
                 <Panel defaultSize={20} minSize={20} maxSize={50}>
                   {/* <FileTree /> */}
-                  <Tree />
+                  <Tree ydoc={ydoc} />
                 </Panel>
                 <PanelResizeHandle
                   style={{
@@ -58,7 +62,7 @@ export default function Editor() {
                 <Panel>
                   <PanelGroup direction="vertical">
                     <Panel minSize={20}>
-                      <CodeEditor projectId={projectId} />
+                      <CodeEditor projectId={projectId} ydoc={ydoc} />
                     </Panel>
                     <PanelResizeHandle
                       style={{ backgroundColor: 'grey', height: '2px' }}

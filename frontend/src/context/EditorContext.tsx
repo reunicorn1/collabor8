@@ -3,7 +3,7 @@
 import { createContext, useState, ReactNode, useContext } from 'react';
 import * as Y from 'yjs';
 
-type YMapValueType = Y.Text | null | Y.Map<YMapValueType>;
+export type YMapValueType = Y.Text | null | Y.Map<YMapValueType>;
 type Theme = string;
 type Language = string;
 type Awareness = [
@@ -12,8 +12,11 @@ type Awareness = [
     [x: string]: any;
   },
 ][];
+export type FileType = {
+  name: string;
+  value: YMapValueType;
+};
 
-// Update SettingsContextType to include the proper types
 interface SettingsContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
@@ -23,16 +26,13 @@ interface SettingsContextType {
   setMode: (mode: boolean) => void;
 }
 
-// Update FileContextType to include the proper types
 interface FileContextType {
-  fileSelected: YMapValueType;
-  setFileSelected: (file: YMapValueType) => void;
+  fileSelected: FileType | null;
+  setFileSelected: (file: FileType) => void;
   awareness: Awareness;
   setAwareness: (awareness: Awareness) => void;
   fileTree: Y.Map<YMapValueType> | null;
   setFileTree: (fileTree: Y.Map<YMapValueType> | null) => void;
-  setting: (() => void) | null;
-  setSetting: (setting: (() => void) | null) => void;
 }
 
 // Initialize contexts with null as default
@@ -54,11 +54,10 @@ export function useFile() {
 export function EditorProvider({ children }: EditorProviderProps) {
   const [theme, setTheme] = useState<Theme>('dracula');
   const [language, setLanguage] = useState<Language>('typescript');
-  const [fileSelected, setFileSelected] = useState<YMapValueType>(null);
+  const [fileSelected, setFileSelected] = useState<FileType | null>(null);
   const [awareness, setAwareness] = useState<Awareness>([]);
   const [fileTree, setFileTree] = useState<Y.Map<YMapValueType> | null>(null);
   const [mode, setMode] = useState<boolean>(true);
-  const [setting, setSetting] = useState<(() => void) | null>(null);
 
   return (
     <SettingsContext.Provider
@@ -72,8 +71,6 @@ export function EditorProvider({ children }: EditorProviderProps) {
           setAwareness,
           fileTree,
           setFileTree,
-          setting,
-          setSetting,
         }}
       >
         {children}

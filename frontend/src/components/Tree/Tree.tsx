@@ -4,31 +4,39 @@ import {
   Spacer,
   IconButton,
   useDisclosure,
+  Box,
 } from '@chakra-ui/react';
 import { VscNewFile, VscNewFolder } from 'react-icons/vsc';
 import { useState } from 'react';
-// import { useFile } from '../../context/EditorContext';
-// import * as Y from 'yjs';
-import NewfileDir from '../Menus/NewfileDir';
+import * as Y from 'yjs';
+import NewfileDir from '../Menus/fileDirMenu';
+import { useYMap } from 'zustand-yjs';
+import { YMapValueType } from '../../context/EditorContext';
+import FileTreeView from '../FileTree/FileTreeView';
 
-export default function Tree() {
+interface TreeProps {
+  ydoc: Y.Doc;
+}
+
+const Tree: React.FC<TreeProps> = ({ ydoc }) => {
   // The buttons of this component creates new files and direcoties in y.map (root) of the project
   // When a new file is created it becomes selected by default
-  //   const { setting, setFileSelected } = useFile();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [newName, setNewName] = useState('');
   const [filedir, setFileDir] = useState('');
+  const root = ydoc.getMap('root');
 
-  const handleCreateFile = () => {
-    // Creating the file starts by calling a menu to name the new file
+  const { data, set, entries } = useYMap<
+    Y.Map<YMapValueType> | Y.Text,
+    Record<string, Y.Map<YMapValueType> | Y.Text>
+  >(root); // Type Error
+
+  const handleCreateNew = (type: string) => {
+    // Creating the file or dir starts by calling a menu to name the new file
     // name of the file is used to create a new y.text or y.map and then that is
     // set as a key value pair using the above function "setting"
     // changes should be reflected on the structure of the file tree since it's used for re-rendering the filetree
-    setFileDir('file');
+    setFileDir(type);
     onOpen();
-    //   if (newName) {
-    //     // Create a new y.text
-    //   }
   };
 
   return (
@@ -59,7 +67,7 @@ export default function Tree() {
           color="white"
           icon={<VscNewFile />}
           _hover={{ color: 'black', bg: 'white' }}
-          onClick={handleCreateFile}
+          onClick={() => handleCreateNew('file')}
         />
         <IconButton
           m={1}
@@ -73,15 +81,20 @@ export default function Tree() {
           aria-label="New File"
           _hover={{ color: 'black', bg: 'white' }}
           icon={<VscNewFolder />}
+          onClick={() => handleCreateNew('directory')}
         />
       </Flex>
       <NewfileDir
         isOpen={isOpen}
         onClose={onClose}
         filedir={filedir}
-        name={newName}
-        setName={setNewName}
+        set={set}
       />
+      <Box bg="brand.900" h="100%">
+        <FileTreeView data={data} />
+      </Box>
     </>
   );
-}
+};
+
+export default Tree;

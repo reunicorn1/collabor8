@@ -1,11 +1,13 @@
 import { Box, Text, Image } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LanguageCode } from '../../utils/codeExamples';
-import { useSettings } from '../../context/EditorContext';
+import { useSettings, useFile } from '../../context/EditorContext';
+import { FileType } from '../../context/EditorContext';
 
 export default function Tabs() {
-  const [tabslist, setTabsList] = useState([]);
+  const [tabslist, setTabsList] = useState<FileType[]>([]);
   const { language } = useSettings()!;
+  const { fileSelected, setFileSelected } = useFile()!;
   const languageModes: Record<LanguageCode, string> = {
     javascript: 'javascript.png',
     python: 'python.png',
@@ -15,8 +17,16 @@ export default function Tabs() {
     html: 'html.png',
   };
 
-  const handleClick = () => {
-    // TODO: This fucntion changes the value of the fileselected state to the corresponding tab object
+  useEffect(() => {
+    if (!fileSelected) return;
+    if (!tabslist.includes(fileSelected)) {
+      setTabsList([...tabslist, fileSelected]);
+    }
+  }, [fileSelected, tabslist]);
+
+  const handleClick = (file: FileType) => {
+    // TODO: This fucntion changes the value of the file selected state to the corresponding tab object
+    setFileSelected(file);
   };
 
   return (
@@ -29,29 +39,39 @@ export default function Tabs() {
         // overflowX="scroll"
         // whiteSpace="nowrap"
       >
-        {/* for every open tab there will be a corresponding box tab that binds the ytext with the editor */}
-        <Box
-          w="18%"
-          display="flex"
-          bg="brand.900"
-          borderTop="2px solid yellow"
-          borderRight="0.5px solid rgba(128, 128, 128, 0.5)"
-          borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
-          borderLeft="0.5px solid rgba(128, 128, 128, 0.5)"
-          alignContent="center"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Image
-            src={`/lang-logo/${languageModes[language]}`}
-            boxSize="15px"
-            mr={2}
-          />
+        {tabslist &&
+          tabslist.map((file, index) => (
+            <Box
+              key={crypto.randomUUID()}
+              w="18%"
+              display="flex"
+              bg="brand.900"
+              cursor="pointer"
+              onClick={() => handleClick(file)}
+              borderTop={
+                fileSelected && fileSelected === file
+                  ? '2px solid yellow'
+                  : '0.5px solid rgba(128, 128, 128, 0.5)'
+              }
+              borderRight="0.5px solid rgba(128, 128, 128, 0.5)"
+              borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
+              borderLeft="0.5px solid rgba(128, 128, 128, 0.5)"
+              alignContent="center"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Image
+                key={crypto.randomUUID()}
+                src={`/lang-logo/${languageModes[language]}`}
+                boxSize="15px"
+                mr={2}
+              />
 
-          <Text color="white" fontSize="xs" fontFamily="mono">
-            CodeEditor.tsx
-          </Text>
-        </Box>
+              <Text color="white" fontSize="xs" fontFamily="mono" key={index}>
+                {file.name}
+              </Text>
+            </Box>
+          ))}
       </Box>
     </>
   );

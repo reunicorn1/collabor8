@@ -10,8 +10,8 @@ import { Editor } from 'codemirror';
 import { useFile, useSettings } from '../../context/EditorContext';
 // import DocumentManager from './TabsList';
 import { Awareness } from 'y-protocols/awareness.js';
-import { useYMap } from 'zustand-yjs';
 import { getRandomUsername } from './names';
+import { YMapValueType } from '../../context/EditorContext';
 import Tabs from './Tabs';
 
 const languageModes: Record<LanguageCode, string> = {
@@ -26,28 +26,23 @@ const languageModes: Record<LanguageCode, string> = {
 // Definition of interfaces and types
 interface CodeEditorProps {
   projectId: string;
+  ydoc: Y.Doc;
 }
 
-type YMapValueType = Y.Text | null | Y.Map<YMapValueType>;
-
-const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
   const websocket = import.meta.env.VITE_WS_SERVER;
   const { theme, language, mode, setMode } = useSettings()!;
-  const { fileSelected, setAwareness } = useFile()!;
+  const { fileSelected, setAwareness, setFileTree } = useFile()!;
   const editorRef = useRef<Editor | null>(null);
   const projectRoot = useRef<Y.Map<YMapValueType> | null>(null);
   const binding = useRef<CodemirrorBinding | null>(null);
-  const ydoc = useRef(new Y.Doc());
+  const ydoc_ = useRef(ydoc);
   const awareness = useRef<Awareness | null>(null);
-  
-  projectRoot.current = ydoc.current.getMap('root');
-  const { data, set, entries } = useYMap<
-    Y.Map<YMapValueType> | Y.Text,
-    Record<string, Y.Map<YMapValueType> | Y.Text>
-  >(projectRoot.current); // Type Error
+
+  projectRoot.current = ydoc_.current.getMap('root');
 
   // An event listener for updates happneing in the ydoc
-  ydoc.current.on('update', (update) => {
+  ydoc_.current.on('update', (update) => {
     console.log('Yjs update', update);
   });
 
@@ -61,7 +56,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
   useEffect(() => {
     if (!editorRef.current) return;
     // Creation of the connction with the websocket
-    const provider = new WebsocketProvider(websocket, projectId, ydoc.current);
+    const provider = new WebsocketProvider(websocket, projectId, ydoc_.current);
     provider.on('status', (event: { status: unknown }) => {
       console.log(event.status); // logs "connected" or "disconnected"
     });
@@ -101,7 +96,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
 
         // Log removed users
         if (removed.length > 0) {
-          removed.forEach((clientId) => {
+          removed.forEach((clientId: number) => {
             console.log('User left:', clientId);
             console.log(awareness.current?.getStates());
             updateAwareness();
@@ -114,6 +109,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
       provider.awareness.setLocalState(null);
     });
 
+    setFileTree(projectRoot.current);
+
     return () => {
       binding.current?.destroy();
       provider.disconnect();
@@ -122,11 +119,15 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
 
 
   useEffect(() => {
-    if (fileSelected && editorRef.current && fileSelected instanceof Y.Text) {
+    if (
+      fileSelected &&
+      editorRef.current &&
+      fileSelected.value instanceof Y.Text
+    ) {
       try {
         setMode(false);
         binding.current?.destroy();
-        binding.current = setupCodemirrorBinding(fileSelected);
+        binding.current = setupCodemirrorBinding(fileSelected.value);
       } catch (err) {
         console.error('Error occured during binding, but this is serious', err);
       }

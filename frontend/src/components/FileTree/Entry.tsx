@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { File, Directory } from './types';
+import { FaFolder, FaFolderOpen, FaFileCode } from 'react-icons/fa';
+import { Box, Icon, IconButton, Text } from '@chakra-ui/react';
 import './FileTree.css';
 
 interface EntryProps {
   entry: File | Directory;
   depth: number;
+  // eslint-disable-next-line no-unused-vars
   onFileClick: (fileId: string) => void;
 }
 
@@ -13,35 +16,47 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick }) => {
 
   return (
     <>
-      <button
-        className="entry-button"
+      <Box
+        color="white"
+        pt={1}
+        pb={1}
+        _hover={{ bg: 'brand.800' }}
+        display="flex"
+        alignItems="center"
+        cursor="pointer"
         onClick={() => {
           if ('directory_name' in entry) {
             setIsExpanded((prev) => !prev);
           } else if ('file_content' in entry) {
-            onFileClick(entry.file_id);
+            onFileClick(entry.file_name);
           }
         }}
         style={{ paddingLeft: `${depth * 20}px` }}
       >
-        {'directory_name' in entry && (
-          <div className="toggle-icon">{isExpanded ? '-' : '+'}</div>
+        {'directory_name' in entry ? (
+          isExpanded ? (
+            <Icon fontSize="14px" as={FaFolderOpen} />
+          ) : (
+            <Icon fontSize="14px" as={FaFolder} />
+          )
+        ) : (
+          <Icon fontSize="14px" as={FaFileCode} />
         )}
-        <span className="name">
+        <Text fontFamily="mono" fontSize="xs" pl={2}>
           {'directory_name' in entry ? entry.directory_name : entry.file_name}
-        </span>
-      </button>
+        </Text>
+      </Box>
       {'directory_name' in entry && isExpanded && (
-        <div className="directory-children">
+        <>
           {entry.children?.map((child) => (
             <Entry
-              key={child.file_content || child.directory_name}
+              key={child.file_name || child.directory_name}
               entry={child}
               depth={depth + 1}
               onFileClick={onFileClick}
             />
           ))}
-        </div>
+        </>
       )}
     </>
   );

@@ -1,33 +1,34 @@
 import React from 'react';
-import { File, Directory } from './types';
 import Entry from './Entry';
-import Spinner from '../../utils/Spinner';
+import * as Y from 'yjs';
+import { YMapValueType } from '../../context/EditorContext';
+import { Text } from '@chakra-ui/react';
 
 interface FileTreeViewProps {
-  fileTree: (File | Directory)[];
-  loading: boolean;
-  onFileClick: (fileId: string) => void;
+  data: Record<string, Y.Text | Y.Map<YMapValueType>>;
 }
 
-const FileTreeView: React.FC<FileTreeViewProps> = ({
-  fileTree,
-  loading,
-  onFileClick,
-}) => (
-  <div className="file-tree">
-    {loading ? (
-      <Spinner />
-    ) : (
-      fileTree.map((node) => (
-        <Entry
-          key={node.file_content || node.directory_name}
-          entry={node}
-          depth={1}
-          onFileClick={onFileClick}
-        />
-      ))
-    )}
-  </div>
-);
+const FileTreeView: React.FC<FileTreeViewProps> = (data) => {
+  const filetree = data['data'].filetree?.children;
+  console.log(data['data'].filetree);
+  const onFileClick = (name: string) => {
+    // This is a function that deals with creation of new y.text per file
+    // Indexing can be either file_id or name, I think name makes more sense because creation of
+    // y.text originally starts with names
+    console.log(name);
+  };
+
+  return (
+    <>
+      {filetree && filetree?.length > 0 ? (
+        filetree.map((node, index) => (
+          <Entry key={index} entry={node} depth={1} onFileClick={onFileClick} />
+        ))
+      ) : (
+        <Text color="white">No files or directories available.</Text>
+      )}
+    </>
+  );
+};
 
 export default FileTreeView;
