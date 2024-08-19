@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { File, Directory } from './types';
 import { FaFolder, FaFolderOpen, FaFileCode } from 'react-icons/fa';
 import { Box, Icon, IconButton, Text } from '@chakra-ui/react';
-import './FileTree.css';
+import { RxDotsVertical } from "react-icons/rx";
 
 interface EntryProps {
   entry: File | Directory;
@@ -27,7 +27,7 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick }) => {
         onClick={() => {
           if ('directory_name' in entry) {
             setIsExpanded((prev) => !prev);
-          } else if ('file_content' in entry) {
+          } else {
             onFileClick(entry.file_name);
           }
         }}

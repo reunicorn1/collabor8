@@ -9,12 +9,13 @@ type Language = string;
 type Awareness = [
   number,
   {
-    [x: string]: any;
+    [x: string]: any; // hopeless type error
   },
 ][];
 export type FileType = {
   name: string;
   value: YMapValueType;
+  id: string;
 };
 
 interface SettingsContextType {

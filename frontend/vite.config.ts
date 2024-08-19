@@ -10,6 +10,7 @@ export default defineConfig({
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify(
+      // eslint-disable-next-line no-undef
       process.env.NODE_ENV || 'development',
     ),
   },

@@ -23,7 +23,7 @@ const Tree: React.FC<TreeProps> = ({ ydoc }) => {
   // When a new file is created it becomes selected by default
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [filedir, setFileDir] = useState('');
-  const root = ydoc.getMap('root');
+  const root = ydoc.getMap('root'); // This gets the value of the root if created before
 
   const { data, set, entries } = useYMap<
     Y.Map<YMapValueType> | Y.Text,
@@ -90,7 +90,7 @@ const Tree: React.FC<TreeProps> = ({ ydoc }) => {
         filedir={filedir}
         set={set}
       />
-      <Box bg="brand.900" h="100%">
+      <Box bg="brand.900" h="100%" overflow="scroll">
         <FileTreeView data={data} />
       </Box>
     </>

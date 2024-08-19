@@ -16,6 +16,7 @@ import {
 import { useState } from 'react';
 import { YMapValueType } from '../../context/EditorContext';
 import { useFile } from '../../context/EditorContext';
+import { v4 as uuidv4 } from 'uuid';
 import * as Y from 'yjs';
 
 interface ModalProps {
@@ -49,17 +50,19 @@ const NewfileDir: React.FC<ModalProps> = ({
     // TODO: Validation of the name in the database among sibling files should be made from database
     // If success onClose
     if (newName) {
+      const id = uuidv4();
       const metadata = {
         name: newName,
+        id: id,
         parent: 'root',
         type: filedir,
         new: true,
       };
       const newValue = filedir === 'file' ? new Y.Text() : new Y.Map();
       set(`${newName}_metadata`, metadata); // Type Error
-      set(newName, newValue); // Type Error
+      set(id, newValue); // Type Error
       if (newValue instanceof Y.Text)
-        setFileSelected({ name: newName, value: newValue });
+        setFileSelected({ name: newName, value: newValue, id: id });
     }
     handleClose();
   };

@@ -9,13 +9,14 @@ const port = 1234;
 // once the y.text is created 
 const project = {
     projectId: '4653',
+    id: 0, // because root 
     children: [ 
-        { type: 'file', file_name: 'test.js', project_id: '4653', file_content: 'it is me hi, I am the problem it is me' },
+        { type: 'file', id: 1, file_name: 'test.js', project_id: '4653'},
         {
-            type: 'dir', directory_name: 'testdir', project_id: '4653', 
+            type: 'dir', id: 2, directory_name: 'testdir', project_id: '4653',
             children: [
-                { type: 'file', file_name: 'test2.js', project_id: '4653', file_content: 'taylor swift' },
-                { type: 'file', file_name: 'test3.js', project_id: '4653', file_content: 'lavendar haze' },
+                { type: 'file', id: 3, file_name: 'test2.js', project_id: '4653'},
+                { type: 'file', id: 4, file_name: 'test3.js', project_id: '4653'},
             ]
         }
     ]

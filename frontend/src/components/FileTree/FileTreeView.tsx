@@ -25,7 +25,9 @@ const FileTreeView: React.FC<FileTreeViewProps> = (data) => {
           <Entry key={index} entry={node} depth={1} onFileClick={onFileClick} />
         ))
       ) : (
-        <Text color="white">No files or directories available.</Text>
+        <Text color="white" fontSize="xs" fontFamily="mono" pl={8} pt={4}>
+          No files or directories available.
+        </Text>
       )}
     </>
   );
