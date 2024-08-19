@@ -13,6 +13,7 @@ import { Awareness } from 'y-protocols/awareness.js';
 import { useYMap } from 'zustand-yjs';
 import { getRandomUsername } from './names';
 import Tabs from './Tabs';
+import { useYjs } from '../../hooks/YjsHook';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -37,17 +38,17 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
   const editorRef = useRef<Editor | null>(null);
   const projectRoot = useRef<Y.Map<YMapValueType> | null>(null);
   const binding = useRef<CodemirrorBinding | null>(null);
-  const ydoc = useRef(new Y.Doc());
   const awareness = useRef<Awareness | null>(null);
-  
-  projectRoot.current = ydoc.current.getMap('root');
+  const ydoc = useYjs();
+
+  projectRoot.current = ydoc.getMap('root');
   const { data, set, entries } = useYMap<
     Y.Map<YMapValueType> | Y.Text,
     Record<string, Y.Map<YMapValueType> | Y.Text>
   >(projectRoot.current); // Type Error
 
   // An event listener for updates happneing in the ydoc
-  ydoc.current.on('update', (update) => {
+  ydoc.on('update', (update) => {
     console.log('Yjs update', update);
   });
 
@@ -61,7 +62,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
   useEffect(() => {
     if (!editorRef.current) return;
     // Creation of the connction with the websocket
-    const provider = new WebsocketProvider(websocket, projectId, ydoc.current);
+    const provider = new WebsocketProvider(websocket, projectId, ydoc);
     provider.on('status', (event: { status: unknown }) => {
       console.log(event.status); // logs "connected" or "disconnected"
     });
@@ -119,7 +120,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
       provider.disconnect();
     };
   }, [projectId, websocket]);
-
 
   useEffect(() => {
     if (fileSelected && editorRef.current && fileSelected instanceof Y.Text) {

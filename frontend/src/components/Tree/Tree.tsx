@@ -6,15 +6,24 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { VscNewFile, VscNewFolder } from 'react-icons/vsc';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // import { useFile } from '../../context/EditorContext';
-// import * as Y from 'yjs';
+import * as Y from 'yjs';
 import NewfileDir from '../Menus/NewfileDir';
+import { useYjs } from '../../hooks/YjsHook';
+
+interface FileNode {
+  id: string;
+  name: string;
+  children: FileNode[];
+}
 
 export default function Tree() {
   // The buttons of this component creates new files and direcoties in y.map (root) of the project
   // When a new file is created it becomes selected by default
   //   const { setting, setFileSelected } = useFile();
+  const doc = useYjs();
+  const [fileTree, setFileTree] = useState<FileNode[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [newName, setNewName] = useState('');
   const [filedir, setFileDir] = useState('');
@@ -30,6 +39,64 @@ export default function Tree() {
     //     // Create a new y.text
     //   }
   };
+
+  useEffect(() => {
+    if (doc) {
+      const projectMap = doc.getMap('projectStructure');
+
+      // recursively build the file tree
+      const buildTree = (map: Y.Map<any>): FileNode[] => {
+        const tree: FileNode[] = [];
+
+        map.forEach((value, key) => {
+          if (value instanceof Y.Map) {
+            const isDirectory = value.has('directory_name');
+            const isFile = value.has('file_name');
+
+            if (isDirectory) {
+              tree.push({
+                id: key,
+                name: value.get('directory_name') as string,
+                children: buildTree(value),
+              });
+            } else if (isFile) {
+              tree.push({
+                id: key,
+                name: value.get('file_name') as string,
+                children: [],
+              });
+            }
+          }
+        });
+        return tree;
+      };
+      const handleMapChanges = () => {
+        setFileTree(buildTree(projectMap));
+      };
+
+      // observe changes on the shared map
+      projectMap.observeDeep(handleMapChanges);
+
+      // initial load
+      handleMapChanges();
+
+      // clean up
+      return () => {
+        projectMap.unobserveDeep(handleMapChanges);
+      };
+    }
+  }, [doc]);
+
+  const renderFileTree = (nodes: FileNode[]): JSX.Element => (
+    <ul>
+      {nodes.map((node) => (
+        <li key={node.id}>
+          {node.name}
+          {node.children.length > 0 && renderFileTree(node.children)}
+        </li>
+      ))}
+    </ul>
+  );
 
   return (
     <>
@@ -75,6 +142,7 @@ export default function Tree() {
           icon={<VscNewFolder />}
         />
       </Flex>
+      {renderFileTree(fileTree)}
       <NewfileDir
         isOpen={isOpen}
         onClose={onClose}
