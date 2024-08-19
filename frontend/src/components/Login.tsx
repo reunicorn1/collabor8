@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLoginUserMutation } from '../store/services/auth';
+import { useLoginUserMutation } from '@store/services/auth';
 
 const Login: React.FC = () => {
   const [loginUser, { data, error, isLoading }] = useLoginUserMutation();

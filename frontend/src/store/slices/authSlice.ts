@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { api } from '../services/auth';
+import { api } from '@store/services/auth';
 
 // Define the authentication state interface
 interface AuthState {

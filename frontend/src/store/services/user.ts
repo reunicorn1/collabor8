@@ -1,5 +1,5 @@
 import { api } from './auth';
-import { CreateUserDto, User } from '../../types';
+import { CreateUserDto, User } from '@types';
 
 export const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
