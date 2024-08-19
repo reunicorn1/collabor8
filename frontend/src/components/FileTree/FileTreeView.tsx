@@ -15,6 +15,7 @@ const FileTreeView: React.FC<FileTreeViewProps> = (data) => {
     // This is a function that deals with creation of new y.text per file
     // Indexing can be either file_id or name, I think name makes more sense because creation of
     // y.text originally starts with names
+    console.log(data['data'].filetree);
     console.log(name);
   };
 

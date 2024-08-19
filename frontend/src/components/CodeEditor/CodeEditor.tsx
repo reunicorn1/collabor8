@@ -12,6 +12,7 @@ import { useFile, useSettings } from '../../context/EditorContext';
 import { Awareness } from 'y-protocols/awareness.js';
 import { getRandomUsername } from './names';
 import { YMapValueType } from '../../context/EditorContext';
+import createfiletree from '../../utils/init';
 import Tabs from './Tabs';
 
 const languageModes: Record<LanguageCode, string> = {
@@ -108,9 +109,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     window.addEventListener('beforeunload', () => {
       provider.awareness.setLocalState(null);
     });
-
-    setFileTree(projectRoot.current);
-
+    if (projectRoot.current) {
+      setFileTree(projectRoot.current);
+      createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
+    }
     return () => {
       binding.current?.destroy();
       provider.disconnect();

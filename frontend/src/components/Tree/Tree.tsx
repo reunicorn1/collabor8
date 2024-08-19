@@ -89,6 +89,7 @@ const Tree: React.FC<TreeProps> = ({ ydoc }) => {
         onClose={onClose}
         filedir={filedir}
         set={set}
+        data={data}
       />
       <Box bg="brand.900" h="100%" overflow="scroll">
         <FileTreeView data={data} />

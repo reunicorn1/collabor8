@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -16,6 +16,7 @@ import {
 import { useState } from 'react';
 import { YMapValueType } from '../../context/EditorContext';
 import { useFile } from '../../context/EditorContext';
+import { createLeaf, addLeaf } from '../../utils/addleaf';
 import { v4 as uuidv4 } from 'uuid';
 import * as Y from 'yjs';
 
@@ -29,6 +30,7 @@ interface ModalProps {
     // eslint-disable-next-line no-unused-vars
     value: VAL,
   ) => VAL;
+  data: Record<string, Y.Text | Y.Map<YMapValueType>>;
 }
 // Eslint was disabled for this method because it's used in an uncasual way
 
@@ -37,6 +39,7 @@ const NewfileDir: React.FC<ModalProps> = ({
   onClose,
   filedir,
   set,
+  data,
 }) => {
   const { setFileSelected } = useFile()!;
   const initialRef = React.useRef(null);
@@ -45,7 +48,6 @@ const NewfileDir: React.FC<ModalProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(e.target.value);
   };
-
   const handleSave = () => {
     // TODO: Validation of the name in the database among sibling files should be made from database
     // If success onClose
@@ -61,6 +63,11 @@ const NewfileDir: React.FC<ModalProps> = ({
       const newValue = filedir === 'file' ? new Y.Text() : new Y.Map();
       set(`${newName}_metadata`, metadata); // Type Error
       set(id, newValue); // Type Error
+
+      // reflect the object in the file tree
+      const leaf = createLeaf(filedir, id, newName);
+      addLeaf(data.filetree, leaf, '0'); // also hopeless type error
+      set('filetree', data.filetree); // trigger to re-render the structure for all clients connected
       if (newValue instanceof Y.Text)
         setFileSelected({ name: newName, value: newValue, id: id });
     }

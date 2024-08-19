@@ -70,19 +70,23 @@ export function createFileDir(
   let fileroot = root;
   for (const path of fullPath) {
     if (!(fileroot instanceof Y.Map)) {
-      console.error('Invalid map structure encountered.');
+      console.error('Invalid map structure encountered.'); // This is happens if the main root wasn't y.map
       return;
     }
-    const subdir = fileroot.get(path); // Subdirectory which is a y.map
-    if (!(subdir instanceof Y.Map)) {
-      console.error(`Subdirectory "${path}" is missing or not a Y.Map.`);
-      return;
+    let subdir = fileroot.get(path); // Subdirectory which is a y.map
+    if (!subdir) {
+      subdir = new Y.Map(); // If not found then build the path and create it
+      fileroot.set(path, subdir);
     }
     fileroot = subdir;
   }
   if (!fileroot || !(fileroot instanceof Y.Map)) return; // double check for eslint tho un-necessary
-  const newfile = filedir === 'file' ? new Y.Text() : new Y.Map();
-  fileroot.set(_id, newfile); // type error hopeless
+  let newfile = fileroot.get(_id);
+  if (!newfile) {
+    newfile = filedir === 'file' ? new Y.Text() : new Y.Map();
+    fileroot.set(_id, newfile);
+  }
+  return newfile;
 }
 
 // To adjust the sturcture of the filetree and add a leaf at the end of whether a file or a dir use addleaf methods.
