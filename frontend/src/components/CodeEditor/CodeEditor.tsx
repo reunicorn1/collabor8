@@ -41,6 +41,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
   const ydoc_ = useRef(ydoc);
   const awareness = useRef<Awareness | null>(null);
   const [wsProvider, setProvider] = useState<WebsocketProvider | null>(null);
+  const reconnectCount = useRef(0);
+  const reconnectDelay = 5000;
 
   projectRoot.current = ydoc_.current.getMap('root');
 
@@ -56,26 +58,44 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     });
   };
 
-  console.log({ wsProvider })
+  console.log({ wsProvider });
   // effects for socket provider and awareness
   useEffect(() => {
     if (!editorRef.current) return;
     if (!wsProvider) {
-      setProvider(new WebsocketProvider(websocket, projectId, ydoc_.current));
-    } else {
+      const provider = new WebsocketProvider(
+        websocket,
+        projectId,
+        ydoc_.current,
+      );
+      setProvider(provider);
       // Creation of the connction with the websocket
       //const provider = new WebsocketProvider(websocket, projectId, ydoc_.current);
-      wsProvider.on('status', (event: { status: unknown }) => {
+      provider.on('status', (event: { status: unknown }) => {
         console.log(event.status); // logs "connected" or "disconnected"
+        if (event.status === 'connected') {
+          reconnectCount.current = 0;
+        }
+        if (event.status === 'disconnected') {
+          if (reconnectCount.current < 5) {
+            reconnectCount.current++;
+            console.log('Reconnecting...', reconnectCount.current);
+            setTimeout(() => {
+              provider.connect();
+            }, reconnectDelay);
+          } else {
+            console.error('Reconnection attempts exhausted');
+          }
+        }
       });
 
       // An event listener to clean up once the user is removed
-      wsProvider.on('close', () => {
-        wsProvider.awareness.setLocalState(null); // Removes the local awareness state
+      provider.on('close', () => {
+        provider.awareness.setLocalState(null); // Removes the local awareness state
       });
 
       // Awareness information related to the presence of the user's cursor
-      awareness.current = wsProvider.awareness;
+      awareness.current = provider.awareness;
       awareness.current.setLocalStateField('user', {
         name: getRandomUsername(), // TODO: import the username from the context and use it here else use Random
         color: RandomColor(),
@@ -114,7 +134,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
       });
       // Clean up before the user leaves
       window.addEventListener('beforeunload', () => {
-        wsProvider.awareness.setLocalState(null);
+        provider.awareness.setLocalState(null);
       });
       if (projectRoot.current && !fileSelected) {
         setFileTree(projectRoot.current);
@@ -125,7 +145,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
       binding.current?.destroy();
       wsProvider?.disconnect();
     };
-  }, [projectId, websocket, wsProvider, setAwareness, setFileTree, fileSelected]);
+  }, [
+  ]);
 
   useEffect(() => {
     if (
