@@ -19,13 +19,17 @@ export default function Tabs() {
 
   useEffect(() => {
     if (!fileSelected) return;
-    if (!tabslist.includes(fileSelected)) {
+    const foundTab = tabslist.find((tab) => tab.id === fileSelected.id);
+    if (!foundTab) {
       setTabsList([...tabslist, fileSelected]);
+    } else {
+      setFileSelected(foundTab);
     }
-  }, [fileSelected, tabslist]);
+  }, [fileSelected, setFileSelected, tabslist]);
 
   const handleClick = (file: FileType) => {
     // TODO: This fucntion changes the value of the file selected state to the corresponding tab object
+    console.log(tabslist);
     setFileSelected(file);
   };
 

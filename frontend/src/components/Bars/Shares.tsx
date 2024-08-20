@@ -2,7 +2,7 @@ import { Box, Avatar, IconButton, Tooltip } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { useFile } from '../../context/EditorContext';
 import { useDisclosure } from '@chakra-ui/react';
-import ShareMenu from '../Menus/ShareMenu';
+import ShareMenu from '../Modals/ShareMenu';
 
 export default function Shares() {
   const { awareness } = useFile()!;

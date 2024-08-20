@@ -12,7 +12,7 @@ import { useFile, useSettings } from '../../context/EditorContext';
 import { Awareness } from 'y-protocols/awareness.js';
 import { getRandomUsername } from './names';
 import { YMapValueType } from '../../context/EditorContext';
-import createfiletree from '../../utils/init';
+import createfiletree from '../../utils/filetreeinit';
 import Tabs from './Tabs';
 
 const languageModes: Record<LanguageCode, string> = {
@@ -60,6 +60,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     const provider = new WebsocketProvider(websocket, projectId, ydoc_.current);
     provider.on('status', (event: { status: unknown }) => {
       console.log(event.status); // logs "connected" or "disconnected"
+      if (event.status === 'connected' && projectRoot.current) {
+        createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
+      }
     });
 
     // An event listener to clean up once the user is removed
@@ -111,7 +114,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     });
     if (projectRoot.current) {
       setFileTree(projectRoot.current);
-      createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
     }
     return () => {
       binding.current?.destroy();

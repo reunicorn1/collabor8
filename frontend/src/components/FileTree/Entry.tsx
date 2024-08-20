@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { File, Directory } from './types';
 import { FaFolder, FaFolderOpen, FaFileCode } from 'react-icons/fa';
-import { Box, Icon, IconButton, Text } from '@chakra-ui/react';
-import { RxDotsVertical } from "react-icons/rx";
+import { Box, Icon, IconButton, Text, Spacer } from '@chakra-ui/react';
+import { useFile } from '../../context/EditorContext';
+import { RxDotsVertical } from 'react-icons/rx';
+import FileDirMenu from './OptionsMenu';
 
 interface EntryProps {
   entry: File | Directory;
   depth: number;
   // eslint-disable-next-line no-unused-vars
-  onFileClick: (fileId: string) => void;
+  onFileClick: (fileId: string, filename: string) => void;
 }
 
 const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick }) => {
+  const { fileSelected } = useFile()!;
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   return (
@@ -21,6 +24,7 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick }) => {
         pt={1}
         pb={1}
         _hover={{ bg: 'brand.800' }}
+        bg={fileSelected?.id === entry.id ? '#41335C' : 'transparennt'}
         display="flex"
         alignItems="center"
         cursor="pointer"
@@ -28,7 +32,7 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick }) => {
           if ('directory_name' in entry) {
             setIsExpanded((prev) => !prev);
           } else {
-            onFileClick(entry.file_name);
+            onFileClick(entry.id, entry.file_name);
           }
         }}
         style={{ paddingLeft: `${depth * 20}px` }}
@@ -45,12 +49,19 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick }) => {
         <Text fontFamily="mono" fontSize="xs" pl={2}>
           {'directory_name' in entry ? entry.directory_name : entry.file_name}
         </Text>
+
+        <Spacer />
+        <FileDirMenu
+          type={entry.type}
+          id={entry.id}
+          name={entry.directory_name || entry.file_name}
+        />
       </Box>
       {'directory_name' in entry && isExpanded && (
         <>
           {entry.children?.map((child) => (
             <Entry
-              key={child.file_name || child.directory_name}
+              key={child.id}
               entry={child}
               depth={depth + 1}
               onFileClick={onFileClick}
