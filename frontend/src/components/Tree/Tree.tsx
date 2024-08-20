@@ -9,7 +9,7 @@ import {
 import { VscNewFile, VscNewFolder } from 'react-icons/vsc';
 import React, { useState } from 'react';
 import * as Y from 'yjs';
-import NewfileDir from '../Modals/fileDirMenu';
+import NewfileDir from '../Modals/NewfileDir';
 import { useYMap } from 'zustand-yjs';
 import { YMapValueType } from '../../context/EditorContext';
 import FileTreeView from '../FileTree/FileTreeView';

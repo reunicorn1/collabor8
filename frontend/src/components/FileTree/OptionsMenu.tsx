@@ -4,17 +4,32 @@ import {
   MenuList,
   MenuItem,
   IconButton,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { RxDotsVertical } from 'react-icons/rx';
+import * as Y from 'yjs';
+import NewfileDir from '../Modals/NewfileDir';
+import { useState } from 'react';
 
 interface FileDirMenuProps {
   type: string;
   id: string;
   name: string;
+  ydoc: Y.Doc;
 }
-export default function FileDirMenu({ type, id, name }: FileDirMenuProps) {
+export default function OptionsMenu({ type, id, ydoc }: FileDirMenuProps) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [parent, setParent] = useState('');
+  const [filedir, setFileDir] = useState('');
+
+  const handleClick = (filedir: string) => {
+    setFileDir(filedir);
+    setParent(id);
+    onOpen();
+  };
+
   return (
-    <Menu isLazy>
+    <Menu>
       <MenuButton
         as={IconButton}
         color="transparent"
@@ -30,18 +45,28 @@ export default function FileDirMenu({ type, id, name }: FileDirMenuProps) {
       <MenuList bg="grey" border="0.5px solid rgba(128, 128, 128, 0.5)">
         {type === 'file' ? (
           <>
-            <MenuItem fontSize="xs">Open File</MenuItem>
             <MenuItem fontSize="xs">Rename File</MenuItem>
             <MenuItem fontSize="xs">Delete File</MenuItem>
           </>
         ) : (
           <>
-            <MenuItem fontSize="xs">New File</MenuItem>
-            <MenuItem fontSize="xs">New Folder</MenuItem>
+            <MenuItem fontSize="xs" onClick={() => handleClick('file')}>
+              New File
+            </MenuItem>
+            <MenuItem fontSize="xs" onClick={() => handleClick('dir')}>
+              New Folder
+            </MenuItem>
             <MenuItem fontSize="xs">Rename Folder</MenuItem>
             <MenuItem fontSize="xs">Delete Folder</MenuItem>
           </>
         )}
+        <NewfileDir
+          isOpen={isOpen}
+          onClose={onClose}
+          filedir={filedir}
+          ydoc={ydoc}
+          parent={parent}
+        />
       </MenuList>
     </Menu>
   );

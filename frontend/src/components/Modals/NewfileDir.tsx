@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -56,13 +56,16 @@ const NewfileDir: React.FC<ModalProps> = ({
     // If success onClose
     if (newName) {
       const id = uuidv4();
+      // Since creating a file in the Y.map depend on the path in the filetree, creation of the leaf has to be made first
+      const leaf = createLeaf(filedir, id, newName);
+      addLeaf(data.filetree, leaf, parent); // also hopeless type error
+
+      // file tree here will be updated with the new leaf so the file path will be found
       const path = getPathFromId(data.filetree, id); //type error
       console.log(path);
       if (path) {
-        const file = createFileDir(path, root, id, filedir); //type error. This function creates
-        // reflect the object in the file tree
-        const leaf = createLeaf(filedir, id, newName);
-        addLeaf(data.filetree, leaf, parent); // also hopeless type error
+        const file = createFileDir(path, root, id, filedir); //type error. This function creates the new ytext/ymap
+
         set('filetree', data.filetree); // trigger to re-render the structure for all clients connected
         if (file instanceof Y.Text)
           setFileSelected({ name: newName, value: file, id: id });
@@ -90,7 +93,7 @@ const NewfileDir: React.FC<ModalProps> = ({
               color="white"
             >{`Create new ${filedir}`}</Text>
           </ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton color="white" />
           <ModalBody pb={4}>
             <FormControl>
               <Divider mb={7} />

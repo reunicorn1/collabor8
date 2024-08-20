@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import { File, Directory } from './types';
 import { FaFolder, FaFolderOpen, FaFileCode } from 'react-icons/fa';
-import { Box, Icon, IconButton, Text, Spacer } from '@chakra-ui/react';
+import { Box, Icon, Text, Spacer } from '@chakra-ui/react';
 import { useFile } from '../../context/EditorContext';
-import { RxDotsVertical } from 'react-icons/rx';
-import FileDirMenu from './OptionsMenu';
+import OptionsMenu from './OptionsMenu';
+import * as Y from 'yjs';
 
 interface EntryProps {
   entry: File | Directory;
   depth: number;
   // eslint-disable-next-line no-unused-vars
   onFileClick: (fileId: string, filename: string) => void;
+  ydoc: Y.Doc;
 }
 
-const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick }) => {
+const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
   const { fileSelected } = useFile()!;
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
@@ -51,10 +52,11 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick }) => {
         </Text>
 
         <Spacer />
-        <FileDirMenu
+        <OptionsMenu
           type={entry.type}
           id={entry.id}
           name={entry.directory_name || entry.file_name}
+          ydoc={ydoc}
         />
       </Box>
       {'directory_name' in entry && isExpanded && (
@@ -65,6 +67,7 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick }) => {
               entry={child}
               depth={depth + 1}
               onFileClick={onFileClick}
+              ydoc={ydoc}
             />
           ))}
         </>

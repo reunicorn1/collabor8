@@ -136,6 +136,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
         console.error('Error occured during binding, but this is serious', err);
       }
     } else {
+      setMode(true);
       console.error('Error occured during binding of the file', fileSelected);
     }
   }, [fileSelected]);

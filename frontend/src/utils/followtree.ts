@@ -53,6 +53,7 @@ export function getPathFromId(
 }
 
 // use previous function to get fullpath which is a string full of ids
+// this function works only when I want to click a file that's already found in the tree
 export function createFileDir(
   fullPath: string[],
   root: YMapValueType,
@@ -61,7 +62,6 @@ export function createFileDir(
 ) {
   // using the root y.maps will be created until the file is reached
   // Data stored in the fullpath consist of ids which is used to index files
-  console.log(fullPath);
   let fileroot = root;
   for (const path of fullPath) {
     if (!(fileroot instanceof Y.Map)) {
@@ -96,10 +96,7 @@ export function createFileDir(
       new: true,
     };
     fileroot.set(`${_id}_metadata`, metadata); // Type Error
-
-    console.log(_id, newfile);
     fileroot.set(_id, newfile);
-    console.log(fileroot.get(_id));
   } else {
     console.log('file is already found in the ymap');
   }
