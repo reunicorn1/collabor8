@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
+import { Box, Text } from '@chakra-ui/react';
 import './codemirrorSetup';
 import * as Y from 'yjs';
 import { CodemirrorBinding } from 'y-codemirror';
@@ -12,7 +13,7 @@ import { useFile, useSettings } from '../../context/EditorContext';
 import { Awareness } from 'y-protocols/awareness.js';
 import { getRandomUsername } from './names';
 import { YMapValueType } from '../../context/EditorContext';
-import createfiletree from '../../utils/init';
+import createfiletree from '../../utils/filetreeinit';
 import Tabs from './Tabs';
 
 const languageModes: Record<LanguageCode, string> = {
@@ -115,7 +116,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
       window.addEventListener('beforeunload', () => {
         wsProvider.awareness.setLocalState(null);
       });
-      if (projectRoot.current) {
+      if (projectRoot.current && !fileSelected) {
         setFileTree(projectRoot.current);
         createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
       }
@@ -124,7 +125,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
       binding.current?.destroy();
       wsProvider?.disconnect();
     };
-  }, [projectId, websocket, wsProvider, setAwareness, setFileTree]);
+  }, [projectId, websocket, wsProvider, setAwareness, setFileTree, fileSelected]);
 
   useEffect(() => {
     if (
@@ -140,12 +141,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
         console.error('Error occured during binding, but this is serious', err);
       }
     } else {
+      setMode(true);
       console.error('Error occured during binding of the file', fileSelected);
     }
   }, [fileSelected]);
 
   return (
-    <div>
+    <Box bg="brand.900" h="100%">
       {/* <DocumentManager
         data={data}
         set={set}
@@ -153,7 +155,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
         yMap={projectRoot.current}
       /> */}
       <Tabs />
-      <div>
+      <Box opacity={fileSelected ? '1' : '0'}>
         <CodeMirror
           options={{
             mode: languageModes[language],
@@ -165,8 +167,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
             editorRef.current = editor;
           }}
         />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

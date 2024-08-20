@@ -2,13 +2,10 @@ import * as Y from 'yjs';
 import { YMapValueType } from '../context/EditorContext';
 
 interface ProjectNode {
-  id: number;
-  type: 'file' | 'dir';
-  file_name?: string;
-  directory_name?: string;
-  project_id: string;
-  parent: number;
-  children?: ProjectNode[];
+  type: 'dir';
+  id: string;
+  directory_name: string;
+  children: [];
 }
 
 interface Project {
@@ -19,11 +16,11 @@ interface Project {
 
 export function getPathFromId(
   project: Project, // This is filetree object
-  targetId: number, // The file id selected
+  targetId: string, // The file id selected
 ): string[] | null {
   function findNodePath(
     node: ProjectNode,
-    id: number,
+    id: string,
     path: string[],
   ): string[] | null {
     // Check if current node is the target node
@@ -34,10 +31,7 @@ export function getPathFromId(
     // If it's a directory, recursively search its children
     if (node.type === 'dir' && node.children) {
       for (const child of node.children) {
-        const childPath = findNodePath(child, id, [
-          ...path,
-          node.directory_name || '',
-        ]);
+        const childPath = findNodePath(child, id, [...path, node.id || '']);
         if (childPath) {
           return childPath;
         }
@@ -49,16 +43,17 @@ export function getPathFromId(
 
   // Start the search from the root
   for (const child of project.children) {
-    const fullPath = findNodePath(child, targetId, []);
+    const fullPath = findNodePath(child, targetId, []); // I'll be creating a list of ids which creates the path
     if (fullPath) {
       return fullPath;
     }
   }
 
-  return null; // If the ID is not found
+  return []; // If the ID is not found
 }
 
 // use previous function to get fullpath which is a string full of ids
+// this function works only when I want to click a file that's already found in the tree
 export function createFileDir(
   fullPath: string[],
   root: YMapValueType,
@@ -76,6 +71,13 @@ export function createFileDir(
     let subdir = fileroot.get(path); // Subdirectory which is a y.map
     if (!subdir) {
       subdir = new Y.Map(); // If not found then build the path and create it
+      // for every new creation add metadata
+      const metadata = {
+        id: path,
+        type: 'dir',
+        new: true,
+      };
+      fileroot.set(`${path}_metadata`, metadata); // Type Error
       fileroot.set(path, subdir);
     }
     fileroot = subdir;
@@ -83,8 +85,20 @@ export function createFileDir(
   if (!fileroot || !(fileroot instanceof Y.Map)) return; // double check for eslint tho un-necessary
   let newfile = fileroot.get(_id);
   if (!newfile) {
+    console.log(
+      'The file you just clicked was created freshly and is not in the yjs object',
+    );
     newfile = filedir === 'file' ? new Y.Text() : new Y.Map();
+    // Add metadata for every new creation
+    const metadata = {
+      id: _id,
+      type: filedir,
+      new: true,
+    };
+    fileroot.set(`${_id}_metadata`, metadata); // Type Error
     fileroot.set(_id, newfile);
+  } else {
+    console.log('file is already found in the ymap');
   }
   return newfile;
 }

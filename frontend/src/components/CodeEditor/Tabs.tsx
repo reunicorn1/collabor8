@@ -1,4 +1,4 @@
-import { Box, Text, Image } from '@chakra-ui/react';
+import { Box, Text, Image, Spacer, CloseButton } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { LanguageCode } from '../../utils/codeExamples';
 import { useSettings, useFile } from '../../context/EditorContext';
@@ -19,14 +19,28 @@ export default function Tabs() {
 
   useEffect(() => {
     if (!fileSelected) return;
-    if (!tabslist.includes(fileSelected)) {
+    const foundTab = tabslist.find((tab) => tab.id === fileSelected.id);
+    if (!foundTab) {
       setTabsList([...tabslist, fileSelected]);
+    } else {
+      setFileSelected(foundTab);
     }
-  }, [fileSelected, tabslist]);
+  }, [fileSelected, setFileSelected, tabslist]);
 
   const handleClick = (file: FileType) => {
     // TODO: This fucntion changes the value of the file selected state to the corresponding tab object
+    console.log(tabslist);
     setFileSelected(file);
+  };
+
+  const handleClose = (file: FileType) => {
+    const updatedFile = tabslist.filter((tab) => tab !== file);
+    setTabsList(updatedFile);
+    if (updatedFile.length > 0) {
+      setFileSelected(updatedFile[updatedFile.length - 1]);
+    } else {
+      setFileSelected(null); // type error -_-
+    }
   };
 
   return (
@@ -43,7 +57,7 @@ export default function Tabs() {
           tabslist.map((file, index) => (
             <Box
               key={crypto.randomUUID()}
-              w="18%"
+              w="20%"
               display="flex"
               bg="brand.900"
               cursor="pointer"
@@ -58,7 +72,9 @@ export default function Tabs() {
               borderLeft="0.5px solid rgba(128, 128, 128, 0.5)"
               alignContent="center"
               alignItems="center"
-              justifyContent="center"
+              overflow="hidden"
+              textOverflow="ellipsis"
+              pl={6}
             >
               <Image
                 key={crypto.randomUUID()}
@@ -66,10 +82,20 @@ export default function Tabs() {
                 boxSize="15px"
                 mr={2}
               />
-
               <Text color="white" fontSize="xs" fontFamily="mono" key={index}>
                 {file.name}
               </Text>
+              <Spacer />
+              <CloseButton
+                color="white"
+                size="sm"
+                _hover={{ bg: '#323232', color: 'white' }}
+                mr={2}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClose(file);
+                }}
+              />
             </Box>
           ))}
       </Box>

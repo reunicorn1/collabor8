@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -14,9 +14,11 @@ import {
   Divider,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { YMapValueType } from '../../context/EditorContext';
+import { useYMap } from 'zustand-yjs';
 import { useFile } from '../../context/EditorContext';
 import { createLeaf, addLeaf } from '../../utils/addleaf';
+import { YMapValueType } from '../../context/EditorContext';
+import { getPathFromId, createFileDir } from '../../utils/followtree';
 import { v4 as uuidv4 } from 'uuid';
 import * as Y from 'yjs';
 
@@ -24,13 +26,8 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   filedir: string;
-  set: <VAL extends Y.Text | Y.Map<YMapValueType>>(
-    // eslint-disable-next-line no-unused-vars
-    key: string,
-    // eslint-disable-next-line no-unused-vars
-    value: VAL,
-  ) => VAL;
-  data: Record<string, Y.Text | Y.Map<YMapValueType>>;
+  ydoc: Y.Doc;
+  parent: string;
 }
 // Eslint was disabled for this method because it's used in an uncasual way
 
@@ -38,12 +35,18 @@ const NewfileDir: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   filedir,
-  set,
-  data,
+  ydoc,
+  parent,
 }) => {
   const { setFileSelected } = useFile()!;
   const initialRef = React.useRef(null);
   const [newName, setNewName] = useState('');
+  const root = ydoc.getMap('root'); // This gets the value of the root if created before
+
+  const { data, set } = useYMap<
+    Y.Map<YMapValueType> | Y.Text,
+    Record<string, Y.Map<YMapValueType> | Y.Text>
+  >(root); // Type Error
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(e.target.value);
@@ -53,23 +56,22 @@ const NewfileDir: React.FC<ModalProps> = ({
     // If success onClose
     if (newName) {
       const id = uuidv4();
-      const metadata = {
-        name: newName,
-        id: id,
-        parent: 'root',
-        type: filedir,
-        new: true,
-      };
-      const newValue = filedir === 'file' ? new Y.Text() : new Y.Map();
-      set(`${newName}_metadata`, metadata); // Type Error
-      set(id, newValue); // Type Error
-
-      // reflect the object in the file tree
+      // Since creating a file in the Y.map depend on the path in the filetree, creation of the leaf has to be made first
       const leaf = createLeaf(filedir, id, newName);
-      addLeaf(data.filetree, leaf, '0'); // also hopeless type error
-      set('filetree', data.filetree); // trigger to re-render the structure for all clients connected
-      if (newValue instanceof Y.Text)
-        setFileSelected({ name: newName, value: newValue, id: id });
+      addLeaf(data.filetree, leaf, parent); // also hopeless type error
+
+      // file tree here will be updated with the new leaf so the file path will be found
+      const path = getPathFromId(data.filetree, id); //type error
+      console.log(path);
+      if (path) {
+        const file = createFileDir(path, root, id, filedir); //type error. This function creates the new ytext/ymap
+
+        set('filetree', data.filetree); // trigger to re-render the structure for all clients connected
+        if (file instanceof Y.Text)
+          setFileSelected({ name: newName, value: file, id: id });
+      } else {
+        console.log('An Error occured during the retrival of this file');
+      }
     }
     handleClose();
   };
@@ -91,7 +93,7 @@ const NewfileDir: React.FC<ModalProps> = ({
               color="white"
             >{`Create new ${filedir}`}</Text>
           </ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton color="white" />
           <ModalBody pb={4}>
             <FormControl>
               <Divider mb={7} />

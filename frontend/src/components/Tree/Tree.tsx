@@ -7,9 +7,9 @@ import {
   Box,
 } from '@chakra-ui/react';
 import { VscNewFile, VscNewFolder } from 'react-icons/vsc';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import * as Y from 'yjs';
-import NewfileDir from '../Menus/fileDirMenu';
+import NewfileDir from '../Modals/NewfileDir';
 import { useYMap } from 'zustand-yjs';
 import { YMapValueType } from '../../context/EditorContext';
 import FileTreeView from '../FileTree/FileTreeView';
@@ -25,7 +25,7 @@ const Tree: React.FC<TreeProps> = ({ ydoc }) => {
   const [filedir, setFileDir] = useState('');
   const root = ydoc.getMap('root'); // This gets the value of the root if created before
 
-  const { data, set, entries } = useYMap<
+  const { data } = useYMap<
     Y.Map<YMapValueType> | Y.Text,
     Record<string, Y.Map<YMapValueType> | Y.Text>
   >(root); // Type Error
@@ -88,11 +88,11 @@ const Tree: React.FC<TreeProps> = ({ ydoc }) => {
         isOpen={isOpen}
         onClose={onClose}
         filedir={filedir}
-        set={set}
-        data={data}
+        ydoc={ydoc}
+        parent={'0'}
       />
       <Box bg="brand.900" h="100%" overflow="scroll">
-        <FileTreeView data={data} />
+        <FileTreeView data={data} ydoc={ydoc} />
       </Box>
     </>
   );

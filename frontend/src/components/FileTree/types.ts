@@ -1,24 +1,16 @@
 export interface File {
-  file_id: string;
+  type: 'file';
+  id: string;
   file_name: string;
-  directory_id: string | null;
-  file_content: string;
-  created_at: string;
-  updated_at: string;
-  parent_id: string;
-  type: 'file' | 'directory';
-  children?: File[];
 }
 
 export interface Directory {
-  directory_id: string;
+  type: 'dir';
+  id: string;
   directory_name: string;
-  parent_id: string | null;
-  created_at: string;
-  updated_at: string;
-  type: 'directory';
-  children: (File | Directory)[];
+  children?: (File | Directory)[];
 }
+
 // export interface File {
 //   file_id: string;
 //   file_name: string;
