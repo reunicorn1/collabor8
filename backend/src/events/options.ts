@@ -25,6 +25,7 @@ const options = {
     return context.document;
   },
   onConnect: (context) => {
+    console.log('------onConnect------->', {context})
     if (context) {
       const connectionId = context.connection?.id || 'unknown';
       const roomName = context.document?.name || 'unknown';
@@ -46,3 +47,5 @@ const options = {
     console.log(`Document updated in room: ${context.document.name}`);
   },
 };
+
+export default options;

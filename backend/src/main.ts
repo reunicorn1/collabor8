@@ -4,6 +4,8 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { corsConfig } from '@config/configuration';
 import { HoxPoxAdapter } from './events/ws-adapter';
+import { createServer } from 'http';
+import options from './events/options';
 // TODO: add passport https://docs.nestjs.com/security/authentication#passport
 // https://github.com/jaredhanson/passport
 // TODO: add helmet https://docs.nestjs.com/security/helmet
@@ -14,11 +16,15 @@ async function bootstrap() {
     cors: corsConfig,
     logger: ['error', 'warn', 'log'],
   });
+  const server = createServer(app.getHttpAdapter().getInstance());
+  const hoxAdapter = new HoxPoxAdapter(app);
+  hoxAdapter.create(1234, options).listen(server)
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.useWebSocketAdapter(new HoxPoxAdapter(app));
+  //app.useWebSocketAdapter(server);
   app.setGlobalPrefix('api/v1');
   app.enableCors();
 
+  //server.listen();
   await app.listen(3000);
 }
 bootstrap();

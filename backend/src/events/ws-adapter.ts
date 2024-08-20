@@ -16,16 +16,17 @@ export class HoxPoxAdapter implements WebSocketAdapter {
       extensions: [new Logger()],
       ...options,
     });
+    this.hocuspocusServer = server;
 
-    server.listen(port);
+    //server.listen(port);
     return server;
   }
 
-  bindClientConnect(server: any, callback: any) {
-    return server.configuration.onConnect((arg) => {
-      console.log('onConnect------------->', { arg });
-      callback(arg);
-    })
+  async bindClientConnect(server: any, callback: any) {
+    console.log('-------onConnect-------->')
+    console.log({ server })
+    await server.configuration.onConnect(callback)
+    return server
   }
 
   bindMessageHandlers(
@@ -58,6 +59,7 @@ export class HoxPoxAdapter implements WebSocketAdapter {
   }
 
   close(server) {
+    console.log('--------OnClose------->')
     server.destory();
   }
 }

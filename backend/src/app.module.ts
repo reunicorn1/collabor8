@@ -62,7 +62,7 @@ import { EventsModule } from './events/events.module';
     FileMongoModule,
     EnvironmentMongoModule,
     AuthModule,
-    EventsModule,
+    //EventsModule,
   ],
   controllers: [AppController],
   providers: [
