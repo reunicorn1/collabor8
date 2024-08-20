@@ -4,6 +4,7 @@ import { Observable, fromEvent, EMPTY } from 'rxjs';
 import { mergeMap, filter } from 'rxjs/operators';
 import { Configuration, Hocuspocus } from '@hocuspocus/server';
 import { Logger } from '@hocuspocus/extension-logger';
+import * as WebSocket from 'ws';
 //import * as Y from 'yjs';
 export class HoxPoxAdapter implements WebSocketAdapter {
   private hocuspocusServer: Hocuspocus;
@@ -11,21 +12,18 @@ export class HoxPoxAdapter implements WebSocketAdapter {
   constructor(private app: INestApplicationContext) { }
 
   create(port: number, options: any = {}): any {
-    const server = new Hocuspocus({
+    const server = new WebSocket.Server({
       port,
-      extensions: [new Logger()],
       ...options,
     });
-    this.hocuspocusServer = server;
 
-    //server.listen(port);
     return server;
   }
 
-  async bindClientConnect(server: any, callback: any) {
+  bindClientConnect(server: any, callback: any) {
     console.log('-------onConnect-------->')
     console.log({ server })
-    await server.configuration.onConnect(callback)
+    server.on('connection', callback)
     return server
   }
 
@@ -47,8 +45,9 @@ export class HoxPoxAdapter implements WebSocketAdapter {
     handlers: MessageMappingProperties[],
     process: (data: any) => Observable<any>,
   ): Observable<any> {
-    console.log('----OnMessage------->', { buffer });
-    const message = JSON.parse(buffer.data);
+    console.log('----OnMessage------->', { data: Buffer.from(buffer.data, 'utf8').toString('utf8') });
+    //const message = JSON.parse(buffer.data.toString('utf8'));
+    const message = ({ "data": "hello", "event": { ok: true } })
     const messageHandler = handlers.find(
       (handler) => handler.message === message.event,
     );
@@ -60,6 +59,6 @@ export class HoxPoxAdapter implements WebSocketAdapter {
 
   close(server) {
     console.log('--------OnClose------->')
-    server.destory();
+    server.close();
   }
 }
