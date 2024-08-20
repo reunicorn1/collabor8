@@ -22,6 +22,7 @@ import { FileMongo } from '@file-mongo/file-mongo.entity';
 import { AuthModule } from '@auth/auth.module';
 import { AuthGuard } from '@auth/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { EventsModule } from './events/events.module';
 // import { RolesGuard } from '@auth/guards/roles.guard';
 
 @Module({
@@ -61,6 +62,7 @@ import { APP_GUARD } from '@nestjs/core';
     FileMongoModule,
     EnvironmentMongoModule,
     AuthModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [

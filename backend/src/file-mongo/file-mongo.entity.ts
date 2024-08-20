@@ -1,10 +1,4 @@
-import {
-  Entity,
-  ObjectIdColumn,
-  ObjectId,
-  Column,
-  ManyToOne,
-} from 'typeorm';
+import { Entity, ObjectIdColumn, ObjectId, Column, ManyToOne } from 'typeorm';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
 

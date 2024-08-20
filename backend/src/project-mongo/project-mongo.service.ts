@@ -57,13 +57,19 @@ export class ProjectMongoService {
 
     const enhancedProjects = await Promise.all(
       projects.map(async (project) => {
-        const directories = await this.directoryService.findDirectoriesByParent(project._id.toString());
+        const directories = await this.directoryService.findDirectoriesByParent(
+          project._id.toString(),
+        );
         directories.map(async (dir) => {
-          const files = await this.fileService.findFilesByParent(dir._id.toString());
+          const files = await this.fileService.findFilesByParent(
+            dir._id.toString(),
+          );
           dir.files = files;
         });
 
-        const files = await this.fileService.findFilesByParent(project._id.toString());
+        const files = await this.fileService.findFilesByParent(
+          project._id.toString(),
+        );
         project.directories = directories;
         project.files = files;
 
@@ -98,7 +104,9 @@ export class ProjectMongoService {
           maxDepth,
         );
 
-        const files = await this.fileService.findFilesByParent(project._id.toString());
+        const files = await this.fileService.findFilesByParent(
+          project._id.toString(),
+        );
 
         project.directories = directories;
         project.files = files;
@@ -175,6 +183,4 @@ export class ProjectMongoService {
   //   console.log(enhancedProjects);
   //   return enhancedProjects;
   // }
-
-
 }

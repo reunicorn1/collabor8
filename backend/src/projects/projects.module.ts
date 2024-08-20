@@ -19,9 +19,7 @@ import { MYSQL_CONN } from '@constants';
     DirectoryMongoModule,
     FileMongoModule,
   ],
-  providers: [
-    ProjectsService,
-  ],
+  providers: [ProjectsService],
   controllers: [ProjectsController],
   exports: [ProjectsService],
 })

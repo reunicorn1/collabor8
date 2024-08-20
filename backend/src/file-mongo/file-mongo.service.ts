@@ -26,11 +26,10 @@ export class FileMongoService {
 
   async findFilesByParent(parent_id: string): Promise<FileMongo[] | null> {
     const files = await this.fileRepository.find({
-            where: { parent_id: parent_id },
-          });
-          return files;
+      where: { parent_id: parent_id },
+    });
+    return files;
   }
-
 
   findOne(id: string): Promise<FileMongo | null> {
     const _id = new ObjectId(id);

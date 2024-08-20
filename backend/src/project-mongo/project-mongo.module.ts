@@ -15,9 +15,7 @@ import { MONGO_CONN } from '@constants';
     DirectoryMongoModule,
     FileMongoModule,
   ],
-  providers: [
-    ProjectMongoService,
-  ],
+  providers: [ProjectMongoService],
   controllers: [ProjectMongoController],
   exports: [ProjectMongoService],
 })

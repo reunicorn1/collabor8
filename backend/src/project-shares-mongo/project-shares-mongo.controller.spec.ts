@@ -9,7 +9,9 @@ describe('ProjectSharesMongoController', () => {
       controllers: [ProjectSharesMongoController],
     }).compile();
 
-    controller = module.get<ProjectSharesMongoController>(ProjectSharesMongoController);
+    controller = module.get<ProjectSharesMongoController>(
+      ProjectSharesMongoController,
+    );
   });
 
   it('should be defined', () => {
