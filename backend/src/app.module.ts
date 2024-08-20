@@ -22,8 +22,10 @@ import { FileMongo } from '@file-mongo/file-mongo.entity';
 import { AuthModule } from '@auth/auth.module';
 import { AuthGuard } from '@auth/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
-import { EventsModule } from './events/events.module';
+// import { EventsModule } from './events/events.module';
+// import { HocuspocusService } from '@hocuspocus/hocuspocus.service';
 // import { RolesGuard } from '@auth/guards/roles.guard';
+import { HocuspocusModule } from './hocuspocus/hocuspocus.module';
 
 @Module({
   imports: [
@@ -62,11 +64,13 @@ import { EventsModule } from './events/events.module';
     FileMongoModule,
     EnvironmentMongoModule,
     AuthModule,
-    EventsModule,
+    HocuspocusModule,
+    // EventsModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    // HocuspocusService,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,

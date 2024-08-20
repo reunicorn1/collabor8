@@ -15,7 +15,7 @@ async function bootstrap() {
     logger: ['error', 'warn', 'log'],
   });
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.useWebSocketAdapter(new HoxPoxAdapter(app));
+  // app.useWebSocketAdapter(new HoxPoxAdapter(app));
   app.setGlobalPrefix('api/v1');
   app.enableCors();
 

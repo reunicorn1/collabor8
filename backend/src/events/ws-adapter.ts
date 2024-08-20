@@ -1,30 +1,34 @@
-import { WebSocketAdapter, INestApplicationContext } from '@nestjs/common';
+import { WebSocketAdapter, INestApplicationContext, OnModuleDestroy } from '@nestjs/common';
 import { MessageMappingProperties } from '@nestjs/websockets';
 import { Observable, fromEvent, EMPTY } from 'rxjs';
 import { mergeMap, filter } from 'rxjs/operators';
 import { Configuration, Hocuspocus } from '@hocuspocus/server';
 import { Logger } from '@hocuspocus/extension-logger';
 //import * as Y from 'yjs';
-export class HoxPoxAdapter implements WebSocketAdapter {
+export class HoxPoxAdapter implements WebSocketAdapter, OnModuleDestroy {
   private hocuspocusServer: Hocuspocus;
 
-  constructor(private app: INestApplicationContext) { }
+  constructor(private app: INestApplicationContext) {}
 
   create(port: number, options: any = {}): any {
-    const server = new Hocuspocus({
+    this.hocuspocusServer = new Hocuspocus({
       port,
       extensions: [new Logger()],
       ...options,
     });
 
-    server.listen(port);
-    return server;
+    this.hocuspocusServer.listen(port);
+    return this.hocuspocusServer;
   }
 
   bindClientConnect(server: any, callback: any) {
     return server.configuration.onConnect((arg) => {
       console.log('onConnect------------->', { arg });
-      callback(arg);
+      try {
+        callback(arg);
+      } catch (error) {
+        console.error('Error during connection:', error);
+      }
     })
   }
 
@@ -59,5 +63,10 @@ export class HoxPoxAdapter implements WebSocketAdapter {
 
   close(server) {
     server.destory();
+  }
+  onModuleDestroy() {
+    if (this.hocuspocusServer) {
+      this.hocuspocusServer.destroy();
+    }
   }
 }

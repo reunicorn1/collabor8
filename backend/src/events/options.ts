@@ -1,7 +1,7 @@
 
-const project = {
+export const project = {
   projectId: '4653',
-  id: 0, // because root 
+  id: 0, // because root
   children: [
     { type: 'file', id: 1, file_name: 'test.js', project_id: '4653' },
     {
@@ -14,7 +14,7 @@ const project = {
   ]
 };
 
-const options = {
+export const options = {
   async onLoadDocument(context) {
     const projectId = context.document.name;
     console.log('OnLoad -------->', projectId);
