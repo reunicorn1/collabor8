@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
+import { Box, Text } from '@chakra-ui/react';
 import './codemirrorSetup';
 import * as Y from 'yjs';
 import { CodemirrorBinding } from 'y-codemirror';
@@ -121,7 +122,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     };
   }, [projectId, websocket]);
 
-
   useEffect(() => {
     if (
       fileSelected &&
@@ -142,7 +142,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
   }, [fileSelected]);
 
   return (
-    <div>
+    <Box bg="brand.900" h="100%">
       {/* <DocumentManager
         data={data}
         set={set}
@@ -150,7 +150,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
         yMap={projectRoot.current}
       /> */}
       <Tabs />
-      <div>
+      <Box opacity={fileSelected ? '1' : '0'}>
         <CodeMirror
           options={{
             mode: languageModes[language],
@@ -162,8 +162,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
             editorRef.current = editor;
           }}
         />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

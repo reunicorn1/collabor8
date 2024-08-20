@@ -41,6 +41,9 @@ export default function OptionsMenu({ type, id, ydoc }: FileDirMenuProps) {
         fontSize="12px"
         size="xs"
         icon={<RxDotsVertical />}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
       />
       <MenuList bg="grey" border="0.5px solid rgba(128, 128, 128, 0.5)">
         {type === 'file' ? (
@@ -50,10 +53,22 @@ export default function OptionsMenu({ type, id, ydoc }: FileDirMenuProps) {
           </>
         ) : (
           <>
-            <MenuItem fontSize="xs" onClick={() => handleClick('file')}>
+            <MenuItem
+              fontSize="xs"
+              onClick={(e) => {
+                handleClick('file');
+                e.stopPropagation();
+              }}
+            >
               New File
             </MenuItem>
-            <MenuItem fontSize="xs" onClick={() => handleClick('dir')}>
+            <MenuItem
+              fontSize="xs"
+              onClick={(e) => {
+                handleClick('dir');
+                e.stopPropagation();
+              }}
+            >
               New Folder
             </MenuItem>
             <MenuItem fontSize="xs">Rename Folder</MenuItem>
