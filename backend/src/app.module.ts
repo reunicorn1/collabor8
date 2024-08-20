@@ -20,9 +20,11 @@ import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
 import { ProjectMongoModule } from '@project-mongo/project-mongo.module';
 import { FileMongo } from '@file-mongo/file-mongo.entity';
 import { AuthModule } from '@auth/auth.module';
+import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { AuthGuard } from '@auth/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 // import { RolesGuard } from '@auth/guards/roles.guard';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -61,13 +63,14 @@ import { APP_GUARD } from '@nestjs/core';
     FileMongoModule,
     EnvironmentMongoModule,
     AuthModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     {
       provide: APP_GUARD,
-      useClass: AuthGuard,
+      useClass: JwtAuthGuard,
     },
   ],
 })

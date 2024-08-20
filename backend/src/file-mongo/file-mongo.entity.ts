@@ -26,6 +26,9 @@ export class FileMongo {
   parent_id?: string;
 
   @Column()
+  project_id: string;
+
+  @Column()
   created_at: Date;
 
   @Column()

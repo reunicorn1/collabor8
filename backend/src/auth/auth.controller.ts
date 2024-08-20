@@ -6,14 +6,16 @@ import {
   HttpStatus,
   Post,
   Request,
-  // UseGuards,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '@auth/auth.service';
 // import { AuthGuard } from '@auth/guards/auth.guard';
 import { Public } from '@auth/decorators/isPublic.decorator';
 // import { RolesGuard } from '@auth/guards/roles.guard';
-import { CreateUserDto, LoginUserDto } from '@users/dto/create-user.dto';
+import { CreateUserDto, LoginUserDto, parseLoginDto } from '@users/dto/create-user.dto';
 import { Users } from '@users/user.entity';
+import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
+import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 // TODO: Add guards and roles where necessary
 // TODO: replace all endpoints that contain username with @Request() req
 @Controller('auth')
@@ -21,10 +23,12 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
+  @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  signIn(@Body() signInDto: LoginUserDto) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  signIn(@Request() req) {
+    console.log('req.user', req.user);
+    return this.authService.signIn(req.user);
   }
 
   @Public()
@@ -41,6 +45,8 @@ export class AuthController {
 
   @Get('profile')
   getProfile(@Request() req) {
+    console.log('req.user', req.user);
     return req.user;
   }
+
 }

@@ -13,3 +13,5 @@ export const corsConfig = {
   preflightContinue: false,
   optionsSuccessStatus: 204,
 };
+
+export const adminEmails = ['triplemg94@gmail.com']
