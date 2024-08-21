@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
-import { Box, Text } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import './codemirrorSetup';
 import * as Y from 'yjs';
 import { CodemirrorBinding } from 'y-codemirror';
@@ -56,7 +56,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     });
   };
 
-  console.log({ wsProvider })
+  console.log({ wsProvider });
   // effects for socket provider and awareness
   useEffect(() => {
     if (!editorRef.current) return;
@@ -116,6 +116,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
       window.addEventListener('beforeunload', () => {
         wsProvider.awareness.setLocalState(null);
       });
+
       if (projectRoot.current && !fileSelected) {
         setFileTree(projectRoot.current);
         createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
@@ -125,7 +126,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
       binding.current?.destroy();
       wsProvider?.disconnect();
     };
-  }, [projectId, websocket, wsProvider, setAwareness, setFileTree, fileSelected]);
+  }, []);
 
   useEffect(() => {
     if (
@@ -135,16 +136,16 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     ) {
       try {
         setMode(false);
+        console.log(binding.current);
         binding.current?.destroy();
         binding.current = setupCodemirrorBinding(fileSelected.value);
       } catch (err) {
         console.error('Error occured during binding, but this is serious', err);
       }
     } else {
-      setMode(true);
       console.error('Error occured during binding of the file', fileSelected);
     }
-  }, [fileSelected]);
+  }, [fileSelected, setMode]);
 
   return (
     <Box bg="brand.900" h="100%">
