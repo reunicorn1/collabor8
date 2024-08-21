@@ -9,13 +9,14 @@ import { map } from 'rxjs/operators';
 import { Server } from 'ws';
 import options from './options';
 
-@WebSocketGateway(1234, options)
+@WebSocketGateway(8080, options)
 export class EventsGateway {
   @WebSocketServer()
   server: Server;
 
   @SubscribeMessage('events')
   onEvent(client: any, data: any): Observable<WsResponse<number>> {
+    console.log({client, data})
     return from([1, 2, 3]).pipe(map(item => ({ event: 'events', data: item })));
   }
 }
