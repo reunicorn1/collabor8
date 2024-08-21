@@ -90,4 +90,14 @@ export class ProjectsService {
   async remove(id: string): Promise<void> {
     await this.projectsRepository.delete(id);
   }
+
+  // Delete all projects by owner ID
+  async removeAllByEnvironment(environment_id: string): Promise<void> {
+    const projects = await this.findAllByEnvironmentId(environment_id);
+    console.log(projects);
+    const projectsMongo = await this.projectMongoService.removeAllByEnvironment(
+      environment_id,
+    );
+    console.log(projectsMongo);
+  }
 }

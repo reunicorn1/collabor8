@@ -5,6 +5,7 @@ import {
   Body,
   Param,
   Delete,
+  Request,
   Put,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
@@ -23,17 +24,21 @@ export class ProjectsController {
     description: 'Create a new project using the provided data.',
   })
   @Post()
-  async create(@Body() createProjectDto: CreateProjectDto): Promise<Projects> {
+  async create(
+    @Body() createProjectDto: CreateProjectDto,
+    @Request() req: any,
+  ): Promise<Projects> {
+    createProjectDto.username = req.user.username;
     return this.projectsService.create(createProjectDto);
   }
 
   @ApiOperation({
-    summary: 'Get all projects',
-    description: 'Retrieve a list of all projects.',
+    summary: 'Get all projects of the logged in user',
+    description: 'Retrieve a list of all projects associated with the logged in user.',
   })
   @Get()
-  async findAll(): Promise<Projects[]> {
-    return this.projectsService.findAll();
+  async findAll(@Request() req: any): Promise<Projects[]> {
+    return this.projectsService.findAllByOwnerId(req.user.user_id);
   }
 
   @ApiOperation({
