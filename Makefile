@@ -14,7 +14,7 @@ BOLD := \e[1m
 RESET := \e[0m
 
 # Sessions
-REACT_SESSION := ReactTS
+REACT_SESSION := ReactJS
 NEST_SESSION := NestJS
 
 # Scripts
@@ -23,7 +23,7 @@ BACKEND_SCRIPT := npm --prefix backend run start:dev
 
 # Define run session
 define run_session
-	@$(TMUX) new-session -d -s "$(1)" "$(2) > $(1)_log.txt 2>&1"
+	@$(TMUX) new-session -d -s "$(1)" "$(2)"
 	@echo -e '$(1) app is $(GREEN)running \e[5m\e[1m...\e[0m$(RESET)'
 endef
 

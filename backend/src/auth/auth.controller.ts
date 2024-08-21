@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   Post,
   Request,
   Response,
@@ -23,26 +24,23 @@ import { Users } from '@users/user.entity';
 import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { RefreshAuthGuard } from './guards/refresh-jwt-auth.guard';
-import {
-  ApiSignIn,
-  ApiSignUp,
-  ApiGetProfile,
-  ApiRefreshToken,
-} from './auth-docs.decorator';
+import docs from './auth-docs.decorator';
 
 // TODO: Add guards and roles where necessary
 // TODO: replace all endpoints that contain username with @Request() req
+// TODO: the logs doesn't appear -_-
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiSignIn()
+  @docs.ApiSignIn()
   @Public()
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('signin')
   async signIn(@Request() req, @Response() res) {
+    Logger.log('--------------->', { user: req.user });
     const { accessToken, refreshToken } = await this.authService.signIn(
       req.user,
     );
@@ -52,7 +50,7 @@ export class AuthController {
       .send({ accessToken });
   }
 
-  @ApiSignUp()
+  @docs.ApiSignUp()
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('signup')
@@ -65,7 +63,7 @@ export class AuthController {
     }
   }
 
-  @ApiGetProfile()
+  @docs.ApiGetProfile()
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Request() req) {
@@ -73,7 +71,7 @@ export class AuthController {
     return req.user;
   }
 
-  @ApiRefreshToken()
+  @docs.ApiRefreshToken()
   @Public()
   // @UseGuards(RefreshAuthGuard)
   @Post('refresh')

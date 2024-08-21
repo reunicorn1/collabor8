@@ -4,6 +4,7 @@ import {
   NotFoundException,
   ConflictException,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { Users } from '@users/user.entity';
@@ -19,7 +20,6 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly environmentService: EnvironmentMongoService,
     private jwtService: JwtService,
-
   ) {}
 
   async signIn(
@@ -28,13 +28,13 @@ export class AuthService {
     accessToken: string,
     refreshToken: string,
   }> {
-
     const payload = {
       username: user.username,
       sub: user.user_id,
       roles: user.roles,
       timestamp: new Date().getTime(),
     };
+    Logger.log('--------->', {user})
     return {
       accessToken: await this.jwtService.signAsync(payload),
       refreshToken: await this.jwtService.signAsync(payload, { expiresIn: '7d' }),
@@ -116,6 +116,4 @@ export class AuthService {
   async comparePwd(password: string, hash: string): Promise<boolean> {
     return await bcrypt.compare(password, hash);
   }
-
-
 }

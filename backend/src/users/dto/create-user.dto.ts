@@ -1,13 +1,20 @@
 import { BadRequestException } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import { encryptPwd } from '@utils/encrypt_password';
 // TODO: create dto for all the entities
 //
-interface CreateUserDto {
+class CreateUserDto {
+  @ApiProperty({ example: 'john_doe' })
   username: string;
+  @ApiProperty({ example: 'Moe' })
   first_name: string;
+  @ApiProperty({ example: 'Elfadil' })
   last_name: string;
+  @ApiProperty({ example: 'a@b.com' })
   email: string;
+  @ApiProperty({ example: 'password' })
   password: string;
+  @ApiProperty({ example: [] })
   favorite_languages: string[];
 }
 
