@@ -8,8 +8,6 @@ import { Users } from '@users/user.entity';
 import { ProjectsModule } from '@projects/projects.module';
 import { ProjectShares } from '@project-shares/project-shares.entity';
 import { ProjectSharesModule } from '@project-shares/project-shares.module';
-import { ProjectSharesMongoModule } from '@project-shares-mongo/project-shares-mongo.module';
-import { ProjectSharesMongo } from '@project-shares-mongo/project-shares-mongo.entity';
 import { Projects } from '@projects/project.entity';
 import { FileMongoModule } from '@file-mongo/file-mongo.module';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
@@ -51,7 +49,6 @@ import { AdminModule } from './admin/admin.module';
       entities: [
         EnvironmentMongo,
         ProjectMongo,
-        ProjectSharesMongo,
         DirectoryMongo,
         FileMongo,
       ],
@@ -62,7 +59,6 @@ import { AdminModule } from './admin/admin.module';
     ProjectSharesModule,
     DirectoryMongoModule,
     ProjectMongoModule,
-    ProjectSharesMongoModule,
     FileMongoModule,
     EnvironmentMongoModule,
     AuthModule,
