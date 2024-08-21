@@ -1,13 +1,11 @@
-import { Box, Text, Image, Spacer, CloseButton } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { Box, Text, Image } from '@chakra-ui/react';
+import { useState } from 'react';
 import { LanguageCode } from '../../utils/codeExamples';
-import { useSettings, useFile } from '../../context/EditorContext';
-import { FileType } from '../../context/EditorContext';
+import { useSettings } from '../../context/EditorContext';
 
 export default function Tabs() {
-  const [tabslist, setTabsList] = useState<FileType[]>([]);
+  const [tabslist, setTabsList] = useState([]);
   const { language } = useSettings()!;
-  const { fileSelected, setFileSelected } = useFile()!;
   const languageModes: Record<LanguageCode, string> = {
     javascript: 'javascript.png',
     python: 'python.png',
@@ -17,30 +15,8 @@ export default function Tabs() {
     html: 'html.png',
   };
 
-  useEffect(() => {
-    if (!fileSelected) return;
-    const foundTab = tabslist.find((tab) => tab.id === fileSelected.id);
-    if (!foundTab) {
-      setTabsList([...tabslist, fileSelected]);
-    } else {
-      setFileSelected(foundTab);
-    }
-  }, [fileSelected, setFileSelected, tabslist]);
-
-  const handleClick = (file: FileType) => {
-    // TODO: This fucntion changes the value of the file selected state to the corresponding tab object
-    console.log(tabslist);
-    setFileSelected(file);
-  };
-
-  const handleClose = (file: FileType) => {
-    const updatedFile = tabslist.filter((tab) => tab !== file);
-    setTabsList(updatedFile);
-    if (updatedFile.length > 0) {
-      setFileSelected(updatedFile[updatedFile.length - 1]);
-    } else {
-      setFileSelected(null); // type error -_-
-    }
+  const handleClick = () => {
+    // TODO: This fucntion changes the value of the fileselected state to the corresponding tab object
   };
 
   return (
@@ -53,51 +29,29 @@ export default function Tabs() {
         // overflowX="scroll"
         // whiteSpace="nowrap"
       >
-        {tabslist &&
-          tabslist.map((file, index) => (
-            <Box
-              key={crypto.randomUUID()}
-              w="20%"
-              display="flex"
-              bg="brand.900"
-              cursor="pointer"
-              onClick={() => handleClick(file)}
-              borderTop={
-                fileSelected && fileSelected === file
-                  ? '2px solid yellow'
-                  : '0.5px solid rgba(128, 128, 128, 0.5)'
-              }
-              borderRight="0.5px solid rgba(128, 128, 128, 0.5)"
-              borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
-              borderLeft="0.5px solid rgba(128, 128, 128, 0.5)"
-              alignContent="center"
-              alignItems="center"
-              overflow="hidden"
-              textOverflow="ellipsis"
-              pl={6}
-            >
-              <Image
-                key={crypto.randomUUID()}
-                src={`/lang-logo/${languageModes[language]}`}
-                boxSize="15px"
-                mr={2}
-              />
-              <Text color="white" fontSize="xs" fontFamily="mono" key={index}>
-                {file.name}
-              </Text>
-              <Spacer />
-              <CloseButton
-                color="white"
-                size="sm"
-                _hover={{ bg: '#323232', color: 'white' }}
-                mr={2}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleClose(file);
-                }}
-              />
-            </Box>
-          ))}
+        {/* for every open tab there will be a corresponding box tab that binds the ytext with the editor */}
+        <Box
+          w="18%"
+          display="flex"
+          bg="brand.900"
+          borderTop="2px solid yellow"
+          borderRight="0.5px solid rgba(128, 128, 128, 0.5)"
+          borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
+          borderLeft="0.5px solid rgba(128, 128, 128, 0.5)"
+          alignContent="center"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Image
+            src={`/lang-logo/${languageModes[language]}`}
+            boxSize="15px"
+            mr={2}
+          />
+
+          <Text color="white" fontSize="xs" fontFamily="mono">
+            CodeEditor.tsx
+          </Text>
+        </Box>
       </Box>
     </>
   );
