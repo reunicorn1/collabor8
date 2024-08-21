@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'ws';
 import { HoxPoxAdapter } from './ws-adapter';
-import options from './options';
+import { options } from './options';
 
 @WebSocketGateway(1234, {
   adapter: HoxPoxAdapter,
