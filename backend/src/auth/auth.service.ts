@@ -20,7 +20,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly environmentService: EnvironmentMongoService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async signIn(
     user: Partial<Users>,
@@ -34,7 +34,7 @@ export class AuthService {
       roles: user.roles,
       timestamp: new Date().getTime(),
     };
-    Logger.log('--------->', {user})
+    Logger.log('--------->', { user })
     return {
       accessToken: await this.jwtService.signAsync(payload),
       refreshToken: await this.jwtService.signAsync(payload, { expiresIn: '7d' }),
@@ -71,7 +71,7 @@ export class AuthService {
     }
     if (!createUserDto['favorite_languages']) {
       createUserDto['favorite_languages'] = [];
-      }
+    }
     return await this.create(createUserDto);
   }
 

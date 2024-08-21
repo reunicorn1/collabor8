@@ -27,8 +27,10 @@ interface CreateUserOutDto {
   favorite_languages: string[];
 }
 
-interface LoginUserDto {
+class LoginUserDto {
+  @ApiProperty({ example: 'Reem Sweetie' })
   username: string;
+  @ApiProperty({ example: 'unicorn' })
   password: string;
 }
 
