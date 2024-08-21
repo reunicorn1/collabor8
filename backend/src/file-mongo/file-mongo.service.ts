@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ObjectId } from 'typeorm';
 import { FileMongo } from './file-mongo.entity';
-import { parseCreateFileMongoDto, CreateFileOutDto } from './dto/create-file-mongo.dto';
+import { parseCreateFileMongoDto, CreateFileOutDto, parseUpdateFileMongoDto,
+  UpdateFileOutDto
+} from './dto/create-file-mongo.dto';
 
 @Injectable()
 export class FileMongoService {
@@ -36,6 +38,18 @@ export class FileMongoService {
   async findOne(id: string): Promise<FileMongo | null> {
     const _id = new ObjectId(id);
     return await this.fileRepository.findOneBy({ _id });
+  }
+
+  async update(id: string, updateFileDto: UpdateFileOutDto): Promise<FileMongo> {
+    const parsedDto = parseCreateFileMongoDto(updateFileDto);
+    const file = await this.findOne(id);
+    if (!file) {
+      throw new Error('File not found');
+    }
+    file.file_name = parsedDto.file_name;
+    file.file_content = parsedDto.file_content;
+    file.updated_at = new Date();
+    return await this.fileRepository.save(file);
   }
 
 

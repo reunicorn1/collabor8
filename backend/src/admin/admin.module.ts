@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
 import { UsersModule } from '@users/users.module';
@@ -10,7 +10,7 @@ import { RolesGuard } from '@auth/guards/roles.guard';
 @Module({
   imports: [
     UsersModule,
-    ProjectsModule,
+    forwardRef(() => ProjectsModule),
     FileMongoModule,
   ],
   providers: [
