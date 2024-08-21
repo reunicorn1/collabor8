@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { RootState } from '../store';
-import apiConfig from '../../config/apiConfig';
-import { LoginUserDto, CreateUserDto, User } from '../../types';
+import { RootState } from '@store/store';
+import apiConfig from '@config/apiConfig';
+import { LoginUserDto, CreateUserDto, User } from '@types';
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
@@ -23,12 +23,20 @@ export const api = createApi({
         url: '/auth/signin',
         method: 'POST',
         body: credentials,
+        credentials: 'include',
+      }),
+    }),
+    refreshToken: builder.mutation<{ accessToken: string }, void>({
+      query: () => ({
+        url: '/auth/refresh',
+        method: 'POST',
+        credentials: 'include',
       }),
     }),
     // Get user profile (for authenticated user)
     getProfile: builder.query<User, void>({
       query: () => '/auth/profile',
-      providesTags: ['Profile'],
+      // providesTags: ['Profile'],
     }),
     // Register new user
     createUser: builder.mutation<User, CreateUserDto>({
@@ -46,4 +54,5 @@ export const {
   useLoginUserMutation,
   useGetProfileQuery,
   useCreateUserMutation,
+  useRefreshTokenMutation,
 } = api;

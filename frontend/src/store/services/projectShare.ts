@@ -1,5 +1,5 @@
 import { api } from './auth';
-import { ProjectShares } from '../../types';
+import { ProjectShares } from '@types';
 
 export const projectShareApi = api.injectEndpoints({
   endpoints: (builder) => ({

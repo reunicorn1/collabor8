@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
 import { Box } from '@chakra-ui/react';
 import './codemirrorSetup';
@@ -11,10 +11,10 @@ import { Editor } from 'codemirror';
 import { useFile, useSettings } from '../../context/EditorContext';
 // import DocumentManager from './TabsList';
 import { Awareness } from 'y-protocols/awareness.js';
+import { useYMap } from 'zustand-yjs';
 import { getRandomUsername } from './names';
-import { YMapValueType } from '../../context/EditorContext';
-import createfiletree from '../../utils/filetreeinit';
 import Tabs from './Tabs';
+import { useYjs } from '../../hooks/YjsHook';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -28,24 +28,28 @@ const languageModes: Record<LanguageCode, string> = {
 // Definition of interfaces and types
 interface CodeEditorProps {
   projectId: string;
-  ydoc: Y.Doc;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
+type YMapValueType = Y.Text | null | Y.Map<YMapValueType>;
+
+const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
   const websocket = import.meta.env.VITE_WS_SERVER;
   const { theme, language, mode, setMode } = useSettings()!;
-  const { fileSelected, setAwareness, setFileTree } = useFile()!;
+  const { fileSelected, setAwareness } = useFile()!;
   const editorRef = useRef<Editor | null>(null);
   const projectRoot = useRef<Y.Map<YMapValueType> | null>(null);
   const binding = useRef<CodemirrorBinding | null>(null);
-  const ydoc_ = useRef(ydoc);
   const awareness = useRef<Awareness | null>(null);
-  const [wsProvider, setProvider] = useState<WebsocketProvider | null>(null);
+  const ydoc = useYjs();
 
-  projectRoot.current = ydoc_.current.getMap('root');
+  projectRoot.current = ydoc.getMap('root');
+  const { data, set, entries } = useYMap<
+    Y.Map<YMapValueType> | Y.Text,
+    Record<string, Y.Map<YMapValueType> | Y.Text>
+  >(projectRoot.current); // Type Error
 
   // An event listener for updates happneing in the ydoc
-  ydoc_.current.on('update', (update) => {
+  ydoc.on('update', (update) => {
     console.log('Yjs update', update);
   });
 
@@ -56,89 +60,76 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     });
   };
 
-  console.log({ wsProvider });
   // effects for socket provider and awareness
   useEffect(() => {
     if (!editorRef.current) return;
-    if (!wsProvider) {
-      setProvider(new WebsocketProvider(websocket, projectId, ydoc_.current));
-    } else {
-      // Creation of the connction with the websocket
-      //const provider = new WebsocketProvider(websocket, projectId, ydoc_.current);
-      wsProvider.on('status', (event: { status: unknown }) => {
-        console.log(event.status); // logs "connected" or "disconnected"
-      });
+    // Creation of the connction with the websocket
+    const provider = new WebsocketProvider(websocket, projectId, ydoc);
+    provider.on('status', (event: { status: unknown }) => {
+      console.log(event.status); // logs "connected" or "disconnected"
+    });
 
-      // An event listener to clean up once the user is removed
-      wsProvider.on('close', () => {
-        wsProvider.awareness.setLocalState(null); // Removes the local awareness state
-      });
+    // An event listener to clean up once the user is removed
+    provider.on('close', () => {
+      provider.awareness.setLocalState(null); // Removes the local awareness state
+    });
 
-      // Awareness information related to the presence of the user's cursor
-      awareness.current = wsProvider.awareness;
-      awareness.current.setLocalStateField('user', {
-        name: getRandomUsername(), // TODO: import the username from the context and use it here else use Random
-        color: RandomColor(),
-      });
+    // Awareness information related to the presence of the user's cursor
+    awareness.current = provider.awareness;
+    awareness.current.setLocalStateField('user', {
+      name: getRandomUsername(), // TODO: import the username from the context and use it here else use Random
+      color: RandomColor(),
+    });
 
-      // Awareness data is shared among different components so it's stored in a state
+    // Awareness data is shared among different components so it's stored in a state
 
-      const updateAwareness = () => {
-        const aware = Array.from(awareness.current?.states);
-        setAwareness(aware);
-      };
-      updateAwareness();
+    const updateAwareness = () => {
+      const aware = Array.from(awareness.current?.states);
+      setAwareness(aware);
+    };
+    updateAwareness();
 
-      //Observations and changes to awarness are tracked using these observers
-      awareness.current.on('update', ({ added, removed }) => {
-        if (awareness.current) {
-          // Log added users
-          if (added.length > 0) {
-            added.forEach((clientId: number) => {
-              const user = awareness.current?.getStates().get(clientId);
-              console.log('User joined:', user);
-              console.log(awareness.current?.getStates());
-              updateAwareness();
-            });
-          }
-
-          // Log removed users
-          if (removed.length > 0) {
-            removed.forEach((clientId: number) => {
-              console.log('User left:', clientId);
-              console.log(awareness.current?.getStates());
-              updateAwareness();
-            });
-          }
+    //Observations and changes to awarness are tracked using these observers
+    awareness.current.on('update', ({ added, removed }) => {
+      if (awareness.current) {
+        // Log added users
+        if (added.length > 0) {
+          added.forEach((clientId: number) => {
+            const user = awareness.current?.getStates().get(clientId);
+            console.log('User joined:', user);
+            console.log(awareness.current?.getStates());
+            updateAwareness();
+          });
         }
-      });
-      // Clean up before the user leaves
-      window.addEventListener('beforeunload', () => {
-        wsProvider.awareness.setLocalState(null);
-      });
 
-      if (projectRoot.current && !fileSelected) {
-        setFileTree(projectRoot.current);
-        createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
+        // Log removed users
+        if (removed.length > 0) {
+          removed.forEach((clientId) => {
+            console.log('User left:', clientId);
+            console.log(awareness.current?.getStates());
+            updateAwareness();
+          });
+        }
       }
-    }
+    });
+    // Clean up before the user leaves
+    window.addEventListener('beforeunload', () => {
+      provider.awareness.setLocalState(null);
+    });
+
     return () => {
       binding.current?.destroy();
-      wsProvider?.disconnect();
+      provider.disconnect();
     };
   }, []);
 
   useEffect(() => {
-    if (
-      fileSelected &&
-      editorRef.current &&
-      fileSelected.value instanceof Y.Text
-    ) {
+    if (fileSelected && editorRef.current && fileSelected instanceof Y.Text) {
       try {
         setMode(false);
         console.log(binding.current);
         binding.current?.destroy();
-        binding.current = setupCodemirrorBinding(fileSelected.value);
+        binding.current = setupCodemirrorBinding(fileSelected);
       } catch (err) {
         console.error('Error occured during binding, but this is serious', err);
       }
@@ -148,7 +139,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
   }, [fileSelected, setMode]);
 
   return (
-    <Box bg="brand.900" h="100%">
+    <div>
       {/* <DocumentManager
         data={data}
         set={set}
@@ -156,7 +147,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
         yMap={projectRoot.current}
       /> */}
       <Tabs />
-      <Box opacity={fileSelected ? '1' : '0'}>
+      <div>
         <CodeMirror
           options={{
             mode: languageModes[language],
@@ -168,8 +159,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
             editorRef.current = editor;
           }}
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

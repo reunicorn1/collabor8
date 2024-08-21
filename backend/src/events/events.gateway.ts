@@ -8,6 +8,7 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Server } from 'ws';
 import options from './options';
+import { HoxPoxAdapter } from './ws-adapter';
 
 @WebSocketGateway(8080, options)
 export class EventsGateway {

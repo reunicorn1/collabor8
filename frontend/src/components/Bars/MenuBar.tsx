@@ -1,36 +1,17 @@
 import { Flex, Button, Spacer, IconButton, Text, Box } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
 import { MdBuild } from 'react-icons/md';
-import { IoChatbubbleEllipsesOutline } from 'react-icons/io5';
-import { PiGithubLogo } from 'react-icons/pi';
-import { GoHome } from 'react-icons/go';
+import { ChatIcon, ArrowRightIcon } from '@chakra-ui/icons';
+// import { useSettings } from '../../context/EditorContext';
 import { LanguageSelector, ThemeSelector } from '../CodeEditor';
 import { useSettings } from '../../context/EditorContext';
 
 export default function MenuBar() {
-  const navigate = useNavigate();
   const { mode } = useSettings()!;
-
-  const goHome = () => {
-    navigate('/dashboard');
-  };
 
   return (
     <div>
       <Flex justifyContent="space-between" alignItems="center">
         <Flex>
-          <IconButton
-            isRound={true}
-            color="white"
-            _hover={{ bg: 'white', color: 'black' }}
-            variant="ghost"
-            aria-label="Done"
-            fontSize="20px"
-            size="xs"
-            icon={<GoHome />}
-            onClick={goHome}
-            ml={2}
-          />
           <ThemeSelector />
           <LanguageSelector />
         </Flex>
@@ -47,7 +28,7 @@ export default function MenuBar() {
         <Button
           leftIcon={<MdBuild />}
           size="xs"
-          colorScheme="yellow"
+          colorScheme="green"
           variant="solid"
           ml={8}
         >
@@ -55,26 +36,22 @@ export default function MenuBar() {
         </Button>
         <IconButton
           isRound={true}
-          color="white"
-          _hover={{ bg: 'white', color: 'black' }}
-          variant="ghost"
+          variant="outline"
+          colorScheme="brand"
           aria-label="Done"
-          fontSize="18px"
+          fontSize="12px"
           size="xs"
-          icon={<IoChatbubbleEllipsesOutline />}
+          icon={<ChatIcon />}
           ml={2}
         />
         <IconButton
           isRound={true}
-          color="white"
-          _hover={{ bg: 'white', color: 'black' }}
-          variant="ghost"
+          variant="outline"
+          colorScheme="brand"
           aria-label="Done"
-          fontSize="18px"
+          fontSize="12px"
           size="xs"
-          ml={1}
-          mr={2}
-          icon={<PiGithubLogo />}
+          icon={<ArrowRightIcon />}
         />
       </Flex>
     </div>

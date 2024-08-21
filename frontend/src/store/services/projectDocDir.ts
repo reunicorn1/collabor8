@@ -1,5 +1,5 @@
 import { api } from './auth';
-import { DirectoryMongo } from '../../types';
+import { DirectoryMongo } from '@types';
 
 export const projectDocDirApi = api.injectEndpoints({
   endpoints: (builder) => ({
