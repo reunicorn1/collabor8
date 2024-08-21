@@ -3,6 +3,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { corsConfig } from '@config/configuration';
+import { HoxPoxAdapter } from './events/ws-adapter';
+import { WsAdapter } from '@nestjs/platform-ws';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
@@ -42,6 +44,7 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.useGlobalFilters(new HttpExceptionFilter());
+  // app.useWebSocketAdapter(new HoxPoxAdapter(app));
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors(corsConfig);

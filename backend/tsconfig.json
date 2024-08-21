@@ -30,7 +30,9 @@
 		"@utils/*": ["src/utils/*"],
 		"@filters/*": ["src/filters/*"],
 		"@constants": ["src/constants"],
-		"@config/*": ["src/config/*"]
+		"@config/*": ["src/config/*"],
+		"@hocuspocus/*": ["src/hocuspocus/*"],
+		"@events/*": ["src/events/*"]
 
 	}
   }

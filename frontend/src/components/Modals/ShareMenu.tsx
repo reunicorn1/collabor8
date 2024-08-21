@@ -53,7 +53,6 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
   // This function handles clicking the "copy link" button
   const handleClick = () => {
-    // TODO: Preppend the url and the hostname to this
     console.log(`${url}${location.pathname}`);
     copyToClipboard(`${url}${location.pathname}`);
     setClicked(true);
@@ -70,7 +69,7 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   //   const handleInvite = () => {
   //     // TODO: info sent, email in the input plus the option selected in the menu
   //     // This will be sent to an endpoint to send an email to this user about the invitation
-  //     // And also to notify the user in his email so he accepts the invitation
+  //     // And also to notify the user in his email so he accepts the invitation. This function is triggered by clicking the invite button
   //   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,16 +148,16 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             Who has access
           </Heading>
           <Divider opacity={0.5} mt={2} mb={2} />
-          {/* This box will contain a list of contributors with the ability to change their allowed permissions */}
+          {/* TODO: This box will contain a list of contributors with the ability to change their allowed permissions, changing the option should trigger an api request */}
           <Box mt={3} mb={3}>
             <Flex alignItems="center">
               <Avatar name="Reem Osama" src="" size="sm" />
-              {/* If you are the owner you should have (you) string beside your name */}
+              {/* TODO: If you are the owner you should have (you) string beside your name */}
               <Text m={3} fontSize="sm" color="white">
                 Reem Osama (you)
               </Text>
               <Spacer />
-              {/* The value of the select for the owner doesn't change it shows a string owner but for others
+              {/* The value of the select for the owner doesn't change, it shows a string "owner" but for others
                changing the value sends a request to the database with the new value */}
               <Text fontSize="sm" color="white" pr={4}>
                 owner

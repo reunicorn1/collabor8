@@ -23,6 +23,10 @@ import { AuthModule } from '@auth/auth.module';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { AuthGuard } from '@auth/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
+// import { EventsModule } from './events/events.module';
+// import { HocuspocusService } from '@hocuspocus/hocuspocus.service';
+// import { RolesGuard } from '@auth/guards/roles.guard';
+import { HocuspocusModule } from './hocuspocus/hocuspocus.module';
 // import { RolesGuard } from '@auth/guards/roles.guard';
 import { AdminModule } from './admin/admin.module';
 import { AuthenticatedGuard } from './auth/guards/authenticated.guard';
@@ -64,11 +68,14 @@ import { AuthenticatedGuard } from './auth/guards/authenticated.guard';
     FileMongoModule,
     EnvironmentMongoModule,
     AuthModule,
+    HocuspocusModule,
+    // EventsModule,
     AdminModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    // HocuspocusService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
