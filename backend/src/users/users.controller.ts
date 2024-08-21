@@ -7,7 +7,6 @@ import {
   Body,
   Param,
   Delete,
-  Put,
   Patch,
   Request,
   Query,
@@ -15,67 +14,52 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '@users/users.service';
 import { Users } from './user.entity';
-import { Roles } from '@auth/decorators/roles.decorator';
-import { RolesGuard } from '@auth/guards/roles.guard';
-import { Role } from '@auth/enums/role.enum';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-// import { Public } from '@auth/decorators/isPublic.decorator';
 
 // TODO: complete RESTful API for user entity
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+  // Endpoints for current user
+  @ApiOperation({
+    summary: 'Get current user profile',
+    description: 'Retrieve the profile of the currently authenticated user.',
+  })
+  @Get('me')
+  async findUser(@Request() req): Promise<Users> {
+    return this.usersService.findOneBy({ username: req.user.username });
+  }
 
   @ApiOperation({
-    summary: 'Get all users',
-    description: 'Retrieve a list of all users. Only accessible by admins.',
-  })
-  @Get('all')
-  @UseGuards(RolesGuard)
-  @Roles(Role.Admin)
-  async findAll(): Promise<Users[]> {
-    return this.usersService.findAll();
-  }
-  // TODO: regular user should not be able to set roles
-  @ApiOperation({
-    summary: 'Update user details',
+    summary: 'Update current user profile',
     description:
-      'Update the details of the current user based on their username. Regular users cannot set roles.',
+      'Update the profile of the currently authenticated user. Roles cannot be updated through this endpoint.',
   })
-  @Put('update')
-  async update(
+  @Patch('me')
+  async updateUser(
     @Request() req,
     @Body() updateUserDto: Partial<Users>,
   ): Promise<Users> {
+    if (updateUserDto.roles) {
+      delete updateUserDto.roles;
+    }
     return this.usersService.updateByUsername(req.user.username, updateUserDto);
   }
 
   @ApiOperation({
-    summary: 'Get user by username',
-    description: 'Retrieve a user by their username.',
+    summary: 'Delete current user profile',
+    description: 'Delete the profile of the currently authenticated user.',
   })
-  @Get(':username')
-  async findOneByUsername(@Param('username') username: string): Promise<Users> {
-    return this.usersService.findOneBy({ username });
+  @Delete('me')
+  async removeUser(@Request() req): Promise<{ message: string }> {
+    return this.usersService.removeByUsername(req.user.username);
   }
 
-  @ApiOperation({
-    summary: 'Update user by username',
-    description:
-      'Update the details of a user based on their username. Regular users cannot set roles.',
-  })
-  @Patch(':username')
-  async updateByUsername(
-    @Param('username') username: string,
-    @Body() updateUserDto: Partial<Users>,
-  ): Promise<Users> {
-    return this.usersService.updateByUsername(username, updateUserDto);
-  }
-
+  // endpoints for other non-admin users
   @ApiOperation({
     summary: 'Get user by ID',
-    description: 'Retrieve a user by their unique ID.',
+    description: 'Retrieve a specific user by their unique ID.',
   })
   @Get(':id')
   async findOneById(@Param('id') user_id: string): Promise<Users> {
@@ -84,8 +68,7 @@ export class UsersController {
 
   @ApiOperation({
     summary: 'Update user by ID',
-    description:
-      'Update the details of a user based on their unique ID. Regular users cannot set roles.',
+    description: 'Update a specific user’s profile by their unique ID.',
   })
   @Patch(':id')
   async updateById(
@@ -97,10 +80,10 @@ export class UsersController {
 
   @ApiOperation({
     summary: 'Delete user by ID',
-    description: 'Delete a user based on their unique ID.',
+    description: 'Delete a specific user by their unique ID.',
   })
   @Delete(':id')
-  async remove(@Param('id') user_id: string): Promise<void> {
+  async remove(@Param('id') user_id: string): Promise<{ message: string }> {
     return this.usersService.remove(user_id);
   }
 }

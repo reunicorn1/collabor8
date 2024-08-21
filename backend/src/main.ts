@@ -3,9 +3,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { corsConfig } from '@config/configuration';
-import { HoxPoxAdapter } from './events/ws-adapter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import * as session from 'express-session';
+import * as passport from 'passport';
+import { jwtConstants } from './constants';
+import * as cookieParser from 'cookie-parser';
 // TODO: add passport https://docs.nestjs.com/security/authentication#passport
 // https://github.com/jaredhanson/passport
 // TODO: add helmet https://docs.nestjs.com/security/helmet
@@ -13,7 +16,6 @@ import { ValidationPipe } from '@nestjs/common';
 // TODO: add cookie-parser https://docs.nestjs.com/techniques/cookies
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    cors: corsConfig,
     logger: ['error', 'warn', 'log'],
   });
   const options = new DocumentBuilder()
@@ -28,11 +30,21 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api-docs', app, document);
+  app.use(
+    session({
+      secret: jwtConstants.secret,
+      resave: false,
+      saveUninitialized: false,
+      cookie: { maxAge: 3600000 },
+    }),
+  );
+  app.use(cookieParser());
+  app.use(passport.initialize());
+  app.use(passport.session());
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.useWebSocketAdapter(new HoxPoxAdapter(app));
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors();
+  app.enableCors(corsConfig);
 
   await app.listen(3000);
 }

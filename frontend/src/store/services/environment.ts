@@ -1,5 +1,5 @@
 import { api } from './auth';
-import { Project, Environment } from '../../types';
+import { Project, Environment } from '@types';
 
 export const environmentApi = api.injectEndpoints({
   endpoints: (builder) => ({

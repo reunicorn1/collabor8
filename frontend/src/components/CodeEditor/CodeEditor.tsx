@@ -15,6 +15,7 @@ import { getRandomUsername } from './names';
 import { YMapValueType } from '../../context/EditorContext';
 import createfiletree from '../../utils/filetreeinit';
 import Tabs from './Tabs';
+import { useYjs } from '../../hooks/YjsHook';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -38,14 +39,17 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
   const editorRef = useRef<Editor | null>(null);
   const projectRoot = useRef<Y.Map<YMapValueType> | null>(null);
   const binding = useRef<CodemirrorBinding | null>(null);
-  const ydoc_ = useRef(ydoc);
   const awareness = useRef<Awareness | null>(null);
-  const [wsProvider, setProvider] = useState<WebsocketProvider | null>(null);
+  const ydoc = useYjs();
 
-  projectRoot.current = ydoc_.current.getMap('root');
+  projectRoot.current = ydoc.getMap('root');
+  const { data, set, entries } = useYMap<
+    Y.Map<YMapValueType> | Y.Text,
+    Record<string, Y.Map<YMapValueType> | Y.Text>
+  >(projectRoot.current); // Type Error
 
   // An event listener for updates happneing in the ydoc
-  ydoc_.current.on('update', (update) => {
+  ydoc.on('update', (update) => {
     console.log('Yjs update', update);
   });
 
@@ -60,14 +64,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
   // effects for socket provider and awareness
   useEffect(() => {
     if (!editorRef.current) return;
-    if (!wsProvider) {
-      setProvider(new WebsocketProvider(websocket, projectId, ydoc_.current));
-    } else {
-      // Creation of the connction with the websocket
-      //const provider = new WebsocketProvider(websocket, projectId, ydoc_.current);
-      wsProvider.on('status', (event: { status: unknown }) => {
-        console.log(event.status); // logs "connected" or "disconnected"
-      });
+    // Creation of the connction with the websocket
+    const provider = new WebsocketProvider(websocket, projectId, ydoc);
+    provider.on('status', (event: { status: unknown }) => {
+      console.log(event.status); // logs "connected" or "disconnected"
+    });
 
       // An event listener to clean up once the user is removed
       wsProvider.on('close', () => {
@@ -125,7 +126,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
       binding.current?.destroy();
       wsProvider?.disconnect();
     };
-  }, [projectId, websocket, wsProvider, setAwareness, setFileTree, fileSelected]);
+  }, [projectId, websocket]);
 
   useEffect(() => {
     if (

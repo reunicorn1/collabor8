@@ -1,10 +1,11 @@
-import { Controller, Delete, Get, Param, Query } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Query, Request } from '@nestjs/common';
 import { ProjectMongoService } from './project-mongo.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 // TODO: Add routes for updating all projects and dirs, files etc
 // TODO: Create dto for updating all projects and dirs, files etc
 // TODO: Modify depth and pagination routes and optimize
 // for the file tree which will be synced with the yMap
+// TODO: replace all Params username with @Request() req
 @ApiTags('ProjectMongo')
 @Controller('project-docs')
 export class ProjectMongoController {
@@ -20,6 +21,30 @@ export class ProjectMongoController {
   }
 
   @ApiOperation({
+    summary: 'Retrieve all projects by username',
+    description:
+      'Retrieve a list of all projects associated with a specific username.',
+  })
+  @Get('all/')
+  findAllByUsername(@Request() req) {
+    return this.projectService.findAllByUsername(req.user.username);
+  }
+
+  @ApiOperation({
+    summary: 'Retrieve projects by username with depth',
+    description:
+      'Retrieve projects associated with a specific username and a given depth level. This operation fetches projects under a specified directory up to a certain depth in the directory hierarchy.',
+  })
+  @Get(':username/:id')
+  findAllByUsernameDepth(
+    @Param('username') username: string,
+    @Param('id') id: string,
+    @Query('depth') depth: number,
+  ) {
+    return this.projectService.findAllByUsernameDepth(username, depth, id);
+  }
+
+  @ApiOperation({
     summary: 'Retrieve a project by ID',
     description:
       'Retrieve a specific project from MongoDB using its unique ID.',
@@ -28,47 +53,6 @@ export class ProjectMongoController {
   findOne(@Param('id') id: string) {
     return this.projectService.findOne(id);
   }
-
-  @ApiOperation({
-    summary: 'Retrieve all projects by username',
-    description:
-      'Retrieve all projects associated with a specific username from MongoDB.',
-  })
-  @Get('all/:username')
-  findAllByUsername(@Param('username') username: string) {
-    return this.projectService.findAllByUsername(username);
-  }
-
-  // TODO: replace all Params username with @Request() req
-  @ApiOperation({
-    summary: 'Retrieve projects by username with depth',
-    description:
-      'Retrieve projects associated with a specific username, with a specified depth level for nested objects.',
-  })
-  @Get(':username/depth')
-  findAllByUsernameDepth(
-    @Param('username') username: string,
-    @Query('depth') depth: number,
-  ) {
-    return this.projectService.findAllByUsernameDepth(username, depth);
-  }
-
-  // @ApiOperation({
-  //   summary: 'Retrieve projects with pagination by username',
-  //   description: 'Retrieve a paginated list of projects associated with a specific username, based on depth levels.',
-  // })
-  // @Get(':username/pagination')
-  // findProjectsWithPaging(
-  //   @Param('username') username: string,
-  //   @Query('startDepth') startDepth: number,
-  //   @Query('endDepth') endDepth: number,
-  // ) {
-  //   return this.projectService.findProjectsWithPaging(
-  //     username,
-  //     startDepth,
-  //     endDepth,
-  //   );
-  // }
 
   @ApiOperation({
     summary: 'Delete a project by ID',

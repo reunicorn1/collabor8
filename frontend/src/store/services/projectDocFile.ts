@@ -1,5 +1,5 @@
 import { api } from './auth';
-import { FileMongo } from '../../types';
+import { FileMongo } from '@types';
 
 export const projectDocFilesApi = api.injectEndpoints({
   endpoints: (builder) => ({

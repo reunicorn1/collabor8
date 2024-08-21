@@ -83,15 +83,23 @@ export class ProjectMongoService {
   async findAllByUsernameDepth(
     username: string,
     maxDepth: number,
+    id: string,
   ): Promise<ProjectMongo[]> {
     const user = await this.usersService.findOneBy({ username });
+    let projects: ProjectMongo[] = [];
     if (!user) {
       return []; // Handle case where user is not found
     }
 
-    const projects = await this.projectMongoRepository.find({
-      where: { environment_id: user.environment_id },
-    });
+    if (id) {
+      projects = await this.projectMongoRepository.find({
+        where: { environment_id: user.environment_id, _id: new ObjectId(id) },
+      });
+    } else {
+      projects = await this.projectMongoRepository.find({
+        where: { environment_id: user.environment_id },
+      });
+    }
 
     // Helper function to load directories and files recursively
     const loadDirectories = this.directoryService.loadDirectoriesByDepth;
@@ -107,9 +115,7 @@ export class ProjectMongoService {
         const files = await this.fileService.findFilesByParent(
           project._id.toString(),
         );
-
-        project.directories = directories;
-        project.files = files;
+        project['children'] = [directories, files];
 
         return project;
       }),
