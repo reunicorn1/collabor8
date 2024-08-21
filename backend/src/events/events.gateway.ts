@@ -15,11 +15,10 @@ import { Server } from 'ws';
 import { HoxPoxAdapter } from './ws-adapter';
 import { options } from './options';
 
-@WebSocketGateway(1234, {
-  adapter: HoxPoxAdapter,
-  ...options,
-})
-export class EventsGateway implements OnGatewayInit, OnGatewayDisconnect, OnGatewayConnection {
+//@WebSocketGateway()
+export class EventsGateway
+  implements OnGatewayInit, OnGatewayDisconnect, OnGatewayConnection
+{
   @WebSocketServer() server: Server;
 
   afterInit(server: Server) {
@@ -37,6 +36,5 @@ export class EventsGateway implements OnGatewayInit, OnGatewayDisconnect, OnGate
   @SubscribeMessage('events')
   handleMessage(@MessageBody() data: string): string {
     return data;
-
   }
 }

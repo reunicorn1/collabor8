@@ -68,7 +68,6 @@ import { AuthenticatedGuard } from './auth/guards/authenticated.guard';
     FileMongoModule,
     EnvironmentMongoModule,
     AuthModule,
-    HocuspocusModule,
     // EventsModule,
     AdminModule,
   ],
