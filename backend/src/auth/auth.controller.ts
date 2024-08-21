@@ -12,7 +12,7 @@ import {
 import { AuthService } from '@auth/auth.service';
 // import { AuthGuard } from '@auth/guards/auth.guard';
 import { Public } from '@auth/decorators/isPublic.decorator';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 // import { RolesGuard } from '@auth/guards/roles.guard';
 import {
   CreateUserDto,
@@ -23,6 +23,13 @@ import { Users } from '@users/user.entity';
 import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { RefreshAuthGuard } from './guards/refresh-jwt-auth.guard';
+import {
+  ApiSignIn,
+  ApiSignUp,
+  ApiGetProfile,
+  ApiRefreshToken,
+} from './auth-docs.decorator';
+
 // TODO: Add guards and roles where necessary
 // TODO: replace all endpoints that contain username with @Request() req
 @ApiTags('Auth')
@@ -30,10 +37,7 @@ import { RefreshAuthGuard } from './guards/refresh-jwt-auth.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiOperation({
-    summary: 'User Sign In',
-    description: 'Sign in to the application using a username and password.',
-  })
+  @ApiSignIn()
   @Public()
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -48,11 +52,7 @@ export class AuthController {
       .send({ accessToken });
   }
 
-  @ApiOperation({
-    summary: 'User Sign Up',
-    description:
-      'Create a new user account by providing the required user details.',
-  })
+  @ApiSignUp()
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('signup')
@@ -65,10 +65,7 @@ export class AuthController {
     }
   }
 
-  @ApiOperation({
-    summary: 'Get User Profile',
-    description: 'Retrieve the profile of the currently authenticated user.',
-  })
+  @ApiGetProfile()
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Request() req) {
@@ -76,11 +73,7 @@ export class AuthController {
     return req.user;
   }
 
-  @ApiOperation({
-    summary: 'Refresh Access Token',
-    description:
-      'Refresh the access token using the refresh token stored in cookies.',
-  })
+  @ApiRefreshToken()
   @Public()
   // @UseGuards(RefreshAuthGuard)
   @Post('refresh')
