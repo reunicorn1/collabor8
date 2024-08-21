@@ -13,7 +13,7 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Server } from 'ws';
 import { HoxPoxAdapter } from './ws-adapter';
-import { options } from './options';
+// import { options } from './options';
 
 //@WebSocketGateway()
 export class EventsGateway

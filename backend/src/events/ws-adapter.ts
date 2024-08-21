@@ -8,7 +8,7 @@ import { Observable, fromEvent, EMPTY } from 'rxjs';
 import { mergeMap, filter } from 'rxjs/operators';
 import { Hocuspocus } from '@hocuspocus/server';
 import { Logger } from '@hocuspocus/extension-logger';
-import options from './options';
+// import options from './options';
 import { WebSocketServer } from 'ws';
 import { IncomingMessage } from 'http';
 //import * as Y from 'yjs';
