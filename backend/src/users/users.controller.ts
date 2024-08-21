@@ -15,7 +15,7 @@ import {
 import { UsersService } from '@users/users.service';
 import { Users } from './user.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-
+// TODO: error handling for all endpoints
 // TODO: complete RESTful API for user entity
 @ApiTags('Users')
 @Controller('users')

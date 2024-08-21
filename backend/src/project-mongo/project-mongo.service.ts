@@ -39,7 +39,6 @@ export class ProjectMongoService {
       where: { environment_id: environment_id },
       relations: ['environment'],
     });
-    console.log(projs);
     return projs;
   }
 
@@ -131,6 +130,11 @@ export class ProjectMongoService {
   async remove(id: string): Promise<void> {
     await this.projectMongoRepository.delete(id);
   }
+
+  async removeAllByEnvironment(environment_id: string): Promise<void> {
+    await this.projectMongoRepository.delete({ environment_id });
+  }
+
 
   // TODO: Fix this function
   // Doesnt work when startDepth is greater than 1

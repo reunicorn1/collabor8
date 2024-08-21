@@ -1,21 +1,12 @@
-import { Controller, Delete, Get, Param, Post, Body } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Patch, Body, Request } from '@nestjs/common';
 import { FileMongoService } from './file-mongo.service';
 import { FileMongo } from './file-mongo.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-
+import { CreateFileOutDto } from './dto/create-file-mongo.dto';
 @ApiTags('FileMongo')
 @Controller('file-docs')
 export class FileMongoController {
   constructor(private readonly fileService: FileMongoService) {}
-
-  @ApiOperation({
-    summary: 'Retrieve all files',
-    description: 'Retrieve a list of all files stored in MongoDB.',
-  })
-  @Get()
-  findAll() {
-    return this.fileService.findAll();
-  }
 
   @ApiOperation({
     summary: 'Create a new file',
@@ -23,7 +14,7 @@ export class FileMongoController {
       'Create a new file document in MongoDB with the provided data.',
   })
   @Post()
-  create(@Body() createFileDto: Partial<FileMongo>) {
+  create(@Body() createFileDto: CreateFileOutDto): Promise<FileMongo> {
     return this.fileService.create(createFileDto);
   }
 
@@ -34,6 +25,15 @@ export class FileMongoController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.fileService.findOne(id);
+  }
+
+  @ApiOperation({
+    summary: 'Update a file by ID',
+    description: 'Update a specific file in MongoDB using its unique ID.',
+  })
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateFileDto: CreateFileOutDto) {
+    return this.fileService.update(id, updateFileDto);
   }
 
   @ApiOperation({

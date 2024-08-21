@@ -22,6 +22,12 @@ export class ProjectMongo {
   project_id: string;
 
   @Column()
+  owner_id: string;
+
+  @Column()
+  username: string;
+
+  @Column()
   created_at: Date;
 
   @Column({ nullable: true })
