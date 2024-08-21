@@ -25,6 +25,7 @@ import { AuthGuard } from '@auth/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 // import { RolesGuard } from '@auth/guards/roles.guard';
 import { AdminModule } from './admin/admin.module';
+import { AuthenticatedGuard } from './auth/guards/authenticated.guard';
 
 @Module({
   imports: [

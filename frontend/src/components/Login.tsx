@@ -1,14 +1,28 @@
 import React, { useState } from 'react';
-import { useLoginUserMutation } from '@store/services/auth';
+import { useLoginUserMutation, useGetProfileQuery, useRefreshTokenMutation } from '@store/services/auth';
 
 const Login: React.FC = () => {
   const [loginUser, { data, error, isLoading }] = useLoginUserMutation();
+  const getProfile = useGetProfileQuery();
+  const [refreshToken] = useRefreshTokenMutation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [profile, setProfile] = useState('');
 
   const handleLogin = async () => {
-    await loginUser({ username, password });
+    const res = loginUser({ username, password }).unwrap();
+    console.log(res);
   };
+
+  const handleProfile = async () => {
+    const resp = getProfile.refetch();
+    setProfile(JSON.stringify(resp));
+    console.log('getProfile:--------------', getProfile.data);
+    }
+
+  const handleRefreshToken = async () => {
+    await refreshToken();
+  }
 
   return (
     <div>
@@ -28,8 +42,15 @@ const Login: React.FC = () => {
       <button onClick={handleLogin} disabled={isLoading}>
         Login
       </button>
-      {data && <p>Access Token: {data.accessToken}</p>}
-      {error && <p>Error: {error.data.message}</p>}
+
+      <div>
+        <button onClick={handleProfile}>Profile</button>
+        <p>{profile}</p>
+
+        <button onClick={handleRefreshToken}>Refresh Token</button>
+      </div>
+
+
     </div>
   );
 };

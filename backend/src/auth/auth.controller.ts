@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Post,
   Request,
+  Response,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '@auth/auth.service';
@@ -16,6 +17,7 @@ import { CreateUserDto, LoginUserDto, parseLoginDto } from '@users/dto/create-us
 import { Users } from '@users/user.entity';
 import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
+import { RefreshAuthGuard } from './guards/refresh-jwt-auth.guard';
 // TODO: Add guards and roles where necessary
 // TODO: replace all endpoints that contain username with @Request() req
 @Controller('auth')
@@ -26,9 +28,12 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  signIn(@Request() req) {
-    console.log('req.user', req.user);
-    return this.authService.signIn(req.user);
+  async signIn(@Request() req, @Response() res) {
+    const { accessToken, refreshToken } = await this.authService.signIn(req.user);
+    res
+    .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
+    .cookie('accessToken', accessToken)
+    .send({ accessToken });
   }
 
   @Public()
@@ -43,10 +48,25 @@ export class AuthController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
+  async getProfile(@Request() req) {
     console.log('req.user', req.user);
     return req.user;
+  }
+
+  @Public()
+  // @UseGuards(RefreshAuthGuard)
+  @Post('refresh')
+  async refreshToken(@Request() req, @Response() res) {
+    console.log('req.cookies', req.cookies);
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) {
+      return res.status(401).send({ message: 'Unauthorized' });
+    }
+    const { accessToken } = await this.authService.refreshToken(refreshToken);
+    console.log('accessToken', accessToken === req.cookies.accessToken);
+    res.send({ accessToken });
   }
 
 }

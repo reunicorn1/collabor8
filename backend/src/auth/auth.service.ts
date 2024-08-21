@@ -24,13 +24,30 @@ export class AuthService {
 
   async signIn(
     user: Partial<Users>,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<{
+    accessToken: string,
+    refreshToken: string,
+  }> {
 
     const payload = {
       username: user.username,
       sub: user.user_id,
       roles: user.roles,
+      timestamp: new Date().getTime(),
     };
+    return {
+      accessToken: await this.jwtService.signAsync(payload),
+      refreshToken: await this.jwtService.signAsync(payload, { expiresIn: '7d' }),
+    };
+  }
+
+  async refreshToken(
+    refreshToken: string,
+  ): Promise<{
+    accessToken: string,
+  }> {
+    const { exp, timestamp, ...payload } = await this.jwtService.verifyAsync(refreshToken);
+    payload.timestamp = new Date().getTime();
     return {
       accessToken: await this.jwtService.signAsync(payload),
     };

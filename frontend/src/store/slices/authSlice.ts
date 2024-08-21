@@ -8,7 +8,7 @@ interface AuthState {
 
 // Define the initial state for authentication
 const initialState: AuthState = {
-  accessToken: localStorage.getItem('accessToken') || null,
+  accessToken: null,
 };
 
 // Create the authentication slice
@@ -38,6 +38,12 @@ const authSlice = createSlice({
       .addMatcher(api.endpoints.loginUser.matchRejected, (state) => {
         state.accessToken = null;
         localStorage.removeItem('accessToken');
+      })
+      .addMatcher(api.endpoints.refreshToken.matchFulfilled, (state, action) => {
+        const { accessToken } = action.payload;
+        state.accessToken = accessToken;
+        localStorage.removeItem('accessToken');
+        localStorage.setItem('accessToken', accessToken);
       });
   },
 });
