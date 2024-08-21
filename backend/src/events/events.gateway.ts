@@ -7,7 +7,10 @@ import {
   OnGatewayInit,
   OnGatewayDisconnect,
   OnGatewayConnection,
+  WsResponse,
 } from '@nestjs/websockets';
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Server } from 'ws';
 import { HoxPoxAdapter } from './ws-adapter';
 import { options } from './options';
@@ -34,5 +37,6 @@ export class EventsGateway implements OnGatewayInit, OnGatewayDisconnect, OnGate
   @SubscribeMessage('events')
   handleMessage(@MessageBody() data: string): string {
     return data;
+
   }
 }

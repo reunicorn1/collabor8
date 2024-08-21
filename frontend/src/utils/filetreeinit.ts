@@ -17,5 +17,6 @@ export default function createfiletree(root: Y.Map<YMapValueType>) {
     console.log('A file tree stucture as metadata is created');
   } else {
     console.log('This is a loaded project, file tree is already provided');
+    console.log(JSON.stringify(root.get('filetree')));
   }
 }

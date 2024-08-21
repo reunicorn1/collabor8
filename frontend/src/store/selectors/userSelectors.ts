@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { RootState } from '../store';
+import { RootState } from '@store/store';
 
 // Selector to get the user details from the state.
 export const selectUserDetails = createSelector(

@@ -10,6 +10,9 @@ export class ProjectSharesMongo {
   _id: ObjectId;
 
   @Column()
+  project_id: string;
+
+  @Column()
   user_id: string;
 
   @Column()

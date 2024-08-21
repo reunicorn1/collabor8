@@ -7,7 +7,7 @@ import { EditorProvider } from '../context/EditorContext';
 import CodeEditor from '../components/CodeEditor/CodeEditor';
 import Shares from '../components/Bars/Shares';
 import MenuBar from '../components/Bars/MenuBar';
-import Tree from '../components/Tree/Tree';
+import Tree from '../components/FileTree/Tree';
 import * as Y from 'yjs';
 
 export default function Editor() {

@@ -8,8 +8,11 @@ export default () => ({
 });
 
 export const corsConfig = {
-  origin: '*',
+  origin: 'http://localhost:5173',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   preflightContinue: false,
-  optionsSuccessStatus: 204,
+  // optionsSuccessStatus: 204,
+  credentials: true,
 };
+
+export const adminEmails = ['triplemg94@gmail.com']

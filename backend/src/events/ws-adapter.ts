@@ -4,32 +4,20 @@ import { Observable, fromEvent, EMPTY } from 'rxjs';
 import { mergeMap, filter } from 'rxjs/operators';
 import { Configuration, Hocuspocus } from '@hocuspocus/server';
 import { Logger } from '@hocuspocus/extension-logger';
+import { options } from './options';
+import * as WebSocket from 'ws';
 //import * as Y from 'yjs';
 export class HoxPoxAdapter implements WebSocketAdapter, OnModuleDestroy {
-  private hocuspocusServer: Hocuspocus;
-
-  constructor(private app: INestApplicationContext) {}
-
-  create(port: number, options: any = {}): any {
-    this.hocuspocusServer = new Hocuspocus({
-      port,
-      extensions: [new Logger()],
+    const server = new WebSocket.Server({
+      port: 8080,
       ...options,
     });
 
-    this.hocuspocusServer.listen(port);
-    return this.hocuspocusServer;
-  }
-
   bindClientConnect(server: any, callback: any) {
-    return server.configuration.onConnect((arg) => {
-      console.log('onConnect------------->', { arg });
-      try {
-        callback(arg);
-      } catch (error) {
-        console.error('Error during connection:', error);
-      }
-    })
+    console.log('-------onConnect-------->')
+    console.log({ server })
+    server.on('connection', callback)
+    return server
   }
 
   bindMessageHandlers(
@@ -50,8 +38,9 @@ export class HoxPoxAdapter implements WebSocketAdapter, OnModuleDestroy {
     handlers: MessageMappingProperties[],
     process: (data: any) => Observable<any>,
   ): Observable<any> {
-    console.log('----OnMessage------->', { buffer });
-    const message = JSON.parse(buffer.data);
+    console.log('----OnMessage------->', { data: Buffer.from(buffer.data, 'utf8').toString('utf8') });
+    //const message = JSON.parse(buffer.data.toString('utf8'));
+    const message = ({ "data": "hello", "event": { ok: true } })
     const messageHandler = handlers.find(
       (handler) => handler.message === message.event,
     );
@@ -62,7 +51,8 @@ export class HoxPoxAdapter implements WebSocketAdapter, OnModuleDestroy {
   }
 
   close(server) {
-    server.destory();
+    console.log('--------OnClose------->')
+    server.close();
   }
   onModuleDestroy() {
     if (this.hocuspocusServer) {

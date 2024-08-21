@@ -53,7 +53,6 @@ const NewfileDir: React.FC<ModalProps> = ({
   };
   const handleSave = () => {
     // TODO: Validation of the name in the database among sibling files should be made from database
-    // If success onClose
     if (newName) {
       const id = uuidv4();
       // Since creating a file in the Y.map depend on the path in the filetree, creation of the leaf has to be made first

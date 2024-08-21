@@ -1,3 +1,2 @@
-export { default as LanguageSelector } from './LanguageSelector';
-export { default as ThemeSelector } from './ThemeSelector';
-export { default as ConnectionForm } from './ConnectionForm';
+export { default as LanguageSelector } from '../Bars/LanguageSelector';
+export { default as ThemeSelector } from '../Bars/ThemeSelector';

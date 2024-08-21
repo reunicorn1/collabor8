@@ -29,7 +29,6 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
   if (!dto || typeof dto !== 'object') {
     throw new BadRequestException('Invalid input');
   }
-
   const {
     username,
     first_name,
@@ -52,7 +51,6 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
       );
     }
   }
-
   if (!Array.isArray(favorite_languages)) {
     throw new BadRequestException('favorite_languages must be an array');
   }

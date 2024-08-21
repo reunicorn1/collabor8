@@ -28,7 +28,6 @@ export default function Tabs() {
   }, [fileSelected, setFileSelected, tabslist]);
 
   const handleClick = (file: FileType) => {
-    // TODO: This fucntion changes the value of the file selected state to the corresponding tab object
     console.log(tabslist);
     setFileSelected(file);
   };

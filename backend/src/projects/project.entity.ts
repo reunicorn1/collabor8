@@ -25,6 +25,9 @@ export class Projects {
   @Column({ type: 'varchar', nullable: true })
   environment_id: string | null;
 
+  @Column({ type: 'varchar', nullable: true })
+  description: string | null;
+
   @CreateDateColumn()
   created_at: Date;
 
