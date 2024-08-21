@@ -8,12 +8,6 @@ export default function Shares() {
   const { awareness } = useFile()!;
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // TODO: Based on collaberators username their avatar will be retrieved from the database
-  // And their name will be used to refer to their presnece
-  // Anyonous people will have their name selected from a set of random names to refer to their presence
-  // Users in the awareness object are displayed here if they're one of the collaborators their Corresponding Avatar will be displayed
-
-  // TODO: Awareness doesn't sync when a user leaves properly and names don't match
   // TODO: The plus icon is displayed only for the project owner
 
   return (
