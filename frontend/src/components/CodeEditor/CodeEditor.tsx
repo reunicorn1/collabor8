@@ -39,6 +39,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
   const binding = useRef<CodemirrorBinding | null>(null);
   const ydoc_ = useRef(ydoc);
   const awareness = useRef<Awareness | null>(null);
+  const [wsProvider, setProvider] = useState<WebsocketProvider | null>(null);
 
   projectRoot.current = ydoc_.current.getMap('root');
   createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
@@ -54,10 +55,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     });
   };
 
+  console.log({ wsProvider });
+  // effects for socket provider and awareness
   useEffect(() => {
     const websocket = import.meta.env.VITE_WS_SERVER;
 
     if (!editorRef.current) return;
+
     // Creation of the connction with the websocket
     const provider = new WebsocketProvider(websocket, projectId, ydoc_.current);
     provider.on('status', (event: { status: unknown }) => {
@@ -105,6 +109,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
             updateAwareness();
           });
         }
+
       }
     });
     // Clean up before the user leaves
@@ -119,6 +124,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
       binding.current?.destroy();
       provider.disconnect();
     };
+
   }, [projectId]);
 
   useEffect(() => {

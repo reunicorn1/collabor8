@@ -159,11 +159,17 @@ const server = new Hocuspocus({
     console.log('OnLoad -------->', projectId);
     // I want to load only metadata stored for this project
     await handleLoadDocument(context, projectId);
-    console.log('Array loaded from house', Array.from(context.document.getMap('root')));
-    return context.document
+    console.log(
+      'Array loaded from house',
+      Array.from(context.document.getMap('root')),
+    );
+    return context.document;
   },
   async afterLoadDocument(context) {
-    console.log('AfterLoad -------->', context.document.getMap('root').get('main-file').toJSON());
+    console.log(
+      'AfterLoad -------->',
+      context.document.getMap('root').get('main-file').toJSON(),
+    );
   },
   onConnect: (context) => {
     handleConnect(context);
@@ -193,8 +199,7 @@ async function handleStoreDocument(context, projectId) {
       if (!key.endsWith('_metadata')) {
         return { key, value };
       }
-    }
-    );
+    });
 
     console.log(Array.from(yTextArray.length));
     for (const [key, value] of Array.from(yMap.entries())) {
@@ -249,7 +254,7 @@ async function insertFileToDb(projectId, fileId, yText) {
     // Update operation
     { $push: { children: dbupdate } },
     // Options (optional)
-    { upsert: true }
+    { upsert: true },
   );
   const project = await collection.findOne({
     project_id: projectId,
@@ -275,19 +280,21 @@ async function updateFileInDb(projectId, fileId, yText) {
       $set: {
         'children.$.file_content': update, // Update the file_content of the matched array element
       },
-    }
+    },
   );
 
   if (result.matchedCount === 0) {
-    console.error(`No file found with fileId: ${fileId} in projectId: ${projectId}`);
+    console.error(
+      `No file found with fileId: ${fileId} in projectId: ${projectId}`,
+    );
   } else {
-    console.log(`File with fileId: ${fileId} updated successfully in projectId: ${projectId}`);
+    console.log(
+      `File with fileId: ${fileId} updated successfully in projectId: ${projectId}`,
+    );
   }
 
   await client.close();
-
 }
-
 
 async function loadfileFromDb(projectId, fileId, yText) {
   const project = await loadprojectFromDb(projectId);
@@ -329,6 +336,22 @@ async function loadfileFromDb(projectId, fileId, yText) {
   //   return;
   // } else {
   //   const file = project.children.find((child) => child.file_id === fileId);
+<<<<<<< HEAD
+
+  //   if (file) {
+  //     const content = file.file_content;
+  //     if (content) {
+  //       yText.applyDelta(content);
+  //     } else {
+  //       console.error(`File content is undefined for fileId: ${fileId}`);
+  //     }
+  //   } else {
+  //     console.error(`File not found: ${fileId}`);
+  //   }
+  // }
+}
+
+=======
 
   //   if (file) {
   //     const content = file.file_content;
@@ -344,13 +367,18 @@ async function loadfileFromDb(projectId, fileId, yText) {
 }
 
 
+>>>>>>> 7574ae516935752b1452bf749a00a3547ce2f294
 async function updateDocumentInDb(projectId, key, value, metaArray) {
   if (key === null) {
     console.error('Cannot store date');
     return;
   }
   // console.log('Updating document:', value.toJSON());
+<<<<<<< HEAD
+  const fileId = key;
+=======
   const fileId = key
+>>>>>>> 7574ae516935752b1452bf749a00a3547ce2f294
   const yText = value;
   console.log(`FileId: ${fileId}`);
   if (yText instanceof Y.Text) {
@@ -365,16 +393,21 @@ async function updateDocumentInDb(projectId, key, value, metaArray) {
       await updateFileInDb(projectId, fileId, yText);
       console.log(`Document updated: ${projectId}/${fileId}`);
     }
+<<<<<<< HEAD
+=======
 
 
+>>>>>>> 7574ae516935752b1452bf749a00a3547ce2f294
   }
 }
 
 async function handleLoadDocument(context, projectId) {
   try {
     const yMap = context.document.getMap('root');
-    const project = await loadprojectFromDb(projectId)
-
+    const projectMap = context.document.getMap('projectStructure');
+    populateMap(projectMap, projectStructure);
+    const project = await loadprojectFromDb(projectId);
+    console.log('projectMap------>', projectMap);
     if (project) {
       loadProjectFiles(yMap, project);
     } else {
@@ -384,11 +417,122 @@ async function handleLoadDocument(context, projectId) {
         project_id: projectId,
         children: [],
       });
-
     }
   } catch (error) {
     console.error(`Failed to load document ${projectId}:`, error);
   }
+}
+
+// safely get a property from an object with a default value
+function getSafe(obj, key, defaultValue) {
+  return obj && obj[key] ? obj[key] : defaultValue;
+}
+
+// rec populate the Y.Map with directories and files
+function populateMap(map, structure) {
+  if (!structure || typeof structure !== 'object') {
+    console.error('Invalid structure provided');
+    return;
+  }
+  map.set('_id', getSafe(structure, '_id'));
+  map.set('project_name', getSafe(structure, 'project_name'));
+  map.set('environment_id', getSafe(structure, 'environment_id'));
+
+  // main maps for directories and files
+  const directoriesMap = new Y.Map();
+  const filesMap = new Y.Map();
+
+  // populate directories
+  if (Array.isArray(structure.directories)) {
+    structure.directories.forEach((directory) => {
+      if (directory && typeof directory === 'object') {
+        const dirMap = new Y.Map();
+        dirMap.set('directory_name', getSafe(directory, 'directory_name'));
+        dirMap.set('parent_id', getSafe(directory, 'parent_id'));
+        dirMap.set(
+          'files',
+          populateFiles(new Y.Map(), getSafe(directory, 'files', [])),
+        );
+        dirMap.set(
+          'children',
+          populateDirectories(new Y.Map(), getSafe(directory, 'children', [])),
+        );
+        directoriesMap.set(getSafe(directory, '_id'), dirMap);
+      } else {
+        console.warn('Skipping invalid directory entry:', directory);
+      }
+    });
+  } else {
+    console.warn('Invalid directories format:', structure.directories);
+  }
+
+  // populate files
+  if (Array.isArray(structure.files)) {
+    structure.files.forEach((file) => {
+      if (file && typeof file === 'object') {
+        const fileMap = new Y.Map();
+        fileMap.set('file_name', getSafe(file, 'file_name'));
+        fileMap.set('parent_id', getSafe(file, 'parent_id'));
+        filesMap.set(getSafe(file, '_id'), fileMap);
+      } else {
+        console.warn('Skipping invalid file entry:', file);
+      }
+    });
+  } else {
+    console.warn('Invalid files format:', structure.files);
+  }
+
+  // set directories and files in the main map
+  map.set('directories', directoriesMap);
+  map.set('files', filesMap);
+}
+
+function populateDirectories(map, directories) {
+  if (!Array.isArray(directories)) {
+    console.warn('Invalid directories array:', directories);
+    return map;
+  }
+
+  directories.forEach((directory) => {
+    if (directory && typeof directory === 'object') {
+      const dirMap = new Y.Map();
+      dirMap.set('directory_name', getSafe(directory, 'directory_name'));
+      dirMap.set('parent_id', getSafe(directory, 'parent_id'));
+      dirMap.set(
+        'files',
+        populateFiles(new Y.Map(), getSafe(directory, 'files', [])),
+      );
+      dirMap.set(
+        'children',
+        populateDirectories(new Y.Map(), getSafe(directory, 'children', [])),
+      );
+      map.set(getSafe(directory, '_id'), dirMap);
+    } else {
+      console.warn('Skipping invalid directory entry:', directory);
+    }
+  });
+
+  return map;
+}
+
+function populateFiles(map, files) {
+  if (!Array.isArray(files)) {
+    console.warn('Invalid files array:', files);
+    return map;
+  }
+
+  files.forEach((file) => {
+    if (file && typeof file === 'object') {
+      const fileMap = new Y.Map();
+      fileMap.set('file_name', getSafe(file, 'file_name'));
+      fileMap.set('parent_id', getSafe(file, 'parent_id'));
+      map.set(getSafe(file, '_id'), fileMap);
+    } else {
+      console.warn('Skipping invalid file entry:', file);
+    }
+  });
+
+  return map;
 }
 
 function loadProjectFiles(yMap, project) {

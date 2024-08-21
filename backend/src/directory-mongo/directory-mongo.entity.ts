@@ -26,6 +26,9 @@ export class DirectoryMongo {
   @Column({ type: 'string', nullable: true })
   parent_id?: string; // Use string for ObjectId
 
+  @Column()
+  project_id: string;
+
   @ManyToOne(() => ProjectMongo, (project) => project.directories)
   project: ProjectMongo;
 
