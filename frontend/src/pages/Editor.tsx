@@ -1,4 +1,4 @@
-import { Grid, GridItem } from '@chakra-ui/react';
+import { Grid, GridItem, Box, Text, Divider } from '@chakra-ui/react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
@@ -67,7 +67,21 @@ export default function Editor() {
                     <PanelResizeHandle
                       style={{ backgroundColor: 'grey', height: '2px' }}
                     />
-                    <Panel defaultSize={20}>Terminal</Panel>
+                    <Panel defaultSize={20}>
+                      <Box bg="brand.800" h="100%">
+                        <Box bg="brand.900">
+                          <Text
+                            fontSize="xs"
+                            color="white"
+                            fontFamily="mono"
+                            p={3}
+                          >
+                            Output
+                          </Text>
+                        </Box>
+                        <Divider color="grey" />
+                      </Box>
+                    </Panel>
                   </PanelGroup>
                 </Panel>
                 {/* Bottom Panel */}
