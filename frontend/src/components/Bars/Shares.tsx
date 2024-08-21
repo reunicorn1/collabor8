@@ -2,11 +2,11 @@ import { Box, Avatar, IconButton, Tooltip } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { useFile } from '../../context/EditorContext';
 import { useDisclosure } from '@chakra-ui/react';
-import ShareMenu from '../Modals/ShareMenu';
+import ShareMenu from '../Menus/ShareMenu';
 
 export default function Shares() {
   const { awareness } = useFile()!;
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   // TODO: Based on collaberators username their avatar will be retrieved from the database
   // And their name will be used to refer to their presnece
@@ -25,14 +25,10 @@ export default function Shares() {
       p={3}
     >
       <Box display="flex" flexDirection="column" alignItems="center">
-        {Array.from(awareness).map(([_, value], index) => (
+        {Array.from(awareness).map(([key, value]) => (
           <>
-            <Tooltip
-              key={crypto.randomUUID()}
-              label={value['user'].name}
-              placement="bottom"
-            >
-              <Avatar name={value['user'].name} size="md" m={1} />
+            <Tooltip label={value['user'].name} placement="bottom">
+              <Avatar key={key} name={value['user'].name} size="md" m={1} />
             </Tooltip>
           </>
         ))}

@@ -11,15 +11,14 @@ const port = 1234;
 let connectionCount = 0;
 
 // Hocuspocus Server Configuration
-// new HOcus()
 const server = new Hocuspocus({
   port,
   extensions: [new Logger()],
   async onStoreDocument(context) {
     const projectId = context.document.name;
     console.log('OnStore -------->', projectId);
-    const yMap = context.document.getMap('root');
-    await handleStoreDocument(yMap, projectId);
+
+    await handleStoreDocument(context, projectId);
   },
   async onLoadDocument(context) {
     const projectId = context.document.name;
@@ -53,8 +52,9 @@ const server = new Hocuspocus({
 });
 
 // Document Handlers
-async function handleStoreDocument(yMap, projectId) {
+async function handleStoreDocument(context, projectId) {
   try {
+    const yMap = context.document.getMap('root');
     const metaArray = {};
     Array.from(yMap.entries()).map(([key, value]) => {
       if (key.endsWith('_metadata')) {
@@ -130,45 +130,6 @@ async function insertFileToDb(projectId, fileId, yText) {
   return file;
 }
 
-async function insertDirToDb(projectId, dirId, yjs) {
-  const client = await MongoClient.connect(mongoUrl);
-  const db = client.db(dbName);
-  const collection = db.collection('projects');
-
-  // Create a new directory entry
-  const newDir = {
-    dir_id: dirId,
-    parent: projectId,
-    children: [],
-  };
-
-  // Loop through the Y.Map (yjs) to add children
-  for (const [key, value] of yjs.entries()) {
-    if (value instanceof Y.Text) {
-      // Handle Y.Text (file)
-      const newFile = {
-        file_id: key,
-        file_content: value.toDelta(), // Serialize Y.Text as Delta
-      };
-      newDir.children.push(newFile);
-    } else if (value instanceof Y.Map) {
-      // Handle Y.Map (directory)
-      await insertDirToDb(projectId, key, value); // Recursive call to handle nested directories
-      newDir.children.push({ dir_id: key });
-    }
-  }
-
-  // Update the project with the new directory
-  await collection.updateOne(
-    { project_id: projectId },
-    { $push: { children: newDir } },
-    { upsert: true }
-  );
-
-  await client.close();
-}
-
-
 // updates the file content of existing file in the database
 async function updateFileInDb(projectId, fileId, yText) {
   const client = await MongoClient.connect(mongoUrl);
@@ -205,8 +166,8 @@ async function loadfileFromDb(projectId, fileId, yText) {
   const project = await loadprojectFromDb(projectId);
   let file = project.children.find((child) => child.file_id === fileId);
   if (!file) {
-    file = await insertFileToDb(projectId, fileId, yText); // creation of a new file happens here
-    yText.applyDelta(yText.toDelta()); // I don't think this makes any difference
+    file = await insertFileToDb(projectId, fileId, yText);
+    yText.applyDelta(yText.toDelta());
   } else {
     const content = file.file_content;
     if (content) {
@@ -216,19 +177,43 @@ async function loadfileFromDb(projectId, fileId, yText) {
     }
     return file;
   }
-}
+  // if (!project) {
+  //   console.error(`Project not found: ${projectId}`);
+  //   // create a new project
+  //   await collection.insertOne({
+  //     project_id: projectId,
+  //     children: [],
+  //   });
+  //   // insert a new file
+  //   await collection.updateOne(
+  //     { projectId: projectId },
+  //     {
+  //       $push: {
+  //         children: {
+  //           file_id: fileId,
+  //           project_id: projectId,
+  //           file_content: yText.toDelta(),
+  //         },
+  //       },
+  //     },
+  //     { upsert: true }
+  //   );
+  //   yText.applyDelta(yText.toDelta());
+  //   return;
+  // } else {
+  //   const file = project.children.find((child) => child.file_id === fileId);
 
-
-async function loaddirfromDb(project_id, fileId, yjs) {
-  const project = await loadprojectFromDb(projectId);
-  let dir = project.children.find((child) => child.file_id === fileId);
-  // If directory isn't found we create a new one and insert all children as new children
-  if (!dir) {
-    dir = await insertDirToDb(project_id, fileId, yjs); // creation of a new dir happens here saving all children under it
-  } else {
-    // loop through children and check it they're either new of not
-    handleStoreDocument(yjs, fileId);
-  }
+  //   if (file) {
+  //     const content = file.file_content;
+  //     if (content) {
+  //       yText.applyDelta(content);
+  //     } else {
+  //       console.error(`File content is undefined for fileId: ${fileId}`);
+  //     }
+  //   } else {
+  //     console.error(`File not found: ${fileId}`);
+  //   }
+  // }
 }
 
 async function updateDocumentInDb(projectId, key, value, metaArray) {
@@ -240,29 +225,16 @@ async function updateDocumentInDb(projectId, key, value, metaArray) {
   const fileId = key;
   const yText = value;
   console.log(`FileId: ${fileId}`);
-  if (yjs instanceof Y.Text) {
-    const fileMeta = metaArray[`${key}_metadata`];
+  if (yText instanceof Y.Text) {
+    const fileMeta = metaArray[`${key}_metadata`]; // Is metadata never stored in database a9lan!
     console.log('FileMeta:', fileMeta);
     if (fileMeta && fileMeta['new']) {
       // update the file from the database
-      const file = await loadfileFromDb(projectId, fileId, yjs);
+      const file = await loadfileFromDb(projectId, fileId, yText);
       fileMeta['new'] = false;
     } else {
       // normal behavior
-      await updateFileInDb(projectId, fileId, yjs);
-      console.log(`Document updated: ${projectId}/${fileId}`);
-    }
-  } else if (yjs instanceof Y.Map) {
-    const dirMeta = metaArray[`${key}_metadata`];
-    console.log('DirMeta:', dirMeta);
-    if (dirMeta && dirMeta['new']) {
-      // if dirmeta is new then all children are new as well
-      await loaddirfromDb(projectId, fileId, yjs); // probably all children will end up here too
-      dirMeta['new'] = false;
-    } else {
-      // normal behavior
-      // update Dir in Db
-      await updateFileInDb(projectId, fileId, yjs);
+      await updateFileInDb(projectId, fileId, yText);
       console.log(`Document updated: ${projectId}/${fileId}`);
     }
   }
