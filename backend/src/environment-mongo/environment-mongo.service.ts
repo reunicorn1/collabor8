@@ -24,6 +24,7 @@ export class EnvironmentMongoService {
     private environRepository: Repository<EnvironmentMongo>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => ProjectsService))
     private readonly projectService: ProjectsService,
   ) {}
 
