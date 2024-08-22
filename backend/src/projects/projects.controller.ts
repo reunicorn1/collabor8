@@ -7,6 +7,8 @@ import {
   Delete,
   Request,
   Put,
+  Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { Projects } from './project.entity';
@@ -37,11 +39,31 @@ export class ProjectsController {
 
   @ApiOperation({
     summary: 'Get all projects of the logged in user',
-    description: 'Retrieve a list of all projects associated with the logged in user.',
+    description: 'Retrieve a list of all projects associated with the logged in user using Id.',
   })
   @Get()
-  async findAll(@Request() req: any): Promise<Projects[]> {
+  async findAllById(@Request() req: any): Promise<Projects[]> {
     return this.projectsService.findAllBy('owner_id', req.user.id);
+  }
+  @ApiOperation({
+    summary: 'Get all projects of the logged in user',
+    description: 'Retrieve a list of all projects associated with the logged in user using username And is paginated.',
+  })
+  @Get()
+  async findAllByUsernamePaginated(
+    @Request() req: any,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ): Promise<Projects[]> {
+    if (page && limit) {
+      return this.projectsService.findAllByUsernamePaginated(
+        req.user.username,
+        page,
+        limit,
+      );
+    } else {
+      throw new BadRequestException('Page and limit query parameters are required');
+    }
   }
 
   @ApiOperation({
@@ -49,7 +71,7 @@ export class ProjectsController {
     description: 'Retrieve all projects associated with a specific username.',
   })
   @Get(':username')
-  async findAllByUsername(
+  async findAllForUser(
     @Param('username') username: string,
   ): Promise<Projects[]> {
     return this.projectsService.findAllBy('username', username);

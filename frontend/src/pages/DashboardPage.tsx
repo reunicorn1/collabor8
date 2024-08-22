@@ -29,7 +29,7 @@ export default function DashboardPage() {
       {/* This is the nvaigation bar of the dashboard */}
       <DashboardBar />
       <Flex h="100vh">
-        <Box
+       <Box 
           bg="brand.900"
           h="100%"
           w="270px"
@@ -37,10 +37,12 @@ export default function DashboardPage() {
           borderRight="2px solid #524175"
         >
           <InputGroup>
+          {/* navbar to the left */}
             <InputLeftElement mt={2} ml={2}>
               <SearchIcon color="gray.500" />
             </InputLeftElement>
-            <Input
+            {/* search bar */}
+            <Input 
               fontFamily="mono"
               variant="filled"
               bg="brand.900"

@@ -65,6 +65,20 @@ export class ProjectsService {
     return this.projectsRepository.findBy({ [field]: value });
   }
 
+  // retrieve all user projects by username and is paginated
+  async findAllByUsernamePaginated(
+    username: string,
+    page: number,
+    limit: number,
+  ): Promise<Projects[]> {
+    const skip = (page - 1) * limit;
+    return await this.projectsRepository.createQueryBuilder('projects')
+    .where('projects.username = :username', { username })
+    .skip(skip)
+    .take(limit)
+    .orderBy('projects.updated_at', 'DESC')
+    .getMany();
+  }
 
   // Retrieve a specific project by ID
   async findOne(id: string): Promise<Projects> {
