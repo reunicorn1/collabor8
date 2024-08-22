@@ -31,7 +31,7 @@ const userSlice = createSlice({
       }
     },
     // Set user data.
-    setUserDetails: (state, action: PayloadAction<User>) => {
+    setUserDetails: (state, action: PayloadAction<Partial<User>>) => {
       state.userDetails = action.payload;
       state.loading = false;
       state.error = null;

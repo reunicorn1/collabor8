@@ -11,7 +11,7 @@ import { User } from '@types';
 // Define the authentication state interface
 interface AuthState {
   accessToken: string | null;
-  user: any;
+  user: User;
 }
 
 // Define the initial state for authentication
@@ -26,10 +26,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     // Action to set credentials with the access token
-    setCredentials(
-      state,
-      action: PayloadAction<{ accessToken: string; user: User }>,
-    ) {
+    setCredentials(state, action: PayloadAction<{ accessToken: string }>) {
       state.accessToken = action.payload.accessToken;
       localStorage.setItem('accessToken', action.payload.accessToken);
     },
@@ -43,10 +40,8 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addMatcher(api.endpoints.loginUser.matchFulfilled, (state, action) => {
-        const { accessToken, user } = action.payload;
-        // set user details in the state
+        const { accessToken } = action.payload;
         state.accessToken = accessToken;
-        state.user = user;
         localStorage.setItem('accessToken', accessToken);
       })
       .addMatcher(api.endpoints.loginUser.matchRejected, (state) => {
