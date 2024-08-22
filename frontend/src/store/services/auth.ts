@@ -10,11 +10,15 @@ import apiConfig from '@config/apiConfig';
 import { setCredentials, unsetCredentials } from '@store/slices/authSlice';
 import { LoginUserDto, CreateUserDto, User } from '@types';
 
+interface RefreshTokenResponse {
+  accessToken: string;
+}
+
 const baseQuery = fetchBaseQuery({
   baseUrl: apiConfig.baseUrl,
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as RootState;
-    const token = state.auth.accessToken;
+    const token = localStorage.getItem('accessToken') || state.auth.accessToken;
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
     }
@@ -28,7 +32,6 @@ const baseQueryWithReauth: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
-  console.log('Refresh Data:-------->', result);
 
   if (result.error && result.error?.status === 401) {
     const refreshResult = await baseQuery(
@@ -40,11 +43,9 @@ const baseQueryWithReauth: BaseQueryFn<
       api,
       extraOptions,
     );
-    console.log('Refrsh result:--------->', refreshResult);
-    console.log(api);
+
     if (refreshResult.data) {
-      const { accessToken } = refreshResult.data;
-      console.log({ accessToken });
+      const { accessToken } = refreshResult.data as RefreshTokenResponse;
       api.dispatch(setCredentials({ accessToken }));
       result = await baseQuery(args, api, extraOptions);
     } else {
