@@ -3,7 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ObjectId } from 'typeorm';
 import { DirectoryMongo } from './directory-mongo.entity';
 import { FileMongoService } from '@file-mongo/file-mongo.service';
-import { parseCreateDirectoryMongoDto } from './dto/create-directory-mongo.dto';
+import {
+  parseCreateDirectoryMongoDto,
+  CreateDirectoryOutDto,
+  parseUpdateDirectoryMongoDto,
+  UpdateDirectoryOutDto,
+} from './dto/create-directory-mongo.dto';
+import { ProjectsService } from '@projects/projects.service';
 
 @Injectable()
 export class DirectoryMongoService {
@@ -12,10 +18,12 @@ export class DirectoryMongoService {
     private directoryRepository: Repository<DirectoryMongo>,
     @Inject(forwardRef(() => FileMongoService))
     private fileService: FileMongoService,
+    @Inject(forwardRef(() => ProjectsService))
+    private projectService: ProjectsService,
   ) {}
 
   async create(
-    createDirectoryDto: Partial<DirectoryMongo>,
+    createDirectoryDto: CreateDirectoryOutDto,
   ): Promise<DirectoryMongo> {
     const parsedDto = parseCreateDirectoryMongoDto(createDirectoryDto);
     const newDirectory = this.directoryRepository.create({
@@ -34,12 +42,18 @@ export class DirectoryMongoService {
     return this.directoryRepository.findOneBy({ _id });
   }
 
+  // general method to find all directories by a field
+  async findAllBy(field: string, value: string): Promise<DirectoryMongo[]> {
+    const directories = await this.directoryRepository.find({
+      where: { [field]: value },
+    });
+    return directories;
+  }
+
   async findDirectoriesByParent(
     parent_id: string,
   ): Promise<DirectoryMongo[] | null> {
-    const directories = await this.directoryRepository.find({
-      where: { parent_id: parent_id },
-    });
+    const directories = await this.findAllBy('parent_id', parent_id);
     return directories;
   }
 
@@ -69,7 +83,45 @@ export class DirectoryMongoService {
     return directories;
   }
 
+  async update(id: string, updateDirectoryDto: UpdateDirectoryOutDto): Promise<DirectoryMongo> {
+    const parsedDto = parseUpdateDirectoryMongoDto(updateDirectoryDto);
+    const directory = await this.findOne(id);
+    if (!directory) {
+      throw new Error('Directory not found');
+    }
+    for (const key in parsedDto) {
+      if (parsedDto[key]) {
+        directory[key] = parsedDto[key];
+      }
+    }
+    directory.updated_at = new Date();
+    if (directory.parent_id === directory.project_id) {
+      await this.projectService.update(directory.parent_id, {
+        updated_at: new Date(),
+      });
+    } else {
+      await this.update(directory.parent_id, { updated_at: new Date() });
+    }
+    return await this.directoryRepository.save(directory);
+  }
+
   async remove(id: string): Promise<void> {
+    const directory = await this.findOne(id);
+    if (!directory) {
+      throw new Error('Directory not found');
+    }
+    const directories = await this.findDirectoriesByParent(id);
+    const files = await this.fileService.findFilesByParent(id);
+    await Promise.all(
+      directories.map(async (dir) => {
+        await this.remove(dir._id.toString());
+      }),
+    );
+    await Promise.all(
+      files.map(async (file) => {
+        await this.fileService.remove(file._id.toString());
+      }),
+    );
     await this.directoryRepository.delete(id);
   }
 }

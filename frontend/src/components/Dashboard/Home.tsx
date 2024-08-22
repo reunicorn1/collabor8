@@ -19,6 +19,22 @@ export default function Home() {
     return coolors[randomIndex];
   }
 
+  function getUserProjects() {
+    // This function should fetch the user's projects from the backend
+  }
+
+  function getSharedProjects() {
+    // This function should fetch the projects shared with the user from the backend
+  }
+  
+  function getRecentProjects() {
+    // This function should fetch the user's recent projects from the backend
+  }
+
+
+  
+  
+
   // This is a list for demonstration purposes in a static version
   const projects = [
     { name: 'Project 1', lastEdited: '2 days ago' },

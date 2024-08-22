@@ -7,12 +7,18 @@ interface CreateProjectDto {
   username?: string;
 }
 
+interface UpdateProjectDto {
+  project_name?: string;
+  description?: string;
+  updated_at?: Date;
+}
+
 function validateCreateProjectDto(dto: any): CreateProjectDto {
   if (!dto || typeof dto !== 'object') {
     throw new BadRequestException('Invalid input');
   }
 
-  const { project_name, description } = dto;
+  const { project_name, description, username } = dto;
 
   if (typeof project_name !== 'string' || project_name.trim() === '') {
     throw new BadRequestException(
@@ -23,7 +29,31 @@ function validateCreateProjectDto(dto: any): CreateProjectDto {
   if (typeof description !== 'string') {
     throw new BadRequestException('description is required and must be a string');
   }
-  return { project_name, description };
+
+  if (username && typeof username !== 'string') {
+    throw new BadRequestException('Username must be a string');
+  }
+
+
+  return { project_name, description, username };
+}
+
+function validateUpdateProjectDto(dto: any): UpdateProjectDto {
+  if (!dto || typeof dto !== 'object') {
+    throw new BadRequestException('Invalid input');
+  }
+
+  const { project_name, description, updated_at } = dto;
+
+  if (project_name && typeof project_name !== 'string') {
+    throw new BadRequestException('Project name must be a string');
+  }
+
+  if (description && typeof description !== 'string') {
+    throw new BadRequestException('Description must be a string');
+  }
+
+  return { project_name, description, updated_at };
 }
 
 function parseCreateProjectDto(requestBody: any): CreateProjectDto {
@@ -32,4 +62,15 @@ function parseCreateProjectDto(requestBody: any): CreateProjectDto {
   return validated;
 }
 
-export { parseCreateProjectDto, CreateProjectDto };
+function parseUpdateProjectDto(requestBody: any): UpdateProjectDto {
+  const validated = validateUpdateProjectDto(requestBody);
+
+  return validated;
+}
+
+export {
+  parseCreateProjectDto,
+  CreateProjectDto,
+  parseUpdateProjectDto,
+  UpdateProjectDto,
+};

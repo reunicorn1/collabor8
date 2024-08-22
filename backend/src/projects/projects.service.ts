@@ -6,9 +6,14 @@ import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { ProjectMongoService } from '@project-mongo/project-mongo.service';
 import { EnvironmentMongoService } from '@environment-mongo/environment-mongo.service';
 import { UsersService } from '@users/users.service';
-import { parseCreateProjectDto } from './dto/create-project.dto';
 import { BadRequestException } from '@nestjs/common';
 import { MYSQL_CONN } from '@constants';
+import {
+  parseCreateProjectDto,
+  CreateProjectDto,
+  parseUpdateProjectDto,
+  UpdateProjectDto,
+} from './dto/create-project.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -25,7 +30,7 @@ export class ProjectsService {
 
   // Create a new project
   // TODO: TODAY modify env to be obtained from user object
-  async create(createProjectDto: Partial<Projects>): Promise<Projects> {
+  async create(createProjectDto: CreateProjectDto): Promise<Projects> {
     try {
       const parsedDto = parseCreateProjectDto(createProjectDto);
 
@@ -44,7 +49,7 @@ export class ProjectsService {
       const newProject = this.projectsRepository.create({
         ...parsedDto,
       });
-      return this.projectsRepository.save(newProject);
+      return await this.projectsRepository.save(newProject);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -55,21 +60,29 @@ export class ProjectsService {
     return this.projectsRepository.find();
   }
 
-  // Retrieve all projects by owner ID
-  async findAllByOwnerId(owner_id: string): Promise<Projects[]> {
-    return this.projectsRepository.findBy({ owner_id });
+  // general method to find all projects by a field
+  async findAllBy(field: string, value: string): Promise<Projects[]> {
+    return this.projectsRepository.findBy({ [field]: value });
   }
 
-  // Retrieve all projects by environment ID
-  async findAllByEnvironmentId(environment_id: string): Promise<Projects[]> {
-    return this.projectsRepository.findBy({ environment_id });
-  }
-
-  async findAllByUsername(username: string): Promise<ProjectMongo[]> {
-    const user = await this.usersService.findOneBy({ username });
-    return await this.projectMongoService.findAllByEnvironment(
-      user.environment_id,
-    );
+  // retrieve all user projects by username and is paginated
+  async findAllByUsernamePaginated(
+    username: string,
+    page: number,
+    limit: number,
+  ): Promise<{ total: number; projects: Projects[] }> {
+    const skip = (page - 1) * limit;
+    const total = await this.projectsRepository.createQueryBuilder('projects')
+    .where('projects.username = :username', { username })
+    .getCount();
+    const projects = await this.projectsRepository.createQueryBuilder('projects')
+    .where('projects.username = :username', { username })
+    .skip(skip)
+    .take(limit)
+    .orderBy('projects.updated_at', 'DESC')
+    .getMany();
+    console.log(total, projects);
+    return { total, projects };
   }
 
   // Retrieve a specific project by ID
@@ -80,20 +93,35 @@ export class ProjectsService {
   // Update a project
   async update(
     id: string,
-    updateProjectDto: Partial<Projects>,
+    updateProjectDto: UpdateProjectDto,
   ): Promise<Projects> {
-    await this.projectsRepository.update(id, updateProjectDto);
+    const parsedDto = parseUpdateProjectDto(updateProjectDto);
+    const project = await this.findOne(id);
+    if (!project) {
+      throw new Error('Project not found');
+    }
+    const newDate = new Date();
+    await this.projectsRepository.update(id, {
+      project_name: parsedDto.project_name,
+      description: parsedDto.description,
+      updated_at: newDate,
+    });
+    await this.projectMongoService.update(id, {
+      project_name: parsedDto.project_name,
+      updated_at: newDate,
+    });
     return this.projectsRepository.findOneBy({ project_id: id });
   }
 
   // Delete a project
   async remove(id: string): Promise<void> {
+    await this.projectMongoService.remove(id);
     await this.projectsRepository.delete(id);
   }
 
   // Delete all projects by owner ID
   async removeAllByEnvironment(environment_id: string): Promise<void> {
-    const projects = await this.findAllByEnvironmentId(environment_id);
+    const projects = await this.findAllBy('environment_id', environment_id);
     console.log(projects);
     const projectsMongo = await this.projectMongoService.removeAllByEnvironment(
       environment_id,

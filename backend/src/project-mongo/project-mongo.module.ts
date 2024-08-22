@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ProjectMongo } from './project-mongo.entity';
 import { ProjectMongoService } from './project-mongo.service';
 import { ProjectMongoController } from './project-mongo.controller';
@@ -11,9 +11,9 @@ import { MONGO_CONN } from '@constants';
 @Module({
   imports: [
     TypeOrmModule.forFeature([ProjectMongo], MONGO_CONN),
-    UsersModule,
-    DirectoryMongoModule,
-    FileMongoModule,
+    forwardRef(() => UsersModule),
+    forwardRef(() => DirectoryMongoModule),
+    forwardRef(() => FileMongoModule),
   ],
   providers: [ProjectMongoService],
   controllers: [ProjectMongoController],

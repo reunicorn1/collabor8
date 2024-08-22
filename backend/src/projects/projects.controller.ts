@@ -7,12 +7,17 @@ import {
   Delete,
   Request,
   Put,
+  Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { Projects } from './project.entity';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
-import { CreateProjectDto } from './dto/create-project.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  CreateProjectDto,
+  UpdateProjectDto,
+} from './dto/create-project.dto';
 
 @ApiTags('Projects')
 @Controller('projects')
@@ -29,16 +34,45 @@ export class ProjectsController {
     @Request() req: any,
   ): Promise<Projects> {
     createProjectDto.username = req.user.username;
+    console.log(createProjectDto);
     return this.projectsService.create(createProjectDto);
   }
 
   @ApiOperation({
     summary: 'Get all projects of the logged in user',
-    description: 'Retrieve a list of all projects associated with the logged in user.',
+    description: 'Retrieve a list of all projects associated with the logged in user using Id.',
   })
   @Get()
-  async findAll(@Request() req: any): Promise<Projects[]> {
-    return this.projectsService.findAllByOwnerId(req.user.user_id);
+  async findAllById(@Request() req: any): Promise<Projects[]> {
+    return this.projectsService.findAllBy('owner_id', req.user.id);
+  }
+  @ApiOperation({
+    summary: 'Get all projects of the logged in user',
+    description: 'Retrieve a list of all projects associated with the logged in user using username And is paginated.',
+  })
+  @Get('page')
+  async findAllByUsernamePaginated(
+    @Request() req: any,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ): Promise<any> {
+    if (page && limit) {
+      const { total, projects } = await this.projectsService.findAllByUsernamePaginated(
+        req.user.username,
+        page,
+        limit,
+      );
+      console.log(total, projects, page, limit, Math.ceil(total / limit));
+      return {
+        total,
+        projects,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      };
+    } else {
+      throw new BadRequestException('Page and limit query parameters are required');
+    }
   }
 
   @ApiOperation({
@@ -46,10 +80,10 @@ export class ProjectsController {
     description: 'Retrieve all projects associated with a specific username.',
   })
   @Get(':username')
-  async findAllByUsername(
+  async findAllForUser(
     @Param('username') username: string,
-  ): Promise<ProjectMongo[]> {
-    return this.projectsService.findAllByUsername(username);
+  ): Promise<Projects[]> {
+    return this.projectsService.findAllBy('username', username);
   }
 
   @ApiOperation({
@@ -68,7 +102,7 @@ export class ProjectsController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateProjectDto: Partial<Projects>,
+    @Body() updateProjectDto: UpdateProjectDto,
   ): Promise<Projects> {
     return this.projectsService.update(id, updateProjectDto);
   }

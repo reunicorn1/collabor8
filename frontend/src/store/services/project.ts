@@ -15,6 +15,15 @@ export const projectApi = api.injectEndpoints({
     getAllProjects: builder.query<Project[], void>({
       query: () => '/projects',
     }),
+    // Get all projects paginated
+    // send query params page and limit
+    // returns total, projects, page, limit, totalPages
+    getAllProjectsPaginated: builder.query<
+      { total: number; projects: Project[]; page: number; limit: number },
+      { page: number; limit: number }
+    >({
+      query: ({ page, limit }) => `/projects?page=${page}&limit=${limit}`,
+    }),
     // Get all projects by username
     getProjectsByUsername: builder.query<Project[], string>({
       query: (username) => `/projects/${username}`,
