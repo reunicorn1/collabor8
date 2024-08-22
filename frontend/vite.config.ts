@@ -11,6 +11,10 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    host: 'localhost',
+    port: 3001,
+  },
   define: {
     'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
   },
