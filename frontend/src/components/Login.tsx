@@ -43,17 +43,14 @@ const Login: React.FC = () => {
         Login
       </button>
       {loginData && <p>Access Token: {loginData.accessToken}</p>}
-      {loginError && <p>Error: {loginError.data.message}</p>}
+      {loginError && <p>Error: {loginError.data?.message}</p>}
 
       <h2>Test Automatic Token Refresh</h2>
-      <button
-        onClick={handleFetchProfile}
-        disabled={profileFetching || !loginData}
-      >
+      <button onClick={handleFetchProfile} disabled={profileFetching}>
         Fetch User Profile
       </button>
       {profileData && <p>Profile: {JSON.stringify(profileData)}</p>}
-      {profileError && <p>Error: {profileError.data.message}</p>}
+      {profileError && <p>Error: {profileError.data?.message}</p>}
     </div>
   );
 };
