@@ -48,7 +48,6 @@ export class AuthService {
       ...userinfo
     } = await this.usersService.findOneBy({ username: user.username });
     Logger.log('--------->', { user });
-    const user = this.usersService.findOneBy({ username: user.username });
     return {
       accessToken: await this.jwtService.signAsync(payload),
       refreshToken: await this.jwtService.signAsync(payload, {
@@ -117,7 +116,6 @@ export class AuthService {
 
       return newUser;
     } catch (err) {
-      console.log(`Failed to create user: ${err.message}`);
       throw new InternalServerErrorException(
         `Failed to create user: ${err.message}`,
       );

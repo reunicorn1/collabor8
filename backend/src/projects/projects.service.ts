@@ -84,7 +84,6 @@ export class ProjectsService {
     if (!sort) {
       sort = 'created_at';
     }
-    console.log(username, page, limit, sort);
     const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
     const sortDirection = sort.startsWith('-') ? 'DESC' : 'ASC';
     const total = await this.projectsRepository.createQueryBuilder('projects')
@@ -96,7 +95,6 @@ export class ProjectsService {
     .take(limit)
     .orderBy(`projects.${sortField}`, sortDirection)
     .getMany();
-    console.log(total, projects);
     return { total, projects };
   }
 
@@ -137,10 +135,8 @@ export class ProjectsService {
   // Delete all projects by owner ID
   async removeAllByEnvironment(environment_id: string): Promise<void> {
     const projects = await this.findAllBy('environment_id', environment_id);
-    console.log(projects);
     const projectsMongo = await this.projectMongoService.removeAllByEnvironment(
       environment_id,
     );
-    console.log(projectsMongo);
   }
 }

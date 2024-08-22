@@ -32,7 +32,6 @@ export class ProjectsController {
     @Request() req: any,
   ): Promise<Projects> {
     createProjectDto.username = req.user.username;
-    console.log(createProjectDto);
     return this.projectsService.create(createProjectDto);
   }
 
@@ -75,7 +74,6 @@ export class ProjectsController {
     @Query('limit') limit: number,
     @Query('sort') sort: string,
   ): Promise<any> {
-    console.log(page, limit, sort);
     if (page && limit) {
       const { total, projects } =
         await this.projectsService.findAllByUsernamePaginated(
@@ -84,7 +82,6 @@ export class ProjectsController {
           limit,
           sort,
         );
-      console.log(total, projects, page, limit, Math.ceil(total / limit));
       return {
         total,
         projects,
