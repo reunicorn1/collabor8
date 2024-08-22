@@ -101,15 +101,12 @@ export default function Home() {
 
   // This is a list for demonstration purposes in a static version
   const projects = [
-    { name: 'Project 1', lastEdited: '2 days ago' },
-    { name: 'Project 2', lastEdited: '5 days ago' },
+    { name: 'Project 1', lastEdited: '1 week ago' },
+    { name: 'Project 2', lastEdited: '1 week ago' },
     { name: 'Project 3', lastEdited: '1 week ago' },
-    { name: 'Project 3', lastEdited: '1 week ago' },
-    { name: 'Project 3', lastEdited: '1 week ago' },
-    { name: 'Project 3', lastEdited: '1 week ago' },
-    { name: 'Project 3', lastEdited: '1 week ago' },
-    { name: 'Project 3', lastEdited: '1 week ago' },
-
+    { name: 'Project 4', lastEdited: '1 week ago' },
+    { name: 'Project 5', lastEdited: '1 week ago' },
+    { name: 'Project 6', lastEdited: '1 week ago' },
   ];
 
   return (
@@ -130,6 +127,7 @@ export default function Home() {
         </Flex>
         <Box
           ml={20}
+          mr={20}
           mt="15px"
           display="flex"
           overflowX="scroll"
@@ -156,7 +154,14 @@ export default function Home() {
               >
                 <Icon as={FaFolder} fontSize="45px" color={color} />
                 <Box ml={5}>
-                  <Text fontSize="md" fontFamily="mono">
+                  <Text
+                    fontSize="sm"
+                    fontFamily="mono"
+                    textOverflow="ellipsis"
+                    whiteSpace="nowrap"
+                    overflow="hidden"
+                    maxW="150px"
+                  >
                     {project.name}
                   </Text>
                   <Text fontSize="xs" fontFamily="mono">
