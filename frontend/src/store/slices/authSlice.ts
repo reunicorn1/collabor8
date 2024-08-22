@@ -1,3 +1,9 @@
+/*
+ * This file is responsible for managing the authentication state of the application.
+ * It handles actions related to user authentication, including setting and unsetting credentials,
+ * and managing the access token.
+ */
+
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { api } from '@store/services/auth';
 

@@ -1,3 +1,14 @@
+/**
+ * This file contains selectors for accessing user-related data from the
+ * Redux store. Selectors are used to derive and access specific pieces of
+ * state related to the user profile and loading states.
+ *
+ * Responsibilities:
+ * - Retrieve user details from the user state.
+ * - Retrieve the loading state for user data.
+ * - Determine if user details have been loaded.
+ */
+
 import { createSelector } from '@reduxjs/toolkit';
 import { RootState } from '@store/store';
 

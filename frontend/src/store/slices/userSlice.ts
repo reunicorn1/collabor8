@@ -1,3 +1,9 @@
+/*
+ * This file manages the user profile information and related states.
+ * It includes actions for updating user details, handling loading states,
+ * and managing errors.
+ */
+
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from '@types';
 import { userApi } from '@store/services/user';
