@@ -1,3 +1,9 @@
+/*
+ * This file manages the user profile information and related states.
+ * It includes actions for updating user details, handling loading states,
+ * and managing errors.
+ */
+
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from '@types';
 import { userApi } from '@store/services/user';
@@ -14,7 +20,6 @@ const initialState: UserState = {
   error: null,
 };
 
-// Managing user-related state
 const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -25,36 +30,65 @@ const userSlice = createSlice({
         state.userDetails = { ...state.userDetails, ...action.payload };
       }
     },
+    // Clears user data, for example on logout
+    clearUser: (state) => {
+      state.userDetails = null;
+      state.loading = false;
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
-      // Handle the pending state of the getUserByUsername endpoint.
-      .addMatcher(userApi.endpoints.getUserByUsername.matchPending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
+      // Handle getCurrentUserProfile pending state
       .addMatcher(
-        userApi.endpoints.getUserByUsername.matchFulfilled,
+        userApi.endpoints.getCurrentUserProfile.matchPending,
+        (state) => {
+          state.loading = true;
+          state.error = null;
+        },
+      )
+      .addMatcher(
+        userApi.endpoints.getCurrentUserProfile.matchFulfilled,
         (state, action) => {
           state.userDetails = action.payload;
           state.loading = false;
         },
       )
       .addMatcher(
-        userApi.endpoints.getUserByUsername.matchRejected,
+        userApi.endpoints.getCurrentUserProfile.matchRejected,
         (state, action) => {
           state.loading = false;
-          state.error = action.error.message || 'Failed to fetch user';
+          state.error = action.error.message || 'Failed to fetch user profile';
         },
       )
+      // Handle updateCurrentUserProfile fulfilled state
       .addMatcher(
-        userApi.endpoints.updateUserByUsername.matchFulfilled,
+        userApi.endpoints.updateCurrentUserProfile.matchFulfilled,
         (state, action) => {
           if (state.userDetails) {
             state.userDetails = { ...state.userDetails, ...action.payload };
           }
         },
       )
+      // Handle deleteCurrentUserProfile fulfilled state
+      .addMatcher(
+        userApi.endpoints.deleteCurrentUserProfile.matchFulfilled,
+        (state) => {
+          state.userDetails = null;
+          state.loading = false;
+          state.error = null;
+        },
+      )
+      // Handle getUserById fulfilled state
+      .addMatcher(
+        userApi.endpoints.getUserById.matchFulfilled,
+        (state, action) => {
+          if (state.userDetails?.user_id === action.payload.user_id) {
+            state.userDetails = action.payload;
+          }
+        },
+      )
+      // Handle updateUserById fulfilled state
       .addMatcher(
         userApi.endpoints.updateUserById.matchFulfilled,
         (state, action) => {
@@ -66,5 +100,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { updateUser } = userSlice.actions;
+export const { updateUser, clearUser } = userSlice.actions;
 export default userSlice.reducer;

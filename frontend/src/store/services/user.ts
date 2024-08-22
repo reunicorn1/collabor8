@@ -3,24 +3,32 @@ import { CreateUserDto, User } from '@types';
 
 export const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    // Get user by username
-    getUserByUsername: builder.query<User, string>({
-      query: (username) => `/users/${username}`,
-      providesTags: (_, __, username) => [{ type: 'User', id: username }],
+    // Get current user profile
+    getCurrentUserProfile: builder.query<User, void>({
+      query: () => `/users/me`,
+      providesTags: ['User'],
     }),
-    // Update user by username
-    updateUserByUsername: builder.mutation<
-      User,
-      { username: string; data: Partial<CreateUserDto> }
-    >({
-      query: ({ username, data }) => ({
-        url: `/users/${username}`,
+    // Update current user profile
+    updateCurrentUserProfile: builder.mutation<User, Partial<CreateUserDto>>({
+      query: (data) => ({
+        url: `/users/me`,
         method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: (_, __, { username }) => [
-        { type: 'User', id: username },
-      ],
+      invalidatesTags: ['User'],
+    }),
+    // Delete current user profile
+    deleteCurrentUserProfile: builder.mutation<void, void>({
+      query: () => ({
+        url: `/users/me`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['User'],
+    }),
+    // Get user by ID
+    getUserById: builder.query<User, string>({
+      query: (id) => `/users/${id}`,
+      providesTags: ['User'],
     }),
     // Update user by ID
     updateUserById: builder.mutation<
@@ -32,7 +40,7 @@ export const userApi = api.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: (_, __, { id }) => [{ type: 'User', id }],
+      invalidatesTags: ['User'],
     }),
     // Delete user by ID
     deleteUserById: builder.mutation<void, string>({
@@ -40,15 +48,17 @@ export const userApi = api.injectEndpoints({
         url: `/users/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (_, __, id) => [{ type: 'User', id }],
+      invalidatesTags: ['User'],
     }),
   }),
   overrideExisting: false,
 });
 
 export const {
-  useGetUserByUsernameQuery,
-  useUpdateUserByUsernameMutation,
+  useGetCurrentUserProfileQuery,
+  useUpdateCurrentUserProfileMutation,
+  useDeleteCurrentUserProfileMutation,
+  useGetUserByIdQuery,
   useUpdateUserByIdMutation,
   useDeleteUserByIdMutation,
 } = userApi;

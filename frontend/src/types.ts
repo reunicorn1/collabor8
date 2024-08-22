@@ -7,6 +7,9 @@ export enum Role {
 }
 /* eslint-enable no-unused-vars */
 
+/**
+ * User-related DTOs and interfaces
+ */
 export interface CreateUserDto {
   username: string;
   first_name: string;
@@ -33,9 +36,18 @@ export interface User {
   roles: Role[];
 }
 
+/**
+ * Project-related DTOs and interfaces
+ */
 export interface CreateProjectDto {
   project_name: string;
   username: string;
+}
+
+export interface UpdateProjectDto {
+  project_name: string;
+  description: string;
+  updated_at: Date;
 }
 
 export interface Project {
@@ -54,35 +66,54 @@ export interface ProjectShares {
   access_level: 'read' | 'write';
 }
 
+/**
+ * Environment-related interfaces
+ */
 export interface Environment {
   _id: string;
   username: string;
   projects: Project[];
 }
 
+/**
+ * Project document structure in MongoDB
+ */
 export interface ProjectMongo {
   _id: string;
   project_name: string;
   created_at: Date;
   environment_id?: string;
-  directories: DirectoryMongo[];
-  files: FileMongo[];
+  directories: Directory[];
+  files: File[];
   shared_with: Array<{ user_id: string; access_level: 'read' | 'write' }>;
 }
 
-export interface DirectoryMongo {
+/**
+ * Directory-related DTOs and interfaces
+ */
+export interface CreateDirectoryDto {
+  directory_name: string;
+  username: string;
+  parent_id: string;
+}
+
+export interface Directory {
   _id: ObjectId | string;
   directory_name: string;
   created_at: Date;
   parent_id?: ObjectId | string;
-  children: DirectoryMongo[];
-  files: FileMongo[];
+  children: Directory[];
+  files: File[];
 }
 
-export interface FileMongo {
+/**
+ * File-related interfaces
+ */
+export interface File {
   _id: ObjectId | string;
   file_name: string;
   file_content: string;
+  project_id: ObjectId | string;
   parent_id?: ObjectId | string;
   created_at: Date;
   updated_at: Date;
