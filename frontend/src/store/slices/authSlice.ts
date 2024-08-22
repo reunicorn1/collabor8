@@ -6,6 +6,7 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { api } from '@store/services/auth';
+import { User } from '@types';
 
 // Define the authentication state interface
 interface AuthState {
@@ -23,7 +24,10 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     // Action to set credentials with the access token
-    setCredentials(state, action: PayloadAction<{ accessToken: string }>) {
+    setCredentials(
+      state,
+      action: PayloadAction<{ accessToken: string; user: User }>,
+    ) {
       state.accessToken = action.payload.accessToken;
       localStorage.setItem('accessToken', action.payload.accessToken);
     },

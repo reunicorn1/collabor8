@@ -7,7 +7,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from '@types';
 import { userApi } from '@store/services/user';
-import { api } from '@store/services/auth';
 
 interface UserState {
   userDetails: User | null;
@@ -30,6 +29,12 @@ const userSlice = createSlice({
       if (state.userDetails) {
         state.userDetails = { ...state.userDetails, ...action.payload };
       }
+    },
+    // Set user data.
+    setUserDetails: (state, action: PayloadAction<User>) => {
+      state.userDetails = action.payload;
+      state.loading = false;
+      state.error = null;
     },
     // Clears user data, for example on logout
     clearUser: (state) => {
@@ -58,15 +63,6 @@ const userSlice = createSlice({
       .addMatcher(
         userApi.endpoints.getCurrentUserProfile.matchRejected,
         (state, action) => {
-          state.loading = false;
-          state.error = action.error.message || 'Failed to fetch user profile';
-        },
-      )
-      .addMatcher(
-        api.endpoints.loginUser.matchFulfilled,
-        (state, action: PayloadAction<Partial<User>>) => {
-          const { user } = action.payload;
-          state.userDetails = user;
           state.loading = false;
           state.error = action.error.message || 'Failed to fetch user profile';
         },
@@ -110,5 +106,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { updateUser, clearUser } = userSlice.actions;
+export const { setUserDetails, updateUser, clearUser } = userSlice.actions;
 export default userSlice.reducer;

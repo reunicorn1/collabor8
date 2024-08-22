@@ -8,6 +8,7 @@ import {
 import { RootState } from '@store/store';
 import apiConfig from '@config/apiConfig';
 import { setCredentials, unsetCredentials } from '@store/slices/authSlice';
+import { setUserDetails } from '@store/slices/userSlice';
 import { LoginUserDto, CreateUserDto, User } from '@types';
 
 interface RefreshTokenResponse {
@@ -83,6 +84,17 @@ export const api = createApi({
         body: credentials,
         credentials: 'include',
       }),
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            setCredentials({ accessToken: data.accessToken, user: data.user }),
+          );
+          dispatch(setUserDetails(data.user));
+        } catch (error) {
+          console.error(error);
+        }
+      },
     }),
     refreshToken: builder.mutation<{ accessToken: string }, void>({
       query: () => ({
