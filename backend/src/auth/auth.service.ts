@@ -48,7 +48,6 @@ export class AuthService {
       ...userinfo
     } = await this.usersService.findOneBy({ username: user.username });
     Logger.log('--------->', { user });
-    const user = this.usersService.findOneBy({ username: user.username });
     return {
       accessToken: await this.jwtService.signAsync(payload),
       refreshToken: await this.jwtService.signAsync(payload, {

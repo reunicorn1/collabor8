@@ -15,7 +15,7 @@ interface UserState {
 }
 
 const initialState: UserState = {
-  userDetails: null,
+  userDetails: JSON.parse(localStorage.getItem('userDetails') || 'null'),
   loading: false,
   error: null,
 };
@@ -24,23 +24,25 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    // Set user data.
+    setUserDetails: (state, action: PayloadAction<Partial<User>>) => {
+      state.userDetails = action.payload;
+      state.loading = false;
+      state.error = null;
+      localStorage.setItem('userDetails', JSON.stringify(action.payload));
+    },
     // Updates the user's details in the state.
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.userDetails) {
         state.userDetails = { ...state.userDetails, ...action.payload };
       }
     },
-    // Set user data.
-    setUserDetails: (state, action: PayloadAction<Partial<User>>) => {
-      state.userDetails = action.payload;
-      state.loading = false;
-      state.error = null;
-    },
     // Clears user data, for example on logout
     clearUser: (state) => {
       state.userDetails = null;
       state.loading = false;
       state.error = null;
+      localStorage.removeItem('userDetails');
     },
   },
   extraReducers: (builder) => {
