@@ -70,14 +70,19 @@ export class ProjectsService {
     username: string,
     page: number,
     limit: number,
-  ): Promise<Projects[]> {
+  ): Promise<{ total: number; projects: Projects[] }> {
     const skip = (page - 1) * limit;
-    return await this.projectsRepository.createQueryBuilder('projects')
+    const total = await this.projectsRepository.createQueryBuilder('projects')
+    .where('projects.username = :username', { username })
+    .getCount();
+    const projects = await this.projectsRepository.createQueryBuilder('projects')
     .where('projects.username = :username', { username })
     .skip(skip)
     .take(limit)
     .orderBy('projects.updated_at', 'DESC')
     .getMany();
+    console.log(total, projects);
+    return { total, projects };
   }
 
   // Retrieve a specific project by ID

@@ -18,7 +18,7 @@ function validateCreateProjectDto(dto: any): CreateProjectDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { project_name, description } = dto;
+  const { project_name, description, username } = dto;
 
   if (typeof project_name !== 'string' || project_name.trim() === '') {
     throw new BadRequestException(
@@ -29,7 +29,13 @@ function validateCreateProjectDto(dto: any): CreateProjectDto {
   if (typeof description !== 'string') {
     throw new BadRequestException('description is required and must be a string');
   }
-  return { project_name, description };
+
+  if (username && typeof username !== 'string') {
+    throw new BadRequestException('Username must be a string');
+  }
+
+
+  return { project_name, description, username };
 }
 
 function validateUpdateProjectDto(dto: any): UpdateProjectDto {

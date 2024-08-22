@@ -34,6 +34,7 @@ export class ProjectsController {
     @Request() req: any,
   ): Promise<Projects> {
     createProjectDto.username = req.user.username;
+    console.log(createProjectDto);
     return this.projectsService.create(createProjectDto);
   }
 
@@ -49,18 +50,26 @@ export class ProjectsController {
     summary: 'Get all projects of the logged in user',
     description: 'Retrieve a list of all projects associated with the logged in user using username And is paginated.',
   })
-  @Get()
+  @Get('page')
   async findAllByUsernamePaginated(
     @Request() req: any,
     @Query('page') page: number,
     @Query('limit') limit: number,
-  ): Promise<Projects[]> {
+  ): Promise<any> {
     if (page && limit) {
-      return this.projectsService.findAllByUsernamePaginated(
+      const { total, projects } = await this.projectsService.findAllByUsernamePaginated(
         req.user.username,
         page,
         limit,
       );
+      console.log(total, projects, page, limit, Math.ceil(total / limit));
+      return {
+        total,
+        projects,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      };
     } else {
       throw new BadRequestException('Page and limit query parameters are required');
     }
