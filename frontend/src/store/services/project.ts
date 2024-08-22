@@ -9,6 +9,7 @@ export const projectApi = api.injectEndpoints({
         url: '/projects',
         method: 'POST',
         body: newProject,
+        credentials: 'include',
       }),
     }),
     // Get all projects of the logged-in user by ID

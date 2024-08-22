@@ -41,7 +41,7 @@ export interface User {
  */
 export interface CreateProjectDto {
   project_name: string;
-  username: string;
+  description: string;
 }
 
 export interface UpdateProjectDto {

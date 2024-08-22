@@ -29,6 +29,7 @@ import docs from './auth-docs.decorator';
 // TODO: Add guards and roles where necessary
 // TODO: replace all endpoints that contain username with @Request() req
 // TODO: the logs doesn't appear -_-
+// TODO: strip input to remove any spaces
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {

@@ -28,7 +28,6 @@ export default function Home() {
   // const [sharedProjects, setSharedProjects] = useState([]);
   const [fetch, setFetch] = useState(true);
   const [error, setError] = useState(null);
-  
 
   function hashStringToIndex(str: string, arrayLength: number): number {
     let hash = 0;
@@ -44,26 +43,27 @@ export default function Home() {
     return coolors[index];
   }
 
-  const { data, err, isFetching, refetch } = useGetAllProjectsPaginatedQuery(
-    { page, limit, sort },
-    // { refetchOnReconnect: true }, // Optional: refetch when reconnecting
-  );
-  useEffect(() => {
-    if (fetch) {
-      if (err) {
-        setError(err);
-      }
+  // const { data, err, isFetching, refetch } = useGetAllProjectsPaginatedQuery(
+  //   { page, limit, sort },
+  //   // { refetchOnReconnect: true }, // Optional: refetch when reconnecting
+  // );
+  // useEffect(() => {
+  //   if (fetch) {
+  //     if (err) {
+  //       setError(err);
+  //     }
 
-      if (data) {
-        console.log('data', data);
-        const mutatedProjects = projectUtils.mutateProjects(data);
-        console.log('mutatedProjects', mutatedProjects);
-        setUserProjects(mutatedProjects);
-        projectUtils.setRecentProjectsFromAllProjects(data, setRecentProjects); // Set recent projects here
-        setFetch(false);
-      }
-    }
-  }, [data, err, fetch]);
+  //     if (data) {
+  //       // why is data only projects?
+  //       console.log('data', data);
+  //       const mutatedProjects = projectUtils.mutateProjects(data);
+  //       console.log('mutatedProjects', mutatedProjects);
+  //       setUserProjects(mutatedProjects);
+  //       projectUtils.setRecentProjectsFromAllProjects(data, setRecentProjects); // Set recent projects here
+  //       setFetch(false);
+  //     }
+  //   }
+  // }, [data, err, fetch]);
 
   //   function getRandomColor(): string {
   //     const randomIndex = Math.floor(Math.random() * coolors.length);
