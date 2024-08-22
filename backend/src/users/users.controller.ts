@@ -15,12 +15,8 @@ import {
 import { UsersService } from '@users/users.service';
 import { Users } from './user.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-<<<<<<< HEAD
-import DOCS from './users.decorator';
+import DOCS from './users.docs';
 
-=======
-// TODO: error handling for all endpoints
->>>>>>> 4797da9be30972f39ddf6435216a0122d0313ac2
 // TODO: complete RESTful API for user entity
 @ApiTags('Users')
 @Controller('users')
