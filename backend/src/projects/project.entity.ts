@@ -22,7 +22,7 @@ export class Projects {
   @Column('uuid')
   owner_id: string;
 
-  @Column({ type: 'varchar'})
+  @Column({ type: 'varchar' })
   username: string;
 
   @Column({ type: 'varchar', nullable: true })

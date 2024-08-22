@@ -5,29 +5,36 @@ import {
   ApiOkResponse,
   ApiResponse,
   getSchemaPath,
-  ApiHeader
+  ApiHeader,
+  ApiBearerAuth
 } from '@nestjs/swagger';
 import { CreateUserDto, LoginUserDto } from '@users/dto/create-user.dto';
 
 class UserDocs {
-  findUser() {
+  static init({ summary, description }, ...args) {
     return applyDecorators(
       ApiOperation({
-        summary: 'Get current user profile',
-        description: 'Retrieve the profile of the currently authenticated user.',
+        summary,
+        description,
       }),
-      ApiOkResponse({
-        type: CreateUserDto,
-      }),
+      ...args,
     );
   }
 
+  @ApiBearerAuth()
+  findUser() {
+    return UserDocs.init({
+      summary: 'Get current user profile',
+      description: 'Retrieve the profile of the currently authenticated user.',
+    });
+  }
+
   updateUser() {
-    return applyDecorators(
-      ApiOperation({
+    return UserDocs.init(
+      {
         summary: 'Update current user profile',
         description: 'Update the profile of the currently authenticated user.',
-      }),
+      },
       ApiBody({
         type: CreateUserDto,
       }),
@@ -36,11 +43,33 @@ class UserDocs {
       }),
     );
   }
-  removeUser() { }
-  findOneById() { }
-  updateById() { }
-  remove() { }
+  removeUser() {
+    return UserDocs.init({
+      summary: 'Delete current user profile',
+      description: 'Delete the profile of the currently authenticated user.',
+    });
+  }
 
+  findOneById() {
+    return UserDocs.init({
+      summary: 'Get user by ID',
+      description: 'Retrieve a specific user by their unique ID.',
+    });
+  }
+
+  updateById() {
+    return UserDocs.init({
+      summary: '',
+      description: '',
+    });
+  }
+
+  remove() {
+    return UserDocs.init({
+      summary: '',
+      description: '',
+    });
+  }
 }
 
 export default new UserDocs();

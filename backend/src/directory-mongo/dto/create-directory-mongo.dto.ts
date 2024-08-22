@@ -7,7 +7,6 @@ interface CreateDirectoryOutDto {
   parent_id: string;
 }
 
-
 interface UpdateDirectoryOutDto {
   directory_name?: string;
   username?: string;
@@ -33,7 +32,7 @@ function validateCreateDirectoryDto(dto: any): CreateDirectoryOutDto {
   }
 
   if (typeof username !== 'string' || username.trim() === '') {
-    throw new BadRequestException('Owner ID is required and must be a string');
+    throw new BadRequestException('username is required and must be a string');
   }
 
   return { directory_name, username, parent_id };
