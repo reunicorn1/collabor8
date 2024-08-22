@@ -30,7 +30,10 @@ function validateCreateProjectDto(dto: any): CreateProjectMongoDto {
     throw new BadRequestException('Owner ID is required and must be a string');
   }
 
-  return { project_name, owner_id };
+  return {
+    project_name: project_name.trim(),
+    owner_id: owner_id.trim(),
+  };
 }
 
 function validateUpdateProjectDto(dto: any): UpdateProjectMongoDto {
@@ -44,7 +47,10 @@ function validateUpdateProjectDto(dto: any): UpdateProjectMongoDto {
     throw new BadRequestException('Project name must be a string');
   }
 
-  return { project_name, updated_at };
+  return {
+    project_name: project_name.trim(),
+    updated_at: updated_at.toString().trim(),
+  };
 }
 
 function parseCreateProjectMongoDto(requestBody: any): CreateProjectMongoDto {

@@ -13,6 +13,7 @@ import PersonalTable from './PersonalTable';
 import {
   useGetAllProjectsPaginatedQuery,
   useLazyGetAllProjectsPaginatedQuery,
+  useCreateProjectMutation,
 } from '@store/services/project';
 import { useState, useEffect } from 'react';
 import * as projectUtils from '@utils/dashboard.utils';
@@ -43,32 +44,29 @@ export default function Home() {
     return coolors[index];
   }
 
-  // const { data, err, isFetching, refetch } = useGetAllProjectsPaginatedQuery(
-  //   { page, limit, sort },
-  //   // { refetchOnReconnect: true }, // Optional: refetch when reconnecting
-  // );
-  // useEffect(() => {
-  //   if (fetch) {
-  //     if (err) {
-  //       setError(err);
-  //     }
 
-  //     if (data) {
-  //       // why is data only projects?
-  //       console.log('data', data);
-  //       const mutatedProjects = projectUtils.mutateProjects(data);
-  //       console.log('mutatedProjects', mutatedProjects);
-  //       setUserProjects(mutatedProjects);
-  //       projectUtils.setRecentProjectsFromAllProjects(data, setRecentProjects); // Set recent projects here
-  //       setFetch(false);
-  //     }
-  //   }
-  // }, [data, err, fetch]);
+  const { data, err, isFetching, refetch } = useGetAllProjectsPaginatedQuery(
+    { page, limit, sort },
+    // { refetchOnReconnect: true }, // Optional: refetch when reconnecting
+  );
 
-  //   function getRandomColor(): string {
-  //     const randomIndex = Math.floor(Math.random() * coolors.length);
-  //     return coolors[randomIndex];
-  //   }
+  useEffect(() => {
+    if (fetch) {
+      if (err) {
+        setError(err);
+      }
+
+      if (data?.projects) {
+        // why is data only projects?
+        console.log('data', data);
+        const mutatedProjects = projectUtils.mutateProjects(data?.projects);
+        console.log('mutatedProjects', mutatedProjects);
+        setUserProjects(mutatedProjects);
+        projectUtils.setRecentProjectsFromAllProjects(data?.projects, setRecentProjects); // Set recent projects here
+        setFetch(false);
+      }
+    }
+  }, [data, err, fetch]);
 
   //   function useData(data) {
   //     const mutatedProjects = projectUtils.mutateProjects(data);
@@ -102,14 +100,14 @@ export default function Home() {
   // }, [page, limit, sort, data]);
 
   // This is a list for demonstration purposes in a static version
-  const projects = [
-    { name: 'Project 1', lastEdited: '1 week ago' },
-    { name: 'Project 2', lastEdited: '1 week ago' },
-    { name: 'Project 3', lastEdited: '1 week ago' },
-    { name: 'Project 4', lastEdited: '1 week ago' },
-    { name: 'Project 5', lastEdited: '1 week ago' },
-    { name: 'Project 6', lastEdited: '1 week ago' },
-  ];
+  // const projects = [
+  //   { name: 'Project 1', lastEdited: '1 week ago' },
+  //   { name: 'Project 2', lastEdited: '1 week ago' },
+  //   { name: 'Project 3', lastEdited: '1 week ago' },
+  //   { name: 'Project 4', lastEdited: '1 week ago' },
+  //   { name: 'Project 5', lastEdited: '1 week ago' },
+  //   { name: 'Project 6', lastEdited: '1 week ago' },
+  // ];
 
   return (
     <Flex justifyContent="center" h="100vh">
@@ -137,7 +135,7 @@ export default function Home() {
           whiteSpace="nowrap"
         >
           {/* top 3 recent projects will be shown here */}
-          {projects?.map((project, index) => {
+          {recentProjects?.map((project, index) => {
             const color = getRandomColor(project.name);
             return (
               <Box

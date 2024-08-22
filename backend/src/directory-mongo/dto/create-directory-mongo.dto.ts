@@ -36,7 +36,11 @@ function validateCreateDirectoryDto(dto: any): CreateDirectoryOutDto {
     throw new BadRequestException('Owner ID is required and must be a string');
   }
 
-  return { directory_name, username, parent_id };
+  return {
+    directory_name: directory_name.trim(),
+    username: username.trim(),
+    parent_id: parent_id.trim(),
+  };
 }
 
 function validateUpdateDirectoryDto(dto: any): UpdateDirectoryOutDto {
@@ -60,7 +64,12 @@ function validateUpdateDirectoryDto(dto: any): UpdateDirectoryOutDto {
 
 
 
-  return { directory_name, username, parent_id, updated_at };
+  return {
+    directory_name: directory_name.trim(),
+    username: username.trim(),
+    parent_id: parent_id.trim(),
+    updated_at: updated_at.toString().trim(),
+  };
 }
 
 function parseCreateDirectoryMongoDto(requestBody: any): CreateDirectoryOutDto {

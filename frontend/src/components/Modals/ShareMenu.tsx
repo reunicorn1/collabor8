@@ -113,7 +113,7 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose }) => {
           <InputGroup size="sm">
             <Input
               pr="4.5rem"
-              placeholder="Invite others by email"
+              placeholder="Invite others by username"
               fontFamily="mono"
               value={invitee}
               color="white"

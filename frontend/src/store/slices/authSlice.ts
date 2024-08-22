@@ -10,11 +10,13 @@ import { api } from '@store/services/auth';
 // Define the authentication state interface
 interface AuthState {
   accessToken: string | null;
+  user: any;
 }
 
 // Define the initial state for authentication
 const initialState: AuthState = {
   accessToken: null,
+  user: null,
 };
 
 // Create the authentication slice
@@ -37,8 +39,10 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addMatcher(api.endpoints.loginUser.matchFulfilled, (state, action) => {
-        const { accessToken } = action.payload;
+        const { accessToken, user } = action.payload;
+        // set user details in the state
         state.accessToken = accessToken;
+        state.user = user;
         localStorage.setItem('accessToken', accessToken);
       })
       .addMatcher(api.endpoints.loginUser.matchRejected, (state) => {
