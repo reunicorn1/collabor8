@@ -32,15 +32,6 @@ const baseStyle = definePartsStyle({
     letterSpacing: 'wider',
     opacity: '0.7',
   },
-  command: {
-    // this will style the text defined by the command
-    // prop in the MenuItem and MenuItemOption components
-    opacity: '0.8',
-    fontFamily: 'mono',
-    fontSize: 'sm',
-    letterSpacing: 'tighter',
-    pl: '4',
-  },
   divider: {
     // this will style the MenuDivider component
     my: '4',

@@ -1,0 +1,96 @@
+import {
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuGroup,
+  Button,
+  MenuDivider,
+} from '@chakra-ui/react';
+import { ChevronDownIcon, CheckIcon } from '@chakra-ui/icons';
+import React from 'react';
+
+interface SortOrderProps {
+  sort: string;
+  setSort: React.Dispatch<React.SetStateAction<string>>;
+  order: string;
+  setOrder: React.Dispatch<React.SetStateAction<string>>;
+}
+export default function MenuSelection({
+  sort,
+  setSort,
+  order,
+  setOrder,
+}: SortOrderProps) {
+  return (
+    <Menu>
+      <MenuButton
+        as={Button}
+        variant="shadow"
+        size="xs"
+        fontFamily="mono"
+        mr={20}
+        opacity={0.7}
+      >
+        {sort} <ChevronDownIcon />
+      </MenuButton>
+      <MenuList bg="gray" fontSize="xs" pt={1} pb={3}>
+        <MenuGroup fontSize="xs" title="Sort By">
+          <MenuItem
+            onClick={() => {
+              setSort('Alphabetical');
+              setOrder('A-Z');
+            }}
+          >
+            <CheckIcon mr={3} opacity={sort === 'Alphabetical' ? 1 : 0} />
+            Alphabetical
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setSort('Date Created');
+              setOrder('Newest first');
+            }}
+          >
+            <CheckIcon mr={3} opacity={sort === 'Date Created' ? 1 : 0} />
+            Date Created
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setSort('Last Modified');
+              setOrder('Newest first');
+            }}
+          >
+            <CheckIcon mr={3} opacity={sort === 'Last Modified' ? 1 : 0} />
+            Last Modified
+          </MenuItem>
+        </MenuGroup>
+        <MenuDivider />
+        <MenuGroup fontSize="xs" title="Order">
+          {sort === 'Alphabetical' ? (
+            <>
+              <MenuItem onClick={() => setOrder('A-Z')}>
+                <CheckIcon mr={3} opacity={order === 'A-Z' ? 1 : 0} />
+                A-Z
+              </MenuItem>
+              <MenuItem onClick={() => setOrder('Z-A')}>
+                <CheckIcon mr={3} opacity={order === 'Z-A' ? 1 : 0} />
+                Z-A
+              </MenuItem>
+            </>
+          ) : (
+            <>
+              <MenuItem onClick={() => setOrder('Oldest first')}>
+                <CheckIcon mr={3} opacity={order === 'Oldest first' ? 1 : 0} />
+                Oldest first
+              </MenuItem>
+              <MenuItem onClick={() => setOrder('Newest first')}>
+                <CheckIcon mr={3} opacity={order === 'Newest first' ? 1 : 0} />
+                Newest first
+              </MenuItem>
+            </>
+          )}
+        </MenuGroup>
+      </MenuList>
+    </Menu>
+  );
+}

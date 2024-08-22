@@ -5,7 +5,6 @@ import {
   InputGroup,
   InputLeftElement,
   Text,
-
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { GoHome, GoHomeFill } from 'react-icons/go';
@@ -28,21 +27,20 @@ export default function DashboardPage() {
     <>
       {/* This is the nvaigation bar of the dashboard */}
       <DashboardBar />
-      <Flex h="100vh">
-       <Box 
+      <Flex h="100%">
+        <Box
           bg="brand.900"
-          h="100%"
           w="270px"
           color="white"
           borderRight="2px solid #524175"
         >
           <InputGroup>
-          {/* navbar to the left */}
+            {/* navbar to the left */}
             <InputLeftElement mt={2} ml={2}>
               <SearchIcon color="gray.500" />
             </InputLeftElement>
             {/* search bar */}
-            <Input 
+            <Input
               fontFamily="mono"
               variant="filled"
               bg="brand.900"
@@ -110,7 +108,7 @@ export default function DashboardPage() {
             </Box>
           </>
         </Box>
-        <Box bg="brand.900" h="100%" w="100%" color="white">
+        <Box flex="1" bg="brand.900" h="100%" color="white">
           {clicked === 'Home' ? (
             <Home />
           ) : clicked === 'Project' ? (

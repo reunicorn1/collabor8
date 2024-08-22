@@ -28,10 +28,20 @@ export default function Home() {
   const [fetch, setFetch] = useState(true);
   const [error, setError] = useState(null);
 
-  function getRandomColor(): string {
-    const randomIndex = Math.floor(Math.random() * coolors.length);
-    return coolors[randomIndex];
+  function hashStringToIndex(str: string, arrayLength: number): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash |= 0; // Convert to a 32-bit integer
+    }
+    return Math.abs(hash) % arrayLength;
   }
+
+  function getRandomColor(projectName: string): string {
+    const index = hashStringToIndex(projectName, coolors.length);
+    return coolors[index];
+  }
+
   const { data, err, isFetching, refetch } = useGetAllProjectsPaginatedQuery(
     { page, limit, sort },
     // { refetchOnReconnect: true }, // Optional: refetch when reconnecting
@@ -90,14 +100,20 @@ export default function Home() {
   // }, [page, limit, sort, data]);
 
   // This is a list for demonstration purposes in a static version
-  // const projects = [
-  //   { name: 'Project 1', lastEdited: '2 days ago' },
-  //   { name: 'Project 2', lastEdited: '5 days ago' },
-  //   { name: 'Project 3', lastEdited: '1 week ago' },
-  // ];
+  const projects = [
+    { name: 'Project 1', lastEdited: '2 days ago' },
+    { name: 'Project 2', lastEdited: '5 days ago' },
+    { name: 'Project 3', lastEdited: '1 week ago' },
+    { name: 'Project 3', lastEdited: '1 week ago' },
+    { name: 'Project 3', lastEdited: '1 week ago' },
+    { name: 'Project 3', lastEdited: '1 week ago' },
+    { name: 'Project 3', lastEdited: '1 week ago' },
+    { name: 'Project 3', lastEdited: '1 week ago' },
+
+  ];
 
   return (
-    <Flex h="100vh" justifyContent="center">
+    <Flex justifyContent="center" h="100vh">
       <Box>
         <Image src="/banner3.png" />
         <Center>
@@ -114,15 +130,15 @@ export default function Home() {
         </Flex>
         <Box
           ml={20}
-          mt={10}
+          mt="15px"
           display="flex"
-          overflowX="auto"
-          maxW="1100"
+          overflowX="scroll"
+          maxW="1020"
           whiteSpace="nowrap"
         >
           {/* top 3 recent projects will be shown here */}
-          {recentProjects?.map((project, index) => {
-            const color = getRandomColor();
+          {projects?.map((project, index) => {
+            const color = getRandomColor(project.name);
             return (
               <Box
                 key={index}
@@ -135,6 +151,8 @@ export default function Home() {
                 pt={5}
                 mr={5}
                 alignItems="center"
+                flexShrink={0}
+                cursor="pointer"
               >
                 <Icon as={FaFolder} fontSize="45px" color={color} />
                 <Box ml={5}>
@@ -152,12 +170,6 @@ export default function Home() {
             );
           })}
         </Box>
-        <Flex alignItems="center" ml={20} mt={10}>
-          <Box w="10px" h="10px" bg="blue.200" borderRadius="50%" />
-          <Text fontFamily="mono" fontSize="xs" ml={2}>
-            Personal Projects
-          </Text>
-        </Flex>
         {/* projects table */}
         <PersonalTable />
       </Box>
