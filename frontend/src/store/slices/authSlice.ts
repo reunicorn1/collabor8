@@ -6,18 +6,15 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { authApi } from '@store/services/auth';
-import { User } from '@types';
 
 // Define the authentication state interface
 interface AuthState {
   accessToken: string | null;
-  user: User;
 }
 
 // Define the initial state for authentication
 const initialState: AuthState = {
   accessToken: null,
-  user: null,
 };
 
 // Create the authentication slice
