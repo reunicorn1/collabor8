@@ -47,6 +47,7 @@ const Login: React.FC = () => {
       {loginError && <p>Error: {loginError.data.message}</p>}
       <br />
       <Link to="/dashboard">Go to Dashboard</Link>
+
     </div>
   );
 };

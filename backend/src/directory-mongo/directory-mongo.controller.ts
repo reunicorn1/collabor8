@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Post, Body, Request } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Body, Request, Patch } from '@nestjs/common';
 import { DirectoryMongoService } from './directory-mongo.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -46,7 +46,7 @@ export class DirectoryMongoController {
     description:
       'Update a specific directory document in MongoDB using its unique ID.',
   })
-  @Post(':id')
+  @Patch(':id')
   update(@Param('id') id: string, @Body() updateDirectoryDto: UpdateDirectoryOutDto) {
     return this.dirService.update(id, updateDirectoryDto);
   }

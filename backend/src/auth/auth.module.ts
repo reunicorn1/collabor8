@@ -21,7 +21,13 @@ import { RefreshStrategy } from '@auth/strategies/refresh.strategy';
       signOptions: { expiresIn: '1d' },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, SessionSerializer, RefreshStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    SessionSerializer,
+    RefreshStrategy,
+  ],
   controllers: [AuthController],
   exports: [AuthService, JwtModule],
 })

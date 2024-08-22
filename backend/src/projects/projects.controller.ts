@@ -9,6 +9,7 @@ import {
   Put,
   Query,
   BadRequestException,
+  Patch,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { Projects } from './project.entity';
@@ -120,7 +121,7 @@ export class ProjectsController {
     summary: 'Update a project by ID',
     description: 'Update the details of an existing project using its ID.',
   })
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,

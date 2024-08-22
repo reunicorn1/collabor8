@@ -1,8 +1,18 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import {
+  BaseQueryFn,
+  createApi,
+  FetchArgs,
+  fetchBaseQuery,
+  FetchBaseQueryError,
+} from '@reduxjs/toolkit/query/react';
 import { RootState } from '@store/store';
 import apiConfig from '@config/apiConfig';
 import { setCredentials, unsetCredentials } from '@store/slices/authSlice';
 import { LoginUserDto, CreateUserDto, User } from '@types';
+
+interface RefreshTokenResponse {
+  accessToken: string;
+}
 
 const baseQuery = fetchBaseQuery({
   baseUrl: apiConfig.baseUrl,
@@ -16,15 +26,26 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
-  let result = baseQuery(args, api, extraOptions);
+const baseQueryWithReauth: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
 
-  if (result.error?.status === 401) {
-    const refreshResult = await api.dispatch(
-      api.endpoints.refreshToken.initiate(),
+  if (result.error && result.error?.status === 401) {
+    const refreshResult = await baseQuery(
+      {
+        url: 'auth/refresh',
+        method: 'POST',
+        credentials: 'include',
+      },
+      api,
+      extraOptions,
     );
+
     if (refreshResult.data) {
-      const { accessToken } = refreshResult.data;
+      const { accessToken } = refreshResult.data as RefreshTokenResponse;
       api.dispatch(setCredentials({ accessToken }));
       result = await baseQuery(args, api, extraOptions);
     } else {
