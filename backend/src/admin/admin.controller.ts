@@ -9,7 +9,10 @@ import {
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { UsersService } from '@users/users.service';
+import { ProjectsService } from '@projects/projects.service';
+import { FileMongoService } from '@file-mongo/file-mongo.service';
 import { Users } from '@users/user.entity';
+import { Projects } from '@projects/project.entity';
 import { Roles } from '@auth/decorators/roles.decorator';
 import { RolesGuard } from '@auth/guards/roles.guard';
 import { Role } from '@auth/enums/role.enum';
@@ -21,8 +24,12 @@ export class AdminController {
   constructor(
     private readonly adminService: AdminService,
     private readonly usersService: UsersService,
+
+    private readonly projectsService: ProjectsService,
+    private readonly fileService: FileMongoService,
   ) {}
 
+  // User CRUD
   @ApiOperation({
     summary: 'Retrieve All Users',
     description:
@@ -31,7 +38,7 @@ export class AdminController {
   @Get('all')
   @UseGuards(RolesGuard)
   @Roles(Role.Admin)
-  async findAll(): Promise<Users[]> {
+  async findAllUsers(): Promise<Users[]> {
     return this.usersService.findAll();
   }
 
@@ -42,10 +49,11 @@ export class AdminController {
   @Delete('all')
   @UseGuards(RolesGuard)
   @Roles(Role.Admin)
-  async removeAll(): Promise<{ message: string }> {
+  async removeAllUsers(): Promise<{ message: string }> {
     return this.usersService.removeAll();
   }
   // TODO: regular user should not be able to set roles
+  // Admin Crud
   @ApiOperation({
     summary: 'Retrieve User Profile by Username',
     description:
@@ -85,5 +93,31 @@ export class AdminController {
     @Param('username') username: string,
   ): Promise<{ message: string }> {
     return this.usersService.removeByUsername(username);
+  }
+
+
+// Project CRUD
+  @ApiOperation({
+    summary: 'Get all projects',
+    description: 'Retrieve a list of all projects.',
+  })
+  @UseGuards(RolesGuard)
+  @Roles(Role.Admin)
+  @Get()
+  async findAllProjects(): Promise<Projects[]> {
+    return this.projectsService.findAll();
+  }
+
+  // Files CRUD
+
+  @ApiOperation({
+    summary: 'Retrieve all files',
+    description: 'Retrieve a list of all files stored in MongoDB.',
+  })
+  @UseGuards(RolesGuard)
+  @Roles(Role.Admin)
+  @Get()
+  findAll() {
+    return this.fileService.findAll();
   }
 }

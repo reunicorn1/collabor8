@@ -18,10 +18,16 @@ import { RefreshStrategy } from '@auth/strategies/refresh.strategy';
     PassportModule.register({ session: true }),
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1d' },
+      signOptions: { expiresIn: '1m' },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, SessionSerializer, RefreshStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    SessionSerializer,
+    RefreshStrategy,
+  ],
   controllers: [AuthController],
   exports: [AuthService, JwtModule],
 })

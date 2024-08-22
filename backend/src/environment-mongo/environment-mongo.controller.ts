@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Request } from '@nestjs/common';
 import { EnvironmentMongoService } from './environment-mongo.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
@@ -18,32 +18,22 @@ export class EnvironmentMongoController {
   }
 
   @ApiOperation({
-    summary: 'Retrieve environment projects by username',
+    summary: 'Retrieve an environment by username',
     description:
-      'Retrieve all projects related to a specific environment by username.',
+      'Retrieve a specific environment document from MongoDB using its unique username.',
   })
-  @Get('projects/:username')
-  getEnvironmentProjects(@Param('username') username: string) {
-    return this.environService.getEnvironmentProjects(username);
-  }
-
-  @ApiOperation({
-    summary: 'Retrieve an environment by ID',
-    description:
-      'Retrieve a specific environment document from MongoDB using its unique ID.',
-  })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.environService.findOne(id);
+  @Get('me')
+  getMyEnvironment(@Request() req) {
+    return this.environService.getEnvironmentUsername(req.user.username);
   }
 
   @ApiOperation({
     summary: 'Delete an environment by ID',
     description:
-      'Delete a specific environment document from MongoDB using its unique ID.',
+      'Delete a specific environment document from MongoDB using its unique ID. Creates a new environment for the user.',
   })
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.environService.remove(id);
+  @Delete('me')
+  remove(@Request() req) {
+    return this.environService.remove(req.user.username);
   }
 }

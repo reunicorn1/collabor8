@@ -5,10 +5,14 @@ import Home from './pages/Home';
 import DashboardPage from './pages/DashboardPage';
 import Editor from './pages/Editor';
 import Login from './components/Login';
+import NavigationBar from './components/Bars/NavigationBar';
+import useAuthRefresh from './hooks/useAuthRefresh';
 
 const App: React.FC = () => {
+  useAuthRefresh();
   return (
     <>
+      {/* <NavigationBar /> */}
       <Routes>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/" element={<Home />}></Route>

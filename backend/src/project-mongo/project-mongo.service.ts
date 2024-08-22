@@ -6,7 +6,12 @@ import { DirectoryMongoService } from '@directory-mongo/directory-mongo.service'
 import { FileMongoService } from '@file-mongo/file-mongo.service';
 import { UsersService } from '@users/users.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateProjectMongoDto } from './dto/create-project-mongo.dto';
+import {
+  parseCreateProjectMongoDto,
+  CreateProjectMongoDto,
+  parseUpdateProjectMongoDto,
+  UpdateProjectMongoDto,
+} from './dto/create-project-mongo.dto';
 
 // TODO: refactor to move helper functions to relevant service providers
 // to avoid code duplication and make code more modular
@@ -24,7 +29,13 @@ export class ProjectMongoService {
   ) {}
 
   async create(createProjectDto: CreateProjectMongoDto): Promise<ProjectMongo> {
-    return this.projectMongoRepository.save(createProjectDto);
+    const parsedDto = parseCreateProjectMongoDto(createProjectDto);
+    const newProject = this.projectMongoRepository.create({
+      project_name: parsedDto.project_name,
+      environment_id: parsedDto.environment_id,
+      owner_id: parsedDto.owner_id,
+    });
+    return await this.projectMongoRepository.save(newProject);
   }
 
   async findAll(): Promise<ProjectMongo[]> {
@@ -39,11 +50,18 @@ export class ProjectMongoService {
       where: { environment_id: environment_id },
       relations: ['environment'],
     });
-    console.log(projs);
     return projs;
   }
 
-  //
+  // general method to find all projects by a field
+  async findAllBy(field: string, value: string): Promise<ProjectMongo[]> {
+    const projects = await this.projectMongoRepository.find({
+      where: { [field]: value },
+    });
+    return projects;
+  }
+
+
   // Find projects by username
   async findAllByUsername(username: string): Promise<ProjectMongo[]> {
     const user = await this.usersService.findOneBy({ username });
@@ -125,12 +143,56 @@ export class ProjectMongoService {
   }
 
   findOne(_id: string): Promise<ProjectMongo | null> {
-    return this.projectMongoRepository.findOneBy({ _id: new ObjectId(_id) });
+    return this.projectMongoRepository.findOneBy({ project_id: _id });
   }
 
-  async remove(id: string): Promise<void> {
-    await this.projectMongoRepository.delete(id);
+    async update(
+    id: string,
+    updateProjectDto: UpdateProjectMongoDto,
+  ): Promise<ProjectMongo | null | { message: string }> {
+    const parsedDto = parseUpdateProjectMongoDto(updateProjectDto);
+    const newDate = new Date();
+    // approach 1
+    const updateResult = await this.projectMongoRepository.update(id, {
+      project_name: parsedDto.project_name,
+      updated_at: newDate,
+    });
+    if (!updateResult.affected) {
+      throw new Error('Project not found');
+    }
+    return { message: 'Project updated successfully' };
   }
+
+
+
+  async remove(id: string): Promise<void> {
+    const project = await this.findOne(id);
+    if (!project) {
+      throw new Error('Project not found');
+    }
+    const directories = await this.directoryService.findDirectoriesByParent(
+      id,
+    );
+    const files = await this.fileService.findFilesByParent(id);
+    await Promise.all(
+      directories.map(async (dir) => {
+        await this.directoryService.remove(dir._id.toString());
+      }),
+    );
+    await Promise.all(
+      files.map(async (file) => {
+        await this.fileService.remove(file._id.toString());
+      }),
+    );
+    await this.projectMongoRepository.delete(
+      { project_id: id },
+    );
+  }
+
+  async removeAllByEnvironment(environment_id: string): Promise<void> {
+    await this.projectMongoRepository.delete({ environment_id });
+  }
+
 
   // TODO: Fix this function
   // Doesnt work when startDepth is greater than 1

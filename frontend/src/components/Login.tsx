@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
-import { useLoginUserMutation, useGetProfileQuery, useRefreshTokenMutation } from '@store/services/auth';
+import { useLoginUserMutation, useGetProfileQuery } from '@store/services/auth';
 
 const Login: React.FC = () => {
-  const [loginUser, { data, error, isLoading }] = useLoginUserMutation();
-  const getProfile = useGetProfileQuery();
-  const [refreshToken] = useRefreshTokenMutation();
+  const [
+    loginUser,
+    { data: loginData, error: loginError, isLoading: loginLoading },
+  ] = useLoginUserMutation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [profile, setProfile] = useState('');
+
+  const {
+    data: profileData,
+    error: profileError,
+    isFetching: profileFetching,
+    refetch,
+  } = useGetProfileQuery();
 
   const handleLogin = async () => {
-    const res = loginUser({ username, password }).unwrap();
-    console.log(res);
+    await loginUser({ username, password });
   };
 
-  const handleProfile = async () => {
-    const resp = getProfile.refetch();
-    setProfile(JSON.stringify(resp));
-    console.log('getProfile:--------------', getProfile.data);
-    }
-
-  const handleRefreshToken = async () => {
-    await refreshToken();
-  }
+  const handleFetchProfile = () => {
+    refetch(); // Manually trigger the profile fetch
+  };
 
   return (
     <div>
@@ -39,18 +39,18 @@ const Login: React.FC = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleLogin} disabled={isLoading}>
+      <button onClick={handleLogin} disabled={loginLoading}>
         Login
       </button>
+      {loginData && <p>Access Token: {loginData.accessToken}</p>}
+      {loginError && <p>Error: {loginError.data?.message}</p>}
 
-      <div>
-        <button onClick={handleProfile}>Profile</button>
-        <p>{profile}</p>
-
-        <button onClick={handleRefreshToken}>Refresh Token</button>
-      </div>
-
-
+      <h2>Test Automatic Token Refresh</h2>
+      <button onClick={handleFetchProfile} disabled={profileFetching}>
+        Fetch User Profile
+      </button>
+      {profileData && <p>Profile: {JSON.stringify(profileData)}</p>}
+      {profileError && <p>Error: {profileError.data?.message}</p>}
     </div>
   );
 };

@@ -1,10 +1,13 @@
 import { Controller, Delete, Get, Param, Post, Body, Request } from '@nestjs/common';
 import { DirectoryMongoService } from './directory-mongo.service';
-import { DirectoryMongo } from './directory-mongo.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  CreateDirectoryOutDto,
+  UpdateDirectoryOutDto,
+} from './dto/create-directory-mongo.dto';
 
 @ApiTags('DirectoryMongo')
-@Controller('directory-docs')
+@Controller('directory')
 export class DirectoryMongoController {
   constructor(private readonly dirService: DirectoryMongoService) {}
 
@@ -24,7 +27,7 @@ export class DirectoryMongoController {
       'Create a new directory document in MongoDB with the provided details.',
   })
   @Post()
-  create(@Body() createDirectoryDto: Partial<DirectoryMongo>) {
+  create(@Body() createDirectoryDto: CreateDirectoryOutDto) {
     return this.dirService.create(createDirectoryDto);
   }
 
@@ -37,6 +40,17 @@ export class DirectoryMongoController {
   findOne(@Param('id') id: string) {
     return this.dirService.findOne(id);
   }
+
+  @ApiOperation({
+    summary: 'Update a directory by ID',
+    description:
+      'Update a specific directory document in MongoDB using its unique ID.',
+  })
+  @Post(':id')
+  update(@Param('id') id: string, @Body() updateDirectoryDto: UpdateDirectoryOutDto) {
+    return this.dirService.update(id, updateDirectoryDto);
+  }
+
 
   @ApiOperation({
     summary: 'Delete a directory by ID',

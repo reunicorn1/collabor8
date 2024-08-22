@@ -4,8 +4,16 @@ import { BadRequestException } from '@nestjs/common';
 
 interface CreateFileOutDto {
   file_name: string;
-  username: string;
   parent_id: string;
+  project_id: string;
+  file_content?: string;
+}
+
+interface UpdateFileOutDto {
+  file_name?: string;
+  parent_id?: string;
+  project_id?: string;
+  file_content?: string;
 }
 
 function validateCreateFileDto(dto: any): CreateFileOutDto {
@@ -13,7 +21,8 @@ function validateCreateFileDto(dto: any): CreateFileOutDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { file_name, username, parent_id } = dto;
+  const { file_name, parent_id, project_id } = dto;
+  let { file_content } = dto;
 
   if (typeof parent_id !== 'string' || parent_id.trim() === '') {
     throw new BadRequestException('parent ID is required and must be a string');
@@ -23,16 +32,54 @@ function validateCreateFileDto(dto: any): CreateFileOutDto {
     throw new BadRequestException('File name is required and must be a string');
   }
 
-  if (typeof username !== 'string' || username.trim() === '') {
-    throw new BadRequestException('Owner ID is required and must be a string');
+  if (typeof project_id !== 'string' || project_id.trim() === '') {
+    throw new BadRequestException('Project ID is required and must be a string');
   }
-  return { file_name, username, parent_id };
+
+  if (file_content && typeof file_content !== 'string') {
+    throw new BadRequestException('File content must be a string');
+  } else if (!file_content) {
+    file_content = '';
+  }
+
+  return { file_name, parent_id, project_id, file_content };
+}
+
+function validateUpdateFileDto(dto: any): UpdateFileOutDto {
+  if (!dto || typeof dto !== 'object') {
+    throw new BadRequestException('Invalid input');
+  }
+
+  const { file_name, parent_id, project_id, file_content } = dto;
+
+  if (file_name && typeof file_name !== 'string') {
+    throw new BadRequestException('File name must be a string');
+  }
+
+  if (parent_id && typeof parent_id !== 'string') {
+    throw new BadRequestException('Parent ID must be a string');
+  }
+
+  if (project_id && typeof project_id !== 'string') {
+    throw new BadRequestException('Project ID must be a string');
+  }
+
+  if (file_content && typeof file_content !== 'string') {
+    throw new BadRequestException('File content must be a string');
+  }
+
+  return { file_name, parent_id, project_id, file_content };
 }
 
 function parseCreateFileMongoDto(requestBody: any): CreateFileOutDto {
   const validated = validateCreateFileDto(requestBody);
-
   return validated;
 }
 
-export { parseCreateFileMongoDto };
+function parseUpdateFileMongoDto(requestBody: any): UpdateFileOutDto {
+  const validated = validateUpdateFileDto(requestBody);
+  return validated;
+}
+
+
+export { parseCreateFileMongoDto, CreateFileOutDto, parseUpdateFileMongoDto, UpdateFileOutDto };

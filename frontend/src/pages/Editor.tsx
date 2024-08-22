@@ -1,4 +1,4 @@
-import { Grid, GridItem } from '@chakra-ui/react';
+import { Grid, GridItem, Box, Text, Divider } from '@chakra-ui/react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
@@ -7,9 +7,13 @@ import { EditorProvider } from '../context/EditorContext';
 import CodeEditor from '../components/CodeEditor/CodeEditor';
 import Shares from '../components/Bars/Shares';
 import MenuBar from '../components/Bars/MenuBar';
-import Tree from '../components/Tree/Tree';
+import Tree from '../components/FileTree/Tree';
+import * as Y from 'yjs';
 
 export default function Editor() {
+  // The only thing to fix my issues is to avoid using context and use direct passing instead
+  const ydoc = new Y.Doc();
+
   const { projectId = '' } = useParams();
   const [isDragging, setIsDragging] = useState(false);
 
@@ -43,7 +47,7 @@ export default function Editor() {
                 {/* Top Panel Group with horizontal panels */}
                 <Panel defaultSize={20} minSize={20} maxSize={50}>
                   {/* <FileTree /> */}
-                  <Tree />
+                  <Tree ydoc={ydoc} />
                 </Panel>
                 <PanelResizeHandle
                   style={{
@@ -58,12 +62,26 @@ export default function Editor() {
                 <Panel>
                   <PanelGroup direction="vertical">
                     <Panel minSize={20}>
-                      <CodeEditor projectId={projectId} />
+                      <CodeEditor projectId={projectId} ydoc={ydoc} />
                     </Panel>
                     <PanelResizeHandle
                       style={{ backgroundColor: 'grey', height: '2px' }}
                     />
-                    <Panel defaultSize={20}>Terminal</Panel>
+                    <Panel defaultSize={20}>
+                      <Box bg="brand.800" h="100%">
+                        <Box bg="brand.900">
+                          <Text
+                            fontSize="xs"
+                            color="white"
+                            fontFamily="mono"
+                            p={3}
+                          >
+                            Output
+                          </Text>
+                        </Box>
+                        <Divider color="grey" />
+                      </Box>
+                    </Panel>
                   </PanelGroup>
                 </Panel>
                 {/* Bottom Panel */}

@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
+import { Box } from '@chakra-ui/react';
 import './codemirrorSetup';
 import * as Y from 'yjs';
 import { CodemirrorBinding } from 'y-codemirror';
@@ -10,10 +11,10 @@ import { Editor } from 'codemirror';
 import { useFile, useSettings } from '../../context/EditorContext';
 // import DocumentManager from './TabsList';
 import { Awareness } from 'y-protocols/awareness.js';
-import { useYMap } from 'zustand-yjs';
 import { getRandomUsername } from './names';
+import { YMapValueType } from '../../context/EditorContext';
+import createfiletree from '../../utils/filetreeinit';
 import Tabs from './Tabs';
-import { useYjs } from '../../hooks/YjsHook';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -23,35 +24,30 @@ const languageModes: Record<LanguageCode, string> = {
   markdown: 'markdown',
   html: 'xml',
 };
-
 // Definition of interfaces and types
+
 interface CodeEditorProps {
   projectId: string;
+  ydoc: Y.Doc;
 }
 
-type YMapValueType = Y.Text | null | Y.Map<YMapValueType>;
-
-const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
-  const websocket = import.meta.env.VITE_WS_SERVER;
+const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
   const { theme, language, mode, setMode } = useSettings()!;
-  const { fileSelected, setAwareness } = useFile()!;
+  const { fileSelected, setAwareness, setFileTree } = useFile()!;
   const editorRef = useRef<Editor | null>(null);
   const projectRoot = useRef<Y.Map<YMapValueType> | null>(null);
   const binding = useRef<CodemirrorBinding | null>(null);
+  const ydoc_ = useRef(ydoc);
   const awareness = useRef<Awareness | null>(null);
-  const ydoc = useYjs();
+  const [wsProvider, setProvider] = useState<WebsocketProvider | null>(null);
 
-  projectRoot.current = ydoc.getMap('root');
-  const { data, set, entries } = useYMap<
-    Y.Map<YMapValueType> | Y.Text,
-    Record<string, Y.Map<YMapValueType> | Y.Text>
-  >(projectRoot.current); // Type Error
+  projectRoot.current = ydoc_.current.getMap('root');
+  createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
 
   // An event listener for updates happneing in the ydoc
-  ydoc.on('update', (update) => {
+  ydoc_.current.on('update', (update) => {
     console.log('Yjs update', update);
   });
-
   // A function to create a binding between file selected from the file tree and the editor
   const setupCodemirrorBinding = (text: Y.Text) => {
     return new CodemirrorBinding(text, editorRef.current!, awareness.current, {
@@ -59,10 +55,15 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
     });
   };
 
+  console.log({ wsProvider });
+  // effects for socket provider and awareness
   useEffect(() => {
+    const websocket = import.meta.env.VITE_WS_SERVER;
+
     if (!editorRef.current) return;
+
     // Creation of the connction with the websocket
-    const provider = new WebsocketProvider(websocket, projectId, ydoc);
+    const provider = new WebsocketProvider(websocket, projectId, ydoc_.current);
     provider.on('status', (event: { status: unknown }) => {
       console.log(event.status); // logs "connected" or "disconnected"
     });
@@ -102,12 +103,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
 
         // Log removed users
         if (removed.length > 0) {
-          removed.forEach((clientId) => {
+          removed.forEach((clientId: number) => {
             console.log('User left:', clientId);
             console.log(awareness.current?.getStates());
             updateAwareness();
           });
         }
+
       }
     });
     // Clean up before the user leaves
@@ -115,36 +117,39 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
       provider.awareness.setLocalState(null);
     });
 
+    if (projectRoot.current) {
+      setFileTree(projectRoot.current);
+    }
     return () => {
       binding.current?.destroy();
       provider.disconnect();
     };
-  }, [projectId, websocket]);
+
+  }, [projectId]);
 
   useEffect(() => {
-    if (fileSelected && editorRef.current && fileSelected instanceof Y.Text) {
+    if (
+      fileSelected &&
+      editorRef.current &&
+      fileSelected.value instanceof Y.Text
+    ) {
       try {
         setMode(false);
         binding.current?.destroy();
-        binding.current = setupCodemirrorBinding(fileSelected);
+        binding.current = setupCodemirrorBinding(fileSelected.value);
       } catch (err) {
         console.error('Error occured during binding, but this is serious', err);
       }
     } else {
+      setMode(true);
       console.error('Error occured during binding of the file', fileSelected);
     }
   }, [fileSelected]);
 
   return (
-    <div>
-      {/* <DocumentManager
-        data={data}
-        set={set}
-        entries={entries}
-        yMap={projectRoot.current}
-      /> */}
+    <Box h="100%" bg="brand.900">
       <Tabs />
-      <div>
+      <Box opacity={fileSelected ? '1' : '0'}>
         <CodeMirror
           options={{
             mode: languageModes[language],
@@ -156,9 +161,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId }) => {
             editorRef.current = editor;
           }}
         />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
-
 export default CodeEditor;

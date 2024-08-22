@@ -5,13 +5,19 @@ import {
   Body,
   Param,
   Delete,
+  Request,
   Put,
+  Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { Projects } from './project.entity';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
-import { CreateProjectDto } from './dto/create-project.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  CreateProjectDto,
+  UpdateProjectDto,
+} from './dto/create-project.dto';
 
 @ApiTags('Projects')
 @Controller('projects')
@@ -23,17 +29,68 @@ export class ProjectsController {
     description: 'Create a new project using the provided data.',
   })
   @Post()
-  async create(@Body() createProjectDto: CreateProjectDto): Promise<Projects> {
+  async create(
+    @Body() createProjectDto: CreateProjectDto,
+    @Request() req: any,
+  ): Promise<Projects> {
+    createProjectDto.username = req.user.username;
+    console.log(createProjectDto);
     return this.projectsService.create(createProjectDto);
   }
 
   @ApiOperation({
-    summary: 'Get all projects',
-    description: 'Retrieve a list of all projects.',
+    summary: 'Get all projects of the logged in user',
+    description: 'Retrieve a list of all projects associated with the logged in user using Id.',
   })
   @Get()
-  async findAll(): Promise<Projects[]> {
-    return this.projectsService.findAll();
+  async findAllById(@Request() req: any): Promise<Projects[]> {
+    return this.projectsService.findAllBy('owner_id', req.user.id);
+  }
+
+  @ApiOperation({
+    summary: 'Retrieve projects by username with depth',
+    description:
+      'Retrieve projects associated with a specific username and a given depth level. This operation fetches projects under a specified directory up to a certain depth in the directory hierarchy.',
+  })
+  @Get(':username/:id')
+  findAllByUsernameDepth(
+    @Param('username') username: string,
+    @Param('id') id: string,
+    @Query('depth') depth: number,
+  ) {
+    return this.projectsService.findAllByUsernameDepth(username, depth, id);
+  }
+
+
+  @ApiOperation({
+    summary: 'Get all projects of the logged in user',
+    description: 'Retrieve a list of all projects associated with the logged in user using username And is paginated.',
+  })
+  @Get('page')
+  async findAllByUsernamePaginated(
+    @Request() req: any,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('sort') sort: string,
+  ): Promise<any> {
+    if (page && limit) {
+      const { total, projects } = await this.projectsService.findAllByUsernamePaginated(
+        req.user.username,
+        page,
+        limit,
+        sort,
+      );
+      console.log(total, projects, page, limit, Math.ceil(total / limit));
+      return {
+        total,
+        projects,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      };
+    } else {
+      throw new BadRequestException('Page and limit query parameters are required');
+    }
   }
 
   @ApiOperation({
@@ -41,10 +98,10 @@ export class ProjectsController {
     description: 'Retrieve all projects associated with a specific username.',
   })
   @Get(':username')
-  async findAllByUsername(
+  async findAllForUser(
     @Param('username') username: string,
-  ): Promise<ProjectMongo[]> {
-    return this.projectsService.findAllByUsername(username);
+  ): Promise<Projects[]> {
+    return this.projectsService.findAllBy('username', username);
   }
 
   @ApiOperation({
@@ -63,7 +120,7 @@ export class ProjectsController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateProjectDto: Partial<Projects>,
+    @Body() updateProjectDto: UpdateProjectDto,
   ): Promise<Projects> {
     return this.projectsService.update(id, updateProjectDto);
   }

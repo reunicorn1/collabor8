@@ -10,6 +10,18 @@ const collectionName = 'documents';
 const port = 1234;
 let connectionCount = 0;
 
+// Initialize MongoDB
+async function initializeDatabase() {
+  try {
+    await MongoClient.connect(mongoUrl);
+    // const db = client.db(dbName);
+    // await clearCollections(db);
+    // await insertMockData(db);
+    console.log('Connected to MongoDB');
+  } catch (error) {
+    console.error('Failed to connect to MongoDB or insert mock data:', error);
+  }
+}
 // Hocuspocus Server Configuration
 const server = new Hocuspocus({
   port,
@@ -202,27 +214,13 @@ async function loadfileFromDb(projectId, fileId, yText) {
   //   return;
   // } else {
   //   const file = project.children.find((child) => child.file_id === fileId);
-
-  //   if (file) {
-  //     const content = file.file_content;
-  //     if (content) {
-  //       yText.applyDelta(content);
-  //     } else {
-  //       console.error(`File content is undefined for fileId: ${fileId}`);
-  //     }
-  //   } else {
-  //     console.error(`File not found: ${fileId}`);
-  //   }
-  // }
-}
-
 async function updateDocumentInDb(projectId, key, value, metaArray) {
   if (key === null) {
     console.error('Cannot store date');
     return;
   }
   // console.log('Updating document:', value.toJSON());
-  const fileId = key;
+  const fileId = key
   const yText = value;
   console.log(`FileId: ${fileId}`);
   if (yText instanceof Y.Text) {
