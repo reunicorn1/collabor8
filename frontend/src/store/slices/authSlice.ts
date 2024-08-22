@@ -6,11 +6,12 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { api } from '@store/services/auth';
+import { User } from '@types';
 
 // Define the authentication state interface
 interface AuthState {
   accessToken: string | null;
-  user: any;
+  user: User;
 }
 
 // Define the initial state for authentication
@@ -39,10 +40,8 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addMatcher(api.endpoints.loginUser.matchFulfilled, (state, action) => {
-        const { accessToken, user } = action.payload;
-        // set user details in the state
+        const { accessToken } = action.payload;
         state.accessToken = accessToken;
-        state.user = user;
         localStorage.setItem('accessToken', accessToken);
       })
       .addMatcher(api.endpoints.loginUser.matchRejected, (state) => {
