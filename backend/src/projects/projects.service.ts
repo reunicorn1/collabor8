@@ -84,6 +84,7 @@ export class ProjectsService {
     if (!sort) {
       sort = 'created_at';
     }
+    console.log(username, page, limit, sort);
     const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
     const sortDirection = sort.startsWith('-') ? 'DESC' : 'ASC';
     const total = await this.projectsRepository.createQueryBuilder('projects')

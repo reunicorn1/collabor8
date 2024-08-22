@@ -8,7 +8,7 @@ const baseQuery = fetchBaseQuery({
   baseUrl: apiConfig.baseUrl,
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as RootState;
-    const token = state.auth.accessToken;
+    const token = localStorage.getItem('accessToken') || state.auth.accessToken;
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
     }

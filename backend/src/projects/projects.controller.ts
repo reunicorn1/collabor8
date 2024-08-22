@@ -61,7 +61,9 @@ export class ProjectsController {
     return this.projectsService.findAllByUsernameDepth(username, depth, id);
   }
 
-
+  // TODO: 22/8 - Add endpoint for searching projects by name
+  // project criteria must be owner or contributor
+  //
   @ApiOperation({
     summary: 'Get all projects of the logged in user',
     description: 'Retrieve a list of all projects associated with the logged in user using username And is paginated.',
@@ -73,6 +75,7 @@ export class ProjectsController {
     @Query('limit') limit: number,
     @Query('sort') sort: string,
   ): Promise<any> {
+    console.log(page, limit, sort);
     if (page && limit) {
       const { total, projects } = await this.projectsService.findAllByUsernamePaginated(
         req.user.username,

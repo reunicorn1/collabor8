@@ -10,37 +10,91 @@ import {
 } from '@chakra-ui/react';
 import { FaFolder } from 'react-icons/fa';
 import PersonalTable from './PersonalTable';
-
+import {
+  useGetAllProjectsPaginatedQuery,
+  useLazyGetAllProjectsPaginatedQuery,
+} from '@store/services/project';
+import { useState, useEffect } from 'react';
+import * as projectUtils from '@utils/dashboard.utils';
 export default function Home() {
   const coolors = ['#F6D277', '#76449A', '#B4B4B4', '#52A0D8', '#F16145'];
+  const [userProjects, setUserProjects] = useState([]);
+  const [page, setPage] = useState(1);
+  const [sort, setSort] = useState('-updated_at');
+  const [limit, setLimit] = useState(10);
+  const [recentProjects, setRecentProjects] = useState([]);
+  // const [personalProjects, setPersonalProjects] = useState([]);
+  // const [sharedProjects, setSharedProjects] = useState([]);
+  const [fetch, setFetch] = useState(true);
+  const [error, setError] = useState(null);
 
   function getRandomColor(): string {
     const randomIndex = Math.floor(Math.random() * coolors.length);
     return coolors[randomIndex];
   }
+  const { data, err, isFetching, refetch } = useGetAllProjectsPaginatedQuery(
+    { page, limit, sort },
+    // { refetchOnReconnect: true }, // Optional: refetch when reconnecting
+  );
+  useEffect(() => {
+    if (fetch) {
+      if (err) {
+        setError(err);
+      }
 
-  function getUserProjects() {
-    // This function should fetch the user's projects from the backend
-  }
+      if (data) {
+        console.log('data', data);
+        const mutatedProjects = projectUtils.mutateProjects(data);
+        console.log('mutatedProjects', mutatedProjects);
+        setUserProjects(mutatedProjects);
+        projectUtils.setRecentProjectsFromAllProjects(data, setRecentProjects); // Set recent projects here
+        setFetch(false);
+      }
+    }
+  }, [data, err, fetch]);
 
-  function getSharedProjects() {
-    // This function should fetch the projects shared with the user from the backend
-  }
-  
-  function getRecentProjects() {
-    // This function should fetch the user's recent projects from the backend
-  }
+  //   function getRandomColor(): string {
+  //     const randomIndex = Math.floor(Math.random() * coolors.length);
+  //     return coolors[randomIndex];
+  //   }
 
+  //   function useData(data) {
+  //     const mutatedProjects = projectUtils.mutateProjects(data);
+  //     setUserProjects(mutatedProjects);
+  //     projectUtils.setRecentProjectsFromAllProjects(data, setRecentProjects); // Set recent projects here
+  //   }
 
-  
-  
+  //   function useTrigger(page, limit, sort) {
+  //     getProjectsPaginated({ page, limit, sort })
+  //       .unwrap()
+  //       .then((res) => {
+  //         // const { total, projects, page, limit, totalPages } = res;
+  //         const mutatedProjects = projectUtils.mutateProjects(res);
+  //         setUserProjects(mutatedProjects);
+  //         projectUtils.setRecentProjectsFromAllProjects(res, setRecentProjects); // Set recent projects here
+  //       })
+  //       .catch((error) => {
+  //         console.error('Error fetching projects:', error);
+  //       });
+  //   }
+  //   useData(data);
+  // useEffect(() => {
+  //   console.log('page:', page);
+  //   if (data && page < 2) {
+  //     useData(data);
+
+  //     setPage(page + 1);
+  //   } else {
+  //     useTrigger(page, limit, sort);
+  //   }
+  // }, [page, limit, sort, data]);
 
   // This is a list for demonstration purposes in a static version
-  const projects = [
-    { name: 'Project 1', lastEdited: '2 days ago' },
-    { name: 'Project 2', lastEdited: '5 days ago' },
-    { name: 'Project 3', lastEdited: '1 week ago' },
-  ];
+  // const projects = [
+  //   { name: 'Project 1', lastEdited: '2 days ago' },
+  //   { name: 'Project 2', lastEdited: '5 days ago' },
+  //   { name: 'Project 3', lastEdited: '1 week ago' },
+  // ];
 
   return (
     <Flex h="100vh" justifyContent="center">
@@ -67,7 +121,7 @@ export default function Home() {
           whiteSpace="nowrap"
         >
           {/* top 3 recent projects will be shown here */}
-          {projects.map((project, index) => {
+          {recentProjects?.map((project, index) => {
             const color = getRandomColor();
             return (
               <Box

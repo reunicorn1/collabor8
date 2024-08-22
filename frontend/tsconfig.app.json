@@ -29,6 +29,12 @@
 			],
 			"@types": [
 				"types.ts"
+			],
+			"@components/*": [
+				"components/*"
+			],
+			"@utils/*": [
+				"utils/*"
 			]
 		}
 	},

@@ -24,9 +24,13 @@ export const projectApi = api.injectEndpoints({
       { total: number; projects: Project[]; page: number; limit: number; totalPages: number },
       { page: number; limit: number; sort: string }
     >({
-      query: ({ page, limit, sort }) =>
-        `/projects?page=${page}&limit=${limit}&sort=${sort}`,
+      query: ({ page, limit, sort }) => ({
+        url: `/projects?page=${page}&limit=${limit}&sort=${sort}`,
+        method: 'GET',
+        credentials: 'include',
+      }),
     }),
+
     // Get all projects by username
     getProjectsByUsername: builder.query<Project[], string>({
       query: (username) => `/projects/${username}`,
@@ -60,6 +64,8 @@ export const projectApi = api.injectEndpoints({
 export const {
   useCreateProjectMutation,
   useGetAllProjectsQuery,
+  useGetAllProjectsPaginatedQuery,
+  useLazyGetAllProjectsPaginatedQuery,
   useGetProjectsByUsernameQuery,
   useGetProjectByIdQuery,
   useUpdateProjectMutation,
