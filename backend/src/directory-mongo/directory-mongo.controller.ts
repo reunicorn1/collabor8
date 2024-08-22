@@ -1,6 +1,5 @@
 import { Controller, Delete, Get, Param, Post, Body, Request } from '@nestjs/common';
 import { DirectoryMongoService } from './directory-mongo.service';
-import { DirectoryMongo } from './directory-mongo.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CreateDirectoryOutDto,
@@ -8,7 +7,7 @@ import {
 } from './dto/create-directory-mongo.dto';
 
 @ApiTags('DirectoryMongo')
-@Controller('directory-docs')
+@Controller('directory')
 export class DirectoryMongoController {
   constructor(private readonly dirService: DirectoryMongoService) {}
 

@@ -46,6 +46,22 @@ export class ProjectsController {
   async findAllById(@Request() req: any): Promise<Projects[]> {
     return this.projectsService.findAllBy('owner_id', req.user.id);
   }
+
+  @ApiOperation({
+    summary: 'Retrieve projects by username with depth',
+    description:
+      'Retrieve projects associated with a specific username and a given depth level. This operation fetches projects under a specified directory up to a certain depth in the directory hierarchy.',
+  })
+  @Get(':username/:id')
+  findAllByUsernameDepth(
+    @Param('username') username: string,
+    @Param('id') id: string,
+    @Query('depth') depth: number,
+  ) {
+    return this.projectsService.findAllByUsernameDepth(username, depth, id);
+  }
+
+
   @ApiOperation({
     summary: 'Get all projects of the logged in user',
     description: 'Retrieve a list of all projects associated with the logged in user using username And is paginated.',
@@ -55,12 +71,14 @@ export class ProjectsController {
     @Request() req: any,
     @Query('page') page: number,
     @Query('limit') limit: number,
+    @Query('sort') sort: string,
   ): Promise<any> {
     if (page && limit) {
       const { total, projects } = await this.projectsService.findAllByUsernamePaginated(
         req.user.username,
         page,
         limit,
+        sort,
       );
       console.log(total, projects, page, limit, Math.ceil(total / limit));
       return {

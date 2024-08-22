@@ -65,13 +65,27 @@ export class ProjectsService {
     return this.projectsRepository.findBy({ [field]: value });
   }
 
+  async findAllByUsernameDepth(
+    username: string,
+    depth: number,
+    id: string,
+  ): Promise<ProjectMongo[]> {
+    return this.projectMongoService.findAllByUsernameDepth(username, depth, id);
+  }
+
   // retrieve all user projects by username and is paginated
   async findAllByUsernamePaginated(
     username: string,
     page: number,
     limit: number,
+    sort: string,
   ): Promise<{ total: number; projects: Projects[] }> {
     const skip = (page - 1) * limit;
+    if (!sort) {
+      sort = 'created_at';
+    }
+    const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
+    const sortDirection = sort.startsWith('-') ? 'DESC' : 'ASC';
     const total = await this.projectsRepository.createQueryBuilder('projects')
     .where('projects.username = :username', { username })
     .getCount();
@@ -79,7 +93,7 @@ export class ProjectsService {
     .where('projects.username = :username', { username })
     .skip(skip)
     .take(limit)
-    .orderBy('projects.updated_at', 'DESC')
+    .orderBy(`projects.${sortField}`, sortDirection)
     .getMany();
     console.log(total, projects);
     return { total, projects };

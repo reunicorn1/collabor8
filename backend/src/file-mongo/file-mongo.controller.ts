@@ -4,7 +4,7 @@ import { FileMongo } from './file-mongo.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateFileOutDto, UpdateFileOutDto } from './dto/create-file-mongo.dto';
 @ApiTags('FileMongo')
-@Controller('file-docs')
+@Controller('files')
 export class FileMongoController {
   constructor(private readonly fileService: FileMongoService) {}
 
