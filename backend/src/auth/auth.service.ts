@@ -30,6 +30,7 @@ export class AuthService {
   async signIn(user: Partial<Users>): Promise<{
     accessToken: string;
     refreshToken: string;
+    user: Partial<Users>;
   }> {
     const payload = {
       username: user.username,
@@ -37,6 +38,15 @@ export class AuthService {
       roles: user.roles,
       timestamp: new Date().getTime(),
     };
+    const {
+      user_id,
+      roles,
+      email,
+      environment_id,
+      created_at,
+      updated_at,
+      ...userinfo
+    } = await this.usersService.findOneBy({ username: user.username });
     Logger.log('--------->', { user });
     const user = this.usersService.findOneBy({ username: user.username });
     return {
@@ -44,13 +54,15 @@ export class AuthService {
       refreshToken: await this.jwtService.signAsync(payload, {
         expiresIn: '7d',
       }),
+      user: userinfo,
     };
   }
 
   async refreshToken(refreshToken: string): Promise<{
     accessToken: string;
   }> {
-    const { iat, exp, timestamp, ...payload } = await this.jwtService.verifyAsync(refreshToken);
+    const { iat, exp, timestamp, ...payload } =
+      await this.jwtService.verifyAsync(refreshToken);
     payload.timestamp = new Date().getTime();
 
     return {

@@ -42,13 +42,13 @@ export class AuthController {
   @Post('signin')
   async signIn(@Request() req, @Response() res) {
     Logger.log('--------------->', { user: req.user });
-    const { accessToken, refreshToken } = await this.authService.signIn(
+    const { accessToken, refreshToken, user } = await this.authService.signIn(
       req.user,
     );
     res
       .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
       .cookie('accessToken', accessToken)
-      .send({ accessToken });
+      .send({ accessToken, user });
   }
 
   @docs.ApiSignUp()

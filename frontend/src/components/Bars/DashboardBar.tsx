@@ -19,7 +19,6 @@ import NewProject from '@components/Modals/NewProject';
 export default function DashboardBar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-
   return (
     <Flex
       bg="brand.900"

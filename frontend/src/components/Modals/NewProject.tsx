@@ -38,7 +38,11 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
   const handleCreate = () => {
     createproject({ project_name: name, description })
       .unwrap()
-      .then((data) => console.log(data))
+      .then((data) => {
+        console.log(data);
+        // TODO: navigate to the project page
+        onClose();
+      })
       .catch((err) => console.log(err));
   };
 

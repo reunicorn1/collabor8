@@ -73,7 +73,10 @@ export const api = createApi({
   tagTypes: ['User', 'Profile', 'Environment', 'Project'],
   endpoints: (builder) => ({
     // Login user
-    loginUser: builder.mutation<{ accessToken: string }, LoginUserDto>({
+    loginUser: builder.mutation<
+      { accessToken: string; user: Partial<User> },
+      LoginUserDto
+    >({
       query: (credentials) => ({
         url: '/auth/signin',
         method: 'POST',
