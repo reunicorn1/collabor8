@@ -15,6 +15,8 @@ import { useState } from 'react';
 import MenuSelection from './MenuSelection';
 import { ArrowForwardIcon, ArrowBackIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
+import { HiDotsHorizontal } from 'react-icons/hi';
+import MenuProject from './MenuProject';
 
 export default function SharedWithMe() {
   // TODO: All items of the table are clickable with cursor pointer
@@ -83,61 +85,101 @@ export default function SharedWithMe() {
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+                <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+                <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+                <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+                <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+                <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+                <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+                <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+                <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+                <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+                <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
           </Tbody>
         </Table>

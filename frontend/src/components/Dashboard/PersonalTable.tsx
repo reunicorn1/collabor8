@@ -15,6 +15,8 @@ import { useState } from 'react';
 import MenuSelection from './MenuSelection';
 import { ArrowForwardIcon, ArrowBackIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
+import { HiDotsHorizontal } from 'react-icons/hi';
+import MenuProject from './MenuProject';
 
 export default function PersonalTable() {
   // These two values can be used to customize the way data is retrived
@@ -22,7 +24,6 @@ export default function PersonalTable() {
   const [order, setOrder] = useState('Newest first');
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
-
 
   const handleBack = () => {
     // This function handles requests of pagination to previous page
@@ -83,61 +84,101 @@ export default function PersonalTable() {
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+                <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+                <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+              <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+              <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+              <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+              <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+              <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+              <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+              <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
             <Tr cursor="pointer">
               <Td>Python Project Snake Game</Td>
               <Td>3 Members</Td>
               <Td>1 Sep, 2023</Td>
-              <Td></Td>
+              <Td>
+              <MenuProject>
+                  <HiDotsHorizontal />
+                </MenuProject>
+              </Td>
             </Tr>
           </Tbody>
         </Table>

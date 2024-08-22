@@ -16,6 +16,7 @@ import {
 } from '@store/services/project';
 import { useState, useEffect } from 'react';
 import * as projectUtils from '@utils/dashboard.utils';
+
 export default function Home() {
   const coolors = ['#F6D277', '#76449A', '#B4B4B4', '#52A0D8', '#F16145'];
   const [userProjects, setUserProjects] = useState([]);
@@ -27,6 +28,7 @@ export default function Home() {
   // const [sharedProjects, setSharedProjects] = useState([]);
   const [fetch, setFetch] = useState(true);
   const [error, setError] = useState(null);
+  
 
   function hashStringToIndex(str: string, arrayLength: number): number {
     let hash = 0;
