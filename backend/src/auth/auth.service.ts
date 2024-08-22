@@ -8,7 +8,12 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { Users } from '@users/user.entity';
-import { CreateUserDto, parseCreateUserDto, parseLoginDto, LoginUserDto } from '@users/dto/create-user.dto';
+import {
+  CreateUserDto,
+  parseCreateUserDto,
+  parseLoginDto,
+  LoginUserDto,
+} from '@users/dto/create-user.dto';
 import { EnvironmentMongoService } from '@environment-mongo/environment-mongo.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -20,13 +25,11 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly environmentService: EnvironmentMongoService,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
-  async signIn(
-    user: Partial<Users>,
-  ): Promise<{
-    accessToken: string,
-    refreshToken: string,
+  async signIn(user: Partial<Users>): Promise<{
+    accessToken: string;
+    refreshToken: string;
   }> {
     const payload = {
       username: user.username,
@@ -34,27 +37,35 @@ export class AuthService {
       roles: user.roles,
       timestamp: new Date().getTime(),
     };
-    Logger.log('--------->', { user })
+    Logger.log('--------->', { user });
     return {
       accessToken: await this.jwtService.signAsync(payload),
-      refreshToken: await this.jwtService.signAsync(payload, { expiresIn: '7d' }),
+      refreshToken: await this.jwtService.signAsync(payload, {
+        expiresIn: '7d',
+      }),
     };
   }
 
-  async refreshToken(
-    refreshToken: string,
-  ): Promise<{
-    accessToken: string,
+  async refreshToken(refreshToken: string): Promise<{
+    accessToken: string;
   }> {
-    const { exp, timestamp, ...payload } = await this.jwtService.verifyAsync(refreshToken);
-    payload.timestamp = new Date().getTime();
+    const { exp, timestamp, ..._payload } =
+      await this.jwtService.verifyAsync(refreshToken);
+    _payload.timestamp = new Date().getTime();
+    const { iat, ...payload } = _payload;
     return {
       accessToken: await this.jwtService.signAsync(payload),
     };
   }
 
-  async validateUser(username: string, password: string): Promise<Partial<Users>> {
-    const { password_hash, ...user } = await this.usersService.findOneBy({ username }, true);
+  async validateUser(
+    username: string,
+    password: string,
+  ): Promise<Partial<Users>> {
+    const { password_hash, ...user } = await this.usersService.findOneBy(
+      { username },
+      true,
+    );
     if (!user) {
       throw new NotFoundException(`User with username ${username} not found`);
     }
@@ -79,23 +90,25 @@ export class AuthService {
     try {
       const parsedDto = parseCreateUserDto(user);
       try {
-        const userExists = await this.usersService.findOneBy({ username: parsedDto.username });
+        const userExists = await this.usersService.findOneBy({
+          username: parsedDto.username,
+        });
 
         if (userExists) {
           throw new ConflictException(
             `User with username ${parsedDto.username} already exists`,
           );
         }
-      } catch (err) {
-      }
+      } catch (err) {}
 
-
-      const newUser = await this.usersService.create(parsedDto)
+      const newUser = await this.usersService.create(parsedDto);
 
       return newUser;
     } catch (err) {
       console.log(`Failed to create user: ${err.message}`);
-      throw new InternalServerErrorException(`Failed to create user: ${err.message}`);
+      throw new InternalServerErrorException(
+        `Failed to create user: ${err.message}`,
+      );
     }
   }
 
