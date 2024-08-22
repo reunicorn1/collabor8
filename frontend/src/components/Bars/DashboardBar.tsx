@@ -8,14 +8,18 @@ import {
   Button,
   ButtonGroup,
   IconButton,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
-
 import { BsBell } from 'react-icons/bs';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import DBMenu from '../Dashboard/DBMenu';
+import NewProject from '@components/Modals/NewProject';
 
 export default function DashboardBar() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+
   return (
     <Flex
       bg="brand.900"
@@ -25,7 +29,7 @@ export default function DashboardBar() {
     >
       <Image src="/logo-bb.png" h="23px" ml={3}></Image>
       <Spacer />
-      <ButtonGroup size="xs" isAttached variant="outline">
+      <ButtonGroup size="xs" isAttached variant="outline" onClick={onOpen}>
         <Button
           fontFamily="mono"
           color="white"
@@ -47,6 +51,7 @@ export default function DashboardBar() {
           <Icon color="white" as={ChevronDownIcon} />
         </DBMenu>
       </Box>
+      <NewProject isOpen={isOpen} onClose={onClose} />
     </Flex>
   );
 }

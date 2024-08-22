@@ -43,6 +43,7 @@ const Login: React.FC = () => {
       <button onClick={handleLogin} disabled={loginLoading}>
         Login
       </button>
+      {console.log(loginError)}
       {loginData && <p>Access Token: {loginData.accessToken}</p>}
       {loginError && <p>Error: {loginError.data.message}</p>}
       <br />
