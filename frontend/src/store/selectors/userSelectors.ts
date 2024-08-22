@@ -12,3 +12,9 @@ export const selectUserLoading = createSelector(
   (state: RootState) => state.user.loading,
   (loading) => loading,
 );
+
+// Selector to check if user details are loaded
+export const selectIsUserDetailsLoaded = createSelector(
+  (state: RootState) => state.user.userDetails,
+  (userDetails) => !!userDetails,
+);

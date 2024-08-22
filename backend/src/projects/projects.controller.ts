@@ -14,10 +14,7 @@ import { ProjectsService } from './projects.service';
 import { Projects } from './project.entity';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  CreateProjectDto,
-  UpdateProjectDto,
-} from './dto/create-project.dto';
+import { CreateProjectDto, UpdateProjectDto } from './dto/create-project.dto';
 
 @ApiTags('Projects')
 @Controller('projects')
@@ -40,7 +37,8 @@ export class ProjectsController {
 
   @ApiOperation({
     summary: 'Get all projects of the logged in user',
-    description: 'Retrieve a list of all projects associated with the logged in user using Id.',
+    description:
+      'Retrieve a list of all projects associated with the logged in user using Id.',
   })
   @Get()
   async findAllById(@Request() req: any): Promise<Projects[]> {
@@ -61,10 +59,10 @@ export class ProjectsController {
     return this.projectsService.findAllByUsernameDepth(username, depth, id);
   }
 
-
   @ApiOperation({
     summary: 'Get all projects of the logged in user',
-    description: 'Retrieve a list of all projects associated with the logged in user using username And is paginated.',
+    description:
+      'Retrieve a list of all projects associated with the logged in user using username And is paginated.',
   })
   @Get('page')
   async findAllByUsernamePaginated(
@@ -74,12 +72,13 @@ export class ProjectsController {
     @Query('sort') sort: string,
   ): Promise<any> {
     if (page && limit) {
-      const { total, projects } = await this.projectsService.findAllByUsernamePaginated(
-        req.user.username,
-        page,
-        limit,
-        sort,
-      );
+      const { total, projects } =
+        await this.projectsService.findAllByUsernamePaginated(
+          req.user.username,
+          page,
+          limit,
+          sort,
+        );
       console.log(total, projects, page, limit, Math.ceil(total / limit));
       return {
         total,
@@ -89,7 +88,9 @@ export class ProjectsController {
         totalPages: Math.ceil(total / limit),
       };
     } else {
-      throw new BadRequestException('Page and limit query parameters are required');
+      throw new BadRequestException(
+        'Page and limit query parameters are required',
+      );
     }
   }
 

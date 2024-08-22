@@ -1,5 +1,5 @@
 import { api } from './auth';
-import { Project, CreateProjectDto } from '@types';
+import { Project, CreateProjectDto, UpdateProjectDto } from '@types';
 
 export const projectApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -11,15 +11,19 @@ export const projectApi = api.injectEndpoints({
         body: newProject,
       }),
     }),
-    // Get all projects
-    getAllProjects: builder.query<Project[], void>({
+    // Get all projects of the logged-in user by ID
+    getAllProjectsByUserId: builder.query<Project[], void>({
       query: () => '/projects',
     }),
-    // Get all projects paginated
-    // send query params page and limit and sort
-    // if sort starts with - it will be descending
-    // and must end with the field name
-    // returns total, projects, page, limit, totalPages
+    // Retrieve projects by username with depth
+    getProjectsByUsernameWithDepth: builder.query<
+      Project[],
+      { username: string; id: string; depth: number }
+    >({
+      query: ({ username, id, depth }) =>
+        `/projects/${username}/${id}?depth=${depth}`,
+    }),
+    // Get all projects of the logged-in user, paginated
     getAllProjectsPaginated: builder.query<
       {
         total: number;
@@ -31,7 +35,7 @@ export const projectApi = api.injectEndpoints({
       { page: number; limit: number; sort: string }
     >({
       query: ({ page, limit, sort }) =>
-        `/projects?page=${page}&limit=${limit}&sort=${sort}`,
+        `/projects/page?page=${page}&limit=${limit}&sort=${sort}`,
     }),
     // Get all projects by username
     getProjectsByUsername: builder.query<Project[], string>({
@@ -40,17 +44,19 @@ export const projectApi = api.injectEndpoints({
     // Get a single project by ID
     getProjectById: builder.query<Project, string>({
       query: (id) => `/projects/${id}`,
+      providesTags: ['Project'],
     }),
     // Update a project by ID
     updateProject: builder.mutation<
       Project,
-      { id: string; data: Partial<Project> }
+      { id: string; data: Partial<UpdateProjectDto> }
     >({
       query: ({ id, data }) => ({
         url: `/projects/${id}`,
         method: 'PUT',
         body: data,
       }),
+      invalidatesTags: ['Project'],
     }),
     // Delete a project by ID
     deleteProject: builder.mutation<void, string>({
@@ -58,6 +64,7 @@ export const projectApi = api.injectEndpoints({
         url: `/projects/${id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['Project'],
     }),
   }),
   overrideExisting: false,
@@ -65,7 +72,9 @@ export const projectApi = api.injectEndpoints({
 
 export const {
   useCreateProjectMutation,
-  useGetAllProjectsQuery,
+  useGetAllProjectsByUserIdQuery,
+  useGetProjectsByUsernameWithDepthQuery,
+  useGetAllProjectsPaginatedQuery,
   useGetProjectsByUsernameQuery,
   useGetProjectByIdQuery,
   useUpdateProjectMutation,

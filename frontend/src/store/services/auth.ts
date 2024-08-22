@@ -14,6 +14,9 @@ interface RefreshTokenResponse {
   accessToken: string;
 }
 
+/**
+ * Base query function with default fetch configuration.
+ */
 const baseQuery = fetchBaseQuery({
   baseUrl: apiConfig.baseUrl,
   prepareHeaders: (headers, { getState }) => {
@@ -26,6 +29,13 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+/**
+ * Base query function with token refresh logic.
+ *
+ * This function handles automatic token refreshing when a 401 Unauthorized
+ * response is encountered. It attempts to refresh the token and retry
+ * the original request.
+ */
 const baseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
   unknown,
@@ -55,9 +65,12 @@ const baseQueryWithReauth: BaseQueryFn<
   return result;
 };
 
+/**
+ * API service configuration Entry point.
+ */
 export const api = createApi({
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['User', 'Profile'],
+  tagTypes: ['User', 'Profile', 'Environment', 'Project'],
   endpoints: (builder) => ({
     // Login user
     loginUser: builder.mutation<{ accessToken: string }, LoginUserDto>({

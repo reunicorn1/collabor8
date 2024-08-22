@@ -1,5 +1,5 @@
 import { api } from './auth';
-import { User } from '@types';
+import { User, Project, File } from '@types';
 
 export const adminApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,7 +9,6 @@ export const adminApi = api.injectEndpoints({
         url: '/admin/all',
         method: 'GET',
       }),
-      providesTags: ['User'],
     }),
     // Delete all users (admin only)
     removeAllUsers: builder.mutation<{ message: string }, void>({
@@ -17,7 +16,6 @@ export const adminApi = api.injectEndpoints({
         url: '/admin/all',
         method: 'DELETE',
       }),
-      invalidatesTags: ['User'],
     }),
     // Retrieve a specific user profile by username (admin only)
     findUserAdmin: builder.query<User, string>({
@@ -25,7 +23,6 @@ export const adminApi = api.injectEndpoints({
         url: `/admin/profile/${username}`,
         method: 'GET',
       }),
-      providesTags: ['User'],
     }),
     // Update a specific user profile by username (admin only)
     updateUserAdmin: builder.mutation<
@@ -37,7 +34,6 @@ export const adminApi = api.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: ['User'],
     }),
     // Delete a specific user profile by username (admin only)
     removeUserAdmin: builder.mutation<{ message: string }, string>({
@@ -45,7 +41,20 @@ export const adminApi = api.injectEndpoints({
         url: `/admin/profile/${username}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['User'],
+    }),
+    // Retrieve all projects (admin only)
+    findAllProjects: builder.query<Project[], void>({
+      query: () => ({
+        url: '/admin',
+        method: 'GET',
+      }),
+    }),
+    // Retrieve all files (admin only)
+    findAllFiles: builder.query<File[], void>({
+      query: () => ({
+        url: '/admin',
+        method: 'GET',
+      }),
     }),
   }),
   overrideExisting: false,
@@ -57,4 +66,6 @@ export const {
   useFindUserAdminQuery,
   useUpdateUserAdminMutation,
   useRemoveUserAdminMutation,
+  useFindAllProjectsQuery,
+  useFindAllFilesQuery,
 } = adminApi;
