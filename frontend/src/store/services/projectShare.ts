@@ -1,4 +1,4 @@
-import { api } from './auth';
+import { api } from './api';
 import { ProjectShares } from '@types';
 
 export const projectShareApi = api.injectEndpoints({

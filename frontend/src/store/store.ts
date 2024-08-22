@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import userReducer from './slices/userSlice';
 import loggerMiddleware from './middleware/loggerMiddleware';
-import { api } from './services/auth';
+import { api } from './services/api';
 
 // Configures the Redux store with reducers and middleware.
 const store = configureStore({

@@ -1,4 +1,4 @@
-import { api } from './auth';
+import { api } from './api';
 import { File } from '@types';
 
 export const fileApi = api.injectEndpoints({
