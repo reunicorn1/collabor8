@@ -5,7 +5,7 @@
  */
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { api } from '@store/services/auth';
+import { authApi } from '@store/services/auth';
 import { User } from '@types';
 
 // Define the authentication state interface
@@ -39,17 +39,20 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addMatcher(api.endpoints.loginUser.matchFulfilled, (state, action) => {
-        const { accessToken } = action.payload;
-        state.accessToken = accessToken;
-        localStorage.setItem('accessToken', accessToken);
-      })
-      .addMatcher(api.endpoints.loginUser.matchRejected, (state) => {
+      .addMatcher(
+        authApi.endpoints.loginUser.matchFulfilled,
+        (state, action) => {
+          const { accessToken } = action.payload;
+          state.accessToken = accessToken;
+          localStorage.setItem('accessToken', accessToken);
+        },
+      )
+      .addMatcher(authApi.endpoints.loginUser.matchRejected, (state) => {
         state.accessToken = null;
         localStorage.removeItem('accessToken');
       })
       .addMatcher(
-        api.endpoints.refreshToken.matchFulfilled,
+        authApi.endpoints.refreshToken.matchFulfilled,
         (state, action) => {
           const { accessToken } = action.payload;
           state.accessToken = accessToken;

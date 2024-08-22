@@ -1,4 +1,4 @@
-import { api } from './auth';
+import { api } from './api';
 import { Environment } from '@types';
 
 export const environmentApi = api.injectEndpoints({

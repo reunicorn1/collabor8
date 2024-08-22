@@ -1,4 +1,4 @@
-import { api } from './auth';
+import { api } from './api';
 import { User, Project, File } from '@types';
 
 export const adminApi = api.injectEndpoints({

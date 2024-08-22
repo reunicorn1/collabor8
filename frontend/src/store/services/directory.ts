@@ -1,4 +1,4 @@
-import { api } from './auth';
+import { api } from './api';
 import { CreateDirectoryDto, Directory } from '@types';
 
 export const directoryApi = api.injectEndpoints({
