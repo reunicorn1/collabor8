@@ -17,6 +17,9 @@ import {
 } from '@store/services/project';
 import { useState, useEffect } from 'react';
 import * as projectUtils from '@utils/dashboard.utils';
+import { useSelector } from 'react-redux';
+import { selectUserDetails } from '@store/selectors/userSelectors';
+import { useGetCurrentUserProfileQuerry } from '@store/services/user';
 
 export default function Home() {
   const coolors = ['#F6D277', '#76449A', '#B4B4B4', '#52A0D8', '#F16145'];
@@ -29,7 +32,8 @@ export default function Home() {
   // const [sharedProjects, setSharedProjects] = useState([]);
   const [fetch, setFetch] = useState(true);
   const [error, setError] = useState(null);
-  
+
+  const userDetails = useSelector(selectUserDetails);
 
   function hashStringToIndex(str: string, arrayLength: number): number {
     let hash = 0;
@@ -56,12 +60,15 @@ export default function Home() {
         setError(err);
       }
 
-      if (data) {
+      if (data?.projects) {
         console.log('data', data);
-        const mutatedProjects = projectUtils.mutateProjects(data);
+        const mutatedProjects = projectUtils.mutateProjects(data?.projects);
         console.log('mutatedProjects', mutatedProjects);
         setUserProjects(mutatedProjects);
-        projectUtils.setRecentProjectsFromAllProjects(data, setRecentProjects); // Set recent projects here
+        projectUtils.setRecentProjectsFromAllProjects(
+          data?.projects,
+          setRecentProjects,
+        ); // Set recent projects here
         setFetch(false);
       }
     }
@@ -114,7 +121,7 @@ export default function Home() {
         <Image src="/banner3.png" />
         <Center>
           <Text color="white" fontFamily="mono" fontSize="2xl" m={5}>
-            Good morning, John Doe
+            {`Good morning, ${userDetails?.first_name} ${userDetails?.last_name}`}
           </Text>
         </Center>
 

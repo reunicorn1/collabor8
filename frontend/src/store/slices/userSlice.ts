@@ -7,6 +7,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from '@types';
 import { userApi } from '@store/services/user';
+import { api } from '@store/services/auth';
 
 interface UserState {
   userDetails: User | null;
@@ -57,6 +58,15 @@ const userSlice = createSlice({
       .addMatcher(
         userApi.endpoints.getCurrentUserProfile.matchRejected,
         (state, action) => {
+          state.loading = false;
+          state.error = action.error.message || 'Failed to fetch user profile';
+        },
+      )
+      .addMatcher(
+        api.endpoints.loginUser.matchFulfilled,
+        (state, action: PayloadAction<Partial<User>>) => {
+          const { user } = action.payload;
+          state.userDetails = user;
           state.loading = false;
           state.error = action.error.message || 'Failed to fetch user profile';
         },
