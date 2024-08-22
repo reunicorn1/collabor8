@@ -16,13 +16,16 @@ export const projectApi = api.injectEndpoints({
       query: () => '/projects',
     }),
     // Get all projects paginated
-    // send query params page and limit
+    // send query params page and limit and sort
+      // if sort starts with - it will be descending
+      // and must end with the field name
     // returns total, projects, page, limit, totalPages
     getAllProjectsPaginated: builder.query<
-      { total: number; projects: Project[]; page: number; limit: number },
-      { page: number; limit: number }
+      { total: number; projects: Project[]; page: number; limit: number; totalPages: number },
+      { page: number; limit: number; sort: string }
     >({
-      query: ({ page, limit }) => `/projects?page=${page}&limit=${limit}`,
+      query: ({ page, limit, sort }) =>
+        `/projects?page=${page}&limit=${limit}&sort=${sort}`,
     }),
     // Get all projects by username
     getProjectsByUsername: builder.query<Project[], string>({
