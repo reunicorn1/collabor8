@@ -18,16 +18,14 @@ import {
   CreateProjectDto,
   UpdateProjectDto,
 } from './dto/create-project.dto';
+import Docs from './projects.docs';
 
 @ApiTags('Projects')
 @Controller('projects')
 export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) {}
+  constructor(private readonly projectsService: ProjectsService) { }
 
-  @ApiOperation({
-    summary: 'Create a new project',
-    description: 'Create a new project using the provided data.',
-  })
+  @Docs.create()
   @Post()
   async create(
     @Body() createProjectDto: CreateProjectDto,
