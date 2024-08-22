@@ -11,8 +11,11 @@ import {
 import { ProjectsService } from './projects.service';
 import { Projects } from './project.entity';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
-import { CreateProjectDto } from './dto/create-project.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  CreateProjectDto,
+  UpdateProjectDto,
+} from './dto/create-project.dto';
 
 @ApiTags('Projects')
 @Controller('projects')
@@ -38,7 +41,7 @@ export class ProjectsController {
   })
   @Get()
   async findAll(@Request() req: any): Promise<Projects[]> {
-    return this.projectsService.findAllByOwnerId(req.user.user_id);
+    return this.projectsService.findAllBy('owner_id', req.user.id);
   }
 
   @ApiOperation({
@@ -48,8 +51,8 @@ export class ProjectsController {
   @Get(':username')
   async findAllByUsername(
     @Param('username') username: string,
-  ): Promise<ProjectMongo[]> {
-    return this.projectsService.findAllByUsername(username);
+  ): Promise<Projects[]> {
+    return this.projectsService.findAllBy('username', username);
   }
 
   @ApiOperation({
@@ -68,7 +71,7 @@ export class ProjectsController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateProjectDto: Partial<Projects>,
+    @Body() updateProjectDto: UpdateProjectDto,
   ): Promise<Projects> {
     return this.projectsService.update(id, updateProjectDto);
   }

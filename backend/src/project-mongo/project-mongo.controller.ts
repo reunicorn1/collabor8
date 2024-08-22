@@ -1,6 +1,7 @@
 import { Controller, Delete, Get, Param, Query, Request } from '@nestjs/common';
 import { ProjectMongoService } from './project-mongo.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+
 // TODO: Add routes for updating all projects and dirs, files etc
 // TODO: Create dto for updating all projects and dirs, files etc
 // TODO: Modify depth and pagination routes and optimize
@@ -53,6 +54,8 @@ export class ProjectMongoController {
   findOne(@Param('id') id: string) {
     return this.projectService.findOne(id);
   }
+
+
 
   @ApiOperation({
     summary: 'Delete a project by ID',

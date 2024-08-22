@@ -8,6 +8,11 @@ interface CreateProjectMongoDto {
   environment_id?: string;
 }
 
+interface UpdateProjectMongoDto {
+  project_name?: string;
+  updated_at?: Date;
+}
+
 function validateCreateProjectDto(dto: any): CreateProjectMongoDto {
   if (!dto || typeof dto !== 'object') {
     throw new BadRequestException('Invalid input');
@@ -28,10 +33,36 @@ function validateCreateProjectDto(dto: any): CreateProjectMongoDto {
   return { project_name, owner_id };
 }
 
+function validateUpdateProjectDto(dto: any): UpdateProjectMongoDto {
+  if (!dto || typeof dto !== 'object') {
+    throw new BadRequestException('Invalid input');
+  }
+
+  const { project_name, updated_at } = dto;
+
+  if (project_name && typeof project_name !== 'string') {
+    throw new BadRequestException('Project name must be a string');
+  }
+
+  return { project_name, updated_at };
+}
+
 function parseCreateProjectMongoDto(requestBody: any): CreateProjectMongoDto {
   const validated = validateCreateProjectDto(requestBody);
 
   return validated;
 }
 
-export { parseCreateProjectMongoDto, CreateProjectMongoDto };
+function parseUpdateProjectMongoDto(requestBody: any): UpdateProjectMongoDto {
+  const validated = validateUpdateProjectDto(requestBody);
+
+  return validated;
+}
+
+
+export {
+  parseCreateProjectMongoDto,
+  CreateProjectMongoDto,
+  parseUpdateProjectMongoDto,
+  UpdateProjectMongoDto,
+};

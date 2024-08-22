@@ -30,6 +30,9 @@ export class ProjectMongo {
   @Column()
   created_at: Date;
 
+  @Column()
+  updated_at: Date;
+
   @Column({ nullable: true })
   environment_id: string;
 

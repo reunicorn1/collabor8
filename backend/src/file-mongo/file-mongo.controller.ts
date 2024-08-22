@@ -2,7 +2,7 @@ import { Controller, Delete, Get, Param, Post, Patch, Body, Request } from '@nes
 import { FileMongoService } from './file-mongo.service';
 import { FileMongo } from './file-mongo.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateFileOutDto } from './dto/create-file-mongo.dto';
+import { CreateFileOutDto, UpdateFileOutDto } from './dto/create-file-mongo.dto';
 @ApiTags('FileMongo')
 @Controller('file-docs')
 export class FileMongoController {
@@ -32,7 +32,7 @@ export class FileMongoController {
     description: 'Update a specific file in MongoDB using its unique ID.',
   })
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFileDto: CreateFileOutDto) {
+  update(@Param('id') id: string, @Body() updateFileDto: UpdateFileOutDto) {
     return this.fileService.update(id, updateFileDto);
   }
 

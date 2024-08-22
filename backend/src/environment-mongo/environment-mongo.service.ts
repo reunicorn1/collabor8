@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EnvironmentMongo } from './environment-mongo.entity';
 import { UsersService } from '@users/users.service';
 import { MONGO_CONN } from '@constants';
+import { ProjectsService } from '@projects/projects.service';
 // import { UsersService } from '@users/users.service';
 interface Query {
   [key: string]: any;
@@ -23,7 +24,7 @@ export class EnvironmentMongoService {
     private environRepository: Repository<EnvironmentMongo>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
-    // private readonly projectService: ProjectsService,
+    private readonly projectService: ProjectsService,
   ) {}
 
   async create(
@@ -48,6 +49,12 @@ export class EnvironmentMongoService {
   async remove(username: string): Promise<EnvironmentMongo> {
     const env = await this.findOneBy({ username });
     console.log('old', env._id.toString());
+    const projects = await this.projectService.findAllBy('environment_id', env._id.toString());
+    await Promise.all(projects.map(async (project) => {
+      await this.projectService.remove(project.project_id);
+    }));
+
+
     // remove the environment
     await this.environRepository.remove(env);
     // create a new environment for the user
