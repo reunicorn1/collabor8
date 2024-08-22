@@ -37,6 +37,7 @@ export const projectApi = api.injectEndpoints({
       query: ({ page, limit, sort }) =>
         `/projects/page?page=${page}&limit=${limit}&sort=${sort}`,
     }),
+
     // Get all projects by username
     getProjectsByUsername: builder.query<Project[], string>({
       query: (username) => `/projects/${username}`,

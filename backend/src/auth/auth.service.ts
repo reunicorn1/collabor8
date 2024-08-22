@@ -49,10 +49,9 @@ export class AuthService {
   async refreshToken(refreshToken: string): Promise<{
     accessToken: string;
   }> {
-    const { exp, timestamp, ..._payload } =
-      await this.jwtService.verifyAsync(refreshToken);
-    _payload.timestamp = new Date().getTime();
-    const { iat, ...payload } = _payload;
+    const { iat, exp, timestamp, ...payload } = await this.jwtService.verifyAsync(refreshToken);
+    payload.timestamp = new Date().getTime();
+
     return {
       accessToken: await this.jwtService.signAsync(payload),
     };

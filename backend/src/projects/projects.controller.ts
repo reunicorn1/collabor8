@@ -9,6 +9,7 @@ import {
   Put,
   Query,
   BadRequestException,
+  Patch,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { Projects } from './project.entity';
@@ -59,6 +60,9 @@ export class ProjectsController {
     return this.projectsService.findAllByUsernameDepth(username, depth, id);
   }
 
+  // TODO: 22/8 - Add endpoint for searching projects by name
+  // project criteria must be owner or contributor
+  //
   @ApiOperation({
     summary: 'Get all projects of the logged in user',
     description:
@@ -71,6 +75,7 @@ export class ProjectsController {
     @Query('limit') limit: number,
     @Query('sort') sort: string,
   ): Promise<any> {
+    console.log(page, limit, sort);
     if (page && limit) {
       const { total, projects } =
         await this.projectsService.findAllByUsernamePaginated(
@@ -118,7 +123,7 @@ export class ProjectsController {
     summary: 'Update a project by ID',
     description: 'Update the details of an existing project using its ID.',
   })
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,

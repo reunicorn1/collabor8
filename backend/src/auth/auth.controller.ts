@@ -67,7 +67,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Request() req) {
-    console.log('req.user', req.user);
     return req.user;
   }
 
@@ -76,13 +75,11 @@ export class AuthController {
   // @UseGuards(RefreshAuthGuard)
   @Post('refresh')
   async refreshToken(@Request() req, @Response() res) {
-    console.log('req.cookies', req.cookies);
     const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
       return res.status(401).send({ message: 'Unauthorized' });
     }
     const { accessToken } = await this.authService.refreshToken(refreshToken);
-    console.log('accessToken', accessToken === req.cookies.accessToken);
     res.send({ accessToken });
   }
 }

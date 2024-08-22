@@ -25,6 +25,8 @@ export class Projects {
   @Column({ type: 'varchar'})
   username: string;
 
+  // TODO: Add favorite boolean
+
   @Column({ type: 'varchar', nullable: true })
   environment_id: string | null;
 

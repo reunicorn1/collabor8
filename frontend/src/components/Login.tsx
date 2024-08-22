@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLoginUserMutation, useGetProfileQuery } from '@store/services/auth';
+import { Link } from 'react-router-dom';
 
 const Login: React.FC = () => {
   const [
@@ -9,20 +10,20 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const {
-    data: profileData,
-    error: profileError,
-    isFetching: profileFetching,
-    refetch,
-  } = useGetProfileQuery();
+  // const {
+  //   data: profileData,
+  //   error: profileError,
+  //   isFetching: profileFetching,
+  //   refetch,
+  // } = useGetProfileQuery();
 
   const handleLogin = async () => {
     await loginUser({ username, password });
   };
 
-  const handleFetchProfile = () => {
-    refetch(); // Manually trigger the profile fetch
-  };
+  // const handleFetchProfile = () => {
+  //   refetch(); // Manually trigger the profile fetch
+  // };
 
   return (
     <div>
@@ -43,14 +44,10 @@ const Login: React.FC = () => {
         Login
       </button>
       {loginData && <p>Access Token: {loginData.accessToken}</p>}
-      {loginError && <p>Error: {loginError.data?.message}</p>}
+      {loginError && <p>Error: {loginError.data.message}</p>}
+      <br />
+      <Link to="/dashboard">Go to Dashboard</Link>
 
-      <h2>Test Automatic Token Refresh</h2>
-      <button onClick={handleFetchProfile} disabled={profileFetching}>
-        Fetch User Profile
-      </button>
-      {profileData && <p>Profile: {JSON.stringify(profileData)}</p>}
-      {profileError && <p>Error: {profileError.data?.message}</p>}
     </div>
   );
 };

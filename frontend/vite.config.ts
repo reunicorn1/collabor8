@@ -23,6 +23,8 @@ export default defineConfig({
       '@store': path.resolve(__dirname, 'src/store'),
       '@config': path.resolve(__dirname, 'src/config'),
       '@types': path.resolve(__dirname, 'src/types.ts'),
+      '@components': path.resolve(__dirname, 'src/components'),
+      '@utils': path.resolve(__dirname, 'src/utils'),
     },
   },
   build: {

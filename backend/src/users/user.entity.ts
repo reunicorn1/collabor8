@@ -35,6 +35,8 @@ export class Users {
 
   // TODO: add profile picture and other user details as needed
 
+   // TODO: create favorite projects list
+
   // default 'user'
   @Column({ type: 'enum', enum: Role, default: Role.User })
   roles: Role[]; // User roles
