@@ -39,12 +39,15 @@ const authSlice = createSlice({
         state.accessToken = null;
         localStorage.removeItem('accessToken');
       })
-      .addMatcher(api.endpoints.refreshToken.matchFulfilled, (state, action) => {
-        const { accessToken } = action.payload;
-        state.accessToken = accessToken;
-        localStorage.removeItem('accessToken');
-        localStorage.setItem('accessToken', accessToken);
-      });
+      .addMatcher(
+        api.endpoints.refreshToken.matchFulfilled,
+        (state, action) => {
+          const { accessToken } = action.payload;
+          state.accessToken = accessToken;
+          localStorage.removeItem('accessToken');
+          localStorage.setItem('accessToken', accessToken);
+        },
+      );
   },
 });
 
