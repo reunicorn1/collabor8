@@ -35,7 +35,11 @@ function validateCreateProjectDto(dto: any): CreateProjectDto {
   }
 
 
-  return { project_name, description, username };
+  return {
+    project_name: project_name.trim(),
+    description,
+    username: username.trim(),
+  };
 }
 
 function validateUpdateProjectDto(dto: any): UpdateProjectDto {
@@ -53,7 +57,11 @@ function validateUpdateProjectDto(dto: any): UpdateProjectDto {
     throw new BadRequestException('Description must be a string');
   }
 
-  return { project_name, description, updated_at };
+  return {
+    project_name: project_name.trim(),
+    description,
+    updated_at: updated_at.toString().trim(),
+   };
 }
 
 function parseCreateProjectDto(requestBody: any): CreateProjectDto {

@@ -49,6 +49,7 @@ export default function Home() {
     return coolors[index];
   }
 
+
   const { data, err, isFetching, refetch } = useGetAllProjectsPaginatedQuery(
     { page, limit, sort },
     // { refetchOnReconnect: true }, // Optional: refetch when reconnecting
@@ -61,6 +62,7 @@ export default function Home() {
       }
 
       if (data?.projects) {
+        // why is data only projects?
         console.log('data', data);
         const mutatedProjects = projectUtils.mutateProjects(data?.projects);
         console.log('mutatedProjects', mutatedProjects);

@@ -42,7 +42,12 @@ function validateCreateFileDto(dto: any): CreateFileOutDto {
     file_content = '';
   }
 
-  return { file_name, parent_id, project_id, file_content };
+  return {
+    file_name: file_name.trim(),
+    parent_id: parent_id.trim(),
+    project_id: project_id.trim(),
+    file_content,
+  };
 }
 
 function validateUpdateFileDto(dto: any): UpdateFileOutDto {
@@ -68,7 +73,12 @@ function validateUpdateFileDto(dto: any): UpdateFileOutDto {
     throw new BadRequestException('File content must be a string');
   }
 
-  return { file_name, parent_id, project_id, file_content };
+  return {
+    file_name: file_name.trim(),
+    parent_id: parent_id.trim(),
+    project_id: project_id.trim(),
+    file_content,
+  };
 }
 
 function parseCreateFileMongoDto(requestBody: any): CreateFileOutDto {

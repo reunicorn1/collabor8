@@ -75,12 +75,12 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
   const password_hash = encryptPwd(password);
 
   return {
-    username,
-    first_name,
-    last_name,
-    email,
-    password_hash,
-    favorite_languages,
+    username: username.trim(),
+    first_name: first_name.trim(),
+    last_name: last_name.trim(),
+    email: email.trim(),
+    password_hash: password_hash.trim(),
+    favorite_languages: favorite_languages.map((lang) => lang.trim()),
   };
 }
 
@@ -104,7 +104,10 @@ function validateLoginUserDto(dto: any): LoginUserDto {
     }
   }
 
-  return { username, password };
+  return {
+    username: username.trim(),
+    password: password.trim(),
+  };
 }
 
 function parseLoginDto(requestBody: any): LoginUserDto {
