@@ -20,7 +20,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly environmentService: EnvironmentMongoService,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
   async signIn(
     user: Partial<Users>,

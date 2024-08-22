@@ -6,8 +6,8 @@ import {
   HttpStatus,
   Logger,
   Post,
-  Request,
-  Response,
+  Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '@auth/auth.service';
@@ -25,9 +25,10 @@ import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { RefreshAuthGuard } from './guards/refresh-jwt-auth.guard';
 import docs from './auth-docs.decorator';
+import { Request, Response } from 'express';
 
 // TODO: Add guards and roles where necessary
-// TODO: replace all endpoints that contain username with @Request() req
+// TODO: replace all endpoints that contain username with @Req() req
 // TODO: the logs doesn't appear -_-
 @ApiTags('Auth')
 @Controller('auth')
@@ -39,7 +40,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  async signIn(@Request() req, @Response() res) {
+  async signIn(@Req() req, @Res() res) {
     Logger.log('--------------->', { user: req.user });
     const { accessToken, refreshToken } = await this.authService.signIn(
       req.user,
@@ -66,7 +67,7 @@ export class AuthController {
   @docs.ApiGetProfile()
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async getProfile(@Request() req) {
+  async getProfile(@Req() req) {
     console.log('req.user', req.user);
     return req.user;
   }
@@ -75,8 +76,8 @@ export class AuthController {
   @Public()
   // @UseGuards(RefreshAuthGuard)
   @Post('refresh')
-  async refreshToken(@Request() req, @Response() res) {
-    console.log('req.cookies', req.cookies);
+  async refreshToken(@Req() req: Request, @Res() res: Response) {
+    // console.log('req.cookies', req.cookies);
     const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
       return res.status(401).send({ message: 'Unauthorized' });

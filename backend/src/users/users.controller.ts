@@ -15,6 +15,7 @@ import {
 import { UsersService } from '@users/users.service';
 import { Users } from './user.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import DOCS from './users.decorator';
 
 // TODO: complete RESTful API for user entity
 @ApiTags('Users')
@@ -22,20 +23,13 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   // Endpoints for current user
-  @ApiOperation({
-    summary: 'Get current user profile',
-    description: 'Retrieve the profile of the currently authenticated user.',
-  })
+  @DOCS.findUser()
   @Get('me')
   async findUser(@Request() req): Promise<Users> {
     return this.usersService.findOneBy({ username: req.user.username });
   }
 
-  @ApiOperation({
-    summary: 'Update current user profile',
-    description:
-      'Update the profile of the currently authenticated user. Roles cannot be updated through this endpoint.',
-  })
+  @DOCS.updateUser()
   @Patch('me')
   async updateUser(
     @Request() req,
