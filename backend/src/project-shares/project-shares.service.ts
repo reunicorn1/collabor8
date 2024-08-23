@@ -5,6 +5,7 @@ import { ProjectShares } from './project-shares.entity';
 import { MYSQL_CONN } from '@constants';
 import { ProjectsService } from '@projects/projects.service';
 import { UsersService } from '@users/users.service';
+import { ProjectSharesOutDto } from './dto/create-project-shares.dto';
 
 @Injectable()
 export class ProjectSharesService {
@@ -30,12 +31,12 @@ export class ProjectSharesService {
     return this.projectSharesRepository.find();
   }
 
-  async mapProjectShareData(projectShare: ProjectShares) {
+  async mapProjectShareData(projectShare: ProjectShares): Promise<ProjectSharesOutDto> {
     const { created_at, updated_at, username, ...projectShareData } = projectShare;
     const project = await this.projectsService.findOne(projectShare.project_id);
-    const memberCount = this.projectSharesRepository.createQueryBuilder('project_shares')
-    .where('project_shares.project_id = :project_id', { project_id: project.project_id })
-    .getCount();
+    const memberCount = await this.projectSharesRepository.createQueryBuilder('project_shares')
+      .where('project_shares.project_id = :project_id', { project_id: project.project_id })
+      .getCount();
     const user = await this.usersService.findOneBy({ username: project.username });
     return {
       ...projectShareData, // share_id, project_id, user_id, favorite, access_level
@@ -43,69 +44,71 @@ export class ProjectSharesService {
       last_name: user.last_name,
       username: user.username,
       project_name: project.project_name,
-      created_at: project.created_at,
-      updated_at: project.updated_at,
+      created_at: project.created_at.toISOString(),
+      updated_at: project.updated_at.toISOString(),
       member_count: memberCount,
     };
   }
 
-  async findOneByQuery(query: any): Promise<ProjectShares> {
+  async findOneByQuery(query: any): Promise<ProjectSharesOutDto> {
     return await this.mapProjectShareData(await this.projectSharesRepository.findOneBy(query));
-}
+  }
 
   // Retrieve a specific project share by ID
-  async findOne(id: string): Promise < ProjectShares > {
-  return this.projectSharesRepository.findOneBy({ share_id: id });
-}
+  async findOne(id: string): Promise<ProjectShares> {
+    return this.projectSharesRepository.findOneBy({ share_id: id });
+  }
 
   // Retrieve project shares by project ID
-  async findByProject(project_id: string): Promise < ProjectShares[] > {
-  return this.projectSharesRepository.findOneBy({ project_id });
-
+  async findByProject(project_id: string): Promise<ProjectShares> {
+    return this.projectSharesRepository.findOneBy({ project_id });
+  }
   // Retrieve project shares by user ID
-  async findByUser(username: string): Promise < ProjectShares[] > {
-  return this.projectSharesRepository.findOneBy({ username });
-}
+  async findByUser(username: string): Promise<ProjectShares> {
+    return this.projectSharesRepository.findOneBy({ username });
+  }
 
 
   async findAllByUsernamePaginated(
-  username: string,
-  page: number,
-  limit: number,
-  sort: string,
-): Promise < { total: number; projects: ProjectShares[] } > {
-  const skip = (page - 1) * limit;
-  if(!sort) {
-    sort = 'created_at';
-  }
+    username: string,
+    page: number,
+    limit: number,
+    sort: string,
+  ): Promise<{ total: number; projects: Promise<ProjectSharesOutDto>[] }> {
+    const skip = (page - 1) * limit;
+    if (!sort) {
+      sort = 'created_at';
+    }
     const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
-  const sortDirection = sort.startsWith('-') ? 'DESC' : 'ASC';
-  const total = await this.projectSharesRepository.createQueryBuilder('projectShares')
-    .where('projects.username = :username', { username })
-    .getCount();
-  const projects = await this.projectSharesRepository.createQueryBuilder('projectShares')
-    .where('projects.username = :username', { username })
-    .skip(skip)
-    .take(limit)
-    .orderBy(`projects.${sortField}`, sortDirection)
-    .getMany().then((projectShares) => {
-      return projectShares.map((projectShare) => {
-        return this.mapProjectShareData(projectShare);
-      }
-  return { total, projects };
-}
+    const sortDirection = sort.startsWith('-') ? 'DESC' : 'ASC';
+    const total = await this.projectSharesRepository.createQueryBuilder('projectShares')
+      .where('projects.username = :username', { username })
+      .getCount();
+    const projects = await this.projectSharesRepository.createQueryBuilder('projectShares')
+      .where('projects.username = :username', { username })
+      .skip(skip)
+      .take(limit)
+      .orderBy(`projects.${sortField}`, sortDirection)
+      .getMany().then((projectShares) => {
+        return projectShares.map((projectShare) => {
+          return this.mapProjectShareData(projectShare);
+        });
+      });
+
+      return { total, projects };
+  }
 
   // Update a project share
   async update(
-  id: string,
-  updateProjectShareDto: Partial<ProjectShares>,
-): Promise < ProjectShares > {
-  await this.projectSharesRepository.update(id, updateProjectShareDto);
-  return this.projectSharesRepository.findOneBy({ share_id: id });
-}
+        id: string,
+        updateProjectShareDto: Partial<ProjectShares>,
+      ): Promise < ProjectShares > {
+        await this.projectSharesRepository.update(id, updateProjectShareDto);
+        return this.projectSharesRepository.findOneBy({ share_id: id });
+      }
 
   // Delete a project share
   async remove(id: string): Promise < void> {
-  await this.projectSharesRepository.delete(id);
-}
+        await this.projectSharesRepository.delete(id);
+      }
 }

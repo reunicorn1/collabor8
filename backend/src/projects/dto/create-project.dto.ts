@@ -1,15 +1,22 @@
 import { BadRequestException } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 // TODO: create dto for all the entities
 //
-interface CreateProjectDto {
+class CreateProjectDto {
+  @ApiProperty()
   project_name: string;
+  @ApiProperty()
   description: string;
+  @ApiProperty()
   username?: string;
 }
 
-interface UpdateProjectDto {
+class UpdateProjectDto {
+  @ApiProperty()
   project_name?: string;
+  @ApiProperty()
   description?: string;
+  @ApiProperty()
   updated_at?: Date;
 }
 

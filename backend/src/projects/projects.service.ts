@@ -38,7 +38,7 @@ export class ProjectsService {
         username: parsedDto.username,
       });
       const environment = await this.environmentService.findOneBy({
-        username: user.username,
+        username: user.environment_id,
       });
       parsedDto['environment_id'] = environment._id.toString();
       parsedDto['owner_id'] = user.user_id;

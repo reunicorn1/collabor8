@@ -19,6 +19,7 @@ async function bootstrap() {
     logger: ['error', 'warn', 'log'],
   });
   const options = new DocumentBuilder()
+    .addBearerAuth()
     .setTitle('Collabor8')
     .setDescription('Your API description')
     .setVersion('1.0')

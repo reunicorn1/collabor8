@@ -27,7 +27,7 @@ import { RefreshAuthGuard } from './guards/refresh-jwt-auth.guard';
 import docs from './auth-docs.decorator';
 
 // TODO: Add guards and roles where necessary
-// TODO: replace all endpoints that contain username with @Request() req
+// TODO: replace all endpoints that contain username with @Req() req
 // TODO: the logs doesn't appear -_-
 // TODO: strip input to remove any spaces
 @ApiTags('Auth')
@@ -76,6 +76,7 @@ export class AuthController {
   // @UseGuards(RefreshAuthGuard)
   @Post('refresh')
   async refreshToken(@Request() req, @Response() res) {
+    // console.log('req.cookies', req.cookies);
     const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
       return res.status(401).send({ message: 'Unauthorized' });
