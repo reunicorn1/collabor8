@@ -6,10 +6,14 @@ import {
   Param,
   Delete,
   Put,
+  Request,
+  Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { ProjectSharesService } from './project-shares.service';
 import { ProjectShares } from './project-shares.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ProjectSharesOutDto } from './dto/create-project-shares.dto';
 
 @ApiTags('ProjectShares')
 @Controller('project-shares')
@@ -29,6 +33,7 @@ export class ProjectSharesController {
   }
 
   // Retrieve all project shares
+  // TODO: move to admin
   @ApiOperation({
     summary: 'Retrieve all project shares',
     description: 'Retrieve a list of all project shares from the database.',
@@ -44,7 +49,7 @@ export class ProjectSharesController {
     description: 'Retrieve a specific project share by its unique ID.',
   })
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<ProjectShares> {
+  async findOne(@Param('id') id: string): Promise<ProjectSharesOutDto> {
     return this.projectSharesService.findOne(id);
   }
 
@@ -57,7 +62,7 @@ export class ProjectSharesController {
   @Get('/project/:project_id')
   async findByProject(
     @Param('project_id') project_id: string,
-  ): Promise<ProjectShares[]> {
+  ): Promise<ProjectSharesOutDto> {
     return this.projectSharesService.findByProject(project_id);
   }
 
@@ -67,11 +72,11 @@ export class ProjectSharesController {
     description:
       'Retrieve all project shares associated with a specific user by their ID.',
   })
-  @Get('/user/:user_id')
+  @Get('/user/')
   async findByUser(
-    @Param('user_id') user_id: string,
-  ): Promise<ProjectShares[]> {
-    return this.projectSharesService.findByUser(user_id);
+    @Request() req,
+  ): Promise<ProjectSharesOutDto[]> {
+    return this.projectSharesService.findByUser({ username: req.user.username });
   }
 
   // Update a project share
@@ -88,6 +93,42 @@ export class ProjectSharesController {
     return this.projectSharesService.update(id, updateProjectShareDto);
   }
 
+
+  // project criteria must be owner or contributor
+  //
+  @ApiOperation({
+    summary: 'Get all projectShares of the logged in user',
+    description:
+      'Retrieve a list of all projectShares associated with the logged in user using username And is paginated.',
+  })
+  @Get('page')
+  async findAllByUsernamePaginated(
+    @Request() req: any,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('sort') sort: string,
+  ): Promise<any> {
+    if (page && limit) {
+      const { total, projects } =
+        await this.projectSharesService.findAllByUsernamePaginated(
+          req.user.username,
+          page,
+          limit,
+          sort,
+        );
+      return {
+        total,
+        projects,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      };
+    } else {
+      throw new BadRequestException(
+        'Page and limit query parameters are required',
+      );
+    }
+  }
   // Delete a project share
   @ApiOperation({
     summary: 'Delete a project share',

@@ -8,20 +8,44 @@ import {
   MenuDivider,
 } from '@chakra-ui/react';
 import { ChevronDownIcon, CheckIcon } from '@chakra-ui/icons';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 interface SortOrderProps {
-  sort: string;
-  setSort: React.Dispatch<React.SetStateAction<string>>;
-  order: string;
-  setOrder: React.Dispatch<React.SetStateAction<string>>;
+  setPagination: any;
+  selectPagination: any;
 }
 export default function MenuSelection({
-  sort,
-  setSort,
-  order,
-  setOrder,
+  setPagination,
+  selectPagination,
+
 }: SortOrderProps) {
+  const dispatch = useDispatch();
+  const pagination = useSelector(selectPagination);
+  const [sort, setSort] = useState('Last Modified');
+  const [order, setOrder] = useState('Newest first');
+  const sortMap = {
+    Alphabetical: 'project_name',
+    'Date Created': 'created_at',
+    'Last Modified': 'updated_at',
+  };
+  const orderMap = {
+    'A-Z': '',
+    'Z-A': '-',
+    'Oldest first': '',
+    'Newest first': '-',
+  }
+  useEffect(() => {
+    dispatch(
+      setPagination({
+        ...pagination,
+        page: 1,
+        sort: `${orderMap[order]}${sortMap[sort]}`,
+      }),
+    ); 
+  }, [sort, order]);
+
+
   return (
     <Menu>
       <MenuButton

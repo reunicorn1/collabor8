@@ -49,6 +49,7 @@ export const authApi = api.injectEndpoints({
     }),
   }),
 });
+// TODO: this is missing a logout endpoint
 
 export const {
   useLoginUserMutation,

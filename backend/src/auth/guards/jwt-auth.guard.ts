@@ -3,6 +3,7 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '@auth/decorators/isPublic.decorator';
+import { ContextUtils } from '@nestjs/core/helpers/context-utils';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
@@ -18,7 +19,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
     if (isPublic) {
       return true;
     }
-
+    const request = context.switchToHttp().getRequest();
+    const headers = request.get('authorization');
+    const token = headers.split(' ')[1];
+    console.log(token);
     return super.canActivate(context);
   }
 

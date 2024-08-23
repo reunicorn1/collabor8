@@ -11,8 +11,10 @@ import {
   Input,
   Button,
   Textarea,
+  useToast,
 } from '@chakra-ui/react';
 import React, { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCreateProjectMutation } from '@store/services/project';
 
 interface ModalProps {
@@ -21,11 +23,13 @@ interface ModalProps {
 }
 
 export default function NewProject({ isOpen, onClose }: ModalProps) {
+  const navigate = useNavigate();
   const initialRef = useRef(null);
   const finalRef = useRef(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [createproject] = useCreateProjectMutation();
+  const toast = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -35,15 +39,35 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
     setDescription(e.target.value);
   };
 
+  const handleGoToProject = (id: string, project_name: string) => {
+    // This function handles the click of a project item in the table it recives the id of the project
+    // And it navigates to the project page using the id
+    navigate(`/editor/${id}`, { state: { project_name } });
+  };
+
   const handleCreate = () => {
     createproject({ project_name: name, description })
       .unwrap()
       .then((data) => {
-        console.log(data);
+        console.log('new project', data);
         // TODO: navigate to the project page
-        onClose();
+        handleGoToProject(data.project_id, name);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        toast({
+          title: 'An Error occured while creating this project',
+          status: 'error',
+          isClosable: true,
+        });
+      });
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setName('');
+    setDescription('');
+    onClose();
   };
 
   return (
@@ -52,7 +76,7 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
         initialFocusRef={initialRef}
         finalFocusRef={finalRef}
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleClose}
       >
         <ModalOverlay />
         <ModalContent bg="brand.900">
@@ -84,7 +108,6 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
                 color="white"
                 fontFamily="mono"
                 fontSize="sm"
-                ref={initialRef}
                 placeholder="Tell us about your project"
                 value={description}
                 onChange={handleChangeDescription}
@@ -99,10 +122,11 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
               size="sm"
               isDisabled={!name || !description}
               onClick={handleCreate}
+              ref={finalRef}
             >
               Create Project
             </Button>
-            <Button size="sm" onClick={onClose}>
+            <Button size="sm" onClick={handleClose}>
               Cancel
             </Button>
           </ModalFooter>

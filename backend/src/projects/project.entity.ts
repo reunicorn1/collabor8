@@ -22,10 +22,12 @@ export class Projects {
   @Column('uuid')
   owner_id: string;
 
-  @Column({ type: 'varchar'})
+  @Column({ type: 'varchar' })
   username: string;
 
   // TODO: Add favorite boolean
+  @Column({ type: 'boolean', default: false })
+  favorite: boolean;
 
   @Column({ type: 'varchar', nullable: true })
   environment_id: string | null;

@@ -41,8 +41,19 @@ const baseQueryWithReauth: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
+  console.log('This function gets executed');
 
   if (result.error && result.error?.status === 401) {
+
+    if (localStorage.getItem('accessToken')) {
+      api.dispatch(
+        setCredentials({
+          accessToken: localStorage.getItem('accessToken') | null,
+        }),
+      );
+      result = await baseQuery(args, api, extraOptions);
+      return result;
+    }
     const refreshResult = await baseQuery(
       {
         url: 'auth/refresh',
@@ -69,6 +80,6 @@ const baseQueryWithReauth: BaseQueryFn<
  */
 export const api = createApi({
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['User', 'Profile', 'Environment', 'Project'],
+  tagTypes: ['User', 'Profile', 'Environment', 'Project', 'ProjectShare'],
   endpoints: () => ({}),
 });

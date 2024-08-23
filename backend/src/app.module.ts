@@ -19,7 +19,7 @@ import { ProjectMongoModule } from '@project-mongo/project-mongo.module';
 import { FileMongo } from '@file-mongo/file-mongo.entity';
 import { AuthModule } from '@auth/auth.module';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
-import { AuthGuard } from '@auth/guards/auth.guard';
+// import { AuthGuard } from '@auth/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 // import { EventsModule } from './events/events.module';
 // import { HocuspocusService } from '@hocuspocus/hocuspocus.service';

@@ -49,7 +49,6 @@ export class EnvironmentMongoService {
 
   async remove(username: string): Promise<EnvironmentMongo> {
     const env = await this.findOneBy({ username });
-    console.log('old', env._id.toString());
     const projects = await this.projectService.findAllBy('environment_id', env._id.toString());
     await Promise.all(projects.map(async (project) => {
       await this.projectService.remove(project.project_id);
@@ -60,7 +59,6 @@ export class EnvironmentMongoService {
     await this.environRepository.remove(env);
     // create a new environment for the user
     const newEnv = await this.create({ username });
-    console.log('new', newEnv._id.toString());
     const user = await this.usersService.findOneBy({ username });
     user.environment_id = newEnv._id.toString();
     await this.usersService.save(user);

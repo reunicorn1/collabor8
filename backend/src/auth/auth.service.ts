@@ -116,7 +116,6 @@ export class AuthService {
 
       return newUser;
     } catch (err) {
-      console.log(`Failed to create user: ${err.message}`);
       throw new InternalServerErrorException(
         `Failed to create user: ${err.message}`,
       );

@@ -15,13 +15,95 @@ import {
   HiUserGroup,
 } from 'react-icons/hi2';
 import DashboardBar from '../components/Bars/DashboardBar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Home from '../components/Dashboard/Home';
 import SharedWithMe from '../components/Dashboard/SharedWithMe';
 import AllProjects from '../components/Dashboard/AllProjects';
+import {
+  useGetAllProjectsPaginatedQuery,
+} from '@store/services/project';
+import {
+  setRecentProjects,
+  setRecentProjectsPagination,
+  setUserProjects,
+  setUserProjectsPagination,
+  // setSharedProjects,
+} from '@store/slices/projectSlice';
+import {
+  selectRecentProjects,
+  selectRecentProjectsPagination,
+  selectUserProjects,
+  selectUserProjectsPagination,
+  // selectSharedProjects,
+} from '@store/selectors';
+import {
+fetchRecentProjects,
+fetchUserProjects,
+// fetchSharedProjects,
+// fetchAllProjects,
+} from '@store/thunks/projectThunks';
+import { useDispatch, useSelector } from 'react-redux';
+
+
+
 
 export default function DashboardPage() {
   const [clicked, setClicked] = useState('Home');
+  // const dispatch = useDispatch();
+  // const recentProjects = useSelector(selectRecentProjects);
+  // const userProjects = useSelector(selectUserProjects);
+
+  // const recentProjectsPagination = useSelector(selectRecentProjectsPagination);
+  // const userProjectsPagination = useSelector(selectUserProjectsPagination);
+
+
+  // useEffect(() => {
+  //   dispatch(fetchRecentProjects(recentProjectsPagination));
+  //   dispatch(fetchUserProjects(userProjectsPagination));
+  // }, [dispatch, recentProjectsPagination, userProjectsPagination]);
+
+  // const { data, err, isFetching, refetch, isSuccess, isLoading } = useGetAllProjectsPaginatedQuery(
+  //   { page, limit, sort },
+  //   { refetchOnReconnect: true }, // Optional: refetch when reconnecting
+  // );
+
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     dispatch(setRecentProjects(data));
+  //   }
+  // }, [isSuccess, data, recentProjects.total, dispatch, recentProjectsPagination]);
+
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     dispatch(setUserProjects(data));
+  //   }
+  // }, [isSuccess, data, userProjects.total, dispatch, userProjectsPagination]);
+
+
+//  const handlePaginationChange = (type: string, page: number, limit: number) => {
+//     // Update pagination state based on type and new page/limit values
+//     switch (type) {
+//       case 'recentProjects':
+//         dispatch(setRecentProjectsPagination({ page, limit, sort: recentProjectsPagination.sort }));
+//         break;
+//       case 'userProjects':
+//         dispatch(setUserProjectsPagination({ page, limit, sort: userProjectsPagination.sort }));
+//         break;
+//       default:
+//         break;
+//     }
+//   };
+//   console.log(recentProjects, userProjects);
+
+//   if (recentProjects.status === 'loading' || userProjects.status === 'loading' ) {
+//     return <div>Loading...</div>;
+//   }
+
+//   if (recentProjects.status === 'failed' || userProjects.status === 'failed') {
+//     return <div>Error loading data</div>;
+//   }
+
+
 
   return (
     <>

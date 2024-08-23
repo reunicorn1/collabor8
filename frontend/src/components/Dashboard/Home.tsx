@@ -10,30 +10,29 @@ import {
 } from '@chakra-ui/react';
 import { FaFolder } from 'react-icons/fa';
 import PersonalTable from './PersonalTable';
-import {
-  useGetAllProjectsPaginatedQuery,
-  useLazyGetAllProjectsPaginatedQuery,
-  useCreateProjectMutation,
-} from '@store/services/project';
-import { useState, useEffect } from 'react';
-import * as projectUtils from '@utils/dashboard.utils';
-import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { selectUserDetails } from '@store/selectors/userSelectors';
-import { useGetCurrentUserProfileQuerry } from '@store/services/user';
+import {
+  selectRecentProjects,
+  selectRecentProjectsPagination,
+} from '@store/selectors';
+import {
+  setRecentProjects,
+  setRecentProjectsPagination,
+} from '@store/slices/projectSlice';
+import { useGetAllProjectsPaginatedQuery } from '@store/services/project';
+// import * as projectUtils from '@utils/dashboard.utils';
 
 export default function Home() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const coolors = ['#F6D277', '#76449A', '#B4B4B4', '#52A0D8', '#F16145'];
-  const [userProjects, setUserProjects] = useState([]);
-  const [page, setPage] = useState(1);
-  const [sort, setSort] = useState('-updated_at');
-  const [limit, setLimit] = useState(10);
-  const [recentProjects, setRecentProjects] = useState([]);
-  // const [personalProjects, setPersonalProjects] = useState([]);
-  // const [sharedProjects, setSharedProjects] = useState([]);
-  const [fetch, setFetch] = useState(true);
-  const [error, setError] = useState(null);
-
+  const recentProjects = useSelector(selectRecentProjects);
   const userDetails = useSelector(selectUserDetails);
+  const recentProjectsPagination = useSelector(selectRecentProjectsPagination);
+  console.log('recent', recentProjects);
 
   function hashStringToIndex(str: string, arrayLength: number): number {
     let hash = 0;
@@ -48,74 +47,67 @@ export default function Home() {
     const index = hashStringToIndex(projectName, coolors.length);
     return coolors[index];
   }
-
-
-  const { data, err, isFetching, refetch } = useGetAllProjectsPaginatedQuery(
-    { page, limit, sort },
-    // { refetchOnReconnect: true }, // Optional: refetch when reconnecting
-  );
+  const { data, err, isFetching, refetch, isSuccess, isLoading } =
+    useGetAllProjectsPaginatedQuery(
+      { ...recentProjectsPagination },
+      { refetchOnReconnect: true }, // Optional: refetch when reconnecting
+    );
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(setRecentProjects(data));
+    }
+  }, [
+    isSuccess,
+    data,
+    recentProjects.total,
+    dispatch,
+    recentProjectsPagination,
+  ]);
 
   useEffect(() => {
-    if (fetch) {
-      if (err) {
-        setError(err);
-      }
+    refetch();
+  }, [recentProjectsPagination]);
 
-      if (data?.projects) {
-        // why is data only projects?
-        console.log('data', data);
-        const mutatedProjects = projectUtils.mutateProjects(data?.projects);
-        console.log('mutatedProjects', mutatedProjects);
-        setUserProjects(mutatedProjects);
-        projectUtils.setRecentProjectsFromAllProjects(
-          data?.projects,
-          setRecentProjects,
-        ); // Set recent projects here
-        setFetch(false);
-      }
+  const handlePaginationChange = (
+    type: string,
+    page: number,
+    limit: number,
+  ) => {
+    // Update pagination state based on type and new page/limit values
+    switch (type) {
+      case 'recentProjects':
+        dispatch(
+          setRecentProjectsPagination({
+            page,
+            limit,
+            sort: recentProjectsPagination.sort,
+          }),
+        );
+        break;
+      default:
+        break;
     }
-  }, [data, err, fetch]);
+  };
+  console.log(recentProjects);
 
-  //   function useData(data) {
-  //     const mutatedProjects = projectUtils.mutateProjects(data);
-  //     setUserProjects(mutatedProjects);
-  //     projectUtils.setRecentProjectsFromAllProjects(data, setRecentProjects); // Set recent projects here
-  //   }
+  if (recentProjects.status === 'loading') {
+    return <div>Loading...</div>;
+  }
 
-  //   function useTrigger(page, limit, sort) {
-  //     getProjectsPaginated({ page, limit, sort })
-  //       .unwrap()
-  //       .then((res) => {
-  //         // const { total, projects, page, limit, totalPages } = res;
-  //         const mutatedProjects = projectUtils.mutateProjects(res);
-  //         setUserProjects(mutatedProjects);
-  //         projectUtils.setRecentProjectsFromAllProjects(res, setRecentProjects); // Set recent projects here
-  //       })
-  //       .catch((error) => {
-  //         console.error('Error fetching projects:', error);
-  //       });
-  //   }
-  //   useData(data);
-  // useEffect(() => {
-  //   console.log('page:', page);
-  //   if (data && page < 2) {
-  //     useData(data);
+  if (recentProjects.status === 'failed') {
+    return <div>Error loading data</div>;
+  }
 
-  //     setPage(page + 1);
-  //   } else {
-  //     useTrigger(page, limit, sort);
-  //   }
-  // }, [page, limit, sort, data]);
+  const handleGoToProject = (id: string, project_name: string) => {
+    // This function handles the click of a project item in the table it recives the id of the project
+    // And it navigates to the project page using the id
+    navigate(`/editor/${id}`, { state: { project_name } });
+  };
 
-  // This is a list for demonstration purposes in a static version
-  // const projects = [
-  //   { name: 'Project 1', lastEdited: '1 week ago' },
-  //   { name: 'Project 2', lastEdited: '1 week ago' },
-  //   { name: 'Project 3', lastEdited: '1 week ago' },
-  //   { name: 'Project 4', lastEdited: '1 week ago' },
-  //   { name: 'Project 5', lastEdited: '1 week ago' },
-  //   { name: 'Project 6', lastEdited: '1 week ago' },
-  // ];
+  // BUG: Since the shared projects, all projects tab are underprogress, clicking them currently crashed the app
+  // But it also changes the state of isAuthenticated to false and therefore it logs the user out, though
+  // The access token remain stable in the local storage.
+  // When this happens userDetails disappear, but accessToken is still there
 
   return (
     <Flex justifyContent="center" h="100vh">
@@ -143,8 +135,8 @@ export default function Home() {
           whiteSpace="nowrap"
         >
           {/* top 3 recent projects will be shown here */}
-          {recentProjects?.map((project, index) => {
-            const color = getRandomColor(project.name);
+          {recentProjects.recentProjects?.map((project, index) => {
+            const color = getRandomColor(project.project_name);
             return (
               <Box
                 key={index}
@@ -159,6 +151,9 @@ export default function Home() {
                 alignItems="center"
                 flexShrink={0}
                 cursor="pointer"
+                onClick={() =>
+                  handleGoToProject(project.project_id, project.project_name)
+                }
               >
                 <Icon as={FaFolder} fontSize="45px" color={color} />
                 <Box ml={5}>
@@ -170,7 +165,7 @@ export default function Home() {
                     overflow="hidden"
                     maxW="150px"
                   >
-                    {project.name}
+                    {project.project_name}
                   </Text>
                   <Text fontSize="xs" fontFamily="mono">
                     {project.lastEdited}

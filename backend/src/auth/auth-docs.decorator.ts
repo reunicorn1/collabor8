@@ -1,7 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiOperation, ApiBody, ApiOkResponse, ApiResponse, getSchemaPath } from '@nestjs/swagger';
+import { ApiOperation, ApiBody, ApiOkResponse, ApiResponse, getSchemaPath, ApiHeader } from '@nestjs/swagger';
 import { CreateUserDto, LoginUserDto } from '@users/dto/create-user.dto';
-import { Users } from '@users/user.entity';
 
 class AuthDocs {
   ApiSignIn() {
@@ -89,6 +88,10 @@ class AuthDocs {
         summary: 'Refresh Access Token',
         description:
           'Refresh the access token using the refresh token stored in cookies.',
+      }),
+      ApiHeader({
+        name: 'X_CSRF_TOKEN',
+        description: 'custom header for Cross-site request forgery',
       }),
       ApiOkResponse({
         description: 'Access token refreshed successfully',

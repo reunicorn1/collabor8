@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -27,7 +28,7 @@ import { RefreshAuthGuard } from './guards/refresh-jwt-auth.guard';
 import docs from './auth-docs.decorator';
 
 // TODO: Add guards and roles where necessary
-// TODO: replace all endpoints that contain username with @Request() req
+// TODO: replace all endpoints that contain username with @Req() req
 // TODO: the logs doesn't appear -_-
 // TODO: strip input to remove any spaces
 @ApiTags('Auth')
@@ -64,6 +65,29 @@ export class AuthController {
     }
   }
 
+  // @docs.ApiSignOut()
+  @HttpCode(HttpStatus.OK)
+  @Delete('signout')
+  async signOut(@Request() req, @Response() res) {
+    // revoke session
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).send({ message: 'Error signing out' });
+      }
+    });
+    res
+    .clearCookie('refreshToken')
+    .clearCookie('accessToken')
+    .clearCookie('connect.sid')
+    .send({ message: 'Signed out' });
+  }
+  // password change
+  // add avatar
+  // add bio
+  // add email validation
+  // add password reset through email
+  // projectShare invite email or notification
+
   @docs.ApiGetProfile()
   @UseGuards(JwtAuthGuard)
   @Get('profile')
@@ -76,6 +100,7 @@ export class AuthController {
   // @UseGuards(RefreshAuthGuard)
   @Post('refresh')
   async refreshToken(@Request() req, @Response() res) {
+    // console.log('req.cookies', req.cookies);
     const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
       return res.status(401).send({ message: 'Unauthorized' });

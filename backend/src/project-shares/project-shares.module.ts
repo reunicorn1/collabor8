@@ -1,12 +1,18 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectShares } from './project-shares.entity';
 import { ProjectSharesController } from './project-shares.controller';
 import { ProjectSharesService } from './project-shares.service';
 import { MYSQL_CONN } from '@constants';
+import { ProjectsModule } from '@projects/projects.module';
+import { UsersModule } from '@users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProjectShares], MYSQL_CONN)],
+  imports: [
+    TypeOrmModule.forFeature([ProjectShares], MYSQL_CONN),
+    forwardRef(() => ProjectsModule),
+    forwardRef(() => UsersModule),
+  ],
   providers: [ProjectSharesService],
   controllers: [ProjectSharesController],
   exports: [ProjectSharesService],
