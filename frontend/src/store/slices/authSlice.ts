@@ -17,6 +17,16 @@ const initialState: AuthState = {
   accessToken: null,
 };
 
+// Utility functions for localStorage operations
+const setAccessToken = (token: string | null) => {
+  if (token) {
+    localStorage.setItem('accessToken', token);
+  } else {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('userDetails');
+  }
+};
+
 // Create the authentication slice
 const authSlice = createSlice({
   name: 'auth',
@@ -24,14 +34,15 @@ const authSlice = createSlice({
   reducers: {
     // Action to set credentials with the access token
     setCredentials(state, action: PayloadAction<{ accessToken: string }>) {
-      state.accessToken = action.payload.accessToken;
-      localStorage.setItem('accessToken', action.payload.accessToken);
+      const { accessToken } = action.payload;
+      state.accessToken = accessToken;
+      setAccessToken(accessToken);
     },
 
     // Action to unset credentials and remove the access token
     unsetCredentials(state) {
       state.accessToken = null;
-      localStorage.removeItem('accessToken');
+      setAccessToken(null);
     },
   },
   extraReducers: (builder) => {
@@ -41,20 +52,19 @@ const authSlice = createSlice({
         (state, action) => {
           const { accessToken } = action.payload;
           state.accessToken = accessToken;
-          localStorage.setItem('accessToken', accessToken);
+          setAccessToken(accessToken);
         },
       )
       .addMatcher(authApi.endpoints.loginUser.matchRejected, (state) => {
         state.accessToken = null;
-        localStorage.removeItem('accessToken');
+        setAccessToken(null);
       })
       .addMatcher(
         authApi.endpoints.refreshToken.matchFulfilled,
         (state, action) => {
           const { accessToken } = action.payload;
           state.accessToken = accessToken;
-          localStorage.removeItem('accessToken');
-          localStorage.setItem('accessToken', accessToken);
+          setAccessToken(accessToken);
         },
       );
   },
