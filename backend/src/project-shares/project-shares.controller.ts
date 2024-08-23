@@ -13,6 +13,7 @@ import {
 import { ProjectSharesService } from './project-shares.service';
 import { ProjectShares } from './project-shares.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ProjectSharesOutDto } from './dto/create-project-shares.dto';
 
 @ApiTags('ProjectShares')
 @Controller('project-shares')
@@ -48,7 +49,7 @@ export class ProjectSharesController {
     description: 'Retrieve a specific project share by its unique ID.',
   })
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<ProjectShares> {
+  async findOne(@Param('id') id: string): Promise<ProjectSharesOutDto> {
     return this.projectSharesService.findOne(id);
   }
 
@@ -61,7 +62,7 @@ export class ProjectSharesController {
   @Get('/project/:project_id')
   async findByProject(
     @Param('project_id') project_id: string,
-  ): Promise<ProjectShares[]> {
+  ): Promise<ProjectSharesOutDto> {
     return this.projectSharesService.findByProject(project_id);
   }
 
@@ -74,7 +75,7 @@ export class ProjectSharesController {
   @Get('/user/')
   async findByUser(
     @Request() req,
-  ): Promise<ProjectShares[]> {
+  ): Promise<ProjectSharesOutDto[]> {
     return this.projectSharesService.findByUser({ username: req.user.username });
   }
 

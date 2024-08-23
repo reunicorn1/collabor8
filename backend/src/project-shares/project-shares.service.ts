@@ -23,12 +23,12 @@ export class ProjectSharesService {
     const newProjectShare = this.projectSharesRepository.create(
       createProjectShareDto,
     );
-    return this.projectSharesRepository.save(newProjectShare);
+    return await this.projectSharesRepository.save(newProjectShare);
   }
 
   // Retrieve all project shares
   async findAll(): Promise<ProjectShares[]> {
-    return this.projectSharesRepository.find();
+    return await this.projectSharesRepository.find();
   }
 
   async mapProjectShareData(projectShare: ProjectShares): Promise<ProjectSharesOutDto> {
@@ -55,17 +55,24 @@ export class ProjectSharesService {
   }
 
   // Retrieve a specific project share by ID
-  async findOne(id: string): Promise<ProjectShares> {
-    return this.projectSharesRepository.findOneBy({ share_id: id });
+  async findOne(id: string): Promise<ProjectSharesOutDto> {
+    return await this.findOneByQuery({ share_id: id });
   }
 
   // Retrieve project shares by project ID
-  async findByProject(project_id: string): Promise<ProjectShares> {
-    return this.projectSharesRepository.findOneBy({ project_id });
+  async findByProject(project_id: string): Promise<ProjectSharesOutDto> {
+    return await this.findOneByQuery({ project_id });
   }
   // Retrieve project shares by user ID
-  async findByUser(username: string): Promise<ProjectShares> {
-    return this.projectSharesRepository.findOneBy({ username });
+  async findByUser(username: string | any): Promise<ProjectSharesOutDto[]> {
+    return await this.findAllByQuery({ username });
+  }
+
+  async findAllByQuery(query: any): Promise<ProjectSharesOutDto[]> {
+    const projectShares = await this.projectSharesRepository.find(query);
+    return Promise.all(projectShares.map(async (projectShare) => {
+      return await this.mapProjectShareData(projectShare);
+    }));
   }
 
 
@@ -74,7 +81,7 @@ export class ProjectSharesService {
     page: number,
     limit: number,
     sort: string,
-  ): Promise<{ total: number; projects: Promise<ProjectSharesOutDto>[] }> {
+  ): Promise<{ total: number; projects: Promise<ProjectSharesOutDto | any>[] }> {
     const skip = (page - 1) * limit;
     if (!sort) {
       sort = 'created_at';
@@ -90,10 +97,14 @@ export class ProjectSharesService {
       .take(limit)
       .orderBy(`projects.${sortField}`, sortDirection)
       .getMany().then((projectShares) => {
-        return projectShares.map((projectShare) => {
-          return this.mapProjectShareData(projectShare);
+        return projectShares.map(async (projectShare) => {
+          return await this.mapProjectShareData(projectShare);
         });
-      });
+      })
+        .catch((error) => {
+          console.log(error);
+          return [];
+        });
 
       return { total, projects };
   }
@@ -104,7 +115,7 @@ export class ProjectSharesService {
         updateProjectShareDto: Partial<ProjectShares>,
       ): Promise < ProjectShares > {
         await this.projectSharesRepository.update(id, updateProjectShareDto);
-        return this.projectSharesRepository.findOneBy({ share_id: id });
+        return await this.projectSharesRepository.findOneBy({ share_id: id });
       }
 
   // Delete a project share

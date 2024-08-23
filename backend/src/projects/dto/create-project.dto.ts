@@ -26,7 +26,6 @@ function validateCreateProjectDto(dto: any): CreateProjectDto {
   }
 
   const { project_name, description, username } = dto;
-
   if (typeof project_name !== 'string' || project_name.trim() === '') {
     throw new BadRequestException(
       'Project name is required and must be a string',

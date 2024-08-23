@@ -33,12 +33,12 @@ export class ProjectsService {
   async create(createProjectDto: CreateProjectDto): Promise<Projects> {
     try {
       const parsedDto = parseCreateProjectDto(createProjectDto);
-
       const user = await this.usersService.findOneBy({
         username: parsedDto.username,
       });
+      console.log(user);
       const environment = await this.environmentService.findOneBy({
-        username: user.environment_id,
+        username: user.username,
       });
       parsedDto['environment_id'] = environment._id.toString();
       parsedDto['owner_id'] = user.user_id;

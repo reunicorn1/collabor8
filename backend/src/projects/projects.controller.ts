@@ -60,6 +60,7 @@ export class ProjectsController {
     @Query('sort') sort: string,
   ): Promise<any> {
     if (page && limit) {
+      console.log(req.user);
       const { total, projects } =
         await this.projectsService.findAllByUsernamePaginated(
           req.user.username,
