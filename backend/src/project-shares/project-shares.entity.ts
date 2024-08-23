@@ -24,6 +24,8 @@ export class ProjectShares {
   user_id: string;
 
   // TODO: Add favorite boolean
+  @Column({ type: 'boolean', default: false })
+  favorite: boolean;
 
   @Column({ type: 'enum', enum: ['read', 'write'] })
   access_level: 'read' | 'write'; // Access level granted

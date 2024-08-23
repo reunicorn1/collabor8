@@ -108,7 +108,9 @@ export class ProjectMongoService {
     if (!user) {
       return []; // Handle case where user is not found
     }
-
+    if (maxDepth < 0) {
+      maxDepth = 99999999;
+    }
     if (id) {
       projects = await this.projectMongoRepository.find({
         where: { environment_id: user.environment_id, _id: new ObjectId(id) },

@@ -11,6 +11,7 @@ export const projectApi = api.injectEndpoints({
         body: newProject,
         credentials: 'include',
       }),
+      invalidatesTags: ['Project'],
     }),
     // Get all projects of the logged-in user by ID
     getAllProjectsByUserId: builder.query<Project[], void>({
@@ -37,6 +38,7 @@ export const projectApi = api.injectEndpoints({
     >({
       query: ({ page, limit, sort }) =>
         `/projects/page?page=${page}&limit=${limit}&sort=${sort}`,
+      providesTags: ['Project'],
     }),
 
     // Get all projects by username

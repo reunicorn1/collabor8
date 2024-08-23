@@ -15,13 +15,66 @@ import {
   HiUserGroup,
 } from 'react-icons/hi2';
 import DashboardBar from '../components/Bars/DashboardBar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Home from '../components/Dashboard/Home';
 import SharedWithMe from '../components/Dashboard/SharedWithMe';
 import AllProjects from '../components/Dashboard/AllProjects';
+import {
+  useGetAllProjectsPaginatedQuery,
+} from '@store/services/project';
+import {
+  setRecentProjects,
+  setUserProjects,
+  // setSharedProjects,
+} from '@store/slices/projectSlice';
+import {
+  selectRecentProjects,
+  selectRecentProjectsPagination,
+  selectUserProjects,
+  selectUserProjectsPagination,
+  // selectSharedProjects,
+} from '@store/selectors';
+import { useDispatch, useSelector } from 'react-redux';
+
+
+
 
 export default function DashboardPage() {
   const [clicked, setClicked] = useState('Home');
+  const [page, setPage] = useState(1);
+  const [sort, setSort] = useState('-updated_at');
+  const [limit, setLimit] = useState(10);
+  const dispatch = useDispatch();
+  const recentProjects = useSelector(selectRecentProjects);
+  const userProjects = useSelector(selectUserProjects);
+
+  const recentProjectsPagination = useSelector(selectRecentProjectsPagination);
+  const userProjectsPagination = useSelector(selectUserProjectsPagination);
+
+  const { data, err, isFetching, refetch, isSuccess, isLoading } = useGetAllProjectsPaginatedQuery(
+    { page, limit, sort },
+    { refetchOnReconnect: true }, // Optional: refetch when reconnecting
+  );
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(setRecentProjects(data));
+    }
+  }, [isSuccess, data, recentProjects.total, dispatch]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(setUserProjects(data));
+    }
+  }, [isSuccess, data, userProjects.total, dispatch]);
+
+
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+
 
   return (
     <>

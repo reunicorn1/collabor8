@@ -1,8 +1,4 @@
 import { formatDistanceToNow, parseISO } from 'date-fns';
-import {
-  useGetAllProjectsPaginatedQuery,
-  useLazyGetAllProjectsPaginatedQuery,
-} from '@store/services/project';
 // import { useState } from 'react';
 
 
@@ -26,24 +22,24 @@ export function mutateProjects(projs) {
   }));
 }
 
-// takes callback to setState
-export function handlePageChange(newPage: number, setPage: (page: number) => void, refetch: () => void) {
-  setPage(newPage);
-  refetch(); // Refetch data with the new page number
-}
 
 //export function SharedProjects() {
 //   // This function should fetch the projects shared with the user from the backend
 // }
 
-export function setRecentProjectsFromAllProjects(projects, setRecentProjects) {
+export function setRecentProjectsFromAllProjects(projects) {
+  console.log('Setting recent projects', projects);
   const recentProjects = [...projects]
     ?.sort((a, b) => parseISO(b.updated_at) - parseISO(a.updated_at))
-    .slice(0, 3);
+    .slice(0, 5);
 
-    setRecentProjects(mutateProjects(recentProjects)); // Directly set the recent projects
+    return mutateProjects(recentProjects); // Directly set the recent projects
 }
 
-//export function PersonalProjects() {
-//   // This function should fetch the user's personal projects from the backend
-// }
+export function setUserProjects(projects) {
+  // This function should fetch the projects created by the user from the backend
+  const userProjects = [...projects]
+  ?.sort((a, b) => parseISO(b.updated_at) - parseISO(a.updated_at))
+  .slice(0, 10);
+}
+
