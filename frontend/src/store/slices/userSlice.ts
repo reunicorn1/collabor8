@@ -20,29 +20,41 @@ const initialState: UserState = {
   error: null,
 };
 
+// Utility function to manage localStorage for user details
+const setUserLocalStorage = (user: User | null) => {
+  if (user) {
+    localStorage.setItem('userDetails', JSON.stringify(user));
+  } else {
+    localStorage.removeItem('userDetails');
+  }
+};
+
+// Utility function to handle setting user details
+const setUserDetailsState = (state: UserState, user: User | null) => {
+  state.userDetails = user;
+  state.loading = false;
+  state.error = null;
+  setUserLocalStorage(user);
+};
+
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
     // Set user data.
     setUserDetails: (state, action: PayloadAction<Partial<User>>) => {
-      state.userDetails = action.payload;
-      state.loading = false;
-      state.error = null;
-      localStorage.setItem('userDetails', JSON.stringify(action.payload));
+      setUserDetailsState(state, action.payload);
     },
     // Updates the user's details in the state.
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.userDetails) {
         state.userDetails = { ...state.userDetails, ...action.payload };
+        setUserLocalStorage(state.userDetails);
       }
     },
     // Clears user data, for example on logout
     clearUser: (state) => {
-      state.userDetails = null;
-      state.loading = false;
-      state.error = null;
-      localStorage.removeItem('userDetails');
+      setUserDetailsState(state, null);
     },
   },
   extraReducers: (builder) => {
@@ -58,8 +70,7 @@ const userSlice = createSlice({
       .addMatcher(
         userApi.endpoints.getCurrentUserProfile.matchFulfilled,
         (state, action) => {
-          state.userDetails = action.payload;
-          state.loading = false;
+          setUserDetailsState(state, action.payload);
         },
       )
       .addMatcher(
@@ -75,6 +86,7 @@ const userSlice = createSlice({
         (state, action) => {
           if (state.userDetails) {
             state.userDetails = { ...state.userDetails, ...action.payload };
+            setUserLocalStorage(state.userDetails);
           }
         },
       )
@@ -82,9 +94,7 @@ const userSlice = createSlice({
       .addMatcher(
         userApi.endpoints.deleteCurrentUserProfile.matchFulfilled,
         (state) => {
-          state.userDetails = null;
-          state.loading = false;
-          state.error = null;
+          setUserDetailsState(state, null);
         },
       )
       // Handle getUserById fulfilled state
@@ -92,7 +102,7 @@ const userSlice = createSlice({
         userApi.endpoints.getUserById.matchFulfilled,
         (state, action) => {
           if (state.userDetails?.user_id === action.payload.user_id) {
-            state.userDetails = action.payload;
+            setUserDetailsState(state, action.payload);
           }
         },
       )
@@ -102,6 +112,7 @@ const userSlice = createSlice({
         (state, action) => {
           if (state.userDetails?.user_id === action.payload.user_id) {
             state.userDetails = { ...state.userDetails, ...action.payload };
+            setUserLocalStorage(state.userDetails);
           }
         },
       );
