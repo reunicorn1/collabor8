@@ -2,153 +2,187 @@ import { Hocuspocus } from '@hocuspocus/server';
 import { Logger } from '@hocuspocus/extension-logger';
 import Delta from 'quill-delta';
 import * as Y from 'yjs';
+import axios from 'axios';
+import chalk from 'chalk';
+import dotenv from 'dotenv';
 
-const port = 1234;
-// This is an example of fully loaded data from the db, but file_content is going to be delta
-// In our case every file content will actually be stored as delta that will be applied to the yobject
-// once the y.text is created 
+dotenv.config();
+
+const port = process.env.PORT || 1234;
+const nestServerUrl =
+  process.env.NEST_SERVER_URL || 'http://localhost:3000/api/v1/files';
+const updateInterval = 60000;
+
 const project = {
   projectId: '4653',
-  id: 0, // because root 
+  id: 0,
   children: [
     { type: 'file', id: 1, file_name: 'test.js', project_id: '4653' },
     {
-      type: 'dir', id: 2, directory_name: 'testdir', project_id: '4653',
+      type: 'dir',
+      id: 2,
+      directory_name: 'testdir',
+      project_id: '4653',
       children: [
         { type: 'file', id: 3, file_name: 'test2.js', project_id: '4653' },
         { type: 'file', id: 4, file_name: 'test3.js', project_id: '4653' },
-      ]
-    }
-  ]
-}
+      ],
+    },
+  ],
+};
 
 const textToDelta = (text) => new Delta().insert(text);
 
-// Hocuspocus Server Configuration
 const server = new Hocuspocus({
   port,
   extensions: [new Logger()],
   async onLoadDocument(context) {
     const projectId = context.document.name;
-    console.log('OnLoad -------->', projectId);
-    //   await handleLoadDocument(context, projectId);
-    const ymap = context.document.getMap('root');
-    ymap.set('filetree', project);
-    console.log('Array loaded from house', Array.from(context.document.getMap('root')));
-    return context.document
+    console.info(chalk.blue(`Loading document for project ID: ${projectId}`));
+    try {
+      await handleLoadDocument(context);
+      const ymap = context.document.getMap('root');
+      ymap.set('filetree', project);
+      console.info(
+        chalk.green(
+          `Document loaded successfully for project ID: ${projectId}`,
+        ),
+      );
+    } catch (error) {
+      console.error(
+        chalk.red(
+          `Failed to load document for project ID: ${projectId}`,
+          error,
+        ),
+      );
+      context.reject(500, 'Internal Server Error');
+    }
   },
-  onConnect: (context) => {
+  onConnect(context) {
     handleConnect(context);
   },
-  onDisconnect: (context) => {
+  onDisconnect(context) {
     handleDisconnect(context);
   },
-  onError: (context, error) => {
-    console.error(`Error occurred: ${error.message}`);
+  onError(context, error) {
+    console.error(
+      chalk.red(`Error occurred in context: ${context.document.name}`, error),
+    );
   },
-  onUpdate: (context) => {
-    console.log(`Document updated in room: ${context.document.name}`);
+  onUpdate(context) {
+    console.info(
+      chalk.yellow(`Document updated in room: ${context.document.name}`),
+    );
+    handleUpdate(context);
   },
 });
 
+const updateQueue = new Map(); // store updates for each project
 
 async function handleLoadDocument(context) {
   const yMap = context.document.getMap('root');
-  loadProjectToYMap(yMap, project);
+  await loadProjectToYMap(yMap, project);
 }
 
-function loadProjectToYMap(yMap, project) {
+async function loadProjectToYMap(yMap, project) {
   for (const file of project.children) {
     if (file.type === 'file') {
-      const { file_id: fileId, file_content: content } = file;
-      if (content) {
-        const yText = new Y.Text();
-        const delta = textToDelta(content);
-        yText.applyDelta(delta);
-        console.log('YText:', yText.toJSON());
-        yMap.set(fileId, yText);
-      } else {
-        console.error(`File content is undefined for fileId: ${fileId}`);
+      const { id } = file;
+      try {
+        const response = await axios.get(`${nestServerUrl}/${id}`);
+        const content = response.data.file_content;
+
+        if (content) {
+          const yText = new Y.Text();
+          const delta = textToDelta(content);
+          yText.applyDelta(delta);
+          yMap.set(id, yText);
+          console.info(chalk.green(`Loaded content for file ID: ${id}`));
+        } else {
+          console.warn(chalk.yellow(`No content found for file ID: ${id}`));
+        }
+      } catch (error) {
+        console.error(
+          chalk.red(`Failed to load content for file ID: ${id}`, error),
+        );
       }
     } else if (file.type === 'dir') {
-      const ymap = new Y.Map();
-      yMap.set(file.dir_id, ymap);
-      loadProjectToYMap(ymap, file); // Recursively handle subdirectories
+      const ySubMap = new Y.Map();
+      yMap.set(file.id, ySubMap);
+      await loadProjectToYMap(ySubMap, file);
     }
   }
 }
 
-// saving ymap to db
-async function saveYMapToDb(yMap, projectId, parentDirId = null) {
-  const client = await MongoClient.connect(mongoUrl);
-  const db = client.db(dbName);
-  const collection = db.collection('projects');
+async function handleUpdate(context) {
+  const yMap = context.document.getMap('root');
+  const projectId = context.document.name;
+
+  if (!updateQueue.has(projectId)) {
+    updateQueue.set(projectId, new Map());
+  }
+
+  const projectUpdates = updateQueue.get(projectId);
 
   for (const [key, value] of yMap.entries()) {
     if (value instanceof Y.Text) {
-      // Handle files
-      const fileContent = value.toDelta();
-      const fileRecord = {
-        type: 'file',
-        file_id: key,
-        project_id: projectId,
-        file_content: fileContent,
-        parent_dir_id: parentDirId
-      };
-      await collection.updateOne(
-        { project_id: projectId, 'children.file_id': key },
-        { $set: { 'children.$': fileRecord } },
-        { upsert: true }
-      );
-    } else if (value instanceof Y.Map) {
-      // Handle directories
-      const dirId = key;
-      const dirRecord = {
-        type: 'dir',
-        dir_id: dirId,
-        project_id: projectId,
-        parent_dir_id: parentDirId,
-        children: []
-      };
-      await collection.updateOne(
-        { project_id: projectId, 'children.dir_id': dirId },
-        { $set: { 'children.$': dirRecord } },
-        { upsert: true }
-      );
+      const fileContent = value.toString();
+      projectUpdates.set(key, fileContent);
+      console.info(chalk.green(`Queued update for file ID: ${key}`));
+    }
+  }
+}
 
-      // Recursively save the directory's contents
-      await saveYMapToDb(value, projectId, dirId);
+// Function to process the batched updates
+async function processBatchedUpdates() {
+  for (const [projectId, fileUpdates] of updateQueue.entries()) {
+    for (const [fileId, content] of fileUpdates.entries()) {
+      const fileRecord = {
+        file_content: content,
+      };
+
+      try {
+        const response = await axios.patch(
+          `${nestServerUrl}/${fileId}`,
+          fileRecord,
+        );
+        console.info(chalk.green(`File updated successfully: ID ${fileId}`));
+      } catch (error) {
+        console.error(
+          chalk.red(
+            `Failed to update file ID: ${fileId}`,
+            error.response ? error.response.data : error.message,
+          ),
+        );
+      }
     }
   }
 
-  await client.close();
+  // clear after processing
+  updateQueue.clear();
 }
 
+// set interval to process batched updates
+setInterval(processBatchedUpdates, updateInterval);
 
-// Connection Handlers
 function handleConnect(context) {
-  if (context) {
-    const connectionId = context.connection?.id || 'unknown';
-    const roomName = context.document?.name || 'unknown';
-
-    console.log(`Client connected: ${connectionId}`);
-    console.log(`Room name: ${roomName}`);
-  } else {
-    console.error('Awareness context is undefined');
-  }
+  const connectionId = context.connection?.id || 'unknown';
+  const roomName = context.document?.name || 'unknown';
+  console.info(
+    chalk.blue(`Client connected: ${connectionId}, Room: ${roomName}`),
+  );
 }
 
 function handleDisconnect(context) {
   const connectionId = context.connection?.id || 'unknown';
-  console.log(`Client disconnected: ${connectionId}`);
+  console.info(chalk.blue(`Client disconnected: ${connectionId}`));
 }
 
-// Start Server
 server
   .listen()
   .then(() => {
-    console.log(`Hocuspocus server is running on port ${port}`);
+    console.info(chalk.green(`Hocuspocus server is running on port ${port}`));
   })
   .catch((error) => {
-    console.error('Failed to start the server:', error);
+    console.error(chalk.red('Failed to start the server:', error));
   });
