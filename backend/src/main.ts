@@ -9,11 +9,7 @@ import * as session from 'express-session';
 import * as passport from 'passport';
 import { jwtConstants } from './constants';
 import * as cookieParser from 'cookie-parser';
-// TODO: add passport https://docs.nestjs.com/security/authentication#passport
-// https://github.com/jaredhanson/passport
-// TODO: add helmet https://docs.nestjs.com/security/helmet
-// TODO: add CSRF protection https://docs.nestjs.com/security/csrf
-// TODO: add cookie-parser https://docs.nestjs.com/techniques/cookies
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log'],

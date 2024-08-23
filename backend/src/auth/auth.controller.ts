@@ -64,6 +64,29 @@ export class AuthController {
     }
   }
 
+  // @docs.ApiSignOut()
+  @HttpCode(HttpStatus.OK)
+  @Post('signout')
+  async signOut(@Request() req, @Response() res) {
+    // revoke session
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).send({ message: 'Error signing out' });
+      }
+    });
+    res
+    .clearCookie('refreshToken')
+    .clearCookie('accessToken')
+    .clearCookie('connect.sid')
+    .send({ message: 'Signed out' });
+  }
+  // password change
+  // add avatar
+  // add bio
+  // add email validation
+  // add password reset through email
+  // projectShare invite email or notification
+
   @docs.ApiGetProfile()
   @UseGuards(JwtAuthGuard)
   @Get('profile')

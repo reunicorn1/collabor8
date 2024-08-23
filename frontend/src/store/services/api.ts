@@ -43,6 +43,12 @@ const baseQueryWithReauth: BaseQueryFn<
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error?.status === 401) {
+    if (localStorage.getItem('accessToken')) {
+      api.dispatch(setCredentials({ accessToken: localStorage.getItem('accessToken') | null }));
+      result = await baseQuery(args, api, extraOptions);
+      return result;
+    }
+
     const refreshResult = await baseQuery(
       {
         url: 'auth/refresh',
