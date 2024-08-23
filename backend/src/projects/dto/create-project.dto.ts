@@ -12,8 +12,11 @@ class CreateProjectDto {
 }
 
 class UpdateProjectDto {
+  @ApiProperty()
   project_name?: string;
+  @ApiProperty()
   description?: string;
+  @ApiProperty()
   updated_at?: Date;
 }
 
