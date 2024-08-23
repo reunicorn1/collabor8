@@ -39,6 +39,7 @@ export default function MenuSelection({
     dispatch(
       setPagination({
         ...pagination,
+        page: 1,
         sort: `${orderMap[order]}${sortMap[sort]}`,
       }),
     ); 

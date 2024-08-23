@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -66,7 +67,7 @@ export class AuthController {
 
   // @docs.ApiSignOut()
   @HttpCode(HttpStatus.OK)
-  @Post('signout')
+  @Delete('signout')
   async signOut(@Request() req, @Response() res) {
     // revoke session
     req.session.destroy((err) => {
