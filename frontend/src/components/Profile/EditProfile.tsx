@@ -7,14 +7,37 @@ import {
   Heading,
   Spacer,
 } from '@chakra-ui/react';
+import { useRef, ChangeEvent } from 'react';
 import { FiEdit3 } from 'react-icons/fi';
+// import { uploadFile } from '@uploadcare/upload-client';
 
 export default function EditProfile() {
+  // Data shown in the fields are from the data retrieved from the user's account
+  // This can be found either in the global sate, or by making an additional request
+  // No need for a request
+  // the states are used to create a duplicate local state which change based on user's
+  // interactions with fields
+  // When the user clicks save the part involved in that section is sent in an update api request
+  // After the request is sent, data related to userdata is refetched so the state is updated globally as well
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const leftPosition = useBreakpointValue({
     base: '120px',
     sm: '350px',
     md: '390px',
   });
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target?.files?.[0];
+    if (file) {
+      // Handle the file upload (e.g., display the file name, upload to a server, etc.)
+      console.log('Selected file:', file.name);
+    }
+  };
+
+  const handleButtonClick = () => {
+    if (inputRef.current) inputRef.current.click();
+  };
 
   return (
     <>
@@ -31,12 +54,20 @@ export default function EditProfile() {
         borderColor="white"
       />
       <Box p={20} pt={10} display="flex" justifyContent="flex-end">
+        <input
+          type="file"
+          ref={inputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+
         <Button
           colorScheme="white"
           variant="outline"
           w="180px"
           size="sm"
           fontFamily="mono"
+          onClick={handleButtonClick}
         >
           Upload new photo
         </Button>
@@ -72,14 +103,6 @@ export default function EditProfile() {
             </Heading>
             <Heading fontFamily="mono" fontSize="md" mt={2}>
               Osama
-            </Heading>
-          </Box>
-          <Box>
-            <Heading fontFamily="mono" fontSize="sm" opacity="0.7">
-              username
-            </Heading>
-            <Heading fontFamily="mono" fontSize="md" mt={2}>
-              @reunicorn
             </Heading>
           </Box>
           <Box>

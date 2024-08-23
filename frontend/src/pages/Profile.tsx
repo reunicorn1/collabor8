@@ -15,8 +15,9 @@ import {
   RiLockPasswordFill,
   RiDeleteBin5Line,
 } from 'react-icons/ri';
-import DeleteAccount from '@components/Modals/DeleteAccount';
+import DeleteAccount from '@components/Profile/DeleteAccount';
 import EditProfile from '@components/Profile/EditProfile';
+import Password from '@components/Profile/Password';
 
 export default function Profile() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -91,7 +92,7 @@ export default function Profile() {
         )}
         <Box flex="1" bg="brand.100" p={10} pb={0}>
           <Box bg="brand.900" color="white" h="100%" borderTopRadius="2xl">
-            {clicked === 'Edit' ? <EditProfile /> : <>hi</>}
+            {clicked === 'Edit' ? <EditProfile /> : <Password />}
           </Box>
         </Box>
         <DeleteAccount isOpen={isOpen} onClose={onClose} />
