@@ -10,24 +10,29 @@ import {
 } from '@chakra-ui/react';
 import { FaFolder } from 'react-icons/fa';
 import PersonalTable from './PersonalTable';
-
-import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUserDetails } from '@store/selectors/userSelectors';
-import { selectRecentProjects, selectRecentProjectsPagination } from '@store/selectors';
-import { setRecentProjects, setRecentProjectsPagination } from '@store/slices/projectSlice';
+import {
+  selectRecentProjects,
+  selectRecentProjectsPagination,
+} from '@store/selectors';
+import {
+  setRecentProjects,
+  setRecentProjectsPagination,
+} from '@store/slices/projectSlice';
 import { useGetAllProjectsPaginatedQuery } from '@store/services/project';
 // import * as projectUtils from '@utils/dashboard.utils';
 
 export default function Home() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const coolors = ['#F6D277', '#76449A', '#B4B4B4', '#52A0D8', '#F16145'];
   const recentProjects = useSelector(selectRecentProjects);
   const userDetails = useSelector(selectUserDetails);
   const recentProjectsPagination = useSelector(selectRecentProjectsPagination);
   console.log('recent', recentProjects);
-
-
 
   function hashStringToIndex(str: string, arrayLength: number): number {
     let hash = 0;
@@ -42,27 +47,42 @@ export default function Home() {
     const index = hashStringToIndex(projectName, coolors.length);
     return coolors[index];
   }
-  const { data, err, isFetching, refetch, isSuccess, isLoading } = useGetAllProjectsPaginatedQuery(
-    { ...recentProjectsPagination },
-    { refetchOnReconnect: true }, // Optional: refetch when reconnecting
-  );
+  const { data, err, isFetching, refetch, isSuccess, isLoading } =
+    useGetAllProjectsPaginatedQuery(
+      { ...recentProjectsPagination },
+      { refetchOnReconnect: true }, // Optional: refetch when reconnecting
+    );
   useEffect(() => {
     if (isSuccess) {
       dispatch(setRecentProjects(data));
     }
-  }, [isSuccess, data, recentProjects.total, dispatch, recentProjectsPagination]);
+  }, [
+    isSuccess,
+    data,
+    recentProjects.total,
+    dispatch,
+    recentProjectsPagination,
+  ]);
 
   useEffect(() => {
     refetch();
-  }
-  , [recentProjectsPagination]);
+  }, [recentProjectsPagination]);
 
-
- const handlePaginationChange = (type: string, page: number, limit: number) => {
+  const handlePaginationChange = (
+    type: string,
+    page: number,
+    limit: number,
+  ) => {
     // Update pagination state based on type and new page/limit values
     switch (type) {
       case 'recentProjects':
-        dispatch(setRecentProjectsPagination({ page, limit, sort: recentProjectsPagination.sort }));
+        dispatch(
+          setRecentProjectsPagination({
+            page,
+            limit,
+            sort: recentProjectsPagination.sort,
+          }),
+        );
         break;
       default:
         break;
@@ -70,15 +90,24 @@ export default function Home() {
   };
   console.log(recentProjects);
 
-  if (recentProjects.status === 'loading'  ) {
+  if (recentProjects.status === 'loading') {
     return <div>Loading...</div>;
   }
 
-  if (recentProjects.status === 'failed' ) {
+  if (recentProjects.status === 'failed') {
     return <div>Error loading data</div>;
   }
 
+  const handleGoToProject = (id: string, project_name: string) => {
+    // This function handles the click of a project item in the table it recives the id of the project
+    // And it navigates to the project page using the id
+    navigate(`/editor/${id}`, { state: { project_name } });
+  };
 
+  // BUG: Since the shared projects, all projects tab are underprogress, clicking them currently crashed the app
+  // But it also changes the state of isAuthenticated to false and therefore it logs the user out, though
+  // The access token remain stable in the local storage.
+  // When this happens userDetails disappear, but accessToken is still there
 
   return (
     <Flex justifyContent="center" h="100vh">
@@ -106,9 +135,7 @@ export default function Home() {
           whiteSpace="nowrap"
         >
           {/* top 3 recent projects will be shown here */}
-
-
-            {recentProjects.recentProjects?.map((project, index) => {
+          {recentProjects.recentProjects?.map((project, index) => {
             const color = getRandomColor(project.project_name);
             return (
               <Box
@@ -124,6 +151,9 @@ export default function Home() {
                 alignItems="center"
                 flexShrink={0}
                 cursor="pointer"
+                onClick={() =>
+                  handleGoToProject(project.project_id, project.project_name)
+                }
               >
                 <Icon as={FaFolder} fontSize="45px" color={color} />
                 <Box ml={5}>

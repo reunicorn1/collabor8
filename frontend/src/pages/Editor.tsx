@@ -52,7 +52,7 @@ export default function Editor() {
                 {/* Top Panel Group with horizontal panels */}
                 <Panel defaultSize={20} minSize={20} maxSize={50}>
                   {/* <FileTree /> */}
-                  <Tree ydoc={ydoc} />
+                  <Tree ydoc={ydoc} name={project_name}/>
                 </Panel>
                 <PanelResizeHandle
                   style={{

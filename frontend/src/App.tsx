@@ -6,11 +6,14 @@ import DashboardPage from './pages/DashboardPage';
 import Editor from './pages/Editor';
 import Login from './components/Login';
 import Profile from './pages/Profile';
-import NavigationBar from './components/Bars/NavigationBar';
+// import NavigationBar from './components/Bars/NavigationBar';
 import useAuthRefresh from './hooks/useAuthRefresh';
+import useLogOut from './hooks/useLogOut';
 
 const App: React.FC = () => {
   useAuthRefresh();
+  useLogOut();
+
   return (
     <>
       {/* <NavigationBar /> */}

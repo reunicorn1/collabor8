@@ -49,9 +49,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 export default function DashboardPage() {
   const [clicked, setClicked] = useState('Home');
-  const [page, setPage] = useState(1);
-  const [sort, setSort] = useState('-updated_at');
-  const [limit, setLimit] = useState(10);
   // const dispatch = useDispatch();
   // const recentProjects = useSelector(selectRecentProjects);
   // const userProjects = useSelector(selectUserProjects);

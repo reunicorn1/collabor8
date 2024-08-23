@@ -16,9 +16,10 @@ import FileTreeView from '../FileTree/FileTreeView';
 
 interface TreeProps {
   ydoc: Y.Doc;
+  name: string;
 }
 
-const Tree: React.FC<TreeProps> = ({ ydoc }) => {
+const Tree: React.FC<TreeProps> = ({ ydoc, name }) => {
   // The buttons of this component creates new files and direcoties in y.map (root) of the project
   // When a new file is created it becomes selected by default
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -52,7 +53,7 @@ const Tree: React.FC<TreeProps> = ({ ydoc }) => {
       >
         <Text fontSize="xs" ml={4} fontFamily="mono">
           {/* Project name is retriened from an api request of from a context */}
-          Project Name
+          {name}
         </Text>
         <Spacer />
         <IconButton
