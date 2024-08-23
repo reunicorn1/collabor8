@@ -12,17 +12,21 @@ import { FaFolder } from 'react-icons/fa';
 import PersonalTable from './PersonalTable';
 
 import { useState, useEffect } from 'react';
-import * as projectUtils from '@utils/dashboard.utils';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { selectUserDetails } from '@store/selectors/userSelectors';
-import { selectRecentProjects, selectUserProjects, selectSharedProjects } from '@store/selectors';
+import { selectRecentProjects, selectRecentProjectsPagination } from '@store/selectors';
+import { setRecentProjects, setRecentProjectsPagination } from '@store/slices/projectSlice';
+import { useGetAllProjectsPaginatedQuery } from '@store/services/project';
+// import * as projectUtils from '@utils/dashboard.utils';
 
 export default function Home() {
+  const dispatch = useDispatch();
   const coolors = ['#F6D277', '#76449A', '#B4B4B4', '#52A0D8', '#F16145'];
   const recentProjects = useSelector(selectRecentProjects);
+  const userDetails = useSelector(selectUserDetails);
+  const recentProjectsPagination = useSelector(selectRecentProjectsPagination);
   console.log('recent', recentProjects);
 
-  const userDetails = useSelector(selectUserDetails);
 
 
   function hashStringToIndex(str: string, arrayLength: number): number {
@@ -37,6 +41,41 @@ export default function Home() {
   function getRandomColor(projectName: string): string {
     const index = hashStringToIndex(projectName, coolors.length);
     return coolors[index];
+  }
+  const { data, err, isFetching, refetch, isSuccess, isLoading } = useGetAllProjectsPaginatedQuery(
+    { ...recentProjectsPagination },
+    { refetchOnReconnect: true }, // Optional: refetch when reconnecting
+  );
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(setRecentProjects(data));
+    }
+  }, [isSuccess, data, recentProjects.total, dispatch, recentProjectsPagination]);
+
+  useEffect(() => {
+    refetch();
+  }
+  , [recentProjectsPagination]);
+
+
+ const handlePaginationChange = (type: string, page: number, limit: number) => {
+    // Update pagination state based on type and new page/limit values
+    switch (type) {
+      case 'recentProjects':
+        dispatch(setRecentProjectsPagination({ page, limit, sort: recentProjectsPagination.sort }));
+        break;
+      default:
+        break;
+    }
+  };
+  console.log(recentProjects);
+
+  if (recentProjects.status === 'loading'  ) {
+    return <div>Loading...</div>;
+  }
+
+  if (recentProjects.status === 'failed' ) {
+    return <div>Error loading data</div>;
   }
 
 
@@ -70,7 +109,7 @@ export default function Home() {
 
 
             {recentProjects.recentProjects?.map((project, index) => {
-            const color = getRandomColor(project.name);
+            const color = getRandomColor(project.project_name);
             return (
               <Box
                 key={index}
@@ -96,7 +135,7 @@ export default function Home() {
                     overflow="hidden"
                     maxW="150px"
                   >
-                    {project.name}
+                    {project.project_name}
                   </Text>
                   <Text fontSize="xs" fontFamily="mono">
                     {project.lastEdited}

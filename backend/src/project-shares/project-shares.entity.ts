@@ -20,8 +20,12 @@ export class ProjectShares {
   @Column('uuid')
   project_id: string;
 
+
   @Column('uuid')
   user_id: string;
+
+  @Column()
+  username: string;
 
   // TODO: Add favorite boolean
   @Column({ type: 'boolean', default: false })

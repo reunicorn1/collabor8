@@ -63,7 +63,15 @@ export interface ProjectShares {
   share_id: string;
   project_id: string;
   user_id: string;
+  favorite: boolean;
   access_level: 'read' | 'write';
+  created_at: Date;
+  updated_at: Date;
+  member_count: number;
+  first_name: string;
+  last_name: string;
+  username: string;
+  project_name: string;
 }
 
 /**

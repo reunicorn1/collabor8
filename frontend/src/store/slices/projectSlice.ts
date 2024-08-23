@@ -3,9 +3,8 @@ import { Project } from '@types';
 import { projectApi } from '@store/services/project';
 import * as projectUtils from '@utils/dashboard.utils';
 
-
 interface projects {
-  name: string;
+  project_name: string;
   username: string;
   description: string;
   updated_at: string;
@@ -15,7 +14,13 @@ interface projects {
 }
 
 interface recentProjectsInterface {
-  name: string;
+  project_name: string;
+  username: string;
+  description: string;
+  updated_at: string;
+  created_at: string;
+  project_id: string;
+  projectShares: string[];
   laseEdited: string;
 }
 
@@ -25,6 +30,8 @@ interface recentProjects {
   limit: number;
   total: number;
   totalPages: number;
+  status?: string;
+  error?: string;
 }
 
 interface userProjects {
@@ -34,6 +41,8 @@ interface userProjects {
   total: number;
   sort: string;
   totalPages: number;
+  status?: string;
+  error?: string;
 }
 
 interface sharedProjects {
@@ -43,6 +52,8 @@ interface sharedProjects {
   total: number;
   sort: string;
   totalPages: number;
+  status?: string;
+  error?: string;
 }
 interface allProjects {
   allProjects: projects[];
@@ -51,6 +62,8 @@ interface allProjects {
   total: number;
   sort: string;
   totalPages: number;
+  status?: string;
+  error?: string;
 }
 
 interface ProjectsState {
@@ -73,6 +86,7 @@ const initialState: ProjectsState = {
     limit: 5,
     total: -1,
     totalPages: 0,
+    status: 'idle',
   },
   userProjects: {
     userProjects: [],
@@ -81,6 +95,7 @@ const initialState: ProjectsState = {
     total: -1,
     sort: '-created_at',
     totalPages: 0,
+    status: 'idle',
   },
   sharedProjects: {
     sharedProjects: [],
@@ -89,6 +104,7 @@ const initialState: ProjectsState = {
     total: -1,
     sort: '-created_at',
     totalPages: 0,
+    status: 'idle',
   },
   allProjects: {
     allProjects: [],
@@ -97,6 +113,7 @@ const initialState: ProjectsState = {
     total: -1,
     sort: '-created_at',
     totalPages: 0,
+    status: 'idle',
   },
   pagination: {
     recentProjects: { page: 1, limit: 5, sort: '-updated_at' },
@@ -119,6 +136,7 @@ const projectSlice = createSlice({
         limit: payload.limit,
         total: payload.total,
         totalPages: payload.totalPages,
+        status: 'succeeded',
       };
     },
     setRecentProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {
@@ -126,7 +144,7 @@ const projectSlice = createSlice({
     },
     setUserProjects: (state, action: PayloadAction<userProjects>) => {
       const payload = action.payload;
-      console.log('Setting recent projects', payload.projects);
+      console.log('Setting user projects', payload);
       state.userProjects = {
         userProjects: payload.projects,
         page: payload.page,
@@ -134,6 +152,7 @@ const projectSlice = createSlice({
         total: payload.total,
         sort: payload.sort,
         totalPages: payload.totalPages,
+        status: 'succeeded',
       };
     },
     setUserProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {
@@ -172,7 +191,6 @@ const projectSlice = createSlice({
   //         setRecentProjects(state, action);
   //       })
   // },
-
 
 
 

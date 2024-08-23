@@ -17,7 +17,7 @@ export function mutateProjects(projs) {
     return [];
   }
   return projs?.map((proj) => ({
-    name: proj.project_name,
+    ...proj,
     lastEdited: computeTimeDiff(proj.updated_at),
   }));
 }

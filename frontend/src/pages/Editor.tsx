@@ -1,6 +1,6 @@
 import { Grid, GridItem, Box, Text, Divider } from '@chakra-ui/react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 // import FileTree from '../components/FileTree/FileTree';
 import { EditorProvider } from '../context/EditorContext';
@@ -9,6 +9,9 @@ import Shares from '../components/Bars/Shares';
 import MenuBar from '../components/Bars/MenuBar';
 import Tree from '../components/FileTree/Tree';
 import * as Y from 'yjs';
+// retrieve project name from state of navigate eg.
+//  navigate(`/editor/${id}`, { state: { project_name } });
+//
 
 export default function Editor() {
   // The only thing to fix my issues is to avoid using context and use direct passing instead
@@ -16,6 +19,8 @@ export default function Editor() {
 
   const { projectId = '' } = useParams();
   const [isDragging, setIsDragging] = useState(false);
+  const location = useLocation();
+  const { project_name } = location.state || { project_name: 'Untitled' };
 
   return (
     <EditorProvider>
