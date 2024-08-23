@@ -10,7 +10,7 @@ dotenv.config();
 
 const port = process.env.PORT || 1234;
 const nestServerUrl =
-  process.env.NEST_SERVER_URL || 'http://localhost:3000/api/v1/files';
+  process.env.NEST_SERVER_URL || 'http://localhost:3000/api/v1/';
 const updateInterval = 60000;
 
 const project = {
@@ -89,7 +89,7 @@ async function loadProjectToYMap(yMap, project) {
     if (file.type === 'file') {
       const { id } = file;
       try {
-        const response = await axios.get(`${nestServerUrl}/${id}`);
+        const response = await axios.get(`${nestServerUrl}/files/${id}`);
         const content = response.data.file_content;
 
         if (content) {
@@ -143,7 +143,7 @@ async function processBatchedUpdates() {
 
       try {
         const response = await axios.patch(
-          `${nestServerUrl}/${fileId}`,
+          `${nestServerUrl}/files/${fileId}`,
           fileRecord,
         );
         console.info(chalk.green(`File updated successfully: ID ${fileId}`));
