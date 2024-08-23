@@ -57,8 +57,6 @@ function validateUpdateDirectoryDto(dto: any): UpdateDirectoryOutDto {
     throw new BadRequestException('Owner ID must be a string');
   }
 
-
-
   return { directory_name, username, parent_id, updated_at };
 }
 
