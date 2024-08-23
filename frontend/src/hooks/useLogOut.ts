@@ -9,10 +9,10 @@ const useLogOut = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const blockedRoutes = ['/dashboard', '/profile', '/editor'];
+    const protectedRoutes = ['/dashboard', '/profile'];
     if (
       !userAuthenticated &&
-      blockedRoutes.some((route) => route.startsWith(location.pathname))
+      protectedRoutes.some((route) => route.startsWith(location.pathname))
     ) {
       console.log('User is not authenticated anymore', userAuthenticated);
       navigate('/');

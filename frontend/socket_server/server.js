@@ -36,11 +36,11 @@ const server = new Hocuspocus({
     const projectId = context.document.name;
     console.log('OnLoad -------->', projectId);
     // I want to load only metadata stored for this project
-    await handleLoadDocument(context, projectId);
-    console.log(
-      'Array loaded from house',
-      Array.from(context.document.getMap('root')),
-    );
+    // await handleLoadDocument(context, projectId);
+    // console.log(
+    //   'Array loaded from house',
+    //   Array.from(context.document.getMap('root')),
+    // );
     return context.document;
   },
   async afterLoadDocument(context) {
@@ -189,6 +189,7 @@ async function loadfileFromDb(projectId, fileId, yText) {
     }
     return file;
   }
+}
   // if (!project) {
   //   console.error(`Project not found: ${projectId}`);
   //   // create a new project
