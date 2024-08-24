@@ -11,10 +11,12 @@ import { LocalStrategy } from '@auth/strategies/local.strategy';
 import { JwtStrategy } from '@auth/strategies/jwt.strategy';
 import { SessionSerializer } from '@auth/serializers/session.serializer';
 import { RefreshStrategy } from '@auth/strategies/refresh.strategy';
+import { RedisModule } from '@redis/redis.module';
 @Module({
   imports: [
     UsersModule,
     EnvironmentMongoModule,
+    RedisModule,
     PassportModule.register({ session: true }),
     JwtModule.register({
       secret: jwtConstants.secret,

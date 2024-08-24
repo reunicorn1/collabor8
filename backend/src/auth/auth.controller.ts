@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  Param,
   Post,
   Request,
   Response,
@@ -70,6 +71,10 @@ export class AuthController {
   @Delete('signout')
   async signOut(@Request() req, @Response() res) {
     // revoke session
+
+    await this.authService.revokeAccessToken(req.user.jti);
+    console.log('req.cookies', req.cookies);
+    await this.authService.revokeRefreshToken(req.cookies.refreshToken);
     req.session.destroy((err) => {
       if (err) {
         return res.status(500).send({ message: 'Error signing out' });
@@ -107,5 +112,12 @@ export class AuthController {
     }
     const { accessToken } = await this.authService.refreshToken(refreshToken);
     res.send({ accessToken });
+  }
+
+  // @docs.ApiVerifyEmail()
+  @Public()
+  @Get('verify')
+  async verifyEmail(@Request() req) {
+    return this.authService.verifyUser(req.query.token);
   }
 }

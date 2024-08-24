@@ -26,6 +26,8 @@ import { APP_GUARD } from '@nestjs/core';
 // import { RolesGuard } from '@auth/guards/roles.guard';
 // import { RolesGuard } from '@auth/guards/roles.guard';
 import { AdminModule } from './admin/admin.module';
+import { RedisService } from './redis/redis.service';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -63,6 +65,7 @@ import { AdminModule } from './admin/admin.module';
     EnvironmentMongoModule,
     AuthModule,
     AdminModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [
@@ -72,6 +75,7 @@ import { AdminModule } from './admin/admin.module';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    RedisService,
   ],
 })
 export class AppModule {}

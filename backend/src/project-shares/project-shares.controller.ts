@@ -43,6 +43,14 @@ export class ProjectSharesController {
     return this.projectSharesService.findAll();
   }
 
+  @Post('status/:id')
+  async updateStatus(
+    @Param('id') id: string,
+    @Body() updateProjectShareDto: Partial<ProjectShares>,
+  ): Promise<ProjectShares> {
+    return this.projectSharesService.updateStatus(id, updateProjectShareDto.status);
+  }
+
   // Retrieve a specific project share by ID
   @ApiOperation({
     summary: 'Retrieve a project share by ID',

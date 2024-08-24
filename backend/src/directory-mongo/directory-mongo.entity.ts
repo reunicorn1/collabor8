@@ -26,6 +26,9 @@ export class DirectoryMongo {
   @Column()
   updated_at: Date;
 
+  @Column({default: 'directory'})
+  type: string;
+
   @Column({ type: 'string', nullable: true })
   parent_id?: string; // Use string for ObjectId
 

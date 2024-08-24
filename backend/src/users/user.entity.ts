@@ -29,6 +29,9 @@ export class Users {
   @Column({ type: 'varchar', length: 100 })
   last_name: string;
 
+  @Column({type: 'boolean', default: false})
+  is_verified: boolean;
+
   // favorite languages list
   @Column('simple-array', { nullable: true })
   favorite_languages: string[] | null;

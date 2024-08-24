@@ -1,11 +1,12 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { jwtConstants } from '../../constants';
+import { RedisService } from '@redis/redis.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor() {
+  constructor(private redisService: RedisService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -15,7 +16,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(req: Request, payload: any) {
-    // check if user is still active
-    return { userId: payload.sub, username: payload.username, roles: payload.roles };
+    console.log('payload', payload);
+    const isRevoked = await this.redisService.getRevoked(payload.jti);
+    if (isRevoked) {
+       throw new UnauthorizedException('Token has been revoked');
+    }
+    return { userId: payload.sub, username: payload.username, roles: payload.roles, jti: payload.jti };
   }
 }

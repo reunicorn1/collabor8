@@ -14,17 +14,18 @@ import {
   parseLoginDto,
   LoginUserDto,
 } from '@users/dto/create-user.dto';
-import { EnvironmentMongoService } from '@environment-mongo/environment-mongo.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { adminEmails } from '@config/configuration';
+import { RedisService } from '@redis/redis.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly environmentService: EnvironmentMongoService,
     private jwtService: JwtService,
+    private redisService: RedisService,
   ) {}
 
   async signIn(user: Partial<Users>): Promise<{
@@ -37,6 +38,7 @@ export class AuthService {
       sub: user.user_id,
       roles: user.roles,
       timestamp: new Date().getTime(),
+      jti: uuidv4(),
     };
     const {
       user_id,
@@ -45,8 +47,12 @@ export class AuthService {
       environment_id,
       created_at,
       updated_at,
+      is_verified,
       ...userinfo
     } = await this.usersService.findOneBy({ username: user.username });
+    if (!is_verified) {
+      throw new UnauthorizedException('User is not verified. Please verify your email');
+    }
     Logger.log('--------->', { user });
     return {
       accessToken: await this.jwtService.signAsync(payload),
@@ -67,6 +73,22 @@ export class AuthService {
     return {
       accessToken: await this.jwtService.signAsync(payload),
     };
+  }
+
+  async verifyUser(token: string): Promise<Partial<Users>> {
+    const user = await this.usersService.findOneBy({ user_id: token });
+    if (!user) {
+      throw new NotFoundException(`User with token ${token} not found`);
+    }
+    return user;
+  }
+
+  async verificationId(email: string): Promise<string> {
+    const user = await this.usersService.findOneBy({ email });
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+    return user.user_id;
   }
 
   async validateUser(
@@ -138,5 +160,21 @@ export class AuthService {
 
   async comparePwd(password: string, hash: string): Promise<boolean> {
     return await bcrypt.compare(password, hash);
+  }
+
+  async revokeAccessToken(jti: string) {
+    await this.redisService.set(`revoked:${jti}`, 'true', 3600); // Token revocation expires after an hour
+  }
+
+  async revokeRefreshToken(refreshToken: string) {
+    await this.redisService.set(`revoked:${refreshToken}`, 'true', 7 * 24 * 3600); // Refresh token revocation for 7 days
+  }
+
+  async isAccessTokenRevoked(jti: string): Promise<boolean> {
+    return !!(await this.redisService.get(`revoked:${jti}`));
+  }
+
+  async isRefreshTokenRevoked(refreshToken: string): Promise<boolean> {
+    return !!(await this.redisService.get(`revoked:${refreshToken}`));
   }
 }

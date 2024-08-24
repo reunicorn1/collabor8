@@ -31,6 +31,17 @@ export class ProjectSharesService {
     return await this.projectSharesRepository.find();
   }
 
+  async updateStatus(id: string, status: string): Promise<ProjectShares> {
+    const projectShare = await this.projectSharesRepository.findOneBy({ share_id: id });
+    if (status !== 'accepted' && status !== 'rejected') {
+      throw new Error('Invalid status');
+    } else if (projectShare.status === 'rejected') {
+      await this.projectSharesRepository.delete(id);
+    }
+    projectShare.status = status;
+    return await this.projectSharesRepository.save(projectShare);
+  }
+
   async mapProjectShareData(projectShare: ProjectShares): Promise<ProjectSharesOutDto> {
     const { created_at, updated_at, username, ...projectShareData } = projectShare;
     const project = await this.projectsService.findOne(projectShare.project_id);
