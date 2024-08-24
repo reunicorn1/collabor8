@@ -16,7 +16,8 @@ const FileTreeView: React.FC<FileTreeViewProps> = ({ data, ydoc }) => {
 
   const root = ydoc.getMap('root');
   const filetree = data.filetree?.children;
-  console.log(root);
+  console.log('Root:-------->', root);
+  console.log('FileTree:----->', filetree);
 
   const onFileClick = (id: string, name: string) => {
     // This is a function that deals with creation of new y.text per file
@@ -40,7 +41,13 @@ const FileTreeView: React.FC<FileTreeViewProps> = ({ data, ydoc }) => {
     <>
       {filetree && filetree?.length > 0 ? (
         filetree.map((node, index) => (
-          <Entry key={index} entry={node} depth={1} onFileClick={onFileClick} ydoc={ydoc}/>
+          <Entry
+            key={index}
+            entry={node}
+            depth={1}
+            onFileClick={onFileClick}
+            ydoc={ydoc}
+          />
         ))
       ) : (
         <Text color="white" fontSize="xs" fontFamily="mono" pl={8} pt={4}>

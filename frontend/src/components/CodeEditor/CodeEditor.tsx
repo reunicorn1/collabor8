@@ -46,7 +46,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
 
   // An event listener for updates happneing in the ydoc
   ydoc_.current.on('update', (update) => {
-    console.log('Yjs update', update);
+    // console.log('Yjs update', update);
   });
   // A function to create a binding between file selected from the file tree and the editor
   const setupCodemirrorBinding = (text: Y.Text) => {

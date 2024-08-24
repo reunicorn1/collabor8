@@ -1,32 +1,274 @@
-import { Hocuspocus } from '@hocuspocus/server';
-import { Logger } from '@hocuspocus/extension-logger';
-import Delta from 'quill-delta';
-import * as Y from 'yjs';
-import axios from 'axios';
-import chalk from 'chalk';
-import dotenv from 'dotenv';
+import { Hocuspocus } from "@hocuspocus/server";
+import { Logger } from "@hocuspocus/extension-logger";
+import Delta from "quill-delta";
+import * as Y from "yjs";
+import axios from "axios";
+import chalk from "chalk";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 const port = process.env.PORT || 1234;
 const nestServerUrl =
-  process.env.NEST_SERVER_URL || 'http://localhost:3000/api/v1/';
+  process.env.NEST_SERVER_URL || "http://localhost:3000/api/v1/";
 const updateInterval = 60000;
 
 const project = {
-  projectId: '4653',
-  id: 0,
+  id: "66c96f56c67902d806265e16",
+  type: "project",
   children: [
-    { type: 'file', id: 1, name: 'test.js', project_id: '4653' },
     {
-      type: 'dir',
-      id: 2,
-      name: 'testdir',
-      project_id: '4653',
+      id: "66c96f56c67902d806265e17",
+      name: "Directory_gc1hgp",
+      type: "directory",
       children: [
-        { type: 'file', id: 3, name: 'test2.js', project_id: '4653' },
-        { type: 'file', id: 4, name: 'test3.js', project_id: '4653' },
+        {
+          id: "66c96f56c67902d806265e24",
+          name: "Directory_5vp6x",
+          type: "directory",
+          children: [
+            {
+              id: "66c96f56c67902d806265e25",
+              name: "Directory_t8pr8d",
+              type: "directory",
+              children: [
+                {
+                  id: "66c96f56c67902d806265e28",
+                  name: "File_ql4zn6.txt",
+                  type: "file",
+                },
+                {
+                  id: "66c96f56c67902d806265e35",
+                  name: "File_r2mpip.txt",
+                  type: "file",
+                },
+                {
+                  id: "66c96f57c67902d806265e41",
+                  name: "File_lry5va.txt",
+                  type: "file",
+                },
+                {
+                  id: "66c96f57c67902d806265e43",
+                  name: "File_3fuw5o.txt",
+                  type: "file",
+                },
+                {
+                  id: "66c96f57c67902d806265e47",
+                  name: "File_i520ttg.txt",
+                  type: "file",
+                },
+              ],
+            },
+            {
+              id: "66c96f56c67902d806265e29",
+              name: "File_u81oy.txt",
+              type: "file",
+            },
+            {
+              id: "66c96f57c67902d806265e3d",
+              name: "File_k00ut.txt",
+              type: "file",
+            },
+            {
+              id: "66c96f57c67902d806265e3e",
+              name: "File_7fnoyj.txt",
+              type: "file",
+            },
+            {
+              id: "66c96f57c67902d806265e46",
+              name: "File_4nquv6.txt",
+              type: "file",
+            },
+          ],
+        },
+        {
+          id: "66c96f56c67902d806265e1b",
+          name: "File_ynsygn.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e21",
+          name: "File_1khnhp.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e22",
+          name: "File_3njlo9.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e2a",
+          name: "File_8n3wzq.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e2c",
+          name: "File_ojo4p4.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e2e",
+          name: "File_icxet.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e2f",
+          name: "File_5u3f1o.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e31",
+          name: "File_frigyr.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e33",
+          name: "File_kstc4.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e34",
+          name: "File_q5iuwk.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e37",
+          name: "File_lq499.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e3c",
+          name: "File_enbfmc.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f57c67902d806265e3f",
+          name: "File_21jvdd.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f57c67902d806265e42",
+          name: "File_b4fb4xh.txt",
+          type: "file",
+        },
       ],
+    },
+    {
+      id: "66c96f56c67902d806265e18",
+      name: "Directory_obkxr9",
+      type: "directory",
+      children: [
+        {
+          id: "66c96f56c67902d806265e19",
+          name: "File_izp6cl.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e1c",
+          name: "File_0s9ig.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e1d",
+          name: "File_zwrpmb.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e1e",
+          name: "File_3pcwni.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e1f",
+          name: "File_2k3ygd.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e23",
+          name: "File_hjs0v7.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e26",
+          name: "File_0u8all.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e2b",
+          name: "File_1di3h.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e2d",
+          name: "File_64jlxk.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e30",
+          name: "File_lm54b.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e32",
+          name: "File_uuuuhd.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e36",
+          name: "File_52f25l.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f56c67902d806265e38",
+          name: "File_9q8gao.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f57c67902d806265e40",
+          name: "File_mpev0m.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f57c67902d806265e44",
+          name: "File_1zckur.txt",
+          type: "file",
+        },
+        {
+          id: "66c96f57c67902d806265e45",
+          name: "File_twki9b.txt",
+          type: "file",
+        },
+      ],
+    },
+    {
+      id: "66c96f56c67902d806265e1a",
+      name: "File_8elznt.txt",
+      type: "file",
+    },
+    {
+      id: "66c96f56c67902d806265e20",
+      name: "File_fwo4uo.txt",
+      type: "file",
+    },
+    {
+      id: "66c96f56c67902d806265e27",
+      name: "File_ftqx5k.txt",
+      type: "file",
+    },
+    {
+      id: "66c96f56c67902d806265e39",
+      name: "File_v0iif4.txt",
+      type: "file",
+    },
+    {
+      id: "66c96f56c67902d806265e3a",
+      name: "File_ww8kzn.txt",
+      type: "file",
+    },
+    {
+      id: "66c96f56c67902d806265e3b",
+      name: "File_a7jjj9.txt",
+      type: "file",
     },
   ],
 };
@@ -41,8 +283,25 @@ const server = new Hocuspocus({
     console.info(chalk.blue(`Loading document for project ID: ${projectId}`));
     try {
       await handleLoadDocument(context);
-      const ymap = context.document.getMap('root');
-      ymap.set('filetree', project);
+
+      // const ymap = context.document.getMap("root");
+      //
+      // function logYMapContents(yMap) {
+      //   yMap.forEach((value, key) => {
+      //     if (value instanceof Y.Map) {
+      //       console.log(`Key: ${key} -> YMap:`, value);
+      //       logYMapContents(value);
+      //     } else if (value instanceof Y.Text) {
+      //       console.log(`Key: ${key} -> YText:`, value.toString());
+      //     } else {
+      //       console.log(`Key: ${key} -> Value:`, value);
+      //     }
+      //   });
+      // }
+      // // ymap.set("filetree", project);
+      //
+      // logYMapContents(ymap);
+
       console.info(
         chalk.green(
           `Document loaded successfully for project ID: ${projectId}`,
@@ -55,7 +314,7 @@ const server = new Hocuspocus({
           error,
         ),
       );
-      context.reject(500, 'Internal Server Error');
+      context.reject(500, "Internal Server Error");
     }
   },
   onConnect(context) {
@@ -80,13 +339,14 @@ const server = new Hocuspocus({
 const updateQueue = new Map(); // store updates for each project
 
 async function handleLoadDocument(context) {
-  const yMap = context.document.getMap('root');
-  await loadProjectToYMap(yMap, project);
+  const yMap = context.document.getMap("root");
+  yMap.set("filetree", project);
+  //await loadProjectToYMap(yMap, project);
 }
 
 async function loadProjectToYMap(yMap, project) {
   for (const file of project.children) {
-    if (file.type === 'file') {
+    if (file.type === "file") {
       const { id } = file;
       try {
         const response = await axios.get(`${nestServerUrl}/files/${id}`);
@@ -106,7 +366,7 @@ async function loadProjectToYMap(yMap, project) {
           chalk.red(`Failed to load content for file ID: ${id}`, error),
         );
       }
-    } else if (file.type === 'dir') {
+    } else if (file.type === "dir") {
       const ySubMap = new Y.Map();
       yMap.set(file.id, ySubMap);
       await loadProjectToYMap(ySubMap, file);
@@ -115,7 +375,7 @@ async function loadProjectToYMap(yMap, project) {
 }
 
 async function handleUpdate(context) {
-  const yMap = context.document.getMap('root');
+  const yMap = context.document.getMap("root");
   const projectId = context.document.name;
 
   if (!updateQueue.has(projectId)) {
@@ -166,15 +426,15 @@ async function processBatchedUpdates() {
 setInterval(processBatchedUpdates, updateInterval);
 
 function handleConnect(context) {
-  const connectionId = context.connection?.id || 'unknown';
-  const roomName = context.document?.name || 'unknown';
+  const connectionId = context.connection?.id || "unknown";
+  const roomName = context.document?.name || "unknown";
   console.info(
     chalk.blue(`Client connected: ${connectionId}, Room: ${roomName}`),
   );
 }
 
 function handleDisconnect(context) {
-  const connectionId = context.connection?.id || 'unknown';
+  const connectionId = context.connection?.id || "unknown";
   console.info(chalk.blue(`Client disconnected: ${connectionId}`));
 }
 
@@ -184,5 +444,5 @@ server
     console.info(chalk.green(`Hocuspocus server is running on port ${port}`));
   })
   .catch((error) => {
-    console.error(chalk.red('Failed to start the server:', error));
+    console.error(chalk.red("Failed to start the server:", error));
   });
