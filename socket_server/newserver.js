@@ -340,8 +340,16 @@ const updateQueue = new Map(); // store updates for each project
 
 async function handleLoadDocument(context) {
   const yMap = context.document.getMap("root");
+  const accessTokenObject = yMap.get("accessToken");
+  // Access the actual token value inside the object
+  const accessToken = accessTokenObject
+    ? accessTokenObject.accessToken
+    : undefined;
+  console.log("Access Token:------------->", accessToken);
   yMap.set("filetree", project);
-  //await loadProjectToYMap(yMap, project);
+  // const token = yMap.getMap("accessToken");
+  // console.log("accessToken------------->", token);
+  // await loadProjectToYMap(yMap, project);
 }
 
 async function loadProjectToYMap(yMap, project) {
