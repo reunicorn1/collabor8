@@ -6,10 +6,10 @@ import { Users } from '@users/user.entity';
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendUserConfirmation(user: Users, token: string) {
+  async sendUserConfirmation(user: Partial<Users>, token: string) {
     const url = `example.com/auth/confirm?token=${token}`;
 
-    await this.mailerService.sendMail({
+    return await this.mailerService.sendMail({
       to: user.email,
       // from: '"Support Team" <support@example.com>', // override default from
       subject: 'Welcome to Nice Collabor8! Confirm your Email',

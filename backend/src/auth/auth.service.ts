@@ -28,7 +28,7 @@ export class AuthService {
     private jwtService: JwtService,
     private redisService: RedisService,
     private mailService: MailService,
-  ) {}
+  ) { }
 
   async signIn(user: Partial<Users>): Promise<{
     accessToken: string;
@@ -53,6 +53,15 @@ export class AuthService {
       ...userinfo
     } = await this.usersService.findOneBy({ username: user.username });
     if (!is_verified) {
+      // send email for verification
+      const info = await this.mailService.sendUserConfirmation(
+        {
+          email,
+          username: user.username,
+        },
+        user_id,
+      );
+      Logger.log(`------------> ${info}`);
       throw new UnauthorizedException('User is not verified. Please verify your email');
     }
     Logger.log('--------->', { user });
@@ -136,7 +145,7 @@ export class AuthService {
             `User with username ${parsedDto.username} already exists`,
           );
         }
-      } catch (err) {}
+      } catch (err) { }
 
       const newUser = await this.usersService.create(parsedDto);
 

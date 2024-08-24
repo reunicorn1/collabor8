@@ -3,26 +3,27 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { join } from 'path';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(), //  load .env
     MailerModule.forRoot({
-      // transport: 'smtps://user@example.com:topsecret@smtp.example.com',
-      // or
       transport: {
-        host: 'smtp.example.com',
-        secure: false,
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
         auth: {
-          user: 'abdofola67@gmail.com',
+          user: process.env.APP_EMAIL,
           pass: process.env.MAIL_PSW,
         },
       },
       defaults: {
-        from: '"No Reply" <noreply@example.com>',
+        from: '"Collabor8 Team" <noreply@example.com>',
       },
       template: {
-        dir: join(__dirname, 'templates'),
-        adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+        dir: join(process.cwd(), 'dist', 'mail', 'templates'),
+        adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
         },

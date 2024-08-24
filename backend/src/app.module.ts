@@ -33,7 +33,7 @@ import { LoggingModule } from './logging/logging.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), //  load .env
+    ConfigModule.forRoot({ isGlobal: true, cache: true }), //  load .env
     TypeOrmModule.forRoot({
       name: 'mysqlConnection',
       type: 'mysql',
@@ -82,4 +82,4 @@ import { LoggingModule } from './logging/logging.module';
     RedisService,
   ],
 })
-export class AppModule {}
+export class AppModule { }
