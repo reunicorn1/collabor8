@@ -15,6 +15,8 @@ import { getRandomUsername } from './names';
 import { YMapValueType } from '../../context/EditorContext';
 import createfiletree from '../../utils/filetreeinit';
 import Tabs from './Tabs';
+import { useAppSelector } from '../../hooks/useApp';
+import { selectAccessToken } from '@store/selectors';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -33,13 +35,13 @@ interface CodeEditorProps {
 
 const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
   const { theme, language, mode, setMode } = useSettings()!;
+  const token = useAppSelector(selectAccessToken);
   const { fileSelected, setAwareness, setFileTree } = useFile()!;
   const editorRef = useRef<Editor | null>(null);
   const projectRoot = useRef<Y.Map<YMapValueType> | null>(null);
   const binding = useRef<CodemirrorBinding | null>(null);
   const ydoc_ = useRef(ydoc);
   const awareness = useRef<Awareness | null>(null);
-  const [wsProvider, setProvider] = useState<WebsocketProvider | null>(null);
 
   projectRoot.current = ydoc_.current.getMap('root');
   createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
@@ -55,7 +57,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     });
   };
 
-  console.log({ wsProvider });
+  console.log('--------->',{token})
   // effects for socket provider and awareness
   useEffect(() => {
     const websocket = import.meta.env.VITE_WS_SERVER;
@@ -63,7 +65,14 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     if (!editorRef.current) return;
 
     // Creation of the connction with the websocket
-    const provider = new WebsocketProvider(websocket, projectId, ydoc_.current);
+    const provider = new WebsocketProvider(
+      websocket,
+      projectId,
+      ydoc_.current,
+      {
+        params: { token },
+      },
+    );
     provider.on('status', (event: { status: unknown }) => {
       console.log(event.status); // logs "connected" or "disconnected"
     });

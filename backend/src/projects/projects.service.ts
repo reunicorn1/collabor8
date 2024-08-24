@@ -26,7 +26,7 @@ export class ProjectsService {
     private readonly environmentService: EnvironmentMongoService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
-  ) {}
+  ) { }
 
   // Create a new project
   // TODO: TODAY modify env to be obtained from user object
@@ -87,20 +87,25 @@ export class ProjectsService {
     const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
     const sortDirection = sort.startsWith('-') ? 'DESC' : 'ASC';
     const total = await this.projectsRepository.createQueryBuilder('projects')
-    .where('projects.username = :username', { username })
-    .getCount();
+      .where('projects.username = :username', { username })
+      .getCount();
     const projects = await this.projectsRepository.createQueryBuilder('projects')
-    .where('projects.username = :username', { username })
-    .skip(skip)
-    .take(limit)
-    .orderBy(`projects.${sortField}`, sortDirection)
-    .getMany();
+      .where('projects.username = :username', { username })
+      .skip(skip)
+      .take(limit)
+      .orderBy(`projects.${sortField}`, sortDirection)
+      .getMany();
     return { total, projects };
   }
 
   // Retrieve a specific project by ID
+  // Retrieve a specific project by ID
   async findOne(id: string): Promise<Projects> {
-    return this.projectsRepository.findOneBy({ project_id: id });
+    const project = await this.projectsRepository.findOneBy({ project_id: id });
+    if (!project) {
+      throw new Error('Project not found');
+    }
+    return project;
   }
 
   // Update a project

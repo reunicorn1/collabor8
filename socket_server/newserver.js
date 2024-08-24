@@ -10,8 +10,20 @@ dotenv.config();
 
 const port = process.env.PORT || 1234;
 const nestServerUrl =
-  process.env.NEST_SERVER_URL || "http://localhost:3000/api/v1/";
+  process.env.NEST_SERVER_URL || "http://localhost:3000/api/v1";
 const updateInterval = 60000;
+
+/**
+ * TODO:
+ * `onLoadDocument`: 
+ *    1. should load project from GET reqest DB, if not exist create it 😈️
+ *    2. tranform data, then set the fileTree accordingly
+ * `onUpdate`:
+ *    1. udpate file content per project, PATCH reqeust DB
+ *
+ * **NOTE**:
+ * - each route is protected so we need the token ✅️
+ */
 
 const project = {
   id: "66c96f56c67902d806265e16",
@@ -280,9 +292,10 @@ const server = new Hocuspocus({
   extensions: [new Logger()],
   async onLoadDocument(context) {
     const projectId = context.document.name;
-    console.info(chalk.blue(`Loading document for project ID: ${projectId}`));
+    const token = context.requestParameters.get('token');
+    console.log('_------------->', { token })
     try {
-      await handleLoadDocument(context);
+      await handleLoadDocument(context, token);
 
       // const ymap = context.document.getMap("root");
       //
@@ -314,7 +327,7 @@ const server = new Hocuspocus({
           error,
         ),
       );
-      context.reject(500, "Internal Server Error");
+      //context.reject(500, "Internal Server Error");
     }
   },
   onConnect(context) {
@@ -338,15 +351,19 @@ const server = new Hocuspocus({
 
 const updateQueue = new Map(); // store updates for each project
 
-async function handleLoadDocument(context) {
+async function handleLoadDocument(context, token) {
   const yMap = context.document.getMap("root");
-  const accessTokenObject = yMap.get("accessToken");
-  // Access the actual token value inside the object
-  const accessToken = accessTokenObject
-    ? accessTokenObject.accessToken
-    : undefined;
-  console.log("Access Token:------------->", accessToken);
-  yMap.set("filetree", project);
+  const projectId = context.document.name
+  try {
+    const project_ = await axios.get(`${nestServerUrl}/projects/${projectId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    console.log({ project_ })
+    yMap.set("filetree", project);
+  } catch (err) {
+    console.log({err})
+
+  }
   // const token = yMap.getMap("accessToken");
   // console.log("accessToken------------->", token);
   // await loadProjectToYMap(yMap, project);
@@ -386,15 +403,16 @@ async function handleUpdate(context) {
   const yMap = context.document.getMap("root");
   const projectId = context.document.name;
 
-  if (!updateQueue.has(projectId)) {
+  if (!updateQueue.has(projectId)) { // custom queue
     updateQueue.set(projectId, new Map());
   }
 
-  const projectUpdates = updateQueue.get(projectId);
+  const projectUpdates = updateQueue.get(projectId); // return map object represents wt ??
 
   for (const [key, value] of yMap.entries()) {
     if (value instanceof Y.Text) {
       const fileContent = value.toString();
+      // key represents file id (and files only)
       projectUpdates.set(key, fileContent);
       console.info(chalk.green(`Queued update for file ID: ${key}`));
     }
@@ -403,6 +421,9 @@ async function handleUpdate(context) {
 
 // Function to process the batched updates
 async function processBatchedUpdates() {
+  // TODO:
+  // refactor this to real Queue
+  // by eleminating nesting for-loop
   for (const [projectId, fileUpdates] of updateQueue.entries()) {
     for (const [fileId, content] of fileUpdates.entries()) {
       const fileRecord = {
@@ -431,6 +452,7 @@ async function processBatchedUpdates() {
 }
 
 // set interval to process batched updates
+// updates request on intervals to DB/nest api
 setInterval(processBatchedUpdates, updateInterval);
 
 function handleConnect(context) {
