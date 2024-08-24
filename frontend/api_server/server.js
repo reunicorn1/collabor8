@@ -33,19 +33,19 @@ const mockProjects = [
     children: [
       {
         directory_id: 'd1c2c74b-dbd4-4f78-b8f1-df72dcf50707',
-        directory_name: 'root',
+        name: 'root',
         parent_id: null,
         created_at: '2024-08-12T00:00:00Z',
         children: [
           {
             directory_id: '82be4d5c-7f77-4e8d-9b0d-6f19f55c89a7',
-            directory_name: 'Folder 1',
+            name: 'Folder 1',
             parent_id: 'd1c2c74b-dbd4-4f78-b8f1-df72dcf50707',
             created_at: '2024-08-12T00:00:00Z',
             children: [
               {
                 file_id: 'cc5f70e4-c13c-41c7-9f47-61d1cfab2e79',
-                file_name: 'file1.js',
+                name: 'file1.js',
                 directory_id: '82be4d5c-7f77-4e8d-9b0d-6f19f55c89a7',
                 file_content: 'console.log("Hello World");',
                 created_at: '2024-08-12T00:00:00Z',
@@ -56,7 +56,7 @@ const mockProjects = [
           },
           {
             directory_id: '9e7d14c8-9db4-4d92-bf36-27463b0890a6',
-            directory_name: 'Folder 2',
+            name: 'Folder 2',
             parent_id: 'd1c2c74b-dbd4-4f78-b8f1-df72dcf50707',
             created_at: '2024-08-12T00:00:00Z',
             children: [],
@@ -65,7 +65,7 @@ const mockProjects = [
       },
       {
         file_id: '1c9d7e54-67c1-4d7e-9e4b-02b6eecf569b',
-        file_name: 'README.md',
+        name: 'README.md',
         directory_id: 'd1c2c74b-dbd4-4f78-b8f1-df72dcf50707',
         file_content: '# Sample Project\nThis is a sample project.',
         created_at: '2024-08-12T00:00:00Z',
@@ -89,19 +89,19 @@ const mockProjects = [
     children: [
       {
         directory_id: 'd3a34e23-9a6d-4b1c-bf26-60acdb84011f',
-        directory_name: 'root',
+        name: 'root',
         parent_id: null,
         created_at: '2024-08-12T00:00:00Z',
         children: [
           {
             directory_id: 'f1c658f5-0c5b-4c43-b4b2-5a0d97388c58',
-            directory_name: 'Folder 3',
+            name: 'Folder 3',
             parent_id: 'd3a34e23-9a6d-4b1c-bf26-60acdb84011f',
             created_at: '2024-08-12T00:00:00Z',
             children: [
               {
                 file_id: 'b548b439-70a4-4d69-85e7-1cf6b274e263',
-                file_name: 'file3.js',
+                name: 'file3.js',
                 directory_id: 'f1c658f5-0c5b-4c43-b4b2-5a0d97388c58',
                 file_content: 'console.log("Hello Universe");',
                 created_at: '2024-08-12T00:00:00Z',

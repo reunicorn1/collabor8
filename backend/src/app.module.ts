@@ -27,6 +27,8 @@ import { APP_GUARD } from '@nestjs/core';
 // import { RolesGuard } from '@auth/guards/roles.guard';
 import { AdminModule } from './admin/admin.module';
 import { MailModule } from './mail/mail.module';
+import { RedisService } from './redis/redis.service';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -65,6 +67,7 @@ import { MailModule } from './mail/mail.module';
     AuthModule,
     AdminModule,
     MailModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [
@@ -74,6 +77,7 @@ import { MailModule } from './mail/mail.module';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    RedisService,
   ],
 })
 export class AppModule {}

@@ -36,11 +36,11 @@ const server = new Hocuspocus({
     const projectId = context.document.name;
     console.log('OnLoad -------->', projectId);
     // I want to load only metadata stored for this project
-    await handleLoadDocument(context, projectId);
-    console.log(
-      'Array loaded from house',
-      Array.from(context.document.getMap('root')),
-    );
+    // await handleLoadDocument(context, projectId);
+    // console.log(
+    //   'Array loaded from house',
+    //   Array.from(context.document.getMap('root')),
+    // );
     return context.document;
   },
   async afterLoadDocument(context) {
@@ -242,7 +242,7 @@ async function updateDocumentInDb(projectId, key, value, metaArray) {
 async function handleLoadDocument(context, projectId) {
   try {
     const yMap = context.document.getMap('root');
-    const projectMap = context.document.getMap('filetree');
+    const projectMap = context.document.getMap('projectStructure');
     populateMap(projectMap, projectStructure);
     const project = await loadprojectFromDb(projectId);
     console.log('projectMap------>', projectMap);
@@ -285,7 +285,7 @@ function populateMap(map, structure) {
     structure.directories.forEach((directory) => {
       if (directory && typeof directory === 'object') {
         const dirMap = new Y.Map();
-        dirMap.set('directory_name', getSafe(directory, 'directory_name'));
+        dirMap.set('name', getSafe(directory, 'name'));
         dirMap.set('parent_id', getSafe(directory, 'parent_id'));
         dirMap.set(
           'files',
@@ -309,7 +309,7 @@ function populateMap(map, structure) {
     structure.files.forEach((file) => {
       if (file && typeof file === 'object') {
         const fileMap = new Y.Map();
-        fileMap.set('file_name', getSafe(file, 'file_name'));
+        fileMap.set('name', getSafe(file, 'name'));
         fileMap.set('parent_id', getSafe(file, 'parent_id'));
         filesMap.set(getSafe(file, '_id'), fileMap);
       } else {
@@ -334,7 +334,7 @@ function populateDirectories(map, directories) {
   directories.forEach((directory) => {
     if (directory && typeof directory === 'object') {
       const dirMap = new Y.Map();
-      dirMap.set('directory_name', getSafe(directory, 'directory_name'));
+      dirMap.set('name', getSafe(directory, 'name'));
       dirMap.set('parent_id', getSafe(directory, 'parent_id'));
       dirMap.set(
         'files',
@@ -362,7 +362,7 @@ function populateFiles(map, files) {
   files.forEach((file) => {
     if (file && typeof file === 'object') {
       const fileMap = new Y.Map();
-      fileMap.set('file_name', getSafe(file, 'file_name'));
+      fileMap.set('name', getSafe(file, 'name'));
       fileMap.set('parent_id', getSafe(file, 'parent_id'));
       map.set(getSafe(file, '_id'), fileMap);
     } else {

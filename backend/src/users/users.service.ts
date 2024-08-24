@@ -121,6 +121,11 @@ async remove(user_id: string): Promise<{ message: string }> {
   return { message: `User with ID ${user_id} successfully deleted` };
 }
 
+async update(username: string, user: Partial<Users>): Promise<Users> {
+  await this.usersRepository.update({ username: username }, user);
+  return this.findOneBy({ username: username });
+}
+
 async removeAll(): Promise<{ message: string }> {
   await this.usersRepository.delete({});
   return { message: 'All users successfully deleted' };

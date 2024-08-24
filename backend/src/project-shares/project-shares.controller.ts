@@ -13,7 +13,7 @@ import {
 import { ProjectSharesService } from './project-shares.service';
 import { ProjectShares } from './project-shares.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ProjectSharesOutDto } from './dto/create-project-shares.dto';
+import { ProjectSharesOutDto, CreateProjectShareDto, UpdateProjectShareDto } from './dto/create-project-shares.dto';
 
 @ApiTags('ProjectShares')
 @Controller('project-shares')
@@ -27,7 +27,7 @@ export class ProjectSharesController {
   })
   @Post()
   async create(
-    @Body() createProjectShareDto: Partial<ProjectShares>,
+    @Body() createProjectShareDto: CreateProjectShareDto,
   ): Promise<ProjectShares> {
     return this.projectSharesService.create(createProjectShareDto);
   }
@@ -41,6 +41,14 @@ export class ProjectSharesController {
   @Get()
   async findAll(): Promise<ProjectShares[]> {
     return this.projectSharesService.findAll();
+  }
+
+  @Post('status/:id')
+  async updateStatus(
+    @Param('id') id: string,
+    @Body() updateProjectShareDto: Partial<ProjectShares>,
+  ): Promise<ProjectShares | { message: string }> {
+    return this.projectSharesService.updateStatus(id, updateProjectShareDto.status);
   }
 
   // Retrieve a specific project share by ID
@@ -88,7 +96,7 @@ export class ProjectSharesController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateProjectShareDto: Partial<ProjectShares>,
+    @Body() updateProjectShareDto: Partial<UpdateProjectShareDto>,
   ): Promise<ProjectShares> {
     return this.projectSharesService.update(id, updateProjectShareDto);
   }

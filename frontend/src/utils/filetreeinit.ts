@@ -10,7 +10,7 @@ export default function createfiletree(root: Y.Map<YMapValueType>) {
     const rootnode = {
       type: 'dir',
       id: '0',
-      directory_name: 'root',
+      name: 'root',
       children: [],
     };
     root.set('filetree', rootnode); // hopeless type error

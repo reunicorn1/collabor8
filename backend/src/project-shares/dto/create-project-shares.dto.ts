@@ -1,15 +1,17 @@
 import { BadRequestException } from '@nestjs/common';
 // TODO: create dto for all the entities
 //
-// interface CreateProjectShareDto {
-//   project_id: string;
-// }
+interface CreateProjectShareDto {
+  project_id: string;
+  username?: string;
+  user_id?: string;
+  access_level: 'read' | 'write';
+}
 
-// interface UpdateProjectShareDto {
-//   project_name?: string;
-//   description?: string;
-//   updated_at?: Date;
-// }
+interface UpdateProjectShareDto {
+  access_level?: 'read' | 'write';
+  favorite?: boolean;
+}
 
 
 interface ProjectSharesOutDto {
@@ -27,56 +29,49 @@ interface ProjectSharesOutDto {
   project_name: string;
 }
 
-// function validateCreateProjectDto(dto: any): CreateProjectDto {
-//   if (!dto || typeof dto !== 'object') {
-//     throw new BadRequestException('Invalid input');
-//   }
+function validateCreateProjectShareDto(dto: any): CreateProjectShareDto {
+  if (!dto || typeof dto !== 'object') {
+    throw new BadRequestException('Invalid input');
+  }
 
-//   const { project_name, description, username } = dto;
+  const { project_id, access_level } = dto;
 
-//   if (typeof project_name !== 'string' || project_name.trim() === '') {
-//     throw new BadRequestException(
-//       'Project name is required and must be a string',
-//     );
-//   }
+  if (typeof project_id !== 'string' || project_id.trim() === '') {
+    throw new BadRequestException(
+      'Project ID is required and must be a string',
+    );
+  }
 
-//   if (typeof description !== 'string') {
-//     throw new BadRequestException('description is required and must be a string');
-//   }
+  if (access_level && typeof access_level !== 'string') {
+    throw new BadRequestException('Access level must be a string');
+  }
 
-//   if (username && typeof username !== 'string') {
-//     throw new BadRequestException('Username must be a string');
-//   }
+  return {
+    project_id: project_id.trim(),
+    access_level: access_level.trim(),
+  };
+}
 
+function validateUpdateProjectShareDto(dto: any): UpdateProjectShareDto {
+  if (!dto || typeof dto !== 'object') {
+    throw new BadRequestException('Invalid input');
+  }
 
-//   return {
-//     project_name: project_name.trim(),
-//     description,
-//     username: username.trim(),
-//   };
-// }
+  const { access_level, favorite } = dto;
 
-// function validateUpdateProjectDto(dto: any): UpdateProjectDto {
-//   if (!dto || typeof dto !== 'object') {
-//     throw new BadRequestException('Invalid input');
-//   }
+  if (access_level && typeof access_level !== 'string') {
+    throw new BadRequestException('Access level must be a string');
+  }
 
-//   const { project_name, description, updated_at } = dto;
+  if (favorite && typeof favorite !== 'boolean') {
+    throw new BadRequestException('Favorite must be a boolean');
+  }
 
-//   if (project_name && typeof project_name !== 'string') {
-//     throw new BadRequestException('Project name must be a string');
-//   }
-
-//   if (description && typeof description !== 'string') {
-//     throw new BadRequestException('Description must be a string');
-//   }
-
-//   return {
-//     project_name: project_name.trim(),
-//     description,
-//     updated_at: updated_at.toString().trim(),
-//    };
-// }
+  return {
+    access_level: access_level.trim(),
+    favorite,
+  };
+}
 
 function validateProjectSharesOutDto(dto: any): ProjectSharesOutDto {
   if (!dto || typeof dto !== 'object') {
@@ -166,17 +161,17 @@ function validateProjectSharesOutDto(dto: any): ProjectSharesOutDto {
 
 
 
-// function parseCreateProjectDto(requestBody: any): CreateProjectDto {
-//   const validated = validateCreateProjectDto(requestBody);
+function parseCreateProjectDto(requestBody: any): CreateProjectShareDto {
+  const validated = validateCreateProjectShareDto(requestBody);
 
-//   return validated;
-// }
+  return validated;
+}
 
-// function parseUpdateProjectDto(requestBody: any): UpdateProjectDto {
-//   const validated = validateUpdateProjectDto(requestBody);
+function parseUpdateProjectDto(requestBody: any): UpdateProjectShareDto {
+  const validated = validateUpdateProjectShareDto(requestBody);
 
-//   return validated;
-// }
+  return validated;
+}
 
 function parseProjectSharesOutDto(requestBody: any): ProjectSharesOutDto {
   const validated = validateProjectSharesOutDto(requestBody);
@@ -185,10 +180,10 @@ function parseProjectSharesOutDto(requestBody: any): ProjectSharesOutDto {
 }
 
 export {
-  // parseCreateProjectDto,
-  // CreateProjectDto,
-  // parseUpdateProjectDto,
-  // UpdateProjectDto,
+  parseCreateProjectDto,
+  CreateProjectShareDto,
+  parseUpdateProjectDto,
+  UpdateProjectShareDto,
   parseProjectSharesOutDto,
   ProjectSharesOutDto,
 };

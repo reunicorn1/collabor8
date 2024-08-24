@@ -2,13 +2,13 @@ import { BadRequestException } from '@nestjs/common';
 // TODO: create dto for all the entities
 
 interface CreateDirectoryOutDto {
-  directory_name: string;
+  name: string;
   username: string;
   parent_id: string;
 }
 
 interface UpdateDirectoryOutDto {
-  directory_name?: string;
+  name?: string;
   username?: string;
   parent_id?: string;
   updated_at?: Date;
@@ -19,13 +19,13 @@ function validateCreateDirectoryDto(dto: any): CreateDirectoryOutDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { directory_name, username, parent_id } = dto;
+  const { name, username, parent_id } = dto;
 
   if (typeof parent_id !== 'string' || parent_id.trim() === '') {
     throw new BadRequestException('parent ID is required and must be a string');
   }
 
-  if (typeof directory_name !== 'string' || directory_name.trim() === '') {
+  if (typeof name !== 'string' || name.trim() === '') {
     throw new BadRequestException(
       'Directory name is required and must be a string',
     );
@@ -36,7 +36,7 @@ function validateCreateDirectoryDto(dto: any): CreateDirectoryOutDto {
   }
 
   return {
-    directory_name: directory_name.trim(),
+    name: name.trim(),
     username: username.trim(),
     parent_id: parent_id.trim(),
   };
@@ -47,9 +47,9 @@ function validateUpdateDirectoryDto(dto: any): UpdateDirectoryOutDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { directory_name, username, parent_id, updated_at } = dto;
+  const { name, username, parent_id, updated_at } = dto;
 
-  if (directory_name && typeof directory_name !== 'string') {
+  if (name && typeof name !== 'string') {
     throw new BadRequestException('Directory name must be a string');
   }
 
@@ -62,7 +62,7 @@ function validateUpdateDirectoryDto(dto: any): UpdateDirectoryOutDto {
   }
 
   return {
-    directory_name: directory_name.trim(),
+    name: name.trim(),
     username: username.trim(),
     parent_id: parent_id.trim(),
     updated_at: updated_at.toString().trim(),

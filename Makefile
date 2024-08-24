@@ -21,7 +21,7 @@ SOCKET_SESSION := SocketIO
 # Scripts
 FRONTEND_SCRIPT := npm --prefix frontend run dev
 BACKEND_SCRIPT := npm --prefix backend run start:dev
-SOCKET_SCRIPT := nodemon --prefix socket_server server.js
+SOCKET_SCRIPT := nodemon socket_server/newserver.js
 
 # Define run session
 define run_session
@@ -42,7 +42,7 @@ endef
 # Check environment
 check-environment:
 	@if [ -z "$(TMUX)" ]; then \
-		echo "Error: tmux is not installed. Please install tmux."; \
+		echo "Error: tmux is not installed. Please install tmux.";
 		exit 1; \
 	fi
 	@if [ -z "$(NPM)" ]; then \
@@ -52,7 +52,7 @@ check-environment:
 
 # Target to set up the project
 setup: ## Setup project and install core tools and dependencies
-	@$(MAKE) -s check-environment
+	# @$(MAKE) -s check-environment
 	@$(MAKE) -s check-dependencies || exit 1
 
 # Check and install dependencies

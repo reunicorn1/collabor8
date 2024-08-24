@@ -14,7 +14,7 @@ export class CreateDirectory {
     example: 'Documents',
   })
   @IsString()
-  directory_name: string;
+  name: string;
 
   @ApiProperty({
     description: 'The username of the owner',
@@ -40,7 +40,7 @@ export class UpdateDirectory {
   })
   @IsString()
   @IsOptional()
-  directory_name?: string;
+  name?: string;
 
   @ApiProperty({
     description: 'The username of the owner',
@@ -76,7 +76,7 @@ class CreateResponse {
     example: 'Documents',
   })
   @IsString()
-  directory_name: string;
+  name: string;
 
   @ApiProperty({
     description: 'The parent directory ID',

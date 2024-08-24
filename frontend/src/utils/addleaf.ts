@@ -1,13 +1,13 @@
 interface FileNode {
   type: 'file';
   id: string;
-  file_name: string;
+  name: string;
 }
 
 interface DirectoryNode {
   type: 'dir';
   id: string;
-  directory_name: string;
+  name: string;
   children?: (FileNode | DirectoryNode)[];
 }
 
@@ -57,18 +57,18 @@ export function addLeaf(
 // Note: before adding an element to the tree, the new node object should be created and passed as an argument
 // addleaf is only used with a fresh brand new file that isn't found in the filetree used for traversing.
 
-export function createLeaf(filedir: string, id: string, file_name: string) {
+export function createLeaf(filedir: string, id: string, name: string) {
   if (filedir === 'file') {
     return {
       type: 'file',
       id,
-      file_name,
+      name,
     } as FileNode;
   } else {
     return {
       type: 'dir',
       id,
-      directory_name: file_name,
+      name: name,
       children: [],
     } as DirectoryNode;
   }

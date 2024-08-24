@@ -34,7 +34,8 @@
 		"@config/*": ["src/config/*"],
 		"@hocuspocus/*": ["src/hocuspocus/*"],
 		"@events/*": ["src/events/*"],
-		"@mail/*": ["src/mail/*"]
+		"@mail/*": ["src/mail/*"],
+		"@redis/*": ["src/redis/*"]
 
 	}
   }

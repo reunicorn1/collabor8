@@ -11,7 +11,11 @@ export class FileMongo {
   _id: ObjectId;
 
   @Column()
-  file_name: string;
+  name: string;
+
+  // deafaault is file
+  @Column({default: 'file'})
+  type: string;
 
   @Column('text')
   file_content: string;

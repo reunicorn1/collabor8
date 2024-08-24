@@ -28,7 +28,7 @@ export class DirectoryMongoService {
     const parsedDto = parseCreateDirectoryMongoDto(createDirectoryDto);
     const newDirectory = this.directoryRepository.create({
       parent_id: parsedDto.parent_id,
-      directory_name: parsedDto.directory_name,
+      name: parsedDto.name,
     });
     return this.directoryRepository.save(newDirectory);
   }

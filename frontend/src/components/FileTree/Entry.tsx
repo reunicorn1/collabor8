@@ -30,15 +30,15 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
         alignItems="center"
         cursor="pointer"
         onClick={() => {
-          if ('directory_name' in entry) {
+          if (entry.type === 'directory') {
             setIsExpanded((prev) => !prev);
           } else {
-            onFileClick(entry.id, entry.file_name);
+            onFileClick(entry.id, entry.name);
           }
         }}
         style={{ paddingLeft: `${depth * 20}px` }}
       >
-        {'directory_name' in entry ? (
+        {entry.type === 'directory' ? (
           isExpanded ? (
             <Icon fontSize="14px" as={FaFolderOpen} />
           ) : (
@@ -48,18 +48,18 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
           <Icon fontSize="14px" as={FaFileCode} />
         )}
         <Text fontFamily="mono" fontSize="xs" pl={2}>
-          {'directory_name' in entry ? entry.directory_name : entry.file_name}
+          {entry.type === 'directory' ? entry.name : entry.name}
         </Text>
 
         <Spacer />
         <OptionsMenu
           type={entry.type}
           id={entry.id}
-          name={entry.directory_name || entry.file_name}
+          name={entry.name || entry.name}
           ydoc={ydoc}
         />
       </Box>
-      {'directory_name' in entry && isExpanded && (
+      {entry.type === 'directory' && isExpanded && (
         <>
           {entry.children?.map((child) => (
             <Entry

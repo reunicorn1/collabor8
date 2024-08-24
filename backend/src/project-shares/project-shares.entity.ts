@@ -27,6 +27,9 @@ export class ProjectShares {
   @Column()
   username: string;
 
+  @Column({ default: 'pending' })
+  status: string; // Status of the share
+
   // TODO: Add favorite boolean
   @Column({ type: 'boolean', default: false })
   favorite: boolean;

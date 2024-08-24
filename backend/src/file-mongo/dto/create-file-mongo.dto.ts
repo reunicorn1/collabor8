@@ -3,14 +3,14 @@ import { BadRequestException } from '@nestjs/common';
 //
 
 interface CreateFileOutDto {
-  file_name: string;
+  name: string;
   parent_id: string;
   project_id: string;
   file_content?: string;
 }
 
 interface UpdateFileOutDto {
-  file_name?: string;
+  name?: string;
   parent_id?: string;
   project_id?: string;
   file_content?: string;
@@ -21,14 +21,14 @@ function validateCreateFileDto(dto: any): CreateFileOutDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { file_name, parent_id, project_id } = dto;
+  const { name, parent_id, project_id } = dto;
   let { file_content } = dto;
 
   if (typeof parent_id !== 'string' || parent_id.trim() === '') {
     throw new BadRequestException('parent ID is required and must be a string');
   }
 
-  if (typeof file_name !== 'string' || file_name.trim() === '') {
+  if (typeof name !== 'string' || name.trim() === '') {
     throw new BadRequestException('File name is required and must be a string');
   }
 
@@ -43,7 +43,7 @@ function validateCreateFileDto(dto: any): CreateFileOutDto {
   }
 
   return {
-    file_name: file_name.trim(),
+    name: name.trim(),
     parent_id: parent_id.trim(),
     project_id: project_id.trim(),
     file_content,
@@ -55,9 +55,9 @@ function validateUpdateFileDto(dto: any): UpdateFileOutDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { file_name, parent_id, project_id, file_content } = dto;
+  const { name, parent_id, project_id, file_content } = dto;
 
-  if (file_name && typeof file_name !== 'string') {
+  if (name && typeof name !== 'string') {
     throw new BadRequestException('File name must be a string');
   }
 
@@ -74,7 +74,7 @@ function validateUpdateFileDto(dto: any): UpdateFileOutDto {
   }
 
   return {
-    file_name: file_name.trim(),
+    name: name.trim(),
     parent_id: parent_id.trim(),
     project_id: project_id.trim(),
     file_content,
