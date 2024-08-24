@@ -6,7 +6,7 @@ import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { ProjectMongoService } from '@project-mongo/project-mongo.service';
 import { EnvironmentMongoService } from '@environment-mongo/environment-mongo.service';
 import { UsersService } from '@users/users.service';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { MYSQL_CONN } from '@constants';
 import {
   parseCreateProjectDto,
@@ -23,8 +23,6 @@ export class ProjectsService {
     private projectsRepository: Repository<Projects>,
     @Inject(forwardRef(() => ProjectMongoService))
     private readonly projectMongoService: ProjectMongoService,
-    @Inject(forwardRef(() => EnvironmentMongoService))
-    private readonly environmentService: EnvironmentMongoService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
@@ -37,10 +35,10 @@ export class ProjectsService {
       const user = await this.usersService.findOneBy({
         username: parsedDto.username,
       });
-      const environment = await this.environmentService.findOneBy({
-        username: user.username,
-      });
-      parsedDto['environment_id'] = environment._id.toString();
+      // const environment = await this.environmentService.findOneBy({
+      //   username: user.username,
+      // });
+      parsedDto['environment_id'] = user.environment_id;
       parsedDto['owner_id'] = user.user_id;
       const newProjectMongo = await this.projectMongoService.create(
         parsedDto as any,
@@ -98,13 +96,13 @@ export class ProjectsService {
       }
       project = await this.projectsRepository.findOneBy({ project_id: IDS.project_id });
       IDS._id = project._id.toString();
+    } else {
+      project = await this.projectsRepository.findOneBy({ _id: IDS._id });
     }
-
-
     if (project.username !== username) {
       throw new Error('Project not found');
     }
-    return this.projectMongoService.findAllByUsernameDepth(username, depth, IDS._id);
+    return await this.projectMongoService.findAllByUsernameDepth(username, depth, IDS._id);
   }
 
   // retrieve all user projects by username and is paginated
@@ -132,9 +130,17 @@ export class ProjectsService {
     return { total, projects };
   }
 
+  async wrapProject(project: Projects): Promise<Projects> {
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    return project;
+  }
+
   // Retrieve a specific project by ID
   async findOne(id: string): Promise<Projects> {
-    return this.projectsRepository.findOneBy({ project_id: id });
+    const project = await this.projectsRepository.findOneBy({ project_id: id });
+    return this.wrapProject(project);
   }
 
   // Update a project

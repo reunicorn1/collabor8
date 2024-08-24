@@ -18,6 +18,9 @@ class CreateUserDto {
   password: string;
   @ApiProperty({ example: [] })
   favorite_languages: string[];
+  profile_picture?: string;
+  bio?: string;
+  favorite_projects?: string[];
 }
 
 interface CreateUserOutDto {
@@ -27,6 +30,9 @@ interface CreateUserOutDto {
   email: string;
   password_hash: string;
   favorite_languages: string[];
+  profile_picture?: string;
+  bio?: string;
+  favorite_projects?: string[];
 }
 
 class LoginUserDto {
@@ -47,6 +53,9 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
     email,
     password,
     favorite_languages,
+    profile_picture,
+    bio,
+    favorite_projects,
   } = dto;
 
   for (const field of [
@@ -74,6 +83,19 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
     }
   }
 
+  if (profile_picture && typeof profile_picture !== 'string') {
+    throw new BadRequestException('profile_picture must be a string');
+  }
+
+  if (bio && typeof bio !== 'string') {
+    throw new BadRequestException('bio must be a string');
+  }
+
+  if (favorite_projects && !Array.isArray(favorite_projects)) {
+    throw new BadRequestException('favorite_projects must be an array');
+  }
+
+
   const password_hash = encryptPwd(password);
 
   return {
@@ -83,6 +105,12 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
     email: email.trim(),
     password_hash: password_hash.trim(),
     favorite_languages: favorite_languages.map((lang) => lang.trim()),
+    profile_picture: profile_picture ? profile_picture?.trim() : undefined,
+    bio: bio ? bio.trim() : undefined,
+    favorite_projects: favorite_projects
+      ? favorite_projects.map((project) => project.trim())
+      : undefined,
+
   };
 }
 

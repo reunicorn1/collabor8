@@ -42,6 +42,11 @@ export class ProjectSharesService {
       member_count: memberCount,
     };
   }
+
+  async getProjectShares(project_id: string, username: string): Promise<ProjectShares> {
+    return await this.projectSharesRepository.findOneBy({ project_id, username });
+  }
+
   // Create a new project share
   async create(
     createProjectShareDto: CreateProjectShareDto,

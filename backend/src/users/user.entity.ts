@@ -37,8 +37,16 @@ export class Users {
   favorite_languages: string[] | null;
 
   // TODO: add profile picture and other user details as needed
+  @Column({ type: 'varchar', nullable: true })
+  profile_picture: string | null;
 
    // TODO: create favorite projects list
+  @Column('simple-array', { nullable: true })
+  favorite_projects: string[] | null;
+
+  // bio
+  @Column({ type: 'varchar', nullable: true })
+  bio: string | null;
 
   // default 'user'
   @Column({ type: 'enum', enum: Role, default: Role.User })

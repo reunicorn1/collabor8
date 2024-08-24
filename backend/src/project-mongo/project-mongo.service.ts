@@ -34,6 +34,7 @@ export class ProjectMongoService {
       project_name: parsedDto.project_name,
       environment_id: parsedDto.environment_id,
       owner_id: parsedDto.owner_id,
+
     });
     return await this.projectMongoRepository.save(newProject);
   }
