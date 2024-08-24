@@ -127,6 +127,11 @@ async update(username: string, user: Partial<Users>): Promise<Users> {
   return this.findOneBy({ username: username });
 }
 
+async findAllBy(query: Query): Promise<Users[]> {
+  const users = await this.usersRepository.find(query);
+  return await this.removeAllPasswordHash(users);
+}
+
 async removeAll(): Promise<{ message: string }> {
   await this.usersRepository.delete({});
   return { message: 'All users successfully deleted' };

@@ -36,7 +36,23 @@ function validateCreateProjectShareDto(dto: any): CreateProjectShareDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { project_id, access_level, _id } = dto;
+  const { project_id, access_level, _id, username, user_id } = dto;
+
+  if (!user_id && !username) {
+    throw new BadRequestException('User ID or username is required');
+  }
+
+  if (username && typeof username !== 'string') {
+    throw new BadRequestException('Username must be a string');
+  }
+
+  if (user_id && typeof user_id !== 'string') {
+    throw new BadRequestException('User ID must be a string');
+  }
+
+  if (!project_id && !_id) {
+    throw new BadRequestException('Project ID is required');
+  }
 
   if (typeof project_id !== 'string' || project_id.trim() === '') {
     throw new BadRequestException(
@@ -56,6 +72,8 @@ function validateCreateProjectShareDto(dto: any): CreateProjectShareDto {
     project_id: project_id.trim(),
     access_level: access_level.trim(),
     _id: _id ? _id.trim() : null,
+    username: username ? username.trim() : null,
+    user_id: user_id ? user_id.trim() : null,
   };
 }
 

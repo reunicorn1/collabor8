@@ -22,13 +22,13 @@ export class ProjectShares {
 
 
   @Column('uuid')
-  user_id: string;
+  user_id: string; // id of the user being shared with
 
   @Column({ type: 'varchar', nullable: true, default: null})
   _id: string | null;
 
   @Column()
-  username: string;
+  username: string; // Username of the user being shared with
 
   @Column({ default: 'pending' })
   status: string; // Status of the share

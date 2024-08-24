@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProjectShares } from './project-shares.entity';
@@ -22,31 +22,6 @@ export class ProjectSharesService {
     private readonly usersService: UsersService,
   ) { }
 
-  // Create a new project share
-  async create(
-    createProjectShareDto: CreateProjectShareDto,
-  ): Promise<ProjectShares> {
-    const parsedDto = parseCreateProjectDto(createProjectShareDto);
-    const newProjectShare = this.projectSharesRepository.create(parsedDto);
-    return await this.projectSharesRepository.save(newProjectShare);
-  }
-
-  // Retrieve all project shares
-  async findAll(): Promise<ProjectShares[]> {
-    return await this.projectSharesRepository.find();
-  }
-
-  async updateStatus(id: string, status: string): Promise<ProjectShares | { message: string }> {
-    const projectShare = await this.projectSharesRepository.findOneBy({ share_id: id });
-    if (status !== 'accepted' && status !== 'rejected') {
-      throw new Error('Invalid status');
-    } else if (projectShare.status === 'rejected') {
-      await this.projectSharesRepository.delete(id);
-      return { "message": "Project share has been deleted" };
-    }
-    projectShare.status = status;
-    return await this.projectSharesRepository.save(projectShare);
-  }
 
   async mapProjectShareData(projectShare: ProjectShares): Promise<ProjectSharesOutDto> {
     const { created_at, updated_at, username, ...projectShareData } = projectShare;
@@ -66,6 +41,55 @@ export class ProjectSharesService {
       updated_at: project.updated_at.toISOString(),
       member_count: memberCount,
     };
+  }
+  // Create a new project share
+  async create(
+    createProjectShareDto: CreateProjectShareDto,
+  ): Promise<ProjectSharesOutDto> {
+    const parsedDto = parseCreateProjectDto(createProjectShareDto);
+    if (parsedDto.username) {
+      const user = await this.usersService.findOneBy({ username: parsedDto.username });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      parsedDto.user_id = user.user_id;
+    } else if (parsedDto.user_id) {
+      const user = await this.usersService.findOneBy({ _id: parsedDto.user_id });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      parsedDto.username = user.username;
+    }
+    if (!await this.projectsService.findOne(parsedDto.project_id)) {
+      throw new NotFoundException('Project not found');
+    }
+
+    const newProjectShare = this.projectSharesRepository.create(parsedDto);
+    await this.projectSharesRepository.save(newProjectShare)
+    console.log(newProjectShare);
+    return await this.mapProjectShareData(newProjectShare);
+  }
+
+
+  // Retrieve all project shares
+  async findAll(): Promise<ProjectSharesOutDto[]> {
+    const shares = await this.projectSharesRepository.find();
+    return Promise.all(shares.map(async (projectShare) => {
+      return await this.mapProjectShareData(projectShare);
+    }));
+
+  }
+
+  async updateStatus(id: string, status: string): Promise<ProjectShares | { message: string }> {
+    const projectShare = await this.projectSharesRepository.findOneBy({ share_id: id });
+    if (status !== 'accepted' && status !== 'rejected') {
+      throw new Error('Invalid status');
+    } else if (projectShare.status === 'rejected') {
+      await this.projectSharesRepository.delete(id);
+      return { "message": "Project share has been deleted" };
+    }
+    projectShare.status = status;
+    return await this.projectSharesRepository.save(projectShare);
   }
 
   async findOneByQuery(query: any): Promise<ProjectSharesOutDto> {
