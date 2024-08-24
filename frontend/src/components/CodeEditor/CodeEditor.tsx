@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
 import { Box } from '@chakra-ui/react';
 import './codemirrorSetup';
@@ -39,13 +39,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
   const binding = useRef<CodemirrorBinding | null>(null);
   const ydoc_ = useRef(ydoc);
   const awareness = useRef<Awareness | null>(null);
-  const [wsProvider, setProvider] = useState<WebsocketProvider | null>(null);
 
   projectRoot.current = ydoc_.current.getMap('root');
   createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
 
   // An event listener for updates happneing in the ydoc
-  ydoc_.current.on('update', (update) => {
+  ydoc.on('update', (update) => {
     console.log('Yjs update', update);
   });
   // A function to create a binding between file selected from the file tree and the editor
@@ -55,7 +54,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     });
   };
 
-  console.log({ wsProvider });
   // effects for socket provider and awareness
   useEffect(() => {
     const websocket = import.meta.env.VITE_WS_SERVER;

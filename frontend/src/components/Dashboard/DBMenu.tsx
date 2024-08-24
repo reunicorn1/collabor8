@@ -33,6 +33,8 @@ export default function DBMenu({ children }: DBMenuProps) {
     dispatch(unsetCredentials());
     toast({
       title: "You've logged out successfully!",
+      variant: 'subtle',
+      position: 'bottom-right',
       status: 'success',
       isClosable: true,
     });
