@@ -285,7 +285,7 @@ function populateMap(map, structure) {
     structure.directories.forEach((directory) => {
       if (directory && typeof directory === 'object') {
         const dirMap = new Y.Map();
-        dirMap.set('directory_name', getSafe(directory, 'directory_name'));
+        dirMap.set('name', getSafe(directory, 'name'));
         dirMap.set('parent_id', getSafe(directory, 'parent_id'));
         dirMap.set(
           'files',
@@ -309,7 +309,7 @@ function populateMap(map, structure) {
     structure.files.forEach((file) => {
       if (file && typeof file === 'object') {
         const fileMap = new Y.Map();
-        fileMap.set('file_name', getSafe(file, 'file_name'));
+        fileMap.set('name', getSafe(file, 'name'));
         fileMap.set('parent_id', getSafe(file, 'parent_id'));
         filesMap.set(getSafe(file, '_id'), fileMap);
       } else {
@@ -334,7 +334,7 @@ function populateDirectories(map, directories) {
   directories.forEach((directory) => {
     if (directory && typeof directory === 'object') {
       const dirMap = new Y.Map();
-      dirMap.set('directory_name', getSafe(directory, 'directory_name'));
+      dirMap.set('name', getSafe(directory, 'name'));
       dirMap.set('parent_id', getSafe(directory, 'parent_id'));
       dirMap.set(
         'files',
@@ -362,7 +362,7 @@ function populateFiles(map, files) {
   files.forEach((file) => {
     if (file && typeof file === 'object') {
       const fileMap = new Y.Map();
-      fileMap.set('file_name', getSafe(file, 'file_name'));
+      fileMap.set('name', getSafe(file, 'name'));
       fileMap.set('parent_id', getSafe(file, 'parent_id'));
       map.set(getSafe(file, '_id'), fileMap);
     } else {

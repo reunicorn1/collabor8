@@ -15,7 +15,7 @@ export class CreateFileDto {
     example: 'README.md',
   })
   @IsString()
-  file_name: string;
+  name: string;
 
   @ApiProperty({
     description: 'The parent directory ID',
@@ -49,7 +49,7 @@ export class UpdateFileDto {
   })
   @IsString()
   @IsOptional()
-  file_name?: string;
+  name?: string;
 
   @ApiProperty({
     description: 'The parent directory ID',
@@ -94,7 +94,7 @@ export class FileResponseDto {
     example: 'main.c',
   })
   @IsString()
-  file_name: string;
+  name: string;
 
   @ApiProperty({
     description: 'The parent directory ID',

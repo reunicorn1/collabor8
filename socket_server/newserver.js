@@ -17,15 +17,15 @@ const project = {
   projectId: '4653',
   id: 0,
   children: [
-    { type: 'file', id: 1, file_name: 'test.js', project_id: '4653' },
+    { type: 'file', id: 1, name: 'test.js', project_id: '4653' },
     {
       type: 'dir',
       id: 2,
-      directory_name: 'testdir',
+      name: 'testdir',
       project_id: '4653',
       children: [
-        { type: 'file', id: 3, file_name: 'test2.js', project_id: '4653' },
-        { type: 'file', id: 4, file_name: 'test3.js', project_id: '4653' },
+        { type: 'file', id: 3, name: 'test2.js', project_id: '4653' },
+        { type: 'file', id: 4, name: 'test3.js', project_id: '4653' },
       ],
     },
   ],

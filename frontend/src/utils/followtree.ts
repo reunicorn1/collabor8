@@ -4,7 +4,7 @@ import { YMapValueType } from '../context/EditorContext';
 interface ProjectNode {
   type: 'dir';
   id: string;
-  directory_name: string;
+  name: string;
   children: [];
 }
 

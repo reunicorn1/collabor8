@@ -18,7 +18,7 @@ export class DirectoryMongo {
   _id: ObjectId;
 
   @Column()
-  directory_name: string;
+  name: string;
 
   @Column()
   created_at: Date;

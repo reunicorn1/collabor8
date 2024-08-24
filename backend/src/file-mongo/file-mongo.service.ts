@@ -23,7 +23,7 @@ export class FileMongoService {
     const parsedDto = parseCreateFileMongoDto(createFileDto);
     const newFile = this.fileRepository.create({
       parent_id: parsedDto.parent_id,
-      file_name: parsedDto.file_name,
+      name: parsedDto.name,
       project_id: parsedDto.project_id,
       file_content: parsedDto.file_content,
     });
@@ -61,7 +61,7 @@ export class FileMongoService {
 
     const newDate = new Date();
     await this.fileRepository.update(id, {
-      file_name: parsedDto.file_name,
+      name: parsedDto.name,
       file_content: parsedDto.file_content,
       updated_at: newDate,
     });

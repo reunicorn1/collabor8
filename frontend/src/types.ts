@@ -100,14 +100,14 @@ export interface ProjectMongo {
  * Directory-related DTOs and interfaces
  */
 export interface CreateDirectoryDto {
-  directory_name: string;
+  name: string;
   username: string;
   parent_id: string;
 }
 
 export interface Directory {
   _id: ObjectId | string;
-  directory_name: string;
+  name: string;
   created_at: Date;
   parent_id?: ObjectId | string;
   children: Directory[];
@@ -119,7 +119,7 @@ export interface Directory {
  */
 export interface File {
   _id: ObjectId | string;
-  file_name: string;
+  name: string;
   file_content: string;
   project_id: ObjectId | string;
   parent_id?: ObjectId | string;
