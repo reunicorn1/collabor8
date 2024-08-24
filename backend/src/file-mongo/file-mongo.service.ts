@@ -44,6 +44,10 @@ export class FileMongoService {
 
   async findFilesByParent(parent_id: string): Promise<FileMongo[] | null> {
     const files = await this.findAllBy('parent_id', parent_id);
+    // remove the file_content from the response
+    files.forEach((file) => {
+      delete file.file_content;
+    });
       return files;
   }
 

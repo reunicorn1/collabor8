@@ -35,8 +35,8 @@
 		"@hocuspocus/*": ["src/hocuspocus/*"],
 		"@events/*": ["src/events/*"],
 		"@mail/*": ["src/mail/*"],
-		"@redis/*": ["src/redis/*"]
-
+		"@redis/*": ["src/redis/*"],
+		"@logging/*": ["src/logging/*"]
 	}
   }
 }

@@ -3,6 +3,7 @@ import { BadRequestException } from '@nestjs/common';
 //
 interface CreateProjectShareDto {
   project_id: string;
+  _id?: string;
   username?: string;
   user_id?: string;
   access_level: 'read' | 'write';
@@ -27,6 +28,7 @@ interface ProjectSharesOutDto {
   last_name: string;
   username: string;
   project_name: string;
+  _id?: string;
 }
 
 function validateCreateProjectShareDto(dto: any): CreateProjectShareDto {
@@ -34,7 +36,23 @@ function validateCreateProjectShareDto(dto: any): CreateProjectShareDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { project_id, access_level } = dto;
+  const { project_id, access_level, _id, username, user_id } = dto;
+
+  if (!user_id && !username) {
+    throw new BadRequestException('User ID or username is required');
+  }
+
+  if (username && typeof username !== 'string') {
+    throw new BadRequestException('Username must be a string');
+  }
+
+  if (user_id && typeof user_id !== 'string') {
+    throw new BadRequestException('User ID must be a string');
+  }
+
+  if (!project_id && !_id) {
+    throw new BadRequestException('Project ID is required');
+  }
 
   if (typeof project_id !== 'string' || project_id.trim() === '') {
     throw new BadRequestException(
@@ -46,9 +64,16 @@ function validateCreateProjectShareDto(dto: any): CreateProjectShareDto {
     throw new BadRequestException('Access level must be a string');
   }
 
+  if (_id && typeof _id !== 'string') {
+    throw new BadRequestException('_id must be a string');
+  }
+
   return {
     project_id: project_id.trim(),
     access_level: access_level.trim(),
+    _id: _id ? _id.trim() : null,
+    username: username ? username.trim() : null,
+    user_id: user_id ? user_id.trim() : null,
   };
 }
 
@@ -78,7 +103,7 @@ function validateProjectSharesOutDto(dto: any): ProjectSharesOutDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { share_id, project_id, user_id, favorite, access_level, created_at, updated_at, member_count, first_name, last_name, username, project_name } = dto;
+  const { share_id, project_id, user_id, favorite, access_level, created_at, updated_at, member_count, first_name, last_name, username, project_name, _id } = dto;
 
   if (typeof share_id !== 'string' || share_id.trim() === '') {
     throw new BadRequestException(
@@ -142,6 +167,12 @@ function validateProjectSharesOutDto(dto: any): ProjectSharesOutDto {
     );
   }
 
+  if (typeof _id !== 'string' || _id.trim() === '') {
+    throw new BadRequestException(
+      '_id is required and must be a string',
+    );
+  }
+
   return {
     share_id: share_id.trim(),
     project_id: project_id.trim(),
@@ -155,6 +186,7 @@ function validateProjectSharesOutDto(dto: any): ProjectSharesOutDto {
     last_name: last_name.trim(),
     username: username.trim(),
     project_name: project_name.trim(),
+    _id: _id ? _id.trim() : null,
   };
 }
 

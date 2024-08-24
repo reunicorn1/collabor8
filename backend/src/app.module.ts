@@ -29,6 +29,7 @@ import { AdminModule } from './admin/admin.module';
 import { MailModule } from './mail/mail.module';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
+import { LoggingModule } from './logging/logging.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { RedisModule } from './redis/redis.module';
     AdminModule,
     MailModule,
     RedisModule,
+    LoggingModule,
   ],
   controllers: [AppController],
   providers: [

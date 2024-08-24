@@ -21,12 +21,12 @@ export class ProjectMongoService {
     @InjectRepository(ProjectMongo, 'mongoConnection')
     private projectMongoRepository: Repository<ProjectMongo>,
     @Inject(forwardRef(() => DirectoryMongoService))
-    private directoryService: DirectoryMongoService,
+    private readonly directoryService: DirectoryMongoService,
     @Inject(forwardRef(() => FileMongoService))
     private fileService: FileMongoService,
     @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
-  ) {}
+  ) { }
 
   async create(createProjectDto: CreateProjectMongoDto): Promise<ProjectMongo> {
     const parsedDto = parseCreateProjectMongoDto(createProjectDto);
@@ -55,12 +55,16 @@ export class ProjectMongoService {
 
   // general method to find all projects by a field
   async findAllBy(field: string, value: string): Promise<ProjectMongo[]> {
+
     const projects = await this.projectMongoRepository.find({
-      where: { [field]: value },
+      where: { [field]: field === '_id' ? new ObjectId(value) : value },
     });
     return projects;
   }
 
+  async save(project: ProjectMongo): Promise<ProjectMongo> {
+    return this.projectMongoRepository.save(project);
+  }
 
   // Find projects by username
   async findAllByUsername(username: string): Promise<ProjectMongo[]> {
@@ -98,36 +102,36 @@ export class ProjectMongoService {
     return enhancedProjects;
   }
 
+
+
   async findAllByUsernameDepth(
     username: string,
     maxDepth: number,
-    id: string,
-  ): Promise<ProjectMongo[]> {
+    id?: string,
+  ): Promise<any[]> { // Change return type to `any[]` for a more dynamic structure
     const user = await this.usersService.findOneBy({ username });
-    let projects: ProjectMongo[] = [];
     if (!user) {
       return []; // Handle case where user is not found
     }
-    if (maxDepth < 0) {
-      maxDepth = 99999999;
+
+    if (maxDepth <= 0) {
+      maxDepth = Number.MAX_SAFE_INTEGER; // Use a high number instead of hardcoded value
     }
-    if (id) {
-      projects = await this.projectMongoRepository.find({
-        where: { environment_id: user.environment_id, _id: new ObjectId(id) },
-      });
+
+    let projects: ProjectMongo[] = [];
+
+    if (id && id !== 'null') {
+      projects = await this.findAllBy('_id', id);
     } else {
       projects = await this.projectMongoRepository.find({
         where: { environment_id: user.environment_id },
       });
     }
 
-    // Helper function to load directories and files recursively
-    const loadDirectories = this.directoryService.loadDirectoriesByDepth;
-
     // Enhance projects with directories and files
     const enhancedProjects = await Promise.all(
       projects.map(async (project) => {
-        const directories = await loadDirectories(
+        const directories = await this.directoryService.loadDirectoriesByDepth(
           project._id.toString(),
           maxDepth,
         );
@@ -135,20 +139,29 @@ export class ProjectMongoService {
         const files = await this.fileService.findFilesByParent(
           project._id.toString(),
         );
-        project['children'] = [directories, files];
 
-        return project;
+        return {
+          ...project,
+          children: {
+            directories,
+            files,
+          },
+        };
       }),
     );
 
     return enhancedProjects;
   }
 
-  findOne(_id: string): Promise<ProjectMongo | null> {
-    return this.projectMongoRepository.findOneBy({ project_id: _id });
+  async findOneBy(field: string, value: string): Promise<ProjectMongo | null> {
+    return await this.projectMongoRepository.findOne({ where: { [field]: value } });
   }
 
-    async update(
+  async findOne(_id: string): Promise<ProjectMongo | null> {
+    return await this.projectMongoRepository.findOneBy({ project_id: _id });
+  }
+
+  async update(
     id: string,
     updateProjectDto: UpdateProjectMongoDto,
   ): Promise<ProjectMongo | null | { message: string }> {
@@ -195,62 +208,4 @@ export class ProjectMongoService {
     await this.projectMongoRepository.delete({ environment_id });
   }
 
-
-  // TODO: Fix this function
-  // Doesnt work when startDepth is greater than 1
-  // async findProjectsWithPaging(
-  //   username: string,
-  //   startDepth: number,
-  //   endDepth: number,
-  // ): Promise<ProjectMongo[]> {
-  //   const user = await this.usersService.findOneBy({ username });
-  //   if (!user) {
-  //     return []; // Handle case where user is not found
-  //   }
-  //   const projects = await this.projectMongoRepository.find({
-  //     where: { environment_id: user.environment_id },
-  //   });
-
-  //   // Helper function to load directories and files recursively with depth control
-  //   const loadDirectories = async (
-  //     parentId: string,
-  //     depth: number,
-  //   ): Promise<DirectoryMongo[]> => {
-  //     if (depth < startDepth || depth > endDepth) return []; // Handle depth range
-  //     const directories = await this.directoryRepository.find({
-  //       where: { parent_id: parentId },
-  //     });
-
-  //     // Load files for each directory
-  //     await Promise.all(
-  //       directories.map(async (dir) => {
-  //         dir.files = await this.fileRepository.find({
-  //           where: { parent_id: dir._id.toString() },
-  //         });
-
-  //         // Recursively load child directories
-  //         dir.children = await loadDirectories(dir._id.toString(), depth + 1);
-  //       }),
-  //     );
-  //     return directories;
-  //   };
-
-  //   // Enhance projects with directories and files
-  //   const enhancedProjects = await Promise.all(
-  //     projects.map(async (project) => {
-  //       const directories = await loadDirectories(project._id.toString(), 1); // Start at depth 1
-
-  //       const files = await this.fileRepository.find({
-  //         where: { parent_id: project._id.toString() },
-  //       });
-
-  //       project.directories = directories;
-  //       project.files = files;
-
-  //       return project;
-  //     }),
-  //   );
-  //   console.log(enhancedProjects);
-  //   return enhancedProjects;
-  // }
 }

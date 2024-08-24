@@ -51,7 +51,7 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
       .then((data) => {
         console.log('new project', data);
         // TODO: navigate to the project page
-        handleGoToProject(data.project_id, name);
+        handleGoToProject(data._id, name);
       })
       .catch((err) => {
         console.log(err);

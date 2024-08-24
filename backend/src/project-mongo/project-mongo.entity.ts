@@ -18,7 +18,7 @@ export class ProjectMongo {
   @Column()
   project_name: string;
 
-  @Column() // passed from mysql
+  @Column({ nullable: true, default: null }) // passed from mysql
   project_id: string;
 
   @Column()

@@ -73,7 +73,6 @@ export class AuthController {
     // revoke session
 
     await this.authService.revokeAccessToken(req.user.jti);
-    console.log('req.cookies', req.cookies);
     await this.authService.revokeRefreshToken(req.cookies.refreshToken);
     req.session.destroy((err) => {
       if (err) {
@@ -105,7 +104,6 @@ export class AuthController {
   // @UseGuards(RefreshAuthGuard)
   @Post('refresh')
   async refreshToken(@Request() req, @Response() res) {
-    // console.log('req.cookies', req.cookies);
     const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
       return res.status(401).send({ message: 'Unauthorized' });

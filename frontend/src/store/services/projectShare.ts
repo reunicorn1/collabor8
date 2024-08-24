@@ -26,7 +26,7 @@ export const projectShareApi = api.injectEndpoints({
     }),
     // Retrieve project shares by project ID
     getProjectSharesByProjectId: builder.query<ProjectShares[], string>({
-      query: (project_id) => `/project-shares/project/${project_id}`,
+      query: (_id) => `/project-shares/project/${_id}`,
         providesTags: ['ProjectShare'],
     }),
     // Retrieve project shares by user ID
