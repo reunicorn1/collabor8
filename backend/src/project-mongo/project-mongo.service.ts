@@ -153,8 +153,12 @@ export class ProjectMongoService {
     return enhancedProjects;
   }
 
-  findOne(_id: string): Promise<ProjectMongo | null> {
-    return this.projectMongoRepository.findOneBy({ project_id: _id });
+  async findOneBy(field: string, value: string): Promise<ProjectMongo | null> {
+    return await this.projectMongoRepository.findOne({ where: { [field]: value } });
+  }
+
+  async findOne(_id: string): Promise<ProjectMongo | null> {
+    return await this.projectMongoRepository.findOneBy({ project_id: _id });
   }
 
   async update(
