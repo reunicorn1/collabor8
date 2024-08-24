@@ -7,7 +7,11 @@ import {
   ModalBody,
   ModalCloseButton,
   Button,
+  useToast,
 } from '@chakra-ui/react';
+import { useDeleteCurrentUserProfileMutation } from '@store/services/user';
+import { useDispatch } from 'react-redux';
+import { unsetCredentials } from '@store/slices/authSlice';
 
 interface ModalProps {
   isOpen: boolean;
@@ -15,6 +19,26 @@ interface ModalProps {
 }
 
 export default function DeleteAccount({ isOpen, onClose }: ModalProps) {
+  const dispatch = useDispatch();
+  const toast = useToast();
+  const [deleteUser] = useDeleteCurrentUserProfileMutation();
+
+  const handleDelete = async () => {
+    try {
+      await deleteUser().unwrap();
+      toast({
+        title: `Data has been updated successfully!`,
+        variant: 'subtle',
+        position: 'bottom-right',
+        status: 'success',
+        isClosable: true,
+      });
+      dispatch(unsetCredentials());
+    } catch (err) {
+      console.log('An Error occured during deletion of this account', err);
+    }
+  };
+
   return (
     <>
       <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
@@ -35,7 +59,7 @@ export default function DeleteAccount({ isOpen, onClose }: ModalProps) {
             certain.
           </ModalBody>
           <ModalFooter mb={4}>
-            <Button size="sm" colorScheme="red" mr={3}>
+            <Button size="sm" colorScheme="red" mr={3} onClick={handleDelete}>
               Delete your account
             </Button>
             <Button size="sm" onClick={onClose}>

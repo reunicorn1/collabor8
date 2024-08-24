@@ -5,7 +5,6 @@ import { YMapValueType } from '../context/EditorContext';
 // related to this room before, the filetree will be overwritten with whatever is in the server
 
 export default function createfiletree(root: Y.Map<YMapValueType>) {
-  // console.log('This function is paused', root.get('filetree'));
   if (!root.get('filetree')) {
     const rootnode = {
       type: 'dir',

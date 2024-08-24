@@ -58,6 +58,8 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
         toast({
           title: 'An Error occured while creating this project',
           status: 'error',
+          variant: 'subtle',
+          position: 'bottom-right',
           isClosable: true,
         });
       });
