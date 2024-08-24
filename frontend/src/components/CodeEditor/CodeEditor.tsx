@@ -39,7 +39,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
   const binding = useRef<CodemirrorBinding | null>(null);
   const ydoc_ = useRef(ydoc);
   const awareness = useRef<Awareness | null>(null);
-  const [wsProvider, setProvider] = useState<WebsocketProvider | null>(null);
 
   projectRoot.current = ydoc_.current.getMap('root');
   createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
@@ -55,7 +54,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     });
   };
 
-  console.log({ wsProvider });
   // effects for socket provider and awareness
   useEffect(() => {
     const websocket = import.meta.env.VITE_WS_SERVER;
