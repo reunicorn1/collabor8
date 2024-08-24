@@ -19,6 +19,7 @@ import * as bcrypt from 'bcrypt';
 import { adminEmails } from '@config/configuration';
 import { RedisService } from '@redis/redis.service';
 import { v4 as uuidv4 } from 'uuid';
+import { MailService } from '@mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +27,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private jwtService: JwtService,
     private redisService: RedisService,
+    private mailService: MailService,
   ) {}
 
   async signIn(user: Partial<Users>): Promise<{

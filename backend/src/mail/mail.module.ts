@@ -13,8 +13,8 @@ import { join } from 'path';
         host: 'smtp.example.com',
         secure: false,
         auth: {
-          user: 'user@example.com',
-          pass: 'topsecret',
+          user: 'abdofola67@gmail.com',
+          pass: process.env.MAIL_PSW,
         },
       },
       defaults: {
