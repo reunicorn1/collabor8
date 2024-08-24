@@ -30,10 +30,17 @@ import { MailModule } from './mail/mail.module';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
 import { LoggingModule } from './logging/logging.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, cache: true }), //  load .env
+    BullModule.forRoot({ // 👈️ Job Queue
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
     TypeOrmModule.forRoot({
       name: 'mysqlConnection',
       type: 'mysql',
