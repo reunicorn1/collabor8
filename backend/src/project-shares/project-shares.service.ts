@@ -5,7 +5,14 @@ import { ProjectShares } from './project-shares.entity';
 import { MYSQL_CONN } from '@constants';
 import { ProjectsService } from '@projects/projects.service';
 import { UsersService } from '@users/users.service';
-import { ProjectSharesOutDto } from './dto/create-project-shares.dto';
+import {
+  parseCreateProjectDto,
+  CreateProjectShareDto,
+  parseUpdateProjectDto,
+  UpdateProjectShareDto,
+  parseProjectSharesOutDto,
+  ProjectSharesOutDto,
+} from './dto/create-project-shares.dto';
 
 @Injectable()
 export class ProjectSharesService {
@@ -18,11 +25,10 @@ export class ProjectSharesService {
 
   // Create a new project share
   async create(
-    createProjectShareDto: Partial<ProjectShares>,
+    createProjectShareDto: CreateProjectShareDto,
   ): Promise<ProjectShares> {
-    const newProjectShare = this.projectSharesRepository.create(
-      createProjectShareDto,
-    );
+    const parsedDto = parseCreateProjectDto(createProjectShareDto);
+    const newProjectShare = this.projectSharesRepository.create(parsedDto);
     return await this.projectSharesRepository.save(newProjectShare);
   }
 
@@ -31,12 +37,13 @@ export class ProjectSharesService {
     return await this.projectSharesRepository.find();
   }
 
-  async updateStatus(id: string, status: string): Promise<ProjectShares> {
+  async updateStatus(id: string, status: string): Promise<ProjectShares | { message: string }> {
     const projectShare = await this.projectSharesRepository.findOneBy({ share_id: id });
     if (status !== 'accepted' && status !== 'rejected') {
       throw new Error('Invalid status');
     } else if (projectShare.status === 'rejected') {
       await this.projectSharesRepository.delete(id);
+      return { "message": "Project share has been deleted" };
     }
     projectShare.status = status;
     return await this.projectSharesRepository.save(projectShare);
@@ -112,25 +119,25 @@ export class ProjectSharesService {
           return await this.mapProjectShareData(projectShare);
         });
       })
-        .catch((error) => {
-          console.log(error);
-          return [];
-        });
+      .catch((error) => {
+        console.log(error);
+        return [];
+      });
 
-      return { total, projects };
+    return { total, projects };
   }
 
   // Update a project share
   async update(
-        id: string,
-        updateProjectShareDto: Partial<ProjectShares>,
-      ): Promise < ProjectShares > {
-        await this.projectSharesRepository.update(id, updateProjectShareDto);
-        return await this.projectSharesRepository.findOneBy({ share_id: id });
-      }
+    id: string,
+    updateProjectShareDto: Partial<ProjectShares>,
+  ): Promise<ProjectShares> {
+    await this.projectSharesRepository.update(id, updateProjectShareDto);
+    return await this.projectSharesRepository.findOneBy({ share_id: id });
+  }
 
   // Delete a project share
-  async remove(id: string): Promise < void> {
-        await this.projectSharesRepository.delete(id);
-      }
+  async remove(id: string): Promise<void> {
+    await this.projectSharesRepository.delete(id);
+  }
 }

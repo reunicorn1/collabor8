@@ -75,12 +75,14 @@ export class AuthService {
     };
   }
 
-  async verifyUser(token: string): Promise<Partial<Users>> {
+  async verifyUser(token: string): Promise<{ message: string }> {
     const user = await this.usersService.findOneBy({ user_id: token });
     if (!user) {
       throw new NotFoundException(`User with token ${token} not found`);
     }
-    return user;
+
+    console.log(await this.usersService.update(user.username, { is_verified: true }));
+    return { "message": "User verified" };
   }
 
   async verificationId(email: string): Promise<string> {
@@ -143,6 +145,7 @@ export class AuthService {
       );
     }
   }
+
 
   // async attachEnvironment(user: Users): Promise<Users> {
   //   const userEnvironment = this.environmentService.create({
