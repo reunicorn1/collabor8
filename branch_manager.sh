@@ -146,24 +146,18 @@ fetch_and_select_branch() {
 
 # Function to pull latest changes and check/update dependencies
 pull_and_check_dependencies() {
-	git fetch --all || {
-		echo "Failed to fetch branches"
-			exit 1
-		}
-
-		echo "Select a branch to switch to (local) or checkout (remote). Press Ctrl+C to cancel."
-		branch_name=$(git branch -a | fzf --height 15 --border --ansi --preview "git log --oneline {}" | sed 's/\* //g' | sed 's/remotes\/origin\///g' | xargs)
-
-		if [ -z "$selected_branch" ]; then
-			echo "No branch selected."
-			exit 1
-		fi
-
-
 	git fetch origin || {
 		echo "Failed to fetch latest changes"
 		exit 1
 	}
+
+		echo "Select a branch to switch to (local) or checkout (remote). Press Ctrl+C to cancel."
+		local branch_name=$(git branch -a | fzf --height 15 --border --ansi --preview "git log --oneline {}" | sed 's/\* //g' | sed 's/remotes\/origin\///g' | xargs)
+
+		if [ -z "$branch_name" ]; then
+			echo "No branch selected."
+			exit 1
+		fi
 
 	local local_commit=$(git rev-parse "$branch_name")
 	local remote_commit=$(git rev-parse origin/"$branch_name")
