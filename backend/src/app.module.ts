@@ -28,6 +28,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AdminModule } from './admin/admin.module';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
+import { LoggingModule } from './logging/logging.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { RedisModule } from './redis/redis.module';
     AuthModule,
     AdminModule,
     RedisModule,
+    LoggingModule,
   ],
   controllers: [AppController],
   providers: [

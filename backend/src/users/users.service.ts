@@ -19,6 +19,7 @@ export class UsersService {
   constructor(
     @InjectRepository(Users, MYSQL_CONN)
     private readonly usersRepository: Repository<Users>,
+    @Inject(forwardRef(() => EnvironmentMongoService))
     private readonly environmentService: EnvironmentMongoService,
   ) {}
 
@@ -124,6 +125,11 @@ async remove(user_id: string): Promise<{ message: string }> {
 async update(username: string, user: Partial<Users>): Promise<Users> {
   await this.usersRepository.update({ username: username }, user);
   return this.findOneBy({ username: username });
+}
+
+async findAllBy(query: Query): Promise<Users[]> {
+  const users = await this.usersRepository.find(query);
+  return await this.removeAllPasswordHash(users);
 }
 
 async removeAll(): Promise<{ message: string }> {

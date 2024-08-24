@@ -18,7 +18,7 @@ function validateCreateProjectDto(dto: any): CreateProjectMongoDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { project_name, owner_id } = dto;
+  const { project_name, owner_id, project_id, environment_id } = dto;
 
   if (typeof project_name !== 'string' || project_name.trim() === '') {
     throw new BadRequestException(
@@ -33,6 +33,8 @@ function validateCreateProjectDto(dto: any): CreateProjectMongoDto {
   return {
     project_name: project_name.trim(),
     owner_id: owner_id.trim(),
+    project_id: project_id ? project_id.trim() : undefined,
+    environment_id: environment_id ? environment_id.trim() : undefined,
   };
 }
 

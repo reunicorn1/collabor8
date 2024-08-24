@@ -152,7 +152,7 @@ export default function Home() {
                 flexShrink={0}
                 cursor="pointer"
                 onClick={() =>
-                  handleGoToProject(project.project_id, project.project_name)
+                  handleGoToProject(project._id, project.project_name)
                 }
               >
                 <Icon as={FaFolder} fontSize="45px" color={color} />

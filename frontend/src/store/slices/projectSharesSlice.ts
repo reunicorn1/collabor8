@@ -10,6 +10,7 @@ interface projectShares {
   updated_at: string;
   created_at: string;
   project_id: string;
+  _id: string;
   projectShares: string[];
 }
 
@@ -20,6 +21,7 @@ interface recentProjectsInterface {
   updated_at: string;
   created_at: string;
   project_id: string;
+  _id: string;
   projectShares: string[];
   laseEdited: string;
 }

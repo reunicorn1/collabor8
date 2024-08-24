@@ -81,7 +81,7 @@ export class AuthService {
       throw new NotFoundException(`User with token ${token} not found`);
     }
 
-    console.log(await this.usersService.update(user.username, { is_verified: true }));
+    await this.usersService.update(user.username, { is_verified: true });
     return { "message": "User verified" };
   }
 

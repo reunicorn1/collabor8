@@ -57,11 +57,13 @@ export interface Project {
   environment_id?: string;
   created_at: Date;
   updated_at: Date;
+  _id: string;
 }
 
 export interface ProjectShares {
   share_id: string;
   project_id: string;
+  _id: string;
   user_id: string;
   favorite: boolean;
   access_level: 'read' | 'write';

@@ -14,6 +14,7 @@ import {
   parseUpdateProjectDto,
   UpdateProjectDto,
 } from './dto/create-project.dto';
+import { validate as uuidValidate } from 'uuid';
 
 @Injectable()
 export class ProjectsService {
@@ -36,7 +37,6 @@ export class ProjectsService {
       const user = await this.usersService.findOneBy({
         username: parsedDto.username,
       });
-      console.log(user);
       const environment = await this.environmentService.findOneBy({
         username: user.username,
       });
@@ -45,11 +45,14 @@ export class ProjectsService {
       const newProjectMongo = await this.projectMongoService.create(
         parsedDto as any,
       );
-      parsedDto['project_id'] = newProjectMongo._id.toString();
+      parsedDto['_id'] = newProjectMongo._id.toString();
       const newProject = this.projectsRepository.create({
         ...parsedDto,
       });
-      return await this.projectsRepository.save(newProject);
+      await this.projectsRepository.save(newProject);
+      newProjectMongo.project_id = newProject.project_id;
+      await this.projectMongoService.save(newProjectMongo);
+      return newProject;
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -64,13 +67,44 @@ export class ProjectsService {
   async findAllBy(field: string, value: string): Promise<Projects[]> {
     return this.projectsRepository.findBy({ [field]: value });
   }
+  async getIds(id: string): Promise<{ project_id: string; _id: string }> {
+    const IDS= {
+      project_id: null,
+      _id: null,
+    };
+     if (uuidValidate(id)) {
+       IDS.project_id = id;
+      const project = await this.projectsRepository.findOneBy({
+        project_id: id,
+      });
+      id = project._id.toString();
+    }
+    else{
+      IDS._id = id;
+    }
+    return IDS;
+  }
 
   async findAllByUsernameDepth(
     username: string,
     depth: number,
     id: string,
   ): Promise<ProjectMongo[]> {
-    return this.projectMongoService.findAllByUsernameDepth(username, depth, id);
+    const IDS = await this.getIds(id);
+    let project;
+    if (!IDS._id) {
+      if (!IDS.project_id) {
+        throw new Error('Project not found');
+      }
+      project = await this.projectsRepository.findOneBy({ project_id: IDS.project_id });
+      IDS._id = project._id.toString();
+    }
+
+
+    if (project.username !== username) {
+      throw new Error('Project not found');
+    }
+    return this.projectMongoService.findAllByUsernameDepth(username, depth, IDS._id);
   }
 
   // retrieve all user projects by username and is paginated
@@ -114,21 +148,37 @@ export class ProjectsService {
     updateProjectDto: UpdateProjectDto,
   ): Promise<Projects> {
     const parsedDto = parseUpdateProjectDto(updateProjectDto);
-    const project = await this.findOne(id);
+    const IDS = await this.getIds(id);
+    let project;
+    if (!IDS._id) {
+      if (!IDS.project_id) {
+        throw new Error('Project not found');
+      }
+      project = await this.projectsRepository.findOneBy({ project_id: IDS.project_id });
+      IDS._id = project._id.toString();
+    }
     if (!project) {
       throw new Error('Project not found');
     }
+    const mongoProject = await this.projectMongoService.findOneBy('_id', IDS._id);
+    if (!mongoProject) {
+      throw new Error('Project not found');
+    }
+    for (const key in parsedDto) {
+      if (parsedDto[key]) {
+        if (key in mongoProject) {
+          mongoProject[key] = parsedDto[key];
+        }
+        if (key in project) {
+          project[key] = parsedDto[key];
+        }
+      }
+    }
     const newDate = new Date();
-    await this.projectsRepository.update(id, {
-      project_name: parsedDto.project_name,
-      description: parsedDto.description,
-      updated_at: newDate,
-    });
-    await this.projectMongoService.update(id, {
-      project_name: parsedDto.project_name,
-      updated_at: newDate,
-    });
-    return this.projectsRepository.findOneBy({ project_id: id });
+    mongoProject.updated_at = newDate;
+    project.updated_at = newDate;
+    await this.projectMongoService.save(mongoProject);
+    return await this.projectsRepository.save(project);
   }
 
   // Delete a project

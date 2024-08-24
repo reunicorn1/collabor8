@@ -28,8 +28,8 @@ export class ProjectSharesController {
   @Post()
   async create(
     @Body() createProjectShareDto: CreateProjectShareDto,
-  ): Promise<ProjectShares> {
-    return this.projectSharesService.create(createProjectShareDto);
+  ): Promise<ProjectSharesOutDto> {
+  return this.projectSharesService.create(createProjectShareDto);
   }
 
   // Retrieve all project shares
@@ -39,7 +39,7 @@ export class ProjectSharesController {
     description: 'Retrieve a list of all project shares from the database.',
   })
   @Get()
-  async findAll(): Promise<ProjectShares[]> {
+  async findAll(): Promise<ProjectSharesOutDto[]> {
     return this.projectSharesService.findAll();
   }
 
