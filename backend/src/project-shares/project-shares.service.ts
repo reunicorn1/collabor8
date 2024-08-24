@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProjectShares } from './project-shares.entity';
@@ -8,9 +8,6 @@ import { UsersService } from '@users/users.service';
 import {
   parseCreateProjectDto,
   CreateProjectShareDto,
-  parseUpdateProjectDto,
-  UpdateProjectShareDto,
-  parseProjectSharesOutDto,
   ProjectSharesOutDto,
 } from './dto/create-project-shares.dto';
 
@@ -19,7 +16,9 @@ export class ProjectSharesService {
   constructor(
     @InjectRepository(ProjectShares, MYSQL_CONN)
     private projectSharesRepository: Repository<ProjectShares>,
+    @Inject(forwardRef(() => ProjectsService))
     private readonly projectsService: ProjectsService,
+    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) { }
 
@@ -62,6 +61,7 @@ export class ProjectSharesService {
       last_name: user.last_name,
       username: user.username,
       project_name: project.project_name,
+      _id: project._id,
       created_at: project.created_at.toISOString(),
       updated_at: project.updated_at.toISOString(),
       member_count: memberCount,
@@ -120,7 +120,7 @@ export class ProjectSharesService {
         });
       })
       .catch((error) => {
-        console.log(error);
+        Logger.error(error);
         return [];
       });
 

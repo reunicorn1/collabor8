@@ -155,7 +155,7 @@ export default function PersonalTable() {
                   cursor="pointer"
                   key={index}
                   onClick={() =>
-                    handleGoToProject(project.project_id, project.project_name)
+                    handleGoToProject(project._id, project.project_name)
                   }
                 >
                   <Td>{project.project_name}</Td>

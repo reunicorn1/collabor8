@@ -1,19 +1,19 @@
 import {
   Entity,
-  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
   ManyToOne,
   JoinColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Users } from '@users/user.entity';
 import { ProjectShares } from '@project-shares/project-shares.entity';
 
 @Entity({ name: 'Projects' })
 export class Projects {
-  @PrimaryColumn({ type: 'varchar', length: 100, nullable: false })
+  @PrimaryGeneratedColumn('uuid')
   project_id: string;
 
   @Column({ type: 'varchar', length: 100 })
@@ -24,6 +24,9 @@ export class Projects {
 
   @Column({ type: 'varchar' })
   username: string;
+
+  @Column({ type: 'varchar', nullable: true, default: null})
+  _id: string | null;
 
   // TODO: Add favorite boolean
   @Column({ type: 'boolean', default: false })

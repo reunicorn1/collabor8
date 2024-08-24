@@ -20,7 +20,7 @@ export class DirectoryMongoService {
     private fileService: FileMongoService,
     @Inject(forwardRef(() => ProjectsService))
     private projectService: ProjectsService,
-  ) {}
+  ) { }
 
   async create(
     createDirectoryDto: CreateDirectoryOutDto,
@@ -57,30 +57,32 @@ export class DirectoryMongoService {
     return directories;
   }
 
+  // Load directories by depth
+  // each directory will have a children property with subdirectories and files
   async loadDirectoriesByDepth(
     parentId: string,
     depth: number,
-  ): Promise<DirectoryMongo[]> {
+  ): Promise<any[]> { // Change return type to `any[]` for flexibility
     if (depth <= 0) return []; // Stop recursion if depth is zero
 
     const directories = await this.findDirectoriesByParent(parentId);
+    if (!directories || directories.length === 0) return []; // Stop if no directories found
 
-    // Load files for each directory
-    await Promise.all(
+    // Load files and recursively load child directories
+    return await Promise.all(
       directories.map(async (dir) => {
-        dir.files = await this.fileService.findFilesByParent(
-          dir._id.toString(),
-        );
+        const files = await this.fileService.findFilesByParent(dir._id.toString());
+        const children = await this.loadDirectoriesByDepth(dir._id.toString(), depth - 1);
 
-        // Recursively load child directories
-        dir.children = await this.loadDirectoriesByDepth(
-          dir._id.toString(),
-          depth - 1,
-        );
+        return {
+          ...dir,
+          children: {
+            directories: children,
+            files,
+          },
+        };
       }),
     );
-
-    return directories;
   }
 
   async update(id: string, updateDirectoryDto: UpdateDirectoryOutDto): Promise<DirectoryMongo> {

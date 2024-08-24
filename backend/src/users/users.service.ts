@@ -19,6 +19,7 @@ export class UsersService {
   constructor(
     @InjectRepository(Users, MYSQL_CONN)
     private readonly usersRepository: Repository<Users>,
+    @Inject(forwardRef(() => EnvironmentMongoService))
     private readonly environmentService: EnvironmentMongoService,
   ) {}
 

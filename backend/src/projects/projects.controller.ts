@@ -16,6 +16,7 @@ import { Projects } from './project.entity';
 import { CreateProjectDto, UpdateProjectDto } from './dto/create-project.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import Docs from './projects.docs';
+import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 
 @ApiBearerAuth()
 @ApiTags('Projects')
@@ -39,6 +40,16 @@ export class ProjectsController {
     return this.projectsService.findAllBy('owner_id', req.user.id);
   }
 
+  // @Docs.findOneDepth()
+  @Get('depth/:id')
+  async findOneDepth(
+    @Param('id') id: string,
+    @Query('depth') depth: number,
+    @Request() req: any): Promise<ProjectMongo[]> {
+      console.log('depth', depth);
+    return this.projectsService.findAllByUsernameDepth(req.user.username, depth, id);
+  }
+
   @Docs.findAllByUsernameDepth()
   @Get(':username/:id')
   findAllByUsernameDepth(
@@ -60,7 +71,6 @@ export class ProjectsController {
     @Query('sort') sort: string,
   ): Promise<any> {
     if (page && limit) {
-      console.log(req.user);
       const { total, projects } =
         await this.projectsService.findAllByUsernamePaginated(
           req.user.username,
@@ -83,11 +93,34 @@ export class ProjectsController {
   }
 
   @Docs.findAllForUser()
-  @Get(':username')
+  @Get('user/:username')
   async findAllForUser(
+    @Request() req: any,
     @Param('username') username: string,
-  ): Promise<Projects[]> {
-    return this.projectsService.findAllBy('username', username);
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('sort') sort: string,
+  ): Promise<any> {
+    if (page && limit) {
+      const { total, projects } =
+        await this.projectsService.findAllByUsernamePaginated(
+          username,
+          page,
+          limit,
+          sort,
+        );
+      return {
+        total,
+        projects,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      };
+    } else {
+      throw new BadRequestException(
+        'Page and limit query parameters are required',
+      );
+    }
   }
 
   @Docs.findOne()

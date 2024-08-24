@@ -36,7 +36,6 @@ export class ProjectsService {
       const user = await this.usersService.findOneBy({
         username: parsedDto.username,
       });
-      console.log(user);
       const environment = await this.environmentService.findOneBy({
         username: user.username,
       });
@@ -45,11 +44,14 @@ export class ProjectsService {
       const newProjectMongo = await this.projectMongoService.create(
         parsedDto as any,
       );
-      parsedDto['project_id'] = newProjectMongo._id.toString();
+      parsedDto['_id'] = newProjectMongo._id.toString();
       const newProject = this.projectsRepository.create({
         ...parsedDto,
       });
-      return await this.projectsRepository.save(newProject);
+      await this.projectsRepository.save(newProject);
+      newProjectMongo.project_id = newProject.project_id;
+      await this.projectMongoService.save(newProjectMongo);
+      return newProject;
     } catch (error) {
       throw new BadRequestException(error.message);
     }

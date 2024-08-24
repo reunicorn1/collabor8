@@ -24,6 +24,9 @@ export class ProjectShares {
   @Column('uuid')
   user_id: string;
 
+  @Column({ type: 'varchar', nullable: true, default: null})
+  _id: string | null;
+
   @Column()
   username: string;
 
