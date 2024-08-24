@@ -26,6 +26,7 @@ import { APP_GUARD } from '@nestjs/core';
 // import { RolesGuard } from '@auth/guards/roles.guard';
 // import { RolesGuard } from '@auth/guards/roles.guard';
 import { AdminModule } from './admin/admin.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { AdminModule } from './admin/admin.module';
     EnvironmentMongoModule,
     AuthModule,
     AdminModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [
