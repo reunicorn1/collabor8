@@ -30,7 +30,7 @@ const Home = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (location.pathname === '/reset_password') {
+      if (location.pathname === '/reset-password') {
         setShowModal(true);
       }
     }, 200);

@@ -22,6 +22,7 @@ import {
   CreateUserDto,
   LoginUserDto,
   parseLoginDto,
+  ResetPasswordDto,
 } from '@users/dto/create-user.dto';
 import { Users } from '@users/user.entity';
 import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
@@ -81,10 +82,10 @@ export class AuthController {
       }
     });
     res
-    .clearCookie('refreshToken')
-    .clearCookie('accessToken')
-    .clearCookie('connect.sid')
-    .send({ message: 'Signed out' });
+      .clearCookie('refreshToken')
+      .clearCookie('accessToken')
+      .clearCookie('connect.sid')
+      .send({ message: 'Signed out' });
   }
   // password change
   // add avatar
@@ -124,15 +125,22 @@ export class AuthController {
   @Patch('me/change-password')
   async changePassword(
     @Request() req,
-    @Body() resetPasswordDto: { old: string, new: string },
+    @Body() resetPasswordDto: { old: string; new: string },
   ): Promise<Users> {
-    return this.authService.resetPassword(req.user.username, resetPasswordDto.old, resetPasswordDto.new);
+    return this.authService.resetPassword(
+      req.user.username,
+      resetPasswordDto.old,
+      resetPasswordDto.new,
+    );
   }
 
   // TODO: send email to user with reset password link
   @Public()
-  @Get('me/reset-password')
-  async resetPassword(@Body() email: string): Promise<{ message: string }> {
+  @Post('me/reset-password')
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
+    const { email } = resetPasswordDto;
     return this.authService.sendResetPasswordEmail(email);
   }
   // after user clicks forgot password, send link in email
@@ -141,8 +149,11 @@ export class AuthController {
   // backend validates token and updates password
   // user is redirected to login page
   @Public()
-  @Get('validate-reset-token')
-  async validateResetToken(@Request() req, @Body() password: string): Promise<{ message: string }> {
+  @Post('validate-reset-token')
+  async validateResetToken(
+    @Request() req,
+    @Body() password: string,
+  ): Promise<{ message: string }> {
     return this.authService.validateToken(req.query.token, password);
   }
 }

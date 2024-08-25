@@ -28,7 +28,7 @@ const App: React.FC = () => {
         <Route path="/dashboard" element={<DashboardPage />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
         <Route path="/editor/:projectId" element={<Editor />}></Route>
-        <Route path="/reset_password" element={<ResetPasswordModal />} />
+        <Route path="/reset-password" element={<ResetPasswordModal />} />
       </Routes>
     </>
   );

@@ -13,8 +13,8 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useRef, useState, useEffect } from 'react';
-import axios from 'axios';
 import { useLocation } from 'react-router-dom';
+import { useValidateResetTokenMutation } from '@store/services/auth';
 
 const ResetPasswordModal = () => {
   const { search } = useLocation();
@@ -25,14 +25,16 @@ const ResetPasswordModal = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const toast = useToast();
 
+  const [validateResetToken, { isLoading, isError, isSuccess, error }] =
+    useValidateResetTokenMutation();
+
   useEffect(() => {
     const params = new URLSearchParams(search);
     const tokenFromUrl = params.get('token');
     setToken(tokenFromUrl || '');
   }, [search]);
 
-  console.log('Token:===============>', token);
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
     if (newPassword !== confirmPassword) {
       toast({
         title: 'Passwords do not match',
@@ -44,37 +46,29 @@ const ResetPasswordModal = () => {
       });
       return;
     }
-
-    axios
-      .post(
-        'http://localhost:3000/api/v1/auth/reset-password',
-        { password: newPassword },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-      .then(() => {
-        toast({
-          title: 'Password Reset Successful',
-          description: 'Your password has been reset successfully.',
-          status: 'success',
-          variant: 'subtle',
-          position: 'bottom-left',
-          isClosable: true,
-        });
-      })
-      .catch(() => {
-        toast({
-          title: 'Error',
-          description: 'An error occurred while resetting your password.',
-          status: 'error',
-          variant: 'subtle',
-          position: 'bottom-left',
-          isClosable: true,
-        });
+    console.log('Token', token);
+    try {
+      await validateResetToken({ token, password: newPassword }).unwrap();
+      toast({
+        title: 'Password Reset Successful',
+        description: 'Your password has been reset successfully.',
+        status: 'success',
+        variant: 'subtle',
+        position: 'bottom-left',
+        isClosable: true,
       });
+      // Redirect to login or home page
+      window.location.href = '/';
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: `An error occurred while resetting your password: ${error?.data.message}`,
+        status: 'error',
+        variant: 'subtle',
+        position: 'bottom-left',
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -137,6 +131,7 @@ const ResetPasswordModal = () => {
             isDisabled={!newPassword || !confirmPassword}
             onClick={handleResetPassword}
             ref={finalRef}
+            isLoading={isLoading}
           >
             Reset Password
           </Button>

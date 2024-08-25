@@ -23,6 +23,10 @@ class CreateUserDto {
   favorite_projects?: string[];
 }
 
+interface ResetPasswordDto {
+  email: string;
+}
+
 interface CreateUserOutDto {
   username: string;
   first_name: string;
@@ -95,7 +99,6 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
     throw new BadRequestException('favorite_projects must be an array');
   }
 
-
   const password_hash = encryptPwd(password);
 
   return {
@@ -110,7 +113,6 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
     favorite_projects: favorite_projects
       ? favorite_projects.map((project) => project.trim())
       : undefined,
-
   };
 }
 
@@ -145,4 +147,10 @@ function parseLoginDto(requestBody: any): LoginUserDto {
   return validated;
 }
 
-export { parseCreateUserDto, CreateUserDto, LoginUserDto, parseLoginDto };
+export {
+  parseCreateUserDto,
+  CreateUserDto,
+  LoginUserDto,
+  parseLoginDto,
+  ResetPasswordDto,
+};
