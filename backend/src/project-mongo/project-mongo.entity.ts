@@ -1,7 +1,6 @@
 import {
   Entity,
   ObjectIdColumn,
-  ObjectId,
   Column,
   OneToMany,
   ManyToOne,
@@ -9,6 +8,7 @@ import {
 import { EnvironmentMongo } from '@environment-mongo/environment-mongo.entity';
 import { FileMongo } from '@file-mongo/file-mongo.entity';
 import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
+import { ObjectId } from 'mongodb';
 
 @Entity('projects')
 export class ProjectMongo {

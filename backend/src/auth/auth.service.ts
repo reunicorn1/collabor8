@@ -26,7 +26,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private jwtService: JwtService,
     private redisService: RedisService,
-  ) {}
+  ) { }
 
   async signIn(user: Partial<Users>): Promise<{
     accessToken: string;
@@ -53,7 +53,6 @@ export class AuthService {
     if (!is_verified) {
       throw new UnauthorizedException('User is not verified. Please verify your email');
     }
-    Logger.log('--------->', { user });
     return {
       accessToken: await this.jwtService.signAsync(payload),
       refreshToken: await this.jwtService.signAsync(payload, {
@@ -66,13 +65,17 @@ export class AuthService {
   async refreshToken(refreshToken: string): Promise<{
     accessToken: string;
   }> {
-    const { iat, exp, timestamp, ...payload } =
-      await this.jwtService.verifyAsync(refreshToken);
-    payload.timestamp = new Date().getTime();
-
-    return {
-      accessToken: await this.jwtService.signAsync(payload),
-    };
+    try {
+      const { iat, exp, timestamp, ...payload } =
+        await this.jwtService.verifyAsync(refreshToken);
+      payload.timestamp = new Date().getTime();
+      payload.jti = uuidv4();
+      return {
+        accessToken: await this.jwtService.signAsync(payload),
+      };
+    } catch (err) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
   }
 
   async verifyUser(token: string): Promise<{ message: string }> {
@@ -134,7 +137,7 @@ export class AuthService {
             `User with username ${parsedDto.username} already exists`,
           );
         }
-      } catch (err) {}
+      } catch (err) { }
 
       const newUser = await this.usersService.create(parsedDto);
 
@@ -146,7 +149,21 @@ export class AuthService {
     }
   }
 
+  async resetPassword(
+    username: string,
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<Users> {
+    const user = await this.usersService.findOneBy({ username }, true);
 
+    if (this.comparePwd(oldPassword, user.password_hash)) {
+      throw new UnauthorizedException('Old password is incorrect');
+    }
+
+    user.password_hash = this.encryptPwd(newPassword);
+    await this.usersService.save(user);
+    return this.usersService.removePasswordHash(user);
+  }
   // async attachEnvironment(user: Users): Promise<Users> {
   //   const userEnvironment = this.environmentService.create({
   //     username: user.username,

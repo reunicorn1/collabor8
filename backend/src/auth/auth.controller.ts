@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Logger,
   Param,
+  Patch,
   Post,
   Request,
   Response,
@@ -118,4 +119,19 @@ export class AuthController {
   async verifyEmail(@Request() req): Promise<{ message: string }> {
     return this.authService.verifyUser(req.query.token);
   }
+
+  // @Docs.resetPassword()
+  @Patch('me/change-password')
+  async changePassword(
+    @Request() req,
+    @Body() resetPasswordDto: { old: string, new: string },
+  ): Promise<Users> {
+    return this.authService.resetPassword(req.user.username, resetPasswordDto.old, resetPasswordDto.new);
+  }
+
+  // TODO: send email to user with reset password link
+  // @Get('me/reset-password')
+  // async resetPassword(@Request() req): Promise<{ message: string }> {
+    // return this.authService.resetPasswordRequest(req.user.username);
+  // }
 }

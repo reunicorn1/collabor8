@@ -48,6 +48,8 @@ export class UsersController {
     return this.usersService.removeByUsername(req.user.username);
   }
 
+
+
   // endpoints for other non-admin users
   @Docs.findOneById()
   @Get(':id')
