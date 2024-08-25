@@ -25,11 +25,11 @@ export function addLeaf(
     targetId: string,
   ): DirectoryNode | null {
     console.log('findDirectoryNode method', node, targetId);
-    if (node.type === 'directory' && node.id === targetId) {
+    if (node.type !== 'file' && node.id === targetId) {
       return node as DirectoryNode;
     }
 
-    if (node.type === 'directory' && node.children) {
+    if (node.type !== 'file' && node.children) {
       for (const child of node.children) {
         const found = findDirectoryNode(child, targetId);
         if (found) return found;
@@ -58,18 +58,25 @@ export function addLeaf(
 // Note: before adding an element to the tree, the new node object should be created and passed as an argument
 // addleaf is only used with a fresh brand new file that isn't found in the filetree used for traversing.
 
-export function createLeaf(filedir: string, id: string, name: string) {
+export function createLeaf(
+  filedir: string,
+  id: string,
+  name: string,
+  parent: string,
+) {
   if (filedir === 'file') {
     return {
       type: 'file',
       id,
       name,
+      parent,
     } as FileNode;
   } else {
     return {
       type: 'directory',
       id,
-      name: name,
+      name,
+      parent,
       children: [],
     } as DirectoryNode;
   }

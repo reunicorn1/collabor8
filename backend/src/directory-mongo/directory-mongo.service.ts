@@ -1,6 +1,6 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ObjectId } from 'typeorm';
+import { Repository } from 'typeorm';
 import { DirectoryMongo } from './directory-mongo.entity';
 import { FileMongoService } from '@file-mongo/file-mongo.service';
 import {
@@ -10,6 +10,7 @@ import {
   UpdateDirectoryOutDto,
 } from './dto/create-directory-mongo.dto';
 import { ProjectsService } from '@projects/projects.service';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class DirectoryMongoService {
@@ -20,7 +21,7 @@ export class DirectoryMongoService {
     private fileService: FileMongoService,
     @Inject(forwardRef(() => ProjectsService))
     private projectService: ProjectsService,
-  ) { }
+  ) {}
 
   async create(
     createDirectoryDto: CreateDirectoryOutDto,
@@ -62,7 +63,8 @@ export class DirectoryMongoService {
   async loadDirectoriesByDepth(
     parentId: string,
     depth: number,
-  ): Promise<any[]> { // Change return type to `any[]` for flexibility
+  ): Promise<any[]> {
+    // Change return type to `any[]` for flexibility
     if (depth <= 0) return []; // Stop recursion if depth is zero
 
     const directories = await this.findDirectoriesByParent(parentId);
@@ -71,8 +73,13 @@ export class DirectoryMongoService {
     // Load files and recursively load child directories
     return await Promise.all(
       directories.map(async (dir) => {
-        const files = await this.fileService.findFilesByParent(dir._id.toString());
-        const children = await this.loadDirectoriesByDepth(dir._id.toString(), depth - 1);
+        const files = await this.fileService.findFilesByParent(
+          dir._id.toString(),
+        );
+        const children = await this.loadDirectoriesByDepth(
+          dir._id.toString(),
+          depth - 1,
+        );
 
         return {
           ...dir,
@@ -85,7 +92,10 @@ export class DirectoryMongoService {
     );
   }
 
-  async update(id: string, updateDirectoryDto: UpdateDirectoryOutDto): Promise<DirectoryMongo> {
+  async update(
+    id: string,
+    updateDirectoryDto: UpdateDirectoryOutDto,
+  ): Promise<DirectoryMongo> {
     const parsedDto = parseUpdateDirectoryMongoDto(updateDirectoryDto);
     const directory = await this.findOne(id);
     if (!directory) {

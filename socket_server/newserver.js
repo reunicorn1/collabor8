@@ -26,266 +26,6 @@ const updateInterval = 60000;
  * - each route is protected so we need the token ✅️
  */
 
-const project = {
-  id: "66c96f56c67902d806265e16",
-  type: "project",
-  children: [
-    {
-      id: "66c96f56c67902d806265e17",
-      name: "Directory_gc1hgp",
-      type: "directory",
-      children: [
-        {
-          id: "66c96f56c67902d806265e24",
-          name: "Directory_5vp6x",
-          type: "directory",
-          children: [
-            {
-              id: "66c96f56c67902d806265e25",
-              name: "Directory_t8pr8d",
-              type: "directory",
-              children: [
-                {
-                  id: "66c96f56c67902d806265e28",
-                  name: "File_ql4zn6.txt",
-                  type: "file",
-                },
-                {
-                  id: "66c96f56c67902d806265e35",
-                  name: "File_r2mpip.txt",
-                  type: "file",
-                },
-                {
-                  id: "66c96f57c67902d806265e41",
-                  name: "File_lry5va.txt",
-                  type: "file",
-                },
-                {
-                  id: "66c96f57c67902d806265e43",
-                  name: "File_3fuw5o.txt",
-                  type: "file",
-                },
-                {
-                  id: "66c96f57c67902d806265e47",
-                  name: "File_i520ttg.txt",
-                  type: "file",
-                },
-              ],
-            },
-            {
-              id: "66c96f56c67902d806265e29",
-              name: "File_u81oy.txt",
-              type: "file",
-            },
-            {
-              id: "66c96f57c67902d806265e3d",
-              name: "File_k00ut.txt",
-              type: "file",
-            },
-            {
-              id: "66c96f57c67902d806265e3e",
-              name: "File_7fnoyj.txt",
-              type: "file",
-            },
-            {
-              id: "66c96f57c67902d806265e46",
-              name: "File_4nquv6.txt",
-              type: "file",
-            },
-          ],
-        },
-        {
-          id: "66c96f56c67902d806265e1b",
-          name: "File_ynsygn.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e21",
-          name: "File_1khnhp.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e22",
-          name: "File_3njlo9.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e2a",
-          name: "File_8n3wzq.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e2c",
-          name: "File_ojo4p4.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e2e",
-          name: "File_icxet.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e2f",
-          name: "File_5u3f1o.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e31",
-          name: "File_frigyr.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e33",
-          name: "File_kstc4.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e34",
-          name: "File_q5iuwk.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e37",
-          name: "File_lq499.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e3c",
-          name: "File_enbfmc.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f57c67902d806265e3f",
-          name: "File_21jvdd.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f57c67902d806265e42",
-          name: "File_b4fb4xh.txt",
-          type: "file",
-        },
-      ],
-    },
-    {
-      id: "66c96f56c67902d806265e18",
-      name: "Directory_obkxr9",
-      type: "directory",
-      children: [
-        {
-          id: "66c96f56c67902d806265e19",
-          name: "File_izp6cl.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e1c",
-          name: "File_0s9ig.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e1d",
-          name: "File_zwrpmb.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e1e",
-          name: "File_3pcwni.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e1f",
-          name: "File_2k3ygd.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e23",
-          name: "File_hjs0v7.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e26",
-          name: "File_0u8all.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e2b",
-          name: "File_1di3h.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e2d",
-          name: "File_64jlxk.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e30",
-          name: "File_lm54b.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e32",
-          name: "File_uuuuhd.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e36",
-          name: "File_52f25l.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f56c67902d806265e38",
-          name: "File_9q8gao.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f57c67902d806265e40",
-          name: "File_mpev0m.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f57c67902d806265e44",
-          name: "File_1zckur.txt",
-          type: "file",
-        },
-        {
-          id: "66c96f57c67902d806265e45",
-          name: "File_twki9b.txt",
-          type: "file",
-        },
-      ],
-    },
-    {
-      id: "66c96f56c67902d806265e1a",
-      name: "File_8elznt.txt",
-      type: "file",
-    },
-    {
-      id: "66c96f56c67902d806265e20",
-      name: "File_fwo4uo.txt",
-      type: "file",
-    },
-    {
-      id: "66c96f56c67902d806265e27",
-      name: "File_ftqx5k.txt",
-      type: "file",
-    },
-    {
-      id: "66c96f56c67902d806265e39",
-      name: "File_v0iif4.txt",
-      type: "file",
-    },
-    {
-      id: "66c96f56c67902d806265e3a",
-      name: "File_ww8kzn.txt",
-      type: "file",
-    },
-    {
-      id: "66c96f56c67902d806265e3b",
-      name: "File_a7jjj9.txt",
-      type: "file",
-    },
-  ],
-};
-
 const textToDelta = (text) => new Delta().insert(text);
 
 const server = new Hocuspocus({
@@ -337,8 +77,11 @@ const server = new Hocuspocus({
     //console.log('--------onChange-------->', {data})
   },
   async onStoreDocument(context) {
-    console.log('-----onSoreDocument---------->')
-    const ymap = context.document.getMap('root')
+    console.log('-----onStoreDocument---------->')
+	const projectId = context.document.name
+	const ymap = context.document.getMap(projectId);
+	console.log(ymap);
+
     const token = context.requestParameters.get('token');
     Array.from(ymap.entries()).forEach(async ([k, v]) => {
       if (!k.endsWith('_metadata') && v instanceof Y.Text) {
@@ -360,8 +103,8 @@ const server = new Hocuspocus({
 const updateQueue = new Map(); // store updates for each project
 
 async function handleLoadDocument(context, { token, username }) {
-  const yMap = context.document.getMap("root");
   const projectId = context.document.name
+  const yMap = context.document.getMap(projectId);
   try {
     const project = await axios.get(`${nestServerUrl}/projects/${username}/${projectId}?depth=0`, {
       headers: { Authorization: `Bearer ${token}` }
@@ -370,6 +113,7 @@ async function handleLoadDocument(context, { token, username }) {
 
     //console.log({ user: username })
     const transformedData = transformData(project.data[0]);
+	console.log('----------------> ', transformedData);
     yMap.set("filetree", transformedData);
   } catch (err) {
     //console.log({ resp: err.response.message })
@@ -494,7 +238,7 @@ async function handleOnStoreDocument({ token, projectId, yText, fileMeta }) {
     fileMeta['new'] = false;
   } else {
     // normal behavior
-    await updateFileInDb(fileId, yText);
+    await updateFileInDb(fileId, yText, token);
     console.log(`Document updated: ${projectId}/${fileId}`);
   }
 }
@@ -505,35 +249,33 @@ async function loadfileFromDb({ fileMeta, projectId, fileId, yText, token }) {
       `${nestServerUrl}/files/${fileId}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
-    const content = file.file_content;
-    if (!content) {
-      yText.insert('');
-    } else {
-      yText.applyDelta(content);
-    }
+    const content = file.data.file_content;
+	const newtext = new Y.Text()
+
+	newtext.applyDelta(content);
+	if (content && JSON.stringify(yText.toDelta()) !== JSON.stringify(content)) {
+
+	Y.transact(async () => {
+		yText.applyDelta(content);
+}, 'loading-content');
+
+	}  
   } catch (err) {
     // file not found
-    const { name, parent_id } = fileMeta
-    const file = await axios.post(`${nestServerUrl}/files`,
-      {
-        name, parent_id, project_id: projectId
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-    // mutate fileMeta id
-    fileMeta.id = file._id
-    yText.applyDelta(yText.toDelta());
+	console.log(err);
   }
 }
 
-async function updateFileInDb(fileId, yText) {
+async function updateFileInDb(fileId, yText, token) {
   const update = yText.toDelta(); // Saving the changes as delta rather than using encodeStateAsUpdate
 
   try {
-    const result = await axios.patch(`${nestServerUrl}/files/${fileId}`, { file_content: update })
+	console.log("I'm here 2");
+    const result = await axios.patch(`${nestServerUrl}/files/${fileId}`, { file_content: update  }, { headers: { Authorization: `Bearer ${token}` } }
+)
+	console.log("I'm here 1");
   } catch (err) {
-    //console.error('-------------->', { err })
+    console.error('Error during request-------------->', { err })
   }
 }
 

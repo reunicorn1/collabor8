@@ -64,8 +64,8 @@ function validateUpdateProjectDto(dto: any): UpdateProjectMongoDto {
   }
 
   return {
-    project_name: project_name.trim(),
-    updated_at: updated_at.toString().trim(),
+    project_name: project_name?.trim(),
+    updated_at: updated_at?.toString().trim(),
   };
 }
 
@@ -80,7 +80,6 @@ function parseUpdateProjectMongoDto(requestBody: any): UpdateProjectMongoDto {
 
   return validated;
 }
-
 
 export {
   parseCreateProjectMongoDto,

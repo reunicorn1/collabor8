@@ -26,7 +26,7 @@ export class ProjectMongoService {
     private fileService: FileMongoService,
     @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
-  ) { }
+  ) {}
 
   async create(createProjectDto: CreateProjectMongoDto): Promise<ProjectMongo> {
     const parsedDto = parseCreateProjectMongoDto(createProjectDto);
@@ -34,7 +34,6 @@ export class ProjectMongoService {
       project_name: parsedDto.project_name,
       environment_id: parsedDto.environment_id,
       owner_id: parsedDto.owner_id,
-
     });
     return await this.projectMongoRepository.save(newProject);
   }
@@ -56,7 +55,6 @@ export class ProjectMongoService {
 
   // general method to find all projects by a field
   async findAllBy(field: string, value: string): Promise<ProjectMongo[]> {
-
     const projects = await this.projectMongoRepository.find({
       where: { [field]: field === '_id' ? new ObjectId(value) : value },
     });
@@ -103,13 +101,12 @@ export class ProjectMongoService {
     return enhancedProjects;
   }
 
-
-
   async findAllByUsernameDepth(
     username: string,
     maxDepth: number,
     id?: string,
-  ): Promise<any[]> { // Change return type to `any[]` for a more dynamic structure
+  ): Promise<any[]> {
+    // Change return type to `any[]` for a more dynamic structure
     const user = await this.usersService.findOneBy({ username });
     if (!user) {
       return []; // Handle case where user is not found
@@ -155,7 +152,14 @@ export class ProjectMongoService {
   }
 
   async findOneBy(field: string, value: string): Promise<ProjectMongo | null> {
-    return await this.projectMongoRepository.findOne({ where: { [field]: value } });
+    if (field === '_id') {
+      return await this.projectMongoRepository.findOne({
+        where: { _id: new ObjectId(value) },
+      });
+    }
+    return await this.projectMongoRepository.findOne({
+      where: { [field]: value },
+    });
   }
 
   async findOne(_id: string): Promise<ProjectMongo | null> {
@@ -179,16 +183,12 @@ export class ProjectMongoService {
     return { message: 'Project updated successfully' };
   }
 
-
-
   async remove(id: string): Promise<void> {
     const project = await this.findOne(id);
     if (!project) {
       throw new Error('Project not found');
     }
-    const directories = await this.directoryService.findDirectoriesByParent(
-      id,
-    );
+    const directories = await this.directoryService.findDirectoriesByParent(id);
     const files = await this.fileService.findFilesByParent(id);
     await Promise.all(
       directories.map(async (dir) => {
@@ -200,13 +200,10 @@ export class ProjectMongoService {
         await this.fileService.remove(file._id.toString());
       }),
     );
-    await this.projectMongoRepository.delete(
-      { project_id: id },
-    );
+    await this.projectMongoRepository.delete({ project_id: id });
   }
 
   async removeAllByEnvironment(environment_id: string): Promise<void> {
     await this.projectMongoRepository.delete({ environment_id });
   }
-
 }

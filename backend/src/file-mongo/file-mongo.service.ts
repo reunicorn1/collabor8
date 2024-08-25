@@ -1,11 +1,18 @@
-import { Injectable, Inject, forwardRef, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  forwardRef,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ObjectId } from 'mongodb';
 import { FileMongo } from './file-mongo.entity';
 import {
-  parseCreateFileMongoDto, CreateFileOutDto, parseUpdateFileMongoDto,
-  UpdateFileOutDto
+  parseCreateFileMongoDto,
+  CreateFileOutDto,
+  parseUpdateFileMongoDto,
+  UpdateFileOutDto,
 } from './dto/create-file-mongo.dto';
 import { DirectoryMongoService } from '@directory-mongo/directory-mongo.service';
 import { ProjectsService } from '@projects/projects.service';
@@ -19,7 +26,7 @@ export class FileMongoService {
     private directoryService: DirectoryMongoService,
     @Inject(forwardRef(() => ProjectsService))
     private projectService: ProjectsService,
-  ) { }
+  ) {}
 
   async create(createFileDto: CreateFileOutDto): Promise<FileMongo> {
     const parsedDto = parseCreateFileMongoDto(createFileDto);
@@ -62,28 +69,32 @@ export class FileMongoService {
     }
   }
 
-  async update(id: string, updateFileDto: UpdateFileOutDto): Promise<FileMongo> {
+  async update(
+    id: string,
+    updateFileDto: UpdateFileOutDto,
+  ): Promise<FileMongo> {
     const parsedDto = parseUpdateFileMongoDto(updateFileDto);
     const file = await this.findOne(id);
     if (!file) {
       throw new NotFoundException('File not found');
     }
-
+    console.log(parsedDto.file_content);
     const newDate = new Date();
-    await this.fileRepository.update(id, {
-      name: parsedDto.name,
-      file_content: parsedDto.file_content,
-      updated_at: newDate,
-    });
+    if (parsedDto.name) file.name = parsedDto.name;
+    if (parsedDto.file_content) file.file_content = parsedDto.file_content;
+    file.updated_at = newDate;
+
     if (file.parent_id === file.project_id) {
-      await this.projectService.update(file.parent_id, { updated_at: new Date() });
+      await this.projectService.update(file.parent_id, {
+        updated_at: new Date(),
+      });
     } else {
-      await this.directoryService.update(file.parent_id, { updated_at: new Date() });
+      await this.directoryService.update(file.parent_id, {
+        updated_at: new Date(),
+      });
     }
     return await this.fileRepository.save(file);
   }
-
-
 
   async remove(id: string): Promise<void> {
     await this.fileRepository.delete(id);

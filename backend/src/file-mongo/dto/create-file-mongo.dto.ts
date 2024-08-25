@@ -6,14 +6,14 @@ interface CreateFileOutDto {
   name: string;
   parent_id: string;
   project_id: string;
-  file_content?: string;
+  file_content?: { [key: string]: any }[] | null;
 }
 
 interface UpdateFileOutDto {
   name?: string;
   parent_id?: string;
   project_id?: string;
-  file_content?: string;
+  file_content?: any;
 }
 
 function validateCreateFileDto(dto: any): CreateFileOutDto {
@@ -33,13 +33,15 @@ function validateCreateFileDto(dto: any): CreateFileOutDto {
   }
 
   if (typeof project_id !== 'string' || project_id.trim() === '') {
-    throw new BadRequestException('Project ID is required and must be a string');
+    throw new BadRequestException(
+      'Project ID is required and must be a string',
+    );
   }
 
-  if (file_content && typeof file_content !== 'string') {
-    throw new BadRequestException('File content must be a string');
+  if (file_content && !Array.isArray(file_content)) {
+    throw new BadRequestException('File content must be an array');
   } else if (!file_content) {
-    file_content = '';
+    file_content = [];
   }
 
   return {
@@ -69,14 +71,14 @@ function validateUpdateFileDto(dto: any): UpdateFileOutDto {
     throw new BadRequestException('Project ID must be a string');
   }
 
-  if (file_content && typeof file_content !== 'string') {
-    throw new BadRequestException('File content must be a string');
+  if (file_content && !Array.isArray(file_content)) {
+    throw new BadRequestException('File content must be an array');
   }
 
   return {
-    name: name.trim(),
-    parent_id: parent_id.trim(),
-    project_id: project_id.trim(),
+    name: name?.trim(),
+    parent_id: parent_id?.trim(),
+    project_id: project_id?.trim(),
     file_content,
   };
 }
@@ -91,5 +93,9 @@ function parseUpdateFileMongoDto(requestBody: any): UpdateFileOutDto {
   return validated;
 }
 
-
-export { parseCreateFileMongoDto, CreateFileOutDto, parseUpdateFileMongoDto, UpdateFileOutDto };
+export {
+  parseCreateFileMongoDto,
+  CreateFileOutDto,
+  parseUpdateFileMongoDto,
+  UpdateFileOutDto,
+};
