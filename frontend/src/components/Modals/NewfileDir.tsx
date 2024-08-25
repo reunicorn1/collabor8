@@ -24,6 +24,7 @@ import * as Y from 'yjs';
 import { useParams } from 'react-router-dom';
 import { useCreateFileMutation } from '@store/services/file';
 import { useCreateDirectoryMutation } from '@store/services/directory';
+import { createDocuments } from '@utils/createfiledir';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -44,7 +45,7 @@ const NewfileDir: React.FC<ModalProps> = ({
   const { setFileSelected } = useFile()!;
   const initialRef = React.useRef(null);
   const [newName, setNewName] = useState('');
-  const root = ydoc.getMap('root');
+  const root = ydoc.getMap(project_id);
   // const root = ydoc.getMap('root'); // This gets the value of the root if created before
   const [createFile] = useCreateFileMutation();
   const [createDir] = useCreateDirectoryMutation();
@@ -69,7 +70,7 @@ const NewfileDir: React.FC<ModalProps> = ({
       });
       console.log('xxxxxxxxxxxParent is project: ', { parent: parent === '0' });
       if (filedir === 'file') {
-        createFile({
+        await createFile({
           project_id,
           name: newName,
           parent_id: parent === '0' ? project_id : parent,
@@ -84,7 +85,7 @@ const NewfileDir: React.FC<ModalProps> = ({
             console.error(err);
           });
       } else {
-        createDir({
+        await createDir({
           project_id,
           name: newName,
           parent_id: parent === '0' ? project_id : parent,
@@ -98,29 +99,26 @@ const NewfileDir: React.FC<ModalProps> = ({
             console.error(err);
           });
       }
-      console.log('=================>', { id });
-      // Since creating a file in the Y.map depend on the path in the filetree, creation of the leaf has to be made first
-      const leaf = createLeaf(filedir, id, newName);
-      addLeaf(data.filetree, leaf, parent); // also hopeless type error
+      console.log('this is the id created =================>', { id });
+      if (id) {
+        // Since creating a file in the Y.map depend on the path in the filetree, creation of the leaf has to be made first
+        const leaf = createLeaf(filedir, id, newName, parent);
+        addLeaf(data.filetree, leaf, parent); // also hopeless type error
 
-      // file tree here will be updated with the new leaf so the file path will be found
-      const path = getPathFromId(data.filetree, id); //type error
-      console.log(path);
-      if (path) {
-        const file = createFileDir({
-          fullPath: path,
+        // file tree here will be updated with the new leaf so the file path will be found
+        // const path = getPathFromId(data.filetree, id); //type error
+        // console.log(path);
+        const file = createDocuments({
+          parent,
           root,
           _id: id,
           filedir,
           newName,
-          parent,
         }); //type error. This function creates the new ytext/ymap
 
         set('filetree', data.filetree); // trigger to re-render the structure for all clients connected
         if (file instanceof Y.Text)
-          setFileSelected({ name: newName, value: file, id: id });
-      } else {
-        console.log('An Error occured during the retrival of this file');
+          setFileSelected({ name: newName, value: file, id });
       }
     }
     handleClose();

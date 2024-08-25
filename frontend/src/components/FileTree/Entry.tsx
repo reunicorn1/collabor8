@@ -49,7 +49,7 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
           if (entry.type === 'directory') {
             setIsExpanded((prev) => !prev);
           } else {
-            onFileClick(entry.id, entry.name);
+            onFileClick(entry.id, entry.name, entry.parent);
           }
         }}
         style={{ paddingLeft: `${depth * 20}px` }}

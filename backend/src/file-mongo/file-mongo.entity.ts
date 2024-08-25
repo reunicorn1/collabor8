@@ -14,11 +14,11 @@ export class FileMongo {
   name: string;
 
   // deafaault is file
-  @Column({default: 'file'})
+  @Column({ default: 'file' })
   type: string;
 
-  @Column('text')
-  file_content: string;
+  @Column()
+  file_content: any;
 
   @Column({ type: 'string', nullable: true })
   parent_id?: string;

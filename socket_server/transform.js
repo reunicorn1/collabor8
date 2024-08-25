@@ -7,14 +7,15 @@ function transformData(input) {
       id: node._id,
       name: node.name || node.project_name, // use project_name for root project node
       type: type,
+	  parent: node.parent_id
     };
-    if ( type !== "file") {
-      transformed.children = [];
-    }
+
+	  if (type !== 'file') transformed.children = [];
     // Initialize children array if there are directories or files
     if (
       node.children &&
       (node.children.directories.length > 0 || node.children.files.length > 0)
+
     ) {
 
       // recursively transform directories

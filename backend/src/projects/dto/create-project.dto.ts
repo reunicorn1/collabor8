@@ -33,13 +33,14 @@ function validateCreateProjectDto(dto: any): CreateProjectDto {
   }
 
   if (typeof description !== 'string') {
-    throw new BadRequestException('description is required and must be a string');
+    throw new BadRequestException(
+      'description is required and must be a string',
+    );
   }
 
   if (username && typeof username !== 'string') {
     throw new BadRequestException('Username must be a string');
   }
-
 
   return {
     project_name: project_name.trim(),
@@ -64,10 +65,10 @@ function validateUpdateProjectDto(dto: any): UpdateProjectDto {
   }
 
   return {
-    project_name: project_name.trim(),
+    project_name: project_name?.trim(),
     description,
-    updated_at: updated_at.toString().trim(),
-   };
+    updated_at: updated_at?.toString()?.trim(),
+  };
 }
 
 function parseCreateProjectDto(requestBody: any): CreateProjectDto {

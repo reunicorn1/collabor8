@@ -73,7 +73,7 @@ export function createFileDir({
   // using the root y.maps will be created until the file is reached
   // Data stored in the fullpath consist of ids which is used to index files
   let fileroot = root;
-  console.log('================>', { fullPath })
+
   for (const path of fullPath) {
     if (!(fileroot instanceof Y.Map)) {
       console.error('Invalid map structure encountered.'); // This is happens if the main root wasn't y.map

@@ -23,9 +23,10 @@ interface TreeProps {
 const Tree: React.FC<TreeProps> = ({ ydoc, name }) => {
   // The buttons of this component creates new files and direcoties in y.map (root) of the project
   // When a new file is created it becomes selected by default
+  const { projectId = '' } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [filedir, setFileDir] = useState('');
-  const root = ydoc.getMap('root'); // This gets the value of the root if created before
+  const root = ydoc.getMap(projectId); // This gets the value of the root if created before
 
   const { data } = useYMap<
     Y.Map<YMapValueType> | Y.Text,
@@ -92,7 +93,7 @@ const Tree: React.FC<TreeProps> = ({ ydoc, name }) => {
         onClose={onClose}
         filedir={filedir}
         ydoc={ydoc}
-        parent={'0'}
+        parent={projectId}
       />
       <Box bg="brand.900" h="100%" overflow="scroll">
         <FileTreeView data={data} ydoc={ydoc} />

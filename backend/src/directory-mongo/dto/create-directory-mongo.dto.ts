@@ -17,7 +17,7 @@ function validateCreateDirectoryDto(dto: any): CreateDirectoryOutDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { name,  parent_id } = dto;
+  const { name, parent_id } = dto;
 
   if (typeof parent_id !== 'string' || parent_id.trim() === '') {
     throw new BadRequestException('parent ID is required and must be a string');
@@ -51,9 +51,9 @@ function validateUpdateDirectoryDto(dto: any): UpdateDirectoryOutDto {
   }
 
   return {
-    name: name.trim(),
-    parent_id: parent_id.trim(),
-    updated_at: updated_at.toString().trim(),
+    name: name?.trim(),
+    parent_id: parent_id?.trim(),
+    updated_at: updated_at?.toString()?.trim(),
   };
 }
 

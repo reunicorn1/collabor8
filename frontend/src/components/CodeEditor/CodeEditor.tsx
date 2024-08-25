@@ -45,8 +45,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
   const ydoc_ = useRef(ydoc);
   const awareness = useRef<Awareness | null>(null);
 
-  projectRoot.current = ydoc_.current.getMap('root');
-  createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
+  projectRoot.current = ydoc_.current.getMap(project._id);
+  // createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
 
   // An event listener for updates happneing in the ydoc
   ydoc_.current.on('update', (update) => {
@@ -131,6 +131,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
     // Clean up before the user leaves
     window.addEventListener('beforeunload', () => {
       provider.awareness.setLocalState(null);
+      binding.current?.destroy();
+      provider.disconnect();
     });
 
     if (projectRoot.current) {
@@ -138,7 +140,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
     }
     return () => {
       binding.current?.destroy();
-      provider.disconnect();
+      provider?.disconnect();
     };
   }, [project._id]);
 

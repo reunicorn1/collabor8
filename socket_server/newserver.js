@@ -77,8 +77,11 @@ const server = new Hocuspocus({
     //console.log('--------onChange-------->', {data})
   },
   async onStoreDocument(context) {
-    console.log('-----onSoreDocument---------->')
-    const ymap = context.document.getMap('root')
+    console.log('-----onStoreDocument---------->')
+	const projectId = context.document.name
+	const ymap = context.document.getMap(projectId);
+	console.log(ymap);
+
     const token = context.requestParameters.get('token');
     Array.from(ymap.entries()).forEach(async ([k, v]) => {
       if (!k.endsWith('_metadata') && v instanceof Y.Text) {
@@ -100,8 +103,8 @@ const server = new Hocuspocus({
 const updateQueue = new Map(); // store updates for each project
 
 async function handleLoadDocument(context, { token, username }) {
-  const yMap = context.document.getMap("root");
   const projectId = context.document.name
+  const yMap = context.document.getMap(projectId);
   try {
     const project = await axios.get(`${nestServerUrl}/projects/${username}/${projectId}?depth=0`, {
       headers: { Authorization: `Bearer ${token}` }
@@ -110,6 +113,7 @@ async function handleLoadDocument(context, { token, username }) {
 
     //console.log({ user: username })
     const transformedData = transformData(project.data[0]);
+	console.log('----------------> ', transformedData);
     yMap.set("filetree", transformedData);
   } catch (err) {
     //console.log({ resp: err.response.message })
@@ -234,7 +238,7 @@ async function handleOnStoreDocument({ token, projectId, yText, fileMeta }) {
     fileMeta['new'] = false;
   } else {
     // normal behavior
-    await updateFileInDb(fileId, yText);
+    await updateFileInDb(fileId, yText, token);
     console.log(`Document updated: ${projectId}/${fileId}`);
   }
 }
@@ -245,34 +249,33 @@ async function loadfileFromDb({ fileMeta, projectId, fileId, yText, token }) {
       `${nestServerUrl}/files/${fileId}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
-    const content = file.file_content;
-    if (!content) {
-      yText.insert('');
-    } else {
-      yText.applyDelta(content);
-    }
+    const content = file.data.file_content;
+	const newtext = new Y.Text()
+
+	newtext.applyDelta(content);
+	if (content && JSON.stringify(yText.toDelta()) !== JSON.stringify(content)) {
+
+	Y.transact(async () => {
+		yText.applyDelta(content);
+}, 'loading-content');
+
+	}
   } catch (err) {
     // file not found
-    const { name, parent_id } = fileMeta
-    const file = await axios.post(`${nestServerUrl}/files`,
-      {
-        name, parent_id, project_id: projectId
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-    // mutate fileMeta id
-    yText.applyDelta(yText.toDelta());
+	console.log(err);
   }
 }
 
-async function updateFileInDb(fileId, yText) {
+async function updateFileInDb(fileId, yText, token) {
   const update = yText.toDelta(); // Saving the changes as delta rather than using encodeStateAsUpdate
 
   try {
-    const result = await axios.patch(`${nestServerUrl}/files/${fileId}`, { file_content: update })
+	console.log("I'm here 2");
+    const result = await axios.patch(`${nestServerUrl}/files/${fileId}`, { file_content: update  }, { headers: { Authorization: `Bearer ${token}` } }
+)
+	console.log("I'm here 1");
   } catch (err) {
-    //console.error('-------------->', { err })
+    console.error('Error during request-------------->', { err })
   }
 }
 
