@@ -1,10 +1,4 @@
-import {
-  Entity,
-  ObjectIdColumn,
-  ObjectId,
-  Column,
-  ManyToOne,
-} from 'typeorm';
+import { Entity, ObjectIdColumn, ObjectId, Column, ManyToOne } from 'typeorm';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
 
@@ -17,13 +11,20 @@ export class FileMongo {
   _id: ObjectId;
 
   @Column()
-  file_name: string;
+  name: string;
 
-  @Column('text')
-  file_content: string;
+  // deafaault is file
+  @Column({ default: 'file' })
+  type: string;
+
+  @Column()
+  file_content: any;
 
   @Column({ type: 'string', nullable: true })
   parent_id?: string;
+
+  @Column()
+  project_id: string;
 
   @Column()
   created_at: Date;

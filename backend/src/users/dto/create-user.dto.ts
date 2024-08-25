@@ -1,14 +1,30 @@
 import { BadRequestException } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import { encryptPwd } from '@utils/encrypt_password';
+import { IsOptional } from 'class-validator';
 // TODO: create dto for all the entities
 //
-interface CreateUserDto {
+class CreateUserDto {
+  @ApiProperty({ example: 'john_doe' })
+  @IsOptional()
   username: string;
+  @ApiProperty({ example: 'Moe' })
   first_name: string;
+  @ApiProperty({ example: 'Elfadil' })
   last_name: string;
+  @ApiProperty({ example: 'a@b.com' })
   email: string;
+  @ApiProperty({ example: 'password' })
   password: string;
+  @ApiProperty({ example: [] })
   favorite_languages: string[];
+  profile_picture?: string;
+  bio?: string;
+  favorite_projects?: string[];
+}
+
+interface ResetPasswordDto {
+  email: string;
 }
 
 interface CreateUserOutDto {
@@ -18,10 +34,15 @@ interface CreateUserOutDto {
   email: string;
   password_hash: string;
   favorite_languages: string[];
+  profile_picture?: string;
+  bio?: string;
+  favorite_projects?: string[];
 }
 
-interface LoginUserDto {
+class LoginUserDto {
+  @ApiProperty({ example: 'Reem Sweetie' })
   username: string;
+  @ApiProperty({ example: 'unicorn' })
   password: string;
 }
 
@@ -29,7 +50,6 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
   if (!dto || typeof dto !== 'object') {
     throw new BadRequestException('Invalid input');
   }
-
   const {
     username,
     first_name,
@@ -37,6 +57,9 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
     email,
     password,
     favorite_languages,
+    profile_picture,
+    bio,
+    favorite_projects,
   } = dto;
 
   for (const field of [
@@ -52,7 +75,6 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
       );
     }
   }
-
   if (!Array.isArray(favorite_languages)) {
     throw new BadRequestException('favorite_languages must be an array');
   }
@@ -65,15 +87,32 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
     }
   }
 
+  if (profile_picture && typeof profile_picture !== 'string') {
+    throw new BadRequestException('profile_picture must be a string');
+  }
+
+  if (bio && typeof bio !== 'string') {
+    throw new BadRequestException('bio must be a string');
+  }
+
+  if (favorite_projects && !Array.isArray(favorite_projects)) {
+    throw new BadRequestException('favorite_projects must be an array');
+  }
+
   const password_hash = encryptPwd(password);
 
   return {
-    username,
-    first_name,
-    last_name,
-    email,
-    password_hash,
-    favorite_languages,
+    username: username.trim(),
+    first_name: first_name.trim(),
+    last_name: last_name.trim(),
+    email: email.trim(),
+    password_hash: password_hash.trim(),
+    favorite_languages: favorite_languages.map((lang) => lang.trim()),
+    profile_picture: profile_picture ? profile_picture?.trim() : undefined,
+    bio: bio ? bio.trim() : undefined,
+    favorite_projects: favorite_projects
+      ? favorite_projects.map((project) => project.trim())
+      : undefined,
   };
 }
 
@@ -97,7 +136,10 @@ function validateLoginUserDto(dto: any): LoginUserDto {
     }
   }
 
-  return { username, password };
+  return {
+    username: username.trim(),
+    password: password.trim(),
+  };
 }
 
 function parseLoginDto(requestBody: any): LoginUserDto {
@@ -105,4 +147,10 @@ function parseLoginDto(requestBody: any): LoginUserDto {
   return validated;
 }
 
-export { parseCreateUserDto, CreateUserDto, LoginUserDto, parseLoginDto };
+export {
+  parseCreateUserDto,
+  CreateUserDto,
+  LoginUserDto,
+  parseLoginDto,
+  ResetPasswordDto,
+};

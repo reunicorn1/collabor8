@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Projects } from './project.entity';
 import { ProjectsService } from './projects.service';
@@ -13,15 +13,13 @@ import { MYSQL_CONN } from '@constants';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Projects], MYSQL_CONN),
-    ProjectMongoModule,
-    UsersModule,
-    EnvironmentMongoModule,
-    DirectoryMongoModule,
-    FileMongoModule,
+    forwardRef(() => ProjectMongoModule),
+    forwardRef(() => UsersModule),
+    forwardRef(() => EnvironmentMongoModule),
+    forwardRef(() => DirectoryMongoModule),
+    forwardRef(() => FileMongoModule),
   ],
-  providers: [
-    ProjectsService,
-  ],
+  providers: [ProjectsService],
   controllers: [ProjectsController],
   exports: [ProjectsService],
 })

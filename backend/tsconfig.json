@@ -18,6 +18,7 @@
 	"forceConsistentCasingInFileNames": false,
 	"noFallthroughCasesInSwitch": false,
 	"paths": {
+		"@admin/*": ["src/admin/*"],
 		"@auth/*": ["src/auth/*"],
 		"@users/*": ["src/users/*"],
 		"@projects/*": ["src/projects/*"],
@@ -30,8 +31,12 @@
 		"@utils/*": ["src/utils/*"],
 		"@filters/*": ["src/filters/*"],
 		"@constants": ["src/constants"],
-		"@config/*": ["src/config/*"]
-
+		"@config/*": ["src/config/*"],
+		"@hocuspocus/*": ["src/hocuspocus/*"],
+		"@events/*": ["src/events/*"],
+		"@mail/*": ["src/mail/*"],
+		"@redis/*": ["src/redis/*"],
+		"@logging/*": ["src/logging/*"]
 	}
   }
 }

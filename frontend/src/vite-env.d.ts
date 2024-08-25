@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+
 declare module 'y-codemirror' {
   import { Text } from 'yjs';
   import { Editor } from 'codemirror';
@@ -16,4 +17,13 @@ declare module 'y-codemirror' {
 
     destroy(): void;
   }
+}
+
+interface ImportMetaEnv {
+  readonly VITE_APP_TITLE: string;
+  readonly MODE: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
 }

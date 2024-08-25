@@ -2,18 +2,17 @@ import { Box, Avatar, IconButton, Tooltip } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { useFile } from '../../context/EditorContext';
 import { useDisclosure } from '@chakra-ui/react';
-import ShareMenu from '../Menus/ShareMenu';
+import ShareMenu from '../Modals/ShareMenu';
+import { Project, ProjectShares } from '@types';
 
-export default function Shares() {
-  const { awareness } = useFile()!;
-  const { isOpen, onOpen, onClose } = useDisclosure()
+interface SharesProps {
+  project: Project | ProjectShares;
+}
 
-  // TODO: Based on collaberators username their avatar will be retrieved from the database
-  // And their name will be used to refer to their presnece
-  // Anyonous people will have their name selected from a set of random names to refer to their presence
-  // Users in the awareness object are displayed here if they're one of the collaborators their Corresponding Avatar will be displayed
+export default function Shares({ project }: SharesProps) {
+  const { awareness } = useFile()!; // why so excited?
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // TODO: Awareness doesn't sync when a user leaves properly and names don't match
   // TODO: The plus icon is displayed only for the project owner
 
   return (
@@ -24,11 +23,20 @@ export default function Shares() {
       minHeight="100vh"
       p={3}
     >
-      <Box display="flex" flexDirection="column" alignItems="center">
-        {Array.from(awareness).map(([key, value]) => (
+      <Box
+        display="flex"
+        key={crypto.randomUUID()}
+        flexDirection="column"
+        alignItems="center"
+      >
+        {Array.from(awareness).map(([_, value], index) => (
           <>
-            <Tooltip label={value['user'].name} placement="bottom">
-              <Avatar key={key} name={value['user'].name} size="md" m={1} />
+            <Tooltip
+              key={crypto.randomUUID()}
+              label={value['user'].name}
+              placement="bottom"
+            >
+              <Avatar name={value['user'].name} size="md" m={1} />
             </Tooltip>
           </>
         ))}
@@ -47,7 +55,7 @@ export default function Shares() {
         onClick={onOpen}
         icon={<AddIcon />}
       />
-      <ShareMenu onClose={onClose} isOpen={isOpen} />
+      <ShareMenu onClose={onClose} isOpen={isOpen} project={project} />
     </Box>
   );
 }

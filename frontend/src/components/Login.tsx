@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
-import { useLoginUserMutation } from '../store/services/auth';
+import { useLoginUserMutation, useGetProfileQuery } from '@store/services/auth';
+import { Link } from 'react-router-dom';
 
 const Login: React.FC = () => {
-  const [loginUser, { data, error, isLoading }] = useLoginUserMutation();
+  const [
+    loginUser,
+    { data: loginData, error: loginError, isLoading: loginLoading },
+  ] = useLoginUserMutation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  // const {
+  //   data: profileData,
+  //   error: profileError,
+  //   isFetching: profileFetching,
+  //   refetch,
+  // } = useGetProfileQuery();
 
   const handleLogin = async () => {
     await loginUser({ username, password });
   };
+
+  // const handleFetchProfile = () => {
+  //   refetch(); // Manually trigger the profile fetch
+  // };
 
   return (
     <div>
@@ -25,11 +40,15 @@ const Login: React.FC = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleLogin} disabled={isLoading}>
+      <button onClick={handleLogin} disabled={loginLoading}>
         Login
       </button>
-      {data && <p>Access Token: {data.accessToken}</p>}
-      {error && <p>Error: {error.data.message}</p>}
+      {console.log(loginError)}
+      {loginData && <p>Access Token: {loginData.accessToken}</p>}
+      {loginError && <p>Error: {loginError.data.message}</p>}
+      <br />
+      <Link to="/dashboard">Go to Dashboard</Link>
+
     </div>
   );
 };

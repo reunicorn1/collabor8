@@ -1,5 +1,5 @@
-import { api } from './auth';
-import { Project, Environment } from '../../types';
+import { api } from './api';
+import { Environment } from '@types';
 
 export const environmentApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -7,20 +7,18 @@ export const environmentApi = api.injectEndpoints({
     getAllEnvironments: builder.query<Environment[], void>({
       query: () => '/environments',
     }),
-    // Get environment by ID
-    getEnvironmentById: builder.query<Environment, string>({
-      query: (id) => `/environments/${id}`,
+    // Get the environment for the current user
+    getEnvironmentForCurrentUser: builder.query<Environment, void>({
+      query: () => '/environments/me',
+      providesTags: ['Environment'],
     }),
-    // Get environment projects by username
-    getEnvironmentProjectsByUsername: builder.query<Project[], string>({
-      query: (username) => `/environments/projects/${username}`,
-    }),
-    // Delete an environment by ID
-    deleteEnvironment: builder.mutation<void, string>({
-      query: (id) => ({
-        url: `/environments/${id}`,
+    // Delete the environment for the current user
+    deleteEnvironmentForCurrentUser: builder.mutation<void, void>({
+      query: () => ({
+        url: `/environments/me`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['Environment'],
     }),
   }),
   overrideExisting: false,
@@ -28,7 +26,6 @@ export const environmentApi = api.injectEndpoints({
 
 export const {
   useGetAllEnvironmentsQuery,
-  useGetEnvironmentByIdQuery,
-  useGetEnvironmentProjectsByUsernameQuery,
-  useDeleteEnvironmentMutation,
+  useGetEnvironmentForCurrentUserQuery,
+  useDeleteEnvironmentForCurrentUserMutation,
 } = environmentApi;

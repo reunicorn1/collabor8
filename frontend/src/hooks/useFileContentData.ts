@@ -7,7 +7,7 @@ const useFileContentData = () => {
   const fetchFileContent = async (projectId: string, fileId: string) => {
     try {
       const response = await axios.get<{
-        file_name: string;
+        name: string;
         file_content: string;
       }>(`http://localhost:3000/api/v1/projects/${projectId}/files/${fileId}`);
       return response.data;
