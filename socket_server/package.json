@@ -15,7 +15,7 @@
     "yjs": "^13.6.18"
   },
   "scripts": {
-    "start": "node newserver.js",
-    "dev": "nodemon newserver.js"
+    "start": "node newserver.ts",
+    "dev": "nodemon newserver.ts"
   }
 }

@@ -254,17 +254,17 @@ async function loadfileFromDb({ fileMeta, projectId, fileId, yText, token }) {
     const content = file.data.file_content;
 	const newtext = new Y.Text()
 
-	newtext.applyDelta(content);
-	if (content && JSON.stringify(yText.toDelta()) !== JSON.stringify(content)) {
+    newtext.applyDelta(content);
+    if (content && JSON.stringify(yText.toDelta()) !== JSON.stringify(content)) {
+      //causing error f not function
+      // Y.transact(async () => {
+        yText.applyDelta(content);
+      // }, 'loading-content');
 
-	Y.transact(async () => {
-		yText.applyDelta(content);
-}, 'loading-content');
-
-	}
+    }
   } catch (err) {
     // file not found
-	console.log(err);
+    console.log(err);
   }
 }
 

@@ -142,7 +142,7 @@ export class AuthController {
   // user is redirected to login page
   @Public()
   @Get('validate-reset-token')
-  async validateResetToken(@Request() req): Promise<{ message: string }> {
-    return this.authService.validateToken(req.query.token, req.query.password);
+  async validateResetToken(@Request() req, @Body() password: string): Promise<{ message: string }> {
+    return this.authService.validateToken(req.query.token, password);
   }
 }
