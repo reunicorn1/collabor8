@@ -179,19 +179,28 @@ export class AuthService {
   async sendResetPasswordEmail(email: string): Promise<{ message: string }> {
     const user = await this.usersService.findOneBy({ email });
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
+      return { message: 'Password reset email sent' };
     }
-    const newPwd = Math.random().toString(36).slice(-8);
-    user.password_hash = this.encryptPwd(newPwd);
-    await this.usersService.save(user);
+    const token = uuidv4();
+    await this.redisService.set(token, user.user_id, 3600); // Token expires after an hour
     const job = await this.mailerQueue.add('reset-password', {
       email,
       username: user.username,
       user_id: user.user_id,
-      newPwd,
+      url: `${process.env.FRONTEND_URL}/reset-password?token=${token}`,
     });
     console.log(`------------> ${job}`);
     return { message: 'Password reset email sent' };
+  }
+
+  async validateToken(token: string, newPassword: string): Promise<{ message: string }> {
+    const user = await this.usersService.findOneBy({ user_id: await this.redisService.get(token) });
+    if (!user) {
+      throw new NotFoundException('Invalid token');
+    }
+    user.password_hash = this.encryptPwd(newPassword);
+    await this.usersService.save(user);
+    return { message: 'Password reset successfully' };
   }
   // async attachEnvironment(user: Users): Promise<Users> {
   //   const userEnvironment = this.environmentService.create({

@@ -16,7 +16,7 @@ const updateInterval = 60000;
 
 /**
  * TODO:
- * `onLoadDocument`: 
+ * `onLoadDocument`:
  *    1. should load project from GET reqest DB, if not exist create it 😈️ ✅️
  *    2. tranform data, then set the fileTree accordingly ✅️
  * `onUpdate`:

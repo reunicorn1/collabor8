@@ -44,7 +44,6 @@ export class MailService extends WorkerHost {
           context: {
             name: job.data.username,
             url,
-            password: job.data.newPwd,
           },
         });
       }
