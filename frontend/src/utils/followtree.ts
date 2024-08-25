@@ -29,7 +29,7 @@ export function getPathFromId(
     }
 
     // If it's a directory, recursively search its children
-    if (node.type === 'directroy' && node.children) {
+    if (node.type === 'directory' && node.children) {
       for (const child of node.children) {
         const childPath = findNodePath(child, id, [...path, node.id || '']);
         if (childPath) {
@@ -73,7 +73,7 @@ export function createFileDir({
   // using the root y.maps will be created until the file is reached
   // Data stored in the fullpath consist of ids which is used to index files
   let fileroot = root;
-  console.log('================>', {fullPath})
+  console.log('================>', { fullPath })
   for (const path of fullPath) {
     if (!(fileroot instanceof Y.Map)) {
       console.error('Invalid map structure encountered.'); // This is happens if the main root wasn't y.map

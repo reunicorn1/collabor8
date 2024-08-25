@@ -26,4 +26,4 @@ export const corsConfig = {
   credentials: true,
 };
 
-export const adminEmails = ['triplemg94@gmail.com'];
+export const adminEmails = ['triplemg94@gmail.com', 'tr', 'trip'];

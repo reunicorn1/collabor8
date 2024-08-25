@@ -1,6 +1,6 @@
 import { Injectable, Inject, forwardRef, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ObjectId } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Projects } from './project.entity';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { ProjectMongoService } from '@project-mongo/project-mongo.service';
@@ -158,6 +158,8 @@ export class ProjectsService {
       }
       project = await this.projectsRepository.findOneBy({ project_id: IDS.project_id });
       IDS._id = project._id.toString();
+    } else {
+      project = await this.projectsRepository.findOneBy({ _id: IDS._id });
     }
     if (!project) {
       throw new Error('Project not found');

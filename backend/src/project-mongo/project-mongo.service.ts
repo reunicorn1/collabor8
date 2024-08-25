@@ -155,6 +155,9 @@ export class ProjectMongoService {
   }
 
   async findOneBy(field: string, value: string): Promise<ProjectMongo | null> {
+    if (field === '_id') {
+      return await this.projectMongoRepository.findOne({ where: { _id: new ObjectId(value) } });
+    }
     return await this.projectMongoRepository.findOne({ where: { [field]: value } });
   }
 

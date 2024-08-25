@@ -33,7 +33,7 @@ export default function AllProjects() {
   // These two values can be used to customize the way data is retrived
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const alllProjects = useSelector(selectAllProjects);
+  const allProjects = useSelector(selectAllProjects);
   const allProjectsPagination = useSelector(selectAllProjectsPagination);
 
   const handleBack = () => {
@@ -82,12 +82,12 @@ export default function AllProjects() {
   ) => {
     // Update pagination state based on type and new page/limit values
     switch (type) {
-      case 'userProjects':
+      case 'allProjects':
         dispatch(
           setAllProjectsPagination({
             page,
             limit,
-            sort: userProjectsPagination.sort,
+            sort: allProjectsPagination.sort,
           }),
         );
         break;
@@ -148,7 +148,7 @@ export default function AllProjects() {
             </Tr>
           </Thead>
           <Tbody fontFamily="mono">
-            {userProjects.allProjects?.map((project, index) => {
+            {allProjects.allProjects?.map((project, index) => {
               const date = new Date(project.updated_at);
               return (
                 <Tr
