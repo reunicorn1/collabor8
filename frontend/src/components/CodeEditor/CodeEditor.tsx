@@ -58,7 +58,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
     });
   };
 
-  console.log('--------->', { project })
   // effects for socket provider and awareness
   useEffect(() => {
     const websocket = import.meta.env.VITE_WS_SERVER;
