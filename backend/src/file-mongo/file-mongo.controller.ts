@@ -1,28 +1,50 @@
-import { Controller, Delete, Get, Param, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Patch,
+  Body,
+  Request,
+} from '@nestjs/common';
 import { FileMongoService } from './file-mongo.service';
 import { FileMongo } from './file-mongo.entity';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  CreateFileOutDto,
+  UpdateFileOutDto,
+} from './dto/create-file-mongo.dto';
+import FileDocs from './file-mongo.docs';
 
-@Controller('file-docs')
+@ApiTags('FileMongo')
+@Controller('files')
 export class FileMongoController {
-  constructor(private readonly fileService: FileMongoService) {}
+  constructor(private readonly fileService: FileMongoService) { }
 
-  @Get()
-  findAll() {
-    return this.fileService.findAll();
-  }
-
+  @FileDocs.create()
   @Post()
-  create(@Body() createFileDto: Partial<FileMongo>) {
-    return this.fileService.create(createFileDto);
+  async create(@Body() createFileDto: CreateFileOutDto): Promise<FileMongo> {
+    return await this.fileService.create(createFileDto);
   }
 
+  @FileDocs.findOne()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.fileService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.fileService.findOne(id);
   }
 
+  // TODO: After testing deployement, integrate yjs updates with this method
+
+  @FileDocs.update()
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() updateFileDto: UpdateFileOutDto) {
+    return await this.fileService.update(id, updateFileDto);
+  }
+
+  @FileDocs.remove()
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.fileService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.fileService.remove(id);
   }
 }

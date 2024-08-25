@@ -20,8 +20,22 @@ export class ProjectShares {
   @Column('uuid')
   project_id: string;
 
+
   @Column('uuid')
-  user_id: string;
+  user_id: string; // id of the user being shared with
+
+  @Column({ type: 'varchar', nullable: true, default: null})
+  _id: string | null;
+
+  @Column()
+  username: string; // Username of the user being shared with
+
+  @Column({ default: 'pending' })
+  status: string; // Status of the share
+
+  // TODO: Add favorite boolean
+  @Column({ type: 'boolean', default: false })
+  favorite: boolean;
 
   @Column({ type: 'enum', enum: ['read', 'write'] })
   access_level: 'read' | 'write'; // Access level granted

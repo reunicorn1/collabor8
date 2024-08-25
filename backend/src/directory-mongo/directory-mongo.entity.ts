@@ -18,13 +18,22 @@ export class DirectoryMongo {
   _id: ObjectId;
 
   @Column()
-  directory_name: string;
+  name: string;
 
   @Column()
   created_at: Date;
 
+  @Column()
+  updated_at: Date;
+
+  @Column({default: 'directory'})
+  type: string;
+
   @Column({ type: 'string', nullable: true })
   parent_id?: string; // Use string for ObjectId
+
+  @Column()
+  project_id: string;
 
   @ManyToOne(() => ProjectMongo, (project) => project.directories)
   project: ProjectMongo;

@@ -1,16 +1,14 @@
 import {
   Injectable,
   NotFoundException,
-  ConflictException,
-  InternalServerErrorException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere, FindOperator, In } from 'typeorm';
 import { Users } from './user.entity';
-import { parseCreateUserDto, parseLoginDto } from './dto/create-user.dto';
 import { EnvironmentMongoService } from '@environment-mongo/environment-mongo.service';
 import { MYSQL_CONN } from '@constants';
-import { comparePwd } from '@utils/encrypt_password';
 
 interface Query {
   [key: string]: any;
@@ -21,65 +19,41 @@ export class UsersService {
   constructor(
     @InjectRepository(Users, MYSQL_CONN)
     private readonly usersRepository: Repository<Users>,
+    @Inject(forwardRef(() => EnvironmentMongoService))
     private readonly environmentService: EnvironmentMongoService,
   ) {}
 
-  async create(user: Partial<Users>): Promise<Users> {
-    try {
-      const parsedDto = parseCreateUserDto(user);
+ async create(user: Partial<Users>): Promise<Users> {
+   let newUser = this.usersRepository.create(user);
+   const newEnv = await this.environmentService.create({ username: newUser.username });
+   newUser.environment_id = newEnv._id.toString();
+   await this.usersRepository.save(newUser);
+   return this.removePasswordHash(newUser);
 
-      const userExists = await this.usersRepository.findOne({
-        where: { username: parsedDto.username },
-      });
-
-      if (userExists) {
-        throw new ConflictException(
-          `User with username ${parsedDto.username} already exists`,
-        );
-      }
-
-      let newUser = this.usersRepository.create(parsedDto);
-
-      if (this.environmentService) {
-        const userEnvironment = await this.environmentService.create({
-          username: newUser.username,
-        });
-        newUser.environment_id = userEnvironment._id.toString();
-      }
-
-      newUser = await this.usersRepository.save(newUser);
-      // remove password_hash from response
-      delete newUser.password_hash;
-      return newUser;
-    } catch (err) {
-      console.log(`Failed to create user: ${err.message}`);
-      throw new InternalServerErrorException(`Failed to create user`);
-    }
   }
 
-  async login(loginDto: { username: string; password: string }) {
-    const parsedDto = parseLoginDto(loginDto);
-    const user = await this.usersRepository.findOne({
-      where: { username: parsedDto.username },
-    });
-    if (!user) {
-      throw new NotFoundException(
-        `User with username ${parsedDto.username} not found`,
-      );
-    }
-    if (!comparePwd(parsedDto.password, user.password_hash)) {
-      throw new NotFoundException('Invalid password');
-    }
+  async save(user: Users): Promise<Users> {
+    return await this.usersRepository.save(user);
+  }
+
+  async removePasswordHash(user: Users): Promise<Users> {
+    delete user.password_hash;
+    delete user.roles;
     return user;
   }
 
-  async findAll(): Promise<Users[]> {
-    return this.usersRepository.find({
-      relations: ['ownedProjects', 'projectShares'],
-    });
+  async removeAllPasswordHash(users: Users[]): Promise<Users[]> {
+    return await Promise.all(
+      users.map(user => this.removePasswordHash(user)),
+    );
   }
 
-  async findOneBy(query: Query): Promise<Users> {
+  async findAll(): Promise<Users[]> {
+    const users = await this.usersRepository.find();
+    return await this.removeAllPasswordHash(users);
+  }
+
+  async findOneBy(query: Query, pwd: boolean = false): Promise<Users> {
     const findOptions: FindOptionsWhere<Users> = {};
 
     const normalizeValue = (value: any): string | Date | FindOperator<any> => {
@@ -94,10 +68,9 @@ export class UsersService {
     };
 
     for (const [key, value] of Object.entries(query)) {
-      if (key in findOptions) {
         findOptions[key] = normalizeValue(value);
-      }
     }
+    // this comes as empty even though i pass {username: 'admin'} as query
 
     const user = await this.usersRepository.findOne({ where: findOptions });
 
@@ -106,7 +79,10 @@ export class UsersService {
         `User with query ${JSON.stringify(query)} not found`,
       );
     }
-    return user;
+    if (pwd) {
+      return user;
+    }
+    return await this.removePasswordHash(user);
   }
 
   async updateById(
@@ -125,10 +101,42 @@ export class UsersService {
     return this.findOneBy({ username });
   }
 
-  async remove(user_id: string): Promise<void> {
-    const result = await this.usersRepository.delete(user_id);
+  async removeByUsername(username: string
+  ): Promise<{ message: string }> {
+    const result = await this.usersRepository.delete({ username });
+
     if (result.affected === 0) {
-      throw new NotFoundException(`User with ID ${user_id} not found`);
+      throw new NotFoundException(`User with username ${username} not found`);
     }
+
+    return { message: `User with username ${username} successfully deleted` };
   }
+
+async remove(user_id: string): Promise<{ message: string }> {
+  const result = await this.usersRepository.delete(user_id);
+
+  if (result.affected === 0) {
+    throw new NotFoundException(`User with ID ${user_id} not found`);
+  }
+
+  return { message: `User with ID ${user_id} successfully deleted` };
+}
+
+async update(username: string, user: Partial<Users>): Promise<Users> {
+  await this.usersRepository.update({ username: username }, user);
+  return this.findOneBy({ username: username });
+}
+
+
+
+async findAllBy(query: Query): Promise<Users[]> {
+  const users = await this.usersRepository.find(query);
+  return await this.removeAllPasswordHash(users);
+}
+
+async removeAll(): Promise<{ message: string }> {
+  await this.usersRepository.delete({});
+  return { message: 'All users successfully deleted' };
+}
+
 }
