@@ -17,27 +17,30 @@ export const projectShareApi = api.injectEndpoints({
     // Retrieve all project shares
     getAllProjectShares: builder.query<ProjectShares[], void>({
       query: () => '/project-shares',
-        providesTags: ['ProjectShare'],
+      providesTags: ['ProjectShare'],
     }),
     // Retrieve a specific project share by ID
     getProjectShareById: builder.query<ProjectShares, string>({
       query: (id) => `/project-shares/${id}`,
-        providesTags: ['ProjectShare'],
+      providesTags: ['ProjectShare'],
     }),
     // Retrieve project shares by project ID
     getProjectSharesByProjectId: builder.query<ProjectShares[], string>({
       query: (_id) => `/project-shares/project/${_id}`,
-        providesTags: ['ProjectShare'],
+      providesTags: ['ProjectShare'],
     }),
     // Retrieve project shares by user ID
     getUserProjectShares: builder.query<ProjectShares[], string>({
       query: () => `/project-shares/user/`,
-        providesTags: ['ProjectShare'],
+      providesTags: ['ProjectShare'],
     }),
     getProjectSharesPaginated: builder.query<
-    ProjectShares[], {page: number; limit: number; sort: string}>({
-      query: ({page, limit, sort}) => `/project-shares/page?page=${page}&limit=${limit}&sort=${sort}`,
-        providesTags: ['ProjectShare'],
+      ProjectShares[],
+      { page: number; limit: number; sort: string }
+    >({
+      query: ({ page, limit, sort }) =>
+        `/project-shares/page?page=${page}&limit=${limit}&sort=${sort}`,
+      providesTags: ['ProjectShare'],
     }),
 
     // Update a project share
@@ -50,7 +53,7 @@ export const projectShareApi = api.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-        invalidatesTags: ['ProjectShare'],
+      invalidatesTags: ['ProjectShare'],
     }),
     // Delete a project share
     deleteProjectShare: builder.mutation<void, string>({
@@ -58,7 +61,7 @@ export const projectShareApi = api.injectEndpoints({
         url: `/project-shares/${id}`,
         method: 'DELETE',
       }),
-        invalidatesTags: ['ProjectShare'],
+      invalidatesTags: ['ProjectShare'],
     }),
   }),
   overrideExisting: false,

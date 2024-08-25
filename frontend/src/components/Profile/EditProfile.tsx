@@ -20,13 +20,8 @@ import {
   useUpdateCurrentUserProfileMutation,
 } from '@store/services/user';
 import { User } from '../../types';
-
 import { uploadFile } from '@uploadcare/upload-client';
 
-interface ExtendedUser {
-  avatar: string | null;
-  bio: string;
-}
 export default function EditProfile() {
   // Data shown in the fields are from the data retrieved from the user's account
   // This can be found either in the global state, or by making an additional request
@@ -50,32 +45,6 @@ export default function EditProfile() {
     md: '390px',
   });
 
-  // bio and avatar currently are not part of the user so a seperate state is created for them.
-  // These are also will be modified serperately so it's safe to create such an example
-  const bio = `I’m a passionate full-stack developer with over 5 years of
-              experience building scalable web applications and intuitive user
-              interfaces. My expertise lies in JavaScript, particularly with
-              frameworks like React, Node.js, and Express, but I'm always
-              exploring new technologies to stay on the cutting edge. 💻 My
-              journey in tech started with a deep fascination for
-              problem-solving and creating digital solutions that make a
-              difference. Whether I'm debugging a complex issue 🐛 or
-              brainstorming the architecture of a new feature, I thrive on the
-              challenges that coding presents. 🎯 I've worked on a variety of
-              projects, from developing enterprise-level applications to
-              launching startups’ MVPs. I’m particularly proud of my
-              contributions to [YourProjectName], where I led the development of
-              a real-time collaboration tool that improved team productivity by
-              30%. 📈 Beyond the code, I’m a strong advocate for clean,
-              maintainable code and enjoy mentoring junior developers to help
-              them grow in their careers. 🌱 I’m always looking to collaborate
-              on exciting projects that challenge my skills and contribute to
-              meaningful outcomes. 🤝`;
-  const [subinput, setSubinput] = useState<ExtendedUser>({
-    avatar: '',
-    bio,
-  });
-
   useEffect(() => {
     const uploading = async () => {
       if (selectedFile) {
@@ -89,7 +58,12 @@ export default function EditProfile() {
           },
         });
         setLoading(false);
-        setSubinput({ ...subinput, avatar: result.cdnUrl });
+        if (result.cdnUrl) {
+          // setInput({ ...input, profile_picture: result.cdnUrl });
+          await updateProfileAction({
+            profile_picture: result.cdnUrl,
+          });
+        }
       }
     };
     uploading();
@@ -129,28 +103,41 @@ export default function EditProfile() {
     }
   };
 
+  const updateProfileAction = async (object: Partial<User>) => {
+    // Send data to be updated
+    try {
+      await updateProfile(object).unwrap();
+      refetch(); // Refetch the user profile after update
+      toast({
+        title: `Data has been updated successfully!`,
+        variant: 'subtle',
+        position: 'bottom-right',
+        status: 'success',
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+    }
+  };
+
   const handleUpdateProfile = async () => {
     if (input) {
-      try {
-        await updateProfile({
-          first_name: input.first_name, // TypeError
-          last_name: input.last_name,
-          email: input.email,
-        }).unwrap();
-        refetch(); // Refetch the user profile after update
-        console.log('Data has been updated successfully!');
-        toast({
-          title: `Data has been updated successfully!`,
-          variant: 'subtle',
-          position: 'bottom-right',
-          status: 'success',
-          isClosable: true,
-        });
-      } catch (error) {
-        console.error('Failed to update profile:', error);
-      }
+      await updateProfileAction({
+        first_name: input.first_name, // TypeError
+        last_name: input.last_name,
+        email: input.email,
+      });
     }
     handleCancel('info');
+  };
+
+  const handleUpdateBio = async () => {
+    if (input && input.bio) {
+      await updateProfileAction({
+        bio: input.bio,
+      });
+    }
+    handleCancel('bio');
   };
   // TODO: Create another function to create an update request specifically for bio
 
@@ -176,7 +163,7 @@ export default function EditProfile() {
             size="2xl"
             position="absolute"
             top="120px"
-            src={subinput?.avatar}
+            src={data?.profile_picture}
             left={leftPosition}
             borderColor="white"
           />
@@ -328,7 +315,7 @@ export default function EditProfile() {
                 >
                   {/* Save Button sends input data using api to update data, exit resets input to the 
                   original data and change the editInfo state */}
-                  <Button>Save</Button>
+                  <Button onClick={handleUpdateBio}>Save</Button>
                   <IconButton
                     borderLeft="1px, black"
                     bg="gray.200"
@@ -343,7 +330,7 @@ export default function EditProfile() {
             </Flex>
             {editBio ? (
               <Box pt={5} fontFamily="mono" fontSize="sm">
-                {subinput.bio}
+                {data?.bio}
               </Box>
             ) : (
               <Textarea
@@ -353,7 +340,7 @@ export default function EditProfile() {
                 fontSize="sm"
                 size="lg"
                 h="100%"
-                value={subinput.bio}
+                value={input?.bio}
                 onChange={handleInputChange}
               ></Textarea>
             )}

@@ -51,7 +51,12 @@ export default function DBMenu({ children }: DBMenuProps) {
       <MenuList bg="purple.700">
         <MenuGroup>
           <MenuItem onClick={handleProfile}>
-            <Avatar boxSize="23px" bg="purple.400" mr={2} />
+            <Avatar
+              src={userDetails?.profile_picture}
+              boxSize="23px"
+              bg="purple.400"
+              mr={2}
+            />
             <Text fontSize="sm">{`@${userDetails?.username}`}</Text>
           </MenuItem>
         </MenuGroup>

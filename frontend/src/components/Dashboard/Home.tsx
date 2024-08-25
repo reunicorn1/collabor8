@@ -47,6 +47,21 @@ export default function Home() {
     const index = hashStringToIndex(projectName, coolors.length);
     return coolors[index];
   }
+
+  function getTimeOfDay() {
+    const now = new Date();
+    const hours = now.getHours();
+    if (hours >= 5 && hours < 12) {
+      return 'Morning';
+    } else if (hours >= 12 && hours < 18) {
+      return 'Afternoon';
+    } else if (hours >= 18 && hours < 22) {
+      return 'Evening';
+    } else {
+      return 'Night';
+    }
+  }
+
   const { data, err, isFetching, refetch, isSuccess, isLoading } =
     useGetAllProjectsPaginatedQuery(
       { ...recentProjectsPagination },
@@ -115,7 +130,7 @@ export default function Home() {
         <Image src="/banner3.png" />
         <Center>
           <Text color="white" fontFamily="mono" fontSize="2xl" m={5}>
-            {`Good morning, ${userDetails?.first_name} ${userDetails?.last_name}`}
+            {`Good ${getTimeOfDay()}, ${userDetails?.first_name} ${userDetails?.last_name}`}
           </Text>
         </Center>
 

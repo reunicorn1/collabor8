@@ -16,8 +16,11 @@ import { ChevronDownIcon } from '@chakra-ui/icons';
 import DBMenu from '../Dashboard/DBMenu';
 import NewProject from '@components/Modals/NewProject';
 import { useNavigate } from 'react-router-dom';
+import { selectUserDetails } from '@store/selectors/userSelectors';
+import { useSelector } from 'react-redux';
 
 export default function DashboardBar() {
+  const userDetails = useSelector(selectUserDetails);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
 
@@ -54,7 +57,13 @@ export default function DashboardBar() {
       <Icon color="white" ml={4} boxSize="16px" as={BsBell} />
       <Box display="flex" alignItems="center">
         <DBMenu>
-          <Avatar boxSize="22px" bg="purple.400" ml={4} mr={2} />
+          <Avatar
+            src={userDetails?.profile_picture}
+            boxSize="22px"
+            bg="purple.400"
+            ml={4}
+            mr={2}
+          />
           <Icon color="white" as={ChevronDownIcon} />
         </DBMenu>
       </Box>

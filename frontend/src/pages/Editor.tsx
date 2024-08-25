@@ -18,10 +18,9 @@ const ydoc = new Y.Doc();
 export default function Editor() {
   // The only thing to fix my issues is to avoid using context and use direct passing instead
 
-  const { projectId = '' } = useParams();
   const [isDragging, setIsDragging] = useState(false);
   const location = useLocation();
-  const { project_name, ...project } = location.state;
+  const project = location.state;
 
   return (
     <EditorProvider>
@@ -32,7 +31,7 @@ export default function Editor() {
           h="100%"
           borderRight="2px solid #524175"
         >
-          <Shares />
+          <Shares project={project}/>
         </GridItem>
 
         {/* Second Section */}
@@ -53,7 +52,7 @@ export default function Editor() {
                 {/* Top Panel Group with horizontal panels */}
                 <Panel defaultSize={20} minSize={20} maxSize={50}>
                   {/* <FileTree /> */}
-                  <Tree ydoc={ydoc} name={project_name} />
+                  <Tree ydoc={ydoc} name={project.project_name} />
                 </Panel>
                 <PanelResizeHandle
                   style={{

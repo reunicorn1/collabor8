@@ -8,9 +8,11 @@ import {
   Input,
   Stack,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { useState, ChangeEvent } from 'react';
 import { FiEdit3 } from 'react-icons/fi';
+import { useChangePasswordMutation } from '@store/services/auth';
 
 interface Pass {
   old: string;
@@ -19,6 +21,8 @@ interface Pass {
 }
 
 export default function Password() {
+  const [changePassword] = useChangePasswordMutation();
+  const toast = useToast();
   const [passmode, setPassmode] = useState(false);
   const [errmsg, setErrMsg] = useState('');
   const [passSet, setPassSet] = useState<Pass>({
@@ -33,12 +37,23 @@ export default function Password() {
     if (errmsg) setErrMsg('');
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
+    // This function isn't tested properly
     if (passSet.new === passSet.again) {
-      // TODO: Send a request to update the password, if there is an error message show it
-      // as a text message above the update password button, this error message disappears
-      // when the user starts typing again
-      console.log('Send Update Password request');
+      try {
+        await changePassword({ old: passSet.old, new: passSet.new }).unwrap();
+        toast({
+          title: `Password has been updated successfully!`,
+          variant: 'subtle',
+          position: 'bottom-right',
+          status: 'success',
+          isClosable: true,
+        });
+        if (errmsg) setErrMsg('');
+      } catch (err) {
+        console.log(err);
+        setErrMsg(err.data.message);
+      }
     } else {
       setErrMsg('The passwords you entered do not match. Please try again.');
     }

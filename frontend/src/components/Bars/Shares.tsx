@@ -3,8 +3,13 @@ import { AddIcon } from '@chakra-ui/icons';
 import { useFile } from '../../context/EditorContext';
 import { useDisclosure } from '@chakra-ui/react';
 import ShareMenu from '../Modals/ShareMenu';
+import { Project, ProjectShares } from '@types';
 
-export default function Shares() {
+interface SharesProps {
+  project: Project | ProjectShares;
+}
+
+export default function Shares({ project }: SharesProps) {
   const { awareness } = useFile()!; // why so excited?
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -50,7 +55,7 @@ export default function Shares() {
         onClick={onOpen}
         icon={<AddIcon />}
       />
-      <ShareMenu onClose={onClose} isOpen={isOpen} />
+      <ShareMenu onClose={onClose} isOpen={isOpen} project={project} />
     </Box>
   );
 }
