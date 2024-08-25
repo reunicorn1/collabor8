@@ -174,6 +174,25 @@ export class AuthService {
     await this.usersService.save(user);
     return this.usersService.removePasswordHash(user);
   }
+
+
+  async sendResetPasswordEmail(email: string): Promise<{ message: string }> {
+    const user = await this.usersService.findOneBy({ email });
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+    const newPwd = Math.random().toString(36).slice(-8);
+    user.password_hash = this.encryptPwd(newPwd);
+    await this.usersService.save(user);
+    const job = await this.mailerQueue.add('reset-password', {
+      email,
+      username: user.username,
+      user_id: user.user_id,
+      newPwd,
+    });
+    console.log(`------------> ${job}`);
+    return { message: 'Password reset email sent' };
+  }
   // async attachEnvironment(user: Users): Promise<Users> {
   //   const userEnvironment = this.environmentService.create({
   //     username: user.username,

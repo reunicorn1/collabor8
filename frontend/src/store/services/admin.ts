@@ -35,6 +35,17 @@ export const adminApi = api.injectEndpoints({
         body: data,
       }),
     }),
+    // reset password
+    resetPassword: builder.mutation<
+      User,
+      { old: string, new: string }
+    >({
+      query: ({ old, new }) => ({
+        url: '/admin/user/me/change-password',
+        method: 'PATCH',
+        body: JSON.stringify({ old, new }),
+      }),
+    }),
     // Delete a specific user profile by username (admin only)
     removeUserAdmin: builder.mutation<{ message: string }, string>({
       query: (username) => ({

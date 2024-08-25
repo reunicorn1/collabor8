@@ -130,8 +130,9 @@ export class AuthController {
   }
 
   // TODO: send email to user with reset password link
-  // @Get('me/reset-password')
-  // async resetPassword(@Request() req): Promise<{ message: string }> {
-    // return this.authService.resetPasswordRequest(req.user.username);
-  // }
+  @Public()
+  @Get('me/reset-password')
+  async resetPassword(@Body() email: string): Promise<{ message: string }> {
+    return this.authService.resetPasswordRequest(email);
+  }
 }
