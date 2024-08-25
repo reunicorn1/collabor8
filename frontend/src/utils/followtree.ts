@@ -29,7 +29,7 @@ export function getPathFromId(
     }
 
     // If it's a directory, recursively search its children
-    if (node.type === 'directroy' && node.children) {
+    if (node.type === 'directory' && node.children) {
       for (const child of node.children) {
         const childPath = findNodePath(child, id, [...path, node.id || '']);
         if (childPath) {
