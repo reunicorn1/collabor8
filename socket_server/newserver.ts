@@ -16,11 +16,11 @@ const updateInterval = 60000;
 
 /**
  * TODO:
- * `onLoadDocument`:
- *    1. should load project from GET reqest DB, if not exist create it 😈️
- *    2. tranform data, then set the fileTree accordingly
-r* `onUpdate`:
- *    1. udpate file content per project, PATCH reqeust DB
+ * `onLoadDocument`: 
+ *    1. should load project from GET reqest DB, if not exist create it 😈️ ✅️
+ *    2. tranform data, then set the fileTree accordingly ✅️
+ * `onUpdate`:
+ *    1. udpate file content per project, PATCH reqeust DB ✅️
  *
  * **NOTE**:
  * - each route is protected so we need the token ✅️
@@ -32,6 +32,7 @@ const server = new Hocuspocus({
   port,
   extensions: [new Logger()],
   async onLoadDocument(context) {
+
     const projectId = context.document.name;
     const token = context.requestParameters.get('token');
     const username = context.requestParameters.get('username');
@@ -72,6 +73,7 @@ const server = new Hocuspocus({
     //handleUpdate(context);
   },
   onChange(context) {
+    // TODO: useful for version control system
     console.log('-------OnChange-------->')
     //console.log({ delta: ytext.toDelta() })
     //console.log('--------onChange-------->', {data})

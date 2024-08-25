@@ -32,9 +32,10 @@ export default function DBMenu({ children }: DBMenuProps) {
   const handleLogout = () => {
     dispatch(unsetCredentials());
     toast({
-      title: "You've logged out successfully!",
+      title: 'See you later, coder! 👋',
+      description: 'You’re now logged out. Until next time!',
       variant: 'subtle',
-      position: 'bottom-right',
+      position: 'bottom-left',
       status: 'success',
       isClosable: true,
     });
