@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ObjectId } from 'typeorm';
 import { Projects } from './project.entity';
@@ -98,9 +98,12 @@ export class ProjectsService {
       }
       project = await this.projectsRepository.findOneBy({ project_id: IDS.project_id });
       IDS._id = project._id.toString();
+    } else {
+      project = await this.projectsRepository.findOneBy({ _id: IDS._id });
     }
 
 
+    console.log('==================>', {project})
     if (project.username !== username) {
       throw new Error('Project not found');
     }
@@ -137,7 +140,7 @@ export class ProjectsService {
   async findOne(id: string): Promise<Projects> {
     const project = await this.projectsRepository.findOneBy({ project_id: id });
     if (!project) {
-      throw new Error('Project not found');
+      throw new NotFoundException('Project not found');
     }
     return project;
   }

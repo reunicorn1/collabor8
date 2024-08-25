@@ -34,5 +34,5 @@ function transformData(input) {
   return transformNode(input, "project");
 }
 
-const transformedData = transformData(project);
-console.log(JSON.stringify(transformedData, null, 2));
+export default transformData;
+//console.log(JSON.stringify(transformedData, null, 2));

@@ -17,6 +17,7 @@ import createfiletree from '../../utils/filetreeinit';
 import Tabs from './Tabs';
 import { useAppSelector } from '../../hooks/useApp';
 import { selectAccessToken } from '@store/selectors';
+import { Project, ProjectShares } from '@types'
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -29,11 +30,11 @@ const languageModes: Record<LanguageCode, string> = {
 // Definition of interfaces and types
 
 interface CodeEditorProps {
-  projectId: string;
+  project: Project | ProjectShares;
   ydoc: Y.Doc;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
   const { theme, language, mode, setMode } = useSettings()!;
   const token = useAppSelector(selectAccessToken);
   const { fileSelected, setAwareness, setFileTree } = useFile()!;
@@ -57,7 +58,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     });
   };
 
-  console.log('--------->',{token})
+  console.log('--------->', { project })
   // effects for socket provider and awareness
   useEffect(() => {
     const websocket = import.meta.env.VITE_WS_SERVER;
@@ -65,12 +66,19 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     if (!editorRef.current) return;
 
     // Creation of the connction with the websocket
+    /**
+     * token based on role=owner
+     *
+     */
     const provider = new WebsocketProvider(
       websocket,
-      projectId,
+      project._id,
       ydoc_.current,
       {
-        params: { token },
+        params: {
+          token,
+          username: project.username,
+        },
       },
     );
     provider.on('status', (event: { status: unknown }) => {
@@ -134,7 +142,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
       provider.disconnect();
     };
 
-  }, [projectId]);
+  }, [project._id]);
 
   useEffect(() => {
     if (

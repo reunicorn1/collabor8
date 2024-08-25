@@ -5,6 +5,7 @@ import * as Y from "yjs";
 import axios from "axios";
 import chalk from "chalk";
 import dotenv from "dotenv";
+import transformData from "./transform.js";
 
 dotenv.config();
 
@@ -293,33 +294,16 @@ const server = new Hocuspocus({
   async onLoadDocument(context) {
     const projectId = context.document.name;
     const token = context.requestParameters.get('token');
-    console.log('_------------->', { token })
+    const username = context.requestParameters.get('username');
     try {
-      await handleLoadDocument(context, token);
-
-      // const ymap = context.document.getMap("root");
-      //
-      // function logYMapContents(yMap) {
-      //   yMap.forEach((value, key) => {
-      //     if (value instanceof Y.Map) {
-      //       console.log(`Key: ${key} -> YMap:`, value);
-      //       logYMapContents(value);
-      //     } else if (value instanceof Y.Text) {
-      //       console.log(`Key: ${key} -> YText:`, value.toString());
-      //     } else {
-      //       console.log(`Key: ${key} -> Value:`, value);
-      //     }
-      //   });
-      // }
-      // // ymap.set("filetree", project);
-      //
-      // logYMapContents(ymap);
-
       console.info(
         chalk.green(
           `Document loaded successfully for project ID: ${projectId}`,
         ),
       );
+      await handleLoadDocument(context, { token, username });
+      return context.document
+
     } catch (error) {
       console.error(
         chalk.red(
@@ -342,26 +326,49 @@ const server = new Hocuspocus({
     );
   },
   onUpdate(context) {
-    console.info(
-      chalk.yellow(`Document updated in room: ${context.document.name}`),
-    );
-    handleUpdate(context);
+    //console.info(
+    //  chalk.yellow(`Document updated in room: ${context.document.name}`),
+    //);
+    //handleUpdate(context);
   },
+  onChange(context) {
+    console.log('-------OnChange-------->')
+    //console.log({ delta: ytext.toDelta() })
+    //console.log('--------onChange-------->', {data})
+  },
+  async onStoreDocument(context) {
+    console.log('-----onSoreDocument---------->')
+    const ymap = context.document.getMap('root')
+    const token = context.requestParameters.get('token');
+    Array.from(ymap.entries()).forEach(async ([k, v]) => {
+      if (!k.endsWith('_metadata') && v instanceof Y.Text) {
+        //a, abc, abc;adf
+        // do smth with the file
+        // handler(v, ymap.get(`${k._metadata}`)
+        await handleOnStoreDocument({
+          token,
+          projectId: context.document.name,
+          yText: v,
+          fileMeta: ymap.get(`${k}_metadata`)
+        });
+      }
+    })
+  }
 });
 
 const updateQueue = new Map(); // store updates for each project
 
-async function handleLoadDocument(context, token) {
+async function handleLoadDocument(context, { token, username }) {
   const yMap = context.document.getMap("root");
   const projectId = context.document.name
   try {
-    const project_ = await axios.get(`${nestServerUrl}/projects/${projectId}`, {
+    const project_ = await axios.get(`${nestServerUrl}/projects/${username}/${projectId}?depth=0`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-    console.log({ project_ })
-    yMap.set("filetree", project);
+    //console.log({ user: username })
+    //yMap.set("filetree", transformData(project));
   } catch (err) {
-    console.log({err})
+    //console.log({ resp: err.response.message })
 
   }
   // const token = yMap.getMap("accessToken");
@@ -382,16 +389,16 @@ async function loadProjectToYMap(yMap, project) {
           const delta = textToDelta(content);
           yText.applyDelta(delta);
           yMap.set(id, yText);
-          console.info(chalk.green(`Loaded content for file ID: ${id}`));
+          //console.info(chalk.green(`Loaded content for file ID: ${id}`));
         } else {
-          console.warn(chalk.yellow(`No content found for file ID: ${id}`));
+          //console.warn(chalk.yellow(`No content found for file ID: ${id}`));
         }
       } catch (error) {
-        console.error(
-          chalk.red(`Failed to load content for file ID: ${id}`, error),
-        );
+        //console.error(
+        //  chalk.red(`Failed to load content for file ID: ${id}`, error),
+        //);
       }
-    } else if (file.type === "dir") {
+    } else if (file.type === "directory") {
       const ySubMap = new Y.Map();
       yMap.set(file.id, ySubMap);
       await loadProjectToYMap(ySubMap, file);
@@ -414,7 +421,7 @@ async function handleUpdate(context) {
       const fileContent = value.toString();
       // key represents file id (and files only)
       projectUpdates.set(key, fileContent);
-      console.info(chalk.green(`Queued update for file ID: ${key}`));
+      //console.info(chalk.green(`Queued update for file ID: ${key}`));
     }
   }
 }
@@ -466,6 +473,64 @@ function handleConnect(context) {
 function handleDisconnect(context) {
   const connectionId = context.connection?.id || "unknown";
   console.info(chalk.blue(`Client disconnected: ${connectionId}`));
+}
+
+// update 
+async function handleOnStoreDocument({ token, projectId, yText, fileMeta }) {
+  // console.log('Updating document:', value.toJSON());
+  console.log('==============>', { fileMeta })
+  const fileId = fileMeta.id
+  //const yText = value;
+  console.log(`FileId: ${fileId}`);
+  //const fileMeta = metaArray[`${key}_metadata`]; // Is metadata never stored in database a9lan!
+  console.log('FileMeta:', fileMeta);
+  if (fileMeta && fileMeta['new']) {
+    // update the file from the database
+    const file = await loadfileFromDb({ fileMeta, projectId, fileId, yText, token });
+    fileMeta['new'] = false;
+  } else {
+    // normal behavior
+    await updateFileInDb(fileId, yText);
+    console.log(`Document updated: ${projectId}/${fileId}`);
+  }
+}
+
+async function loadfileFromDb({ fileMeta, projectId, fileId, yText, token }) {
+  try {
+    let file = await axios.get(
+      `${nestServerUrl}/files/${fileId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const content = file.file_content;
+    if (!content) {
+      yText.insert('');
+    } else {
+      yText.applyDelta(content);
+    }
+  } catch (err) {
+    // file not found
+    const { name, parent_id } = fileMeta
+    const file = await axios.post(`${nestServerUrl}/files`,
+      {
+        name, parent_id, project_id: projectId
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    // mutate fileMeta id
+    fileMeta.id = file._id
+    yText.applyDelta(yText.toDelta());
+  }
+}
+
+async function updateFileInDb(fileId, yText) {
+  const update = yText.toDelta(); // Saving the changes as delta rather than using encodeStateAsUpdate
+
+  try {
+    const result = await axios.patch(`${nestServerUrl}/files/${fileId}`, { file_content: update })
+  } catch (err) {
+    //console.error('-------------->', { err })
+  }
 }
 
 server

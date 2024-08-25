@@ -1,12 +1,14 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ObjectId } from 'typeorm';
+import { ObjectId } from 'mongodb';
 import { FileMongo } from './file-mongo.entity';
-import { parseCreateFileMongoDto, CreateFileOutDto, parseUpdateFileMongoDto,
+import {
+  parseCreateFileMongoDto, CreateFileOutDto, parseUpdateFileMongoDto,
   UpdateFileOutDto
 } from './dto/create-file-mongo.dto';
 import { DirectoryMongoService } from '@directory-mongo/directory-mongo.service';
 import { ProjectsService } from '@projects/projects.service';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class FileMongoService {
@@ -17,7 +19,7 @@ export class FileMongoService {
     private directoryService: DirectoryMongoService,
     @Inject(forwardRef(() => ProjectsService))
     private projectService: ProjectsService,
-  ) {}
+  ) { }
 
   async create(createFileDto: CreateFileOutDto): Promise<FileMongo> {
     const parsedDto = parseCreateFileMongoDto(createFileDto);
@@ -48,12 +50,16 @@ export class FileMongoService {
     files.forEach((file) => {
       delete file.file_content;
     });
-      return files;
+    return files;
   }
 
   async findOne(id: string): Promise<FileMongo | null> {
-    const _id = new ObjectId(id);
-    return await this.fileRepository.findOneBy({ _id });
+    try {
+      const _id = new ObjectId(id);
+      return await this.fileRepository.findOneBy({ _id });
+    } catch (err) {
+      throw new NotFoundException('File not found');
+    }
   }
 
   async update(id: string, updateFileDto: UpdateFileOutDto): Promise<FileMongo> {

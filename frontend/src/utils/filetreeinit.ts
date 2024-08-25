@@ -8,7 +8,7 @@ export default function createfiletree(root: Y.Map<YMapValueType>) {
   // console.log('This function is paused', root.get('filetree'));
   if (!root.get('filetree')) {
     const rootnode = {
-      type: 'dir',
+      type: 'directory',
       id: '0',
       name: 'root',
       children: [],

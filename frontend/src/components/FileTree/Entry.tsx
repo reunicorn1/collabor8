@@ -18,6 +18,7 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
   const { fileSelected } = useFile()!;
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
+  console.log('%c--------->', 'background: yellow;',{type: entry.type})
   return (
     <>
       <Box

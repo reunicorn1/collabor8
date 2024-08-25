@@ -20,7 +20,7 @@ import FileDocs from './file-mongo.docs';
 @ApiTags('FileMongo')
 @Controller('files')
 export class FileMongoController {
-  constructor(private readonly fileService: FileMongoService) {}
+  constructor(private readonly fileService: FileMongoService) { }
 
   @FileDocs.create()
   @Post()
@@ -30,21 +30,21 @@ export class FileMongoController {
 
   @FileDocs.findOne()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.fileService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.fileService.findOne(id);
   }
 
   // TODO: After testing deployement, integrate yjs updates with this method
 
   @FileDocs.update()
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFileDto: UpdateFileOutDto) {
-    return this.fileService.update(id, updateFileDto);
+  async update(@Param('id') id: string, @Body() updateFileDto: UpdateFileOutDto) {
+    return await this.fileService.update(id, updateFileDto);
   }
 
   @FileDocs.remove()
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.fileService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.fileService.remove(id);
   }
 }
