@@ -25,6 +25,11 @@ export default function OptionsMenu({ type, id, ydoc }: FileDirMenuProps) {
   const handleClick = (filedir: string) => {
     setFileDir(filedir);
     setParent(id);
+    console.log(
+      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaid',
+      id,
+    );
+
     onOpen();
   };
 

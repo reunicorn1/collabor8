@@ -84,8 +84,8 @@ export function createFileDir({
       subdir = new Y.Map(); // If not found then build the path and create it
       // for every new creation add metadata
       const metadata = {
-        id: path,
-        type: 'directory',
+        id: _id,
+        type: filedir,
         new: true,
         name: newName,
         parent_id: parent,

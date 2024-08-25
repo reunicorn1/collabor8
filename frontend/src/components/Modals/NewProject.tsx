@@ -38,11 +38,10 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
   const handleChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDescription(e.target.value);
   };
-
-  const handleGoToProject = (id: string, project_name: string) => {
+  const handleGoToProject = (project: any) => {
     // This function handles the click of a project item in the table it recives the id of the project
     // And it navigates to the project page using the id
-    navigate(`/editor/${id}`, { state: { project_name } });
+    navigate(`/editor/${project._id}`, { state: project });
   };
 
   const handleCreate = () => {
@@ -51,7 +50,7 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
       .then((data) => {
         console.log('new project', data);
         // TODO: navigate to the project page
-        handleGoToProject(data._id, name);
+        handleGoToProject(data);
       })
       .catch((err) => {
         console.log(err);

@@ -161,6 +161,7 @@ const projectSlice = createSlice({
       state.pagination.userProjects = action.payload;
     },
     setSharedProjects: (state, action: PayloadAction<sharedProjects>) => {
+      console.error('Setting shared projects', action.payload);
       state.sharedProjects = action.payload;
     },
     setSharedProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {

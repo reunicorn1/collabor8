@@ -29,7 +29,7 @@ export class Users {
   @Column({ type: 'varchar', length: 100 })
   last_name: string;
 
-  @Column({type: 'boolean', default: false})
+  @Column({ type: 'boolean', default: false })
   is_verified: boolean;
 
   // favorite languages list
@@ -37,15 +37,15 @@ export class Users {
   favorite_languages: string[] | null;
 
   // TODO: add profile picture and other user details as needed
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'varchar',nullable: true, default: '' })
   profile_picture: string | null;
 
-   // TODO: create favorite projects list
+  // TODO: create favorite projects list
   @Column('simple-array', { nullable: true })
   favorite_projects: string[] | null;
 
   // bio
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'varchar',nullable: true, default: '' })
   bio: string | null;
 
   // default 'user'

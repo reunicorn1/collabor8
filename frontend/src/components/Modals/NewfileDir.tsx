@@ -44,7 +44,7 @@ const NewfileDir: React.FC<ModalProps> = ({
   const { setFileSelected } = useFile()!;
   const initialRef = React.useRef(null);
   const [newName, setNewName] = useState('');
-  const root = useMemo(() => ydoc.getMap('root'), [ydoc]);
+  const root = ydoc.getMap('root');
   // const root = ydoc.getMap('root'); // This gets the value of the root if created before
   const [createFile] = useCreateFileMutation();
   const [createDir] = useCreateDirectoryMutation();

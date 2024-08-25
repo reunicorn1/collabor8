@@ -34,7 +34,7 @@ export const projectShareApi = api.injectEndpoints({
       query: () => `/project-shares/user/`,
         providesTags: ['ProjectShare'],
     }),
-    getUserProjectSharesPaginated: builder.query<
+    getProjectSharesPaginated: builder.query<
     ProjectShares[], {page: number; limit: number; sort: string}>({
       query: ({page, limit, sort}) => `/project-shares/page?page=${page}&limit=${limit}&sort=${sort}`,
         providesTags: ['ProjectShare'],
@@ -69,7 +69,8 @@ export const {
   useGetAllProjectSharesQuery,
   useGetProjectShareByIdQuery,
   useGetProjectSharesByProjectIdQuery,
-  useGetProjectSharesByUserIdQuery,
+  useGetProjectSharesPaginatedQuery,
   useUpdateProjectShareMutation,
   useDeleteProjectShareMutation,
+  useGetUserProjectSharesQuery,
 } = projectShareApi;

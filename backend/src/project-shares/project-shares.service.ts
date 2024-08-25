@@ -136,15 +136,19 @@ export class ProjectSharesService {
     const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
     const sortDirection = sort.startsWith('-') ? 'DESC' : 'ASC';
     const total = await this.projectSharesRepository.createQueryBuilder('projectShares')
-      .where('projects.username = :username', { username })
+      .where('projects_shares.username = :username', { username })
       .getCount();
     const projects = await this.projectSharesRepository.createQueryBuilder('projectShares')
-      .where('projects.username = :username', { username })
+      .where('project_shares.username = :username', { username })
       .skip(skip)
       .take(limit)
-      .orderBy(`projects.${sortField}`, sortDirection)
+      .orderBy(`project_shares.${sortField}`, sortDirection)
       .getMany().then((projectShares) => {
         return projectShares.map(async (projectShare) => {
+          console.log(projectShare);
+          if (!projectShare) {
+            return null;
+          }
           return await this.mapProjectShareData(projectShare);
         });
       })

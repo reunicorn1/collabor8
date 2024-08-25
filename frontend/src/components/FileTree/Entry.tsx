@@ -68,6 +68,7 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
         </Text>
 
         <Spacer />
+        {console.log('entry', entry)}
         <OptionsMenu
           type={entry.type}
           id={entry.id}

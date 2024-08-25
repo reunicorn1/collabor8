@@ -354,6 +354,7 @@ export default function EditProfile() {
                 size="lg"
                 h="100%"
                 value={subinput.bio}
+                onChange={handleInputChange}
               ></Textarea>
             )}
           </Box>

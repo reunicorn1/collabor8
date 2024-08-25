@@ -29,6 +29,8 @@ export interface User {
   username: string;
   first_name: string;
   last_name: string;
+  bio?: string;
+  profile_picture?: string;
   email: string;
   favorite_languages?: string[];
   created_at: Date;

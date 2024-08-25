@@ -18,12 +18,13 @@ export function addLeaf(
   newFile: FileNode,
   parentId: string, // ID of the directory where the new file should be added taken from the last value of fullPath or directly
 ): TreeNode {
+  console.log('addleaf', tree, newFile, parentId);
   // Helper function to traverse and find the parent node
   function findDirectoryNode(
     node: TreeNode,
     targetId: string,
   ): DirectoryNode | null {
-    console.log('addleaf', node, targetId);
+    console.log('findDirectoryNode method', node, targetId);
     if (node.type === 'directory' && node.id === targetId) {
       return node as DirectoryNode;
     }
