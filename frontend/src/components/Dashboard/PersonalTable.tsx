@@ -105,10 +105,10 @@ export default function PersonalTable() {
     return <div>Error loading data</div>;
   }
 
-  const handleGoToProject = (id: string, project_name: string) => {
+  const handleGoToProject = (project: any) => {
     // This function handles the click of a project item in the table it recives the id of the project
     // And it navigates to the project page using the id
-    navigate(`/editor/${id}`, { state: { project_name } });
+    navigate(`/editor/${project._id}`, { state: project });
   };
 
   return (
@@ -155,7 +155,7 @@ export default function PersonalTable() {
                   cursor="pointer"
                   key={index}
                   onClick={() =>
-                    handleGoToProject(project._id, project.project_name)
+                    handleGoToProject(project)
                   }
                 >
                   <Td>{project.project_name}</Td>

@@ -26,13 +26,21 @@ import { APP_GUARD } from '@nestjs/core';
 // import { RolesGuard } from '@auth/guards/roles.guard';
 // import { RolesGuard } from '@auth/guards/roles.guard';
 import { AdminModule } from './admin/admin.module';
+import { MailModule } from './mail/mail.module';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
 import { LoggingModule } from './logging/logging.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), //  load .env
+    ConfigModule.forRoot({ isGlobal: true, cache: true }), //  load .env
+    BullModule.forRoot({ // 👈️ Job Queue
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
     TypeOrmModule.forRoot({
       name: 'mysqlConnection',
       type: 'mysql',
@@ -66,6 +74,7 @@ import { LoggingModule } from './logging/logging.module';
     EnvironmentMongoModule,
     AuthModule,
     AdminModule,
+    MailModule,
     RedisModule,
     LoggingModule,
   ],
@@ -80,4 +89,4 @@ import { LoggingModule } from './logging/logging.module';
     RedisService,
   ],
 })
-export class AppModule {}
+export class AppModule { }

@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ObjectId } from 'typeorm';
 import { Projects } from './project.entity';
@@ -25,7 +25,7 @@ export class ProjectsService {
     private readonly projectMongoService: ProjectMongoService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
-  ) {}
+  ) { }
 
   // Create a new project
   // TODO: TODAY modify env to be obtained from user object
@@ -99,6 +99,7 @@ export class ProjectsService {
     } else {
       project = await this.projectsRepository.findOneBy({ _id: IDS._id });
     }
+
     if (project.username !== username) {
       throw new Error('Project not found');
     }
@@ -119,14 +120,14 @@ export class ProjectsService {
     const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
     const sortDirection = sort.startsWith('-') ? 'DESC' : 'ASC';
     const total = await this.projectsRepository.createQueryBuilder('projects')
-    .where('projects.username = :username', { username })
-    .getCount();
+      .where('projects.username = :username', { username })
+      .getCount();
     const projects = await this.projectsRepository.createQueryBuilder('projects')
-    .where('projects.username = :username', { username })
-    .skip(skip)
-    .take(limit)
-    .orderBy(`projects.${sortField}`, sortDirection)
-    .getMany();
+      .where('projects.username = :username', { username })
+      .skip(skip)
+      .take(limit)
+      .orderBy(`projects.${sortField}`, sortDirection)
+      .getMany();
     return { total, projects };
   }
 
@@ -137,6 +138,7 @@ export class ProjectsService {
     return project;
   }
 
+  // Retrieve a specific project by ID
   // Retrieve a specific project by ID
   async findOne(id: string): Promise<Projects> {
     const project = await this.projectsRepository.findOneBy({ project_id: id });

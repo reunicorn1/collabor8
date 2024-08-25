@@ -15,6 +15,9 @@ import { getRandomUsername } from './names';
 import { YMapValueType } from '../../context/EditorContext';
 import createfiletree from '../../utils/filetreeinit';
 import Tabs from './Tabs';
+import { useAppSelector } from '../../hooks/useApp';
+import { selectAccessToken } from '@store/selectors';
+import { Project, ProjectShares } from '@types'
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -27,12 +30,13 @@ const languageModes: Record<LanguageCode, string> = {
 // Definition of interfaces and types
 
 interface CodeEditorProps {
-  projectId: string;
+  project: Project | ProjectShares;
   ydoc: Y.Doc;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
   const { theme, language, mode, setMode } = useSettings()!;
+  const token = useAppSelector(selectAccessToken);
   const { fileSelected, setAwareness, setFileTree } = useFile()!;
   const editorRef = useRef<Editor | null>(null);
   const projectRoot = useRef<Y.Map<YMapValueType> | null>(null);
@@ -44,8 +48,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
   createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
 
   // An event listener for updates happneing in the ydoc
-  ydoc.on('update', (update) => {
-    console.log('Yjs update', update);
+  ydoc_.current.on('update', (update) => {
+    // console.log('Yjs update', update);
   });
   // A function to create a binding between file selected from the file tree and the editor
   const setupCodemirrorBinding = (text: Y.Text) => {
@@ -61,7 +65,21 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
     if (!editorRef.current) return;
 
     // Creation of the connction with the websocket
-    const provider = new WebsocketProvider(websocket, projectId, ydoc_.current);
+    /**
+     * token based on role=owner
+     *
+     */
+    const provider = new WebsocketProvider(
+      websocket,
+      project._id,
+      ydoc_.current,
+      {
+        params: {
+          token,
+          username: project.username,
+        },
+      },
+    );
     provider.on('status', (event: { status: unknown }) => {
       console.log(event.status); // logs "connected" or "disconnected"
     });
@@ -123,7 +141,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ projectId, ydoc }) => {
       provider.disconnect();
     };
 
-  }, [projectId]);
+  }, [project._id]);
 
   useEffect(() => {
     if (

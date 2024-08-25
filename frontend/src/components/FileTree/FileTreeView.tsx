@@ -16,16 +16,38 @@ const FileTreeView: React.FC<FileTreeViewProps> = ({ data, ydoc }) => {
 
   const root = ydoc.getMap('root');
   const filetree = data.filetree?.children;
-  console.log(root);
+  console.log('Root:-------->', root);
+  console.log('FileTree:----->', filetree);
+
+  const getParentID = (tree: Record<string, any>, id, parentId = null) => {
+    if (!tree) return null;
+    return Object.entries(tree).find(([k, v]) => {
+      if (v.type === 'file' && v.id === id) {
+        return parentId;
+      }
+      return getParentID(v.children, id, k);
+    });
+  };
 
   const onFileClick = (id: string, name: string) => {
+    const parent = getParentID(filetree, id);
+    console.log('+++++++++++++++++++++>', { parent });
     // This is a function that deals with creation of new y.text per file
     // Indexing is id, and this is ued to find the path from the root until the file and then this
     // path will be used to create the model corresponding to it
     if (fileSelected?.id === id) return;
     const path = getPathFromId(data.filetree, id); // hopeless type error, I didn't assign types correcty at the beginning bc I did a lot of changes on how it was defined
     if (path) {
-      const file = createFileDir(path, root, id, 'file'); // No new leafs are required since this file is already a part of the filetree model
+      // extact parent base on fileId
+
+      const file = createFileDir({
+        fullPath: path,
+        root,
+        id_: id,
+        filedir: 'file',
+        parent,
+        newName: name,
+      }); // No new leafs are required since this file is already a part of the filetree model
       if (file) {
         setFileSelected({ name: name, value: file, id: id });
       } else {
@@ -40,7 +62,13 @@ const FileTreeView: React.FC<FileTreeViewProps> = ({ data, ydoc }) => {
     <>
       {filetree && filetree?.length > 0 ? (
         filetree.map((node, index) => (
-          <Entry key={index} entry={node} depth={1} onFileClick={onFileClick} ydoc={ydoc}/>
+          <Entry
+            key={index}
+            entry={node}
+            depth={1}
+            onFileClick={onFileClick}
+            ydoc={ydoc}
+          />
         ))
       ) : (
         <Text color="white" fontSize="xs" fontFamily="mono" pl={8} pt={4}>

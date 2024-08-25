@@ -2,7 +2,7 @@ import * as Y from 'yjs';
 import { YMapValueType } from '../context/EditorContext';
 
 interface ProjectNode {
-  type: 'dir';
+  type: 'directory';
   id: string;
   name: string;
   children: [];
@@ -29,7 +29,7 @@ export function getPathFromId(
     }
 
     // If it's a directory, recursively search its children
-    if (node.type === 'dir' && node.children) {
+    if (node.type === 'directroy' && node.children) {
       for (const child of node.children) {
         const childPath = findNodePath(child, id, [...path, node.id || '']);
         if (childPath) {
@@ -54,15 +54,26 @@ export function getPathFromId(
 
 // use previous function to get fullpath which is a string full of ids
 // this function works only when I want to click a file that's already found in the tree
-export function createFileDir(
-  fullPath: string[],
-  root: YMapValueType,
-  _id: string,
-  filedir: string,
-) {
+type P = {
+  fullPath: string[];
+  parent: string;
+  root: YMapValueType;
+  _id: string;
+  filedir: string;
+  newName: string;
+};
+export function createFileDir({
+  fullPath,
+  parent,
+  root,
+  _id,
+  filedir,
+  newName,
+}: P) {
   // using the root y.maps will be created until the file is reached
   // Data stored in the fullpath consist of ids which is used to index files
   let fileroot = root;
+  console.log('================>', {fullPath})
   for (const path of fullPath) {
     if (!(fileroot instanceof Y.Map)) {
       console.error('Invalid map structure encountered.'); // This is happens if the main root wasn't y.map
@@ -74,8 +85,10 @@ export function createFileDir(
       // for every new creation add metadata
       const metadata = {
         id: path,
-        type: 'dir',
+        type: 'directory',
         new: true,
+        name: newName,
+        parent_id: parent,
       };
       fileroot.set(`${path}_metadata`, metadata); // Type Error
       fileroot.set(path, subdir);
@@ -94,6 +107,8 @@ export function createFileDir(
       id: _id,
       type: filedir,
       new: true,
+      name: newName,
+      parent_id: parent,
     };
     fileroot.set(`${_id}_metadata`, metadata); // Type Error
     fileroot.set(_id, newfile);

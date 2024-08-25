@@ -1,6 +1,7 @@
 import { Injectable, Inject, forwardRef, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ObjectId } from 'mongodb';
 import { FileMongo } from './file-mongo.entity';
 import {
   parseCreateFileMongoDto, CreateFileOutDto, parseUpdateFileMongoDto,
@@ -8,7 +9,6 @@ import {
 } from './dto/create-file-mongo.dto';
 import { DirectoryMongoService } from '@directory-mongo/directory-mongo.service';
 import { ProjectsService } from '@projects/projects.service';
-import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class FileMongoService {
@@ -53,11 +53,11 @@ export class FileMongoService {
     return files;
   }
 
-  async findOne(id: string): Promise<FileMongo | null> {]
+  async findOne(id: string): Promise<FileMongo | null> {
     try {
       const _id = new ObjectId(id);
       return await this.fileRepository.findOneBy({ _id });
-    } catch (error) {
+    } catch (err) {
       throw new NotFoundException('File not found');
     }
   }

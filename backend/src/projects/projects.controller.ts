@@ -46,7 +46,7 @@ export class ProjectsController {
     @Param('id') id: string,
     @Query('depth') depth: number,
     @Request() req: any): Promise<ProjectMongo[]> {
-      console.log('depth', depth);
+    console.log('depth', depth);
     return this.projectsService.findAllByUsernameDepth(req.user.username, depth, id);
   }
 
@@ -57,6 +57,10 @@ export class ProjectsController {
     @Param('id') id: string,
     @Query('depth') depth: number,
   ) {
+    if (!depth) { depth = 0 }
+    if (!username) {
+      console.log('+++++++++++++++>')
+    }
     return this.projectsService.findAllByUsernameDepth(username, depth, id);
   }
 

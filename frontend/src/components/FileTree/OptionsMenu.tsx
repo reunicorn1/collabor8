@@ -65,7 +65,7 @@ export default function OptionsMenu({ type, id, ydoc }: FileDirMenuProps) {
             <MenuItem
               fontSize="xs"
               onClick={(e) => {
-                handleClick('dir');
+                handleClick('directory');
                 e.stopPropagation();
               }}
             >

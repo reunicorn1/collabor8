@@ -54,6 +54,7 @@ export interface Project {
   project_id: string;
   project_name: string;
   owner_id: string;
+  username: string;
   environment_id?: string;
   created_at: Date;
   updated_at: Date;

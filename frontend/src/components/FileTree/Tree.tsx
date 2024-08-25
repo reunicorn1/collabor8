@@ -40,6 +40,7 @@ const Tree: React.FC<TreeProps> = ({ ydoc, name }) => {
     onOpen();
   };
 
+  console.log('------------------_>', {root})
   return (
     <>
       <Flex

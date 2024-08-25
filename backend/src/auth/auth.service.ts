@@ -19,6 +19,9 @@ import * as bcrypt from 'bcrypt';
 import { adminEmails } from '@config/configuration';
 import { RedisService } from '@redis/redis.service';
 import { v4 as uuidv4 } from 'uuid';
+import { MailService } from '@mail/mail.service';
+import { Queue } from 'bullmq';
+import { InjectQueue } from '@nestjs/bullmq';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +29,8 @@ export class AuthService {
     private readonly usersService: UsersService,
     private jwtService: JwtService,
     private redisService: RedisService,
-  ) { }
+    @InjectQueue('mailer') private mailerQueue: Queue,
+  ) {}
 
   async signIn(user: Partial<Users>): Promise<{
     accessToken: string;
@@ -51,6 +55,12 @@ export class AuthService {
       ...userinfo
     } = await this.usersService.findOneBy({ username: user.username });
     if (!is_verified) {
+      const job = await this.mailerQueue.add('verification', {
+        email,
+        username: user.username,
+        user_id,
+      });
+      console.log(`------------> ${job}`);
       throw new UnauthorizedException('User is not verified. Please verify your email');
     }
     return {

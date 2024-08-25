@@ -20,7 +20,7 @@ import FileDocs from './file-mongo.docs';
 @ApiTags('FileMongo')
 @Controller('files')
 export class FileMongoController {
-  constructor(private readonly fileService: FileMongoService) {}
+  constructor(private readonly fileService: FileMongoService) { }
 
   @FileDocs.create()
   @Post()

@@ -219,7 +219,7 @@ if [ "$create_branch" = true ]; then
 	create_branch_interactively
 fi
 
-if [ "$fetch_branch" = true ]|| [ "$checkout_remote_branch" = true ]; then
+if [ "$fetch_branch" = true ] || [ "$checkout_remote_branch" = true ]; then
 	fetch_and_select_branch
 fi
 

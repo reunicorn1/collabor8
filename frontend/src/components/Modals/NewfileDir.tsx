@@ -53,6 +53,7 @@ const NewfileDir: React.FC<ModalProps> = ({
   };
   const handleSave = () => {
     // TODO: Validation of the name in the database among sibling files should be made from database
+    console.log('=================>', { parent });
     if (newName) {
       const id = uuidv4();
       // Since creating a file in the Y.map depend on the path in the filetree, creation of the leaf has to be made first
@@ -63,7 +64,14 @@ const NewfileDir: React.FC<ModalProps> = ({
       const path = getPathFromId(data.filetree, id); //type error
       console.log(path);
       if (path) {
-        const file = createFileDir(path, root, id, filedir); //type error. This function creates the new ytext/ymap
+        const file = createFileDir({
+          fullPath: path,
+          root,
+          _id: id,
+          filedir,
+          newName,
+          parent,
+        }); //type error. This function creates the new ytext/ymap
 
         set('filetree', data.filetree); // trigger to re-render the structure for all clients connected
         if (file instanceof Y.Text)

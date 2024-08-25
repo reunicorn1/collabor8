@@ -5,7 +5,7 @@ interface FileNode {
 }
 
 interface DirectoryNode {
-  type: 'dir';
+  type: 'directory';
   id: string;
   name: string;
   children?: (FileNode | DirectoryNode)[];
@@ -24,11 +24,11 @@ export function addLeaf(
     targetId: string,
   ): DirectoryNode | null {
     console.log('addleaf', node, targetId);
-    if (node.type === 'dir' && node.id === targetId) {
+    if (node.type === 'directory' && node.id === targetId) {
       return node as DirectoryNode;
     }
 
-    if (node.type === 'dir' && node.children) {
+    if (node.type === 'directory' && node.children) {
       for (const child of node.children) {
         const found = findDirectoryNode(child, targetId);
         if (found) return found;
@@ -66,7 +66,7 @@ export function createLeaf(filedir: string, id: string, name: string) {
     } as FileNode;
   } else {
     return {
-      type: 'dir',
+      type: 'directory',
       id,
       name: name,
       children: [],

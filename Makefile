@@ -42,7 +42,7 @@ endef
 # Check environment
 check-environment:
 	@if [ -z "$(TMUX)" ]; then \
-		echo "Error: tmux is not installed. Please install tmux."; \
+		echo "Error: tmux is not installed. Please install tmux.";
 		exit 1; \
 	fi
 	@if [ -z "$(NPM)" ]; then \
@@ -52,7 +52,7 @@ check-environment:
 
 # Target to set up the project
 setup: ## Setup project and install core tools and dependencies
-	@$(MAKE) -s check-environment
+	# @$(MAKE) -s check-environment
 	@$(MAKE) -s check-dependencies || exit 1
 
 # Check and install dependencies

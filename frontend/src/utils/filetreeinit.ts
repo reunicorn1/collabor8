@@ -7,7 +7,7 @@ import { YMapValueType } from '../context/EditorContext';
 export default function createfiletree(root: Y.Map<YMapValueType>) {
   if (!root.get('filetree')) {
     const rootnode = {
-      type: 'dir',
+      type: 'directory',
       id: '0',
       name: 'root',
       children: [],

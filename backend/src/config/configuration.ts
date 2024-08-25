@@ -8,7 +8,18 @@ export default () => ({
 });
 
 export const corsConfig = {
-  origin: 'http://localhost:3001',
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'http://localhost:3001',
+      'http://localhost:1234',
+    ];
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   preflightContinue: false,
   optionsSuccessStatus: 204,
