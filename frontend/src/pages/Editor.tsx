@@ -21,7 +21,7 @@ export default function Editor() {
   const { projectId = '' } = useParams();
   const [isDragging, setIsDragging] = useState(false);
   const location = useLocation();
-  const { name: project_name, ...project } = location.state || { project_name: 'Untitled' };
+  const { project_name, ...project } = location.state;
 
   return (
     <EditorProvider>

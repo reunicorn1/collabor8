@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -21,7 +21,9 @@ import { YMapValueType } from '../../context/EditorContext';
 import { getPathFromId, createFileDir } from '../../utils/followtree';
 import { v4 as uuidv4 } from 'uuid';
 import * as Y from 'yjs';
-
+import { useParams } from 'react-router-dom';
+import { useCreateFileMutation } from '@store/services/file';
+import { useCreateDirectoryMutation } from '@store/services/directory';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -38,10 +40,14 @@ const NewfileDir: React.FC<ModalProps> = ({
   ydoc,
   parent,
 }) => {
+  const { projectId: project_id = '' } = useParams();
   const { setFileSelected } = useFile()!;
   const initialRef = React.useRef(null);
   const [newName, setNewName] = useState('');
-  const root = ydoc.getMap('root'); // This gets the value of the root if created before
+  const root = useMemo(() => ydoc.getMap('root'), [ydoc]);
+  // const root = ydoc.getMap('root'); // This gets the value of the root if created before
+  const [createFile] = useCreateFileMutation();
+  const [createDir] = useCreateDirectoryMutation();
 
   const { data, set } = useYMap<
     Y.Map<YMapValueType> | Y.Text,
@@ -51,11 +57,48 @@ const NewfileDir: React.FC<ModalProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(e.target.value);
   };
-  const handleSave = () => {
+  const handleSave = async () => {
     // TODO: Validation of the name in the database among sibling files should be made from database
+    let id = null;
     console.log('=================>', { parent });
     if (newName) {
-      const id = uuidv4();
+      // create a new fi
+      console.log('xxxxxxxxxxxCreating File: ', { newName });
+      console.log('xxxxxxxxxxxFor parent: ', {
+        parent_id: parent === '0' ? project_id : parent,
+      });
+      console.log('xxxxxxxxxxxParent is project: ', { parent: parent === '0' });
+      if (filedir === 'file') {
+        createFile({
+          project_id,
+          name: newName,
+          parent_id: parent === '0' ? project_id : parent,
+          file_content: '',
+        })
+          .unwrap()
+          .then((res) => {
+            const { _id } = res;
+            id = _id;
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      } else {
+        createDir({
+          project_id,
+          name: newName,
+          parent_id: parent === '0' ? project_id : parent,
+        })
+          .unwrap()
+          .then((res) => {
+            const { _id } = res;
+            id = _id;
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+      console.log('=================>', { id });
       // Since creating a file in the Y.map depend on the path in the filetree, creation of the leaf has to be made first
       const leaf = createLeaf(filedir, id, newName);
       addLeaf(data.filetree, leaf, parent); // also hopeless type error

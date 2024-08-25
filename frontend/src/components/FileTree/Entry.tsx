@@ -1,10 +1,25 @@
 import React, { useState } from 'react';
-import { File, Directory } from './types';
+// import { File, Directory } from '@types';
 import { FaFolder, FaFolderOpen, FaFileCode } from 'react-icons/fa';
 import { Box, Icon, Text, Spacer } from '@chakra-ui/react';
 import { useFile } from '../../context/EditorContext';
 import OptionsMenu from './OptionsMenu';
 import * as Y from 'yjs';
+
+interface File {
+  type: 'file';
+  id: string;
+  name: string;
+}
+
+interface Directory {
+  type: 'directory';
+  id: string;
+  name: string;
+  children?: TreeNode[];
+}
+
+type TreeNode = File | Directory;
 
 interface EntryProps {
   entry: File | Directory;
@@ -18,7 +33,7 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
   const { fileSelected } = useFile()!;
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
-  console.log('%c--------->', 'background: yellow;',{type: entry.type})
+  console.log('%c--------->', 'background: yellow;', { type: entry.type });
   return (
     <>
       <Box

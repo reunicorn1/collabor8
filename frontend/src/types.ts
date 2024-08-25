@@ -109,7 +109,7 @@ export interface CreateDirectoryDto {
 }
 
 export interface Directory {
-  _id: ObjectId | string;
+  _id: string;
   name: string;
   created_at: Date;
   parent_id?: ObjectId | string;
@@ -121,7 +121,7 @@ export interface Directory {
  * File-related interfaces
  */
 export interface File {
-  _id: ObjectId | string;
+  _id: string;
   name: string;
   file_content: string;
   project_id: ObjectId | string;

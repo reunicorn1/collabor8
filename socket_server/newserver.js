@@ -16,7 +16,7 @@ const updateInterval = 60000;
 
 /**
  * TODO:
- * `onLoadDocument`: 
+ * `onLoadDocument`:
  *    1. should load project from GET reqest DB, if not exist create it 😈️
  *    2. tranform data, then set the fileTree accordingly
  * `onUpdate`:
@@ -345,6 +345,7 @@ const server = new Hocuspocus({
         //a, abc, abc;adf
         // do smth with the file
         // handler(v, ymap.get(`${k._metadata}`)
+        console.log('----->', v.toString())
         await handleOnStoreDocument({
           token,
           projectId: context.document.name,
@@ -362,11 +363,14 @@ async function handleLoadDocument(context, { token, username }) {
   const yMap = context.document.getMap("root");
   const projectId = context.document.name
   try {
-    const project_ = await axios.get(`${nestServerUrl}/projects/${username}/${projectId}?depth=0`, {
+    const project = await axios.get(`${nestServerUrl}/projects/${username}/${projectId}?depth=0`, {
       headers: { Authorization: `Bearer ${token}` }
-    })
+    });
+    console.log( project.data )
+
     //console.log({ user: username })
-    //yMap.set("filetree", transformData(project));
+    const transformedData = transformData(project.data[0]);
+    yMap.set("filetree", transformedData);
   } catch (err) {
     //console.log({ resp: err.response.message })
 
@@ -475,7 +479,7 @@ function handleDisconnect(context) {
   console.info(chalk.blue(`Client disconnected: ${connectionId}`));
 }
 
-// update 
+// update
 async function handleOnStoreDocument({ token, projectId, yText, fileMeta }) {
   // console.log('Updating document:', value.toJSON());
   console.log('==============>', { fileMeta })

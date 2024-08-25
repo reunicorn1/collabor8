@@ -13,6 +13,7 @@ import NewfileDir from '../Modals/NewfileDir';
 import { useYMap } from 'zustand-yjs';
 import { YMapValueType } from '../../context/EditorContext';
 import FileTreeView from '../FileTree/FileTreeView';
+import { useParams } from 'react-router-dom';
 
 interface TreeProps {
   ydoc: Y.Doc;
@@ -40,7 +41,7 @@ const Tree: React.FC<TreeProps> = ({ ydoc, name }) => {
     onOpen();
   };
 
-  console.log('------------------_>', {root})
+  console.log('------------------_>', { root });
   return (
     <>
       <Flex

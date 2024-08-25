@@ -21,7 +21,7 @@ SOCKET_SESSION := SocketIO
 # Scripts
 FRONTEND_SCRIPT := npm --prefix frontend run dev
 BACKEND_SCRIPT := npm --prefix backend run start:dev
-SOCKET_SCRIPT := nodemon socket_server/newserver.js
+SOCKET_SCRIPT := npm --prefix socket_server run dev
 
 # Define run session
 define run_session

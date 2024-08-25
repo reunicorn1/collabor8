@@ -16,8 +16,8 @@ import { YMapValueType } from '../../context/EditorContext';
 import createfiletree from '../../utils/filetreeinit';
 import Tabs from './Tabs';
 import { useAppSelector } from '../../hooks/useApp';
-import { selectAccessToken } from '@store/selectors';
-import { Project, ProjectShares } from '@types'
+import { selectAccessToken, selectUserDetails } from '@store/selectors';
+import { Project, ProjectShares } from '@types';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -37,6 +37,7 @@ interface CodeEditorProps {
 const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
   const { theme, language, mode, setMode } = useSettings()!;
   const token = useAppSelector(selectAccessToken);
+  const user = useAppSelector(selectUserDetails);
   const { fileSelected, setAwareness, setFileTree } = useFile()!;
   const editorRef = useRef<Editor | null>(null);
   const projectRoot = useRef<Y.Map<YMapValueType> | null>(null);
@@ -92,7 +93,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
     // Awareness information related to the presence of the user's cursor
     awareness.current = provider.awareness;
     awareness.current.setLocalStateField('user', {
-      name: getRandomUsername(), // TODO: import the username from the context and use it here else use Random
+      name: user?.username || getRandomUsername(), // TODO: import the username from the context and use it here else use Random
       color: RandomColor(),
     });
 
@@ -125,7 +126,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
             updateAwareness();
           });
         }
-
       }
     });
     // Clean up before the user leaves
@@ -140,7 +140,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
       binding.current?.destroy();
       provider.disconnect();
     };
-
   }, [project._id]);
 
   useEffect(() => {

@@ -25,7 +25,7 @@ export class LoggingInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap((response) => {
         const responseTime = Date.now() - now;
-        // this.logger.log(`Response: ${JSON.stringify(response)}`)
+        this.logger.log(`Response: ${JSON.stringify(response)}`)
         this.logger.verbose(`Response Time: ${responseTime}ms`);
       }),
     );

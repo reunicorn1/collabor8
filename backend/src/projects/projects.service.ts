@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ObjectId } from 'typeorm';
 import { Projects } from './project.entity';
@@ -6,7 +6,6 @@ import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { ProjectMongoService } from '@project-mongo/project-mongo.service';
 import { EnvironmentMongoService } from '@environment-mongo/environment-mongo.service';
 import { UsersService } from '@users/users.service';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { MYSQL_CONN } from '@constants';
 import {
   parseCreateProjectDto,

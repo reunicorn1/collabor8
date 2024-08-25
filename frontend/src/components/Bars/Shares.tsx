@@ -5,7 +5,7 @@ import { useDisclosure } from '@chakra-ui/react';
 import ShareMenu from '../Modals/ShareMenu';
 
 export default function Shares() {
-  const { awareness } = useFile()!;
+  const { awareness } = useFile()!; // why so excited?
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // TODO: The plus icon is displayed only for the project owner
@@ -18,7 +18,12 @@ export default function Shares() {
       minHeight="100vh"
       p={3}
     >
-      <Box display="flex" flexDirection="column" alignItems="center">
+      <Box
+        display="flex"
+        key={crypto.randomUUID()}
+        flexDirection="column"
+        alignItems="center"
+      >
         {Array.from(awareness).map(([_, value], index) => (
           <>
             <Tooltip
