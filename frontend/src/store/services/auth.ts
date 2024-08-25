@@ -33,6 +33,20 @@ export const authApi = api.injectEndpoints({
         credentials: 'include',
       }),
     }),
+    changePassword: builder.mutation<User, { old: string; new: string }>({
+      query: (data) => ({
+        url: '/admin/me/change-password',
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      }),
+    }),
+    resetPassword: builder.mutation<User, { email: string }>({
+      query: ({ email }) => ({
+        url: '/auth/me/reset-password',
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      }),
+    }),
     // Get user profile (for authenticated user)
     getProfile: builder.query<User, void>({
       query: () => '/auth/profile',
@@ -56,4 +70,6 @@ export const {
   useGetProfileQuery,
   useCreateUserMutation,
   useRefreshTokenMutation,
+  useChangePasswordMutation,
+  useResetPasswordMutation,
 } = authApi;
