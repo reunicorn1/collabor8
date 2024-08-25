@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ObjectId } from 'typeorm';
 import { Projects } from './project.entity';
@@ -25,7 +25,7 @@ export class ProjectsService {
     private readonly projectMongoService: ProjectMongoService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
-  ) { }
+  ) {}
 
   // Create a new project
   // TODO: TODAY modify env to be obtained from user object
@@ -66,18 +66,17 @@ export class ProjectsService {
     return this.projectsRepository.findBy({ [field]: value });
   }
   async getIds(id: string): Promise<{ project_id: string; _id: string }> {
-    const IDS= {
+    const IDS = {
       project_id: null,
       _id: null,
     };
-     if (uuidValidate(id)) {
-       IDS.project_id = id;
+    if (uuidValidate(id)) {
+      IDS.project_id = id;
       const project = await this.projectsRepository.findOneBy({
         project_id: id,
       });
       id = project._id.toString();
-    }
-    else{
+    } else {
       IDS._id = id;
     }
     return IDS;
@@ -94,7 +93,9 @@ export class ProjectsService {
       if (!IDS.project_id) {
         throw new Error('Project not found');
       }
-      project = await this.projectsRepository.findOneBy({ project_id: IDS.project_id });
+      project = await this.projectsRepository.findOneBy({
+        project_id: IDS.project_id,
+      });
       IDS._id = project._id.toString();
     } else {
       project = await this.projectsRepository.findOneBy({ _id: IDS._id });
@@ -103,7 +104,11 @@ export class ProjectsService {
     if (project.username !== username) {
       throw new Error('Project not found');
     }
-    return await this.projectMongoService.findAllByUsernameDepth(username, depth, IDS._id);
+    return await this.projectMongoService.findAllByUsernameDepth(
+      username,
+      depth,
+      IDS._id,
+    );
   }
 
   // retrieve all user projects by username and is paginated
@@ -119,10 +124,12 @@ export class ProjectsService {
     }
     const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
     const sortDirection = sort.startsWith('-') ? 'DESC' : 'ASC';
-    const total = await this.projectsRepository.createQueryBuilder('projects')
+    const total = await this.projectsRepository
+      .createQueryBuilder('projects')
       .where('projects.username = :username', { username })
       .getCount();
-    const projects = await this.projectsRepository.createQueryBuilder('projects')
+    const projects = await this.projectsRepository
+      .createQueryBuilder('projects')
       .where('projects.username = :username', { username })
       .skip(skip)
       .take(limit)
@@ -157,13 +164,18 @@ export class ProjectsService {
       if (!IDS.project_id) {
         throw new Error('Project not found');
       }
-      project = await this.projectsRepository.findOneBy({ project_id: IDS.project_id });
+      project = await this.projectsRepository.findOneBy({
+        project_id: IDS.project_id,
+      });
       IDS._id = project._id.toString();
     }
     if (!project) {
       throw new Error('Project not found');
     }
-    const mongoProject = await this.projectMongoService.findOneBy('_id', IDS._id);
+    const mongoProject = await this.projectMongoService.findOneBy(
+      '_id',
+      IDS._id,
+    );
     if (!mongoProject) {
       throw new Error('Project not found');
     }
@@ -193,8 +205,7 @@ export class ProjectsService {
   // Delete all projects by owner ID
   async removeAllByEnvironment(environment_id: string): Promise<void> {
     const projects = await this.findAllBy('environment_id', environment_id);
-    const projectsMongo = await this.projectMongoService.removeAllByEnvironment(
-      environment_id,
-    );
+    const projectsMongo =
+      await this.projectMongoService.removeAllByEnvironment(environment_id);
   }
 }
