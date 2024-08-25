@@ -35,6 +35,7 @@ export const adminApi = api.injectEndpoints({
         body: data,
       }),
     }),
+
     // Delete a specific user profile by username (admin only)
     removeUserAdmin: builder.mutation<{ message: string }, string>({
       query: (username) => ({

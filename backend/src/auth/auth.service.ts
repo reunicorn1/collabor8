@@ -174,6 +174,34 @@ export class AuthService {
     await this.usersService.save(user);
     return this.usersService.removePasswordHash(user);
   }
+
+
+  async sendResetPasswordEmail(email: string): Promise<{ message: string }> {
+    const user = await this.usersService.findOneBy({ email });
+    if (!user) {
+      return { message: 'Password reset email sent' };
+    }
+    const token = uuidv4();
+    await this.redisService.set(token, user.user_id, 3600); // Token expires after an hour
+    const job = await this.mailerQueue.add('reset-password', {
+      email,
+      username: user.username,
+      user_id: user.user_id,
+      url: `${process.env.FRONTEND_URL}/reset-password?token=${token}`,
+    });
+    console.log(`------------> ${job}`);
+    return { message: 'Password reset email sent' };
+  }
+
+  async validateToken(token: string, newPassword: string): Promise<{ message: string }> {
+    const user = await this.usersService.findOneBy({ user_id: await this.redisService.get(token) });
+    if (!user) {
+      throw new NotFoundException('Invalid token');
+    }
+    user.password_hash = this.encryptPwd(newPassword);
+    await this.usersService.save(user);
+    return { message: 'Password reset successfully' };
+  }
   // async attachEnvironment(user: Users): Promise<Users> {
   //   const userEnvironment = this.environmentService.create({
   //     username: user.username,

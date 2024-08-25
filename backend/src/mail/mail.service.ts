@@ -16,15 +16,31 @@ export class MailService extends WorkerHost {
     const endpoint = {
       development: 'http://localhost:3000/auth/verify',
       production: 'https://collabor8.netlify.app/auth/verify',
+      signinDev: 'http://localhost:3000/auth/signin',
+      signinProd: 'https://collabor8.netlify.app/auth/signin',
+
     };
     const url = `${endpoint[environ] ?? endpoint.development}?token=${job.data.user_id}`;
     switch (job.name) {
       case 'verification': {
         return await this.mailerService.sendMail({
           to: job.data.email,
-          from: '"Support Team" <support@example.com>', // override default from
+          from: '"Support Team" <support@collabor8.com>', // override default from
           subject: 'Welcome to Collabor8! Confirm your Email',
           template: './confirmation', // `.hbs` extension is appended automatically
+          context: {
+            name: job.data.username,
+            url,
+          },
+        });
+      }
+      case 'reset-password': {
+        const url = `${endpoint[environ] ?? endpoint.development}`;
+        return await this.mailerService.sendMail({
+          to: job.data.email,
+          from: '"Support Team" <support@collabor8.com>', // override default from
+          subject: 'Password Reset Request',
+          template: './reset-password', // `.hbs` extension is appended automatically
           context: {
             name: job.data.username,
             url,

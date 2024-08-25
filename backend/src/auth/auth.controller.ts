@@ -130,8 +130,19 @@ export class AuthController {
   }
 
   // TODO: send email to user with reset password link
-  // @Get('me/reset-password')
-  // async resetPassword(@Request() req): Promise<{ message: string }> {
-    // return this.authService.resetPasswordRequest(req.user.username);
-  // }
+  @Public()
+  @Get('me/reset-password')
+  async resetPassword(@Body() email: string): Promise<{ message: string }> {
+    return this.authService.sendResetPasswordEmail(email);
+  }
+  // after user clicks forgot password, send link in email
+  // user clicks link, redirect to reset password page
+  // user enters new password
+  // backend validates token and updates password
+  // user is redirected to login page
+  @Public()
+  @Get('validate-reset-token')
+  async validateResetToken(@Request() req, @Body() password: string): Promise<{ message: string }> {
+    return this.authService.validateToken(req.query.token, password);
+  }
 }
