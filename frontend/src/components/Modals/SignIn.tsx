@@ -10,28 +10,30 @@ import {
   FormLabel,
   Input,
   Button,
+Flex,
   useToast,
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 import { useLoginUserMutation } from '@store/services/auth';
 import { useNavigate } from 'react-router-dom';
+import PasswordReset from './PasswordReset';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// SignIn Modal handles user login.
 export default function SignIn({ isOpen, onClose }: ModalProps) {
   const initialRef = useRef(null);
   const finalRef = useRef(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [login] = useLoginUserMutation();
+  const [isResetPasswordOpen, setResetPasswordOpen] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
 
-  // Handles the login process.
+  // Handles the login process
   const handleLogin = () => {
     if (!username.trim()) {
       toast({
@@ -59,7 +61,7 @@ export default function SignIn({ isOpen, onClose }: ModalProps) {
           isClosable: true,
         });
         navigate('/dashboard');
-        handleClose(); // close & navigate to dashboard modal on success
+        handleClose(); // Close & navigate to dashboard modal on success
       })
       .catch((err) => {
         let errorMessage = 'Login failed.';
@@ -90,6 +92,11 @@ export default function SignIn({ isOpen, onClose }: ModalProps) {
       });
   };
 
+  // Opens the password reset modal
+  const handleResetPassword = () => {
+    setResetPasswordOpen(true);
+  };
+
   // Resets the input fields
   const handleClose = () => {
     setUsername('');
@@ -97,74 +104,106 @@ export default function SignIn({ isOpen, onClose }: ModalProps) {
     onClose();
   };
 
+  // Closes the password reset modal
+  const handleResetPasswordClose = () => {
+    setResetPasswordOpen(false);
+  };
+
   return (
-    <Modal
-      initialFocusRef={initialRef}
-      finalFocusRef={finalRef}
-      isOpen={isOpen}
-      onClose={handleClose}
-    >
-      <ModalOverlay />
-      <ModalContent
-        bg="brand.900"
-        top="20px"
-        right="40px"
-        position="absolute"
-        transform="none"
+    <>
+      <Modal
+        initialFocusRef={initialRef}
+        finalFocusRef={finalRef}
+        isOpen={isOpen}
+        onClose={handleClose}
       >
-        <ModalHeader color="white" fontFamily="mono" fontSize="xx">
-          Secure Login: Enter Your Credentials
-        </ModalHeader>
-        <ModalCloseButton color="white" />
-        <ModalBody pb={6}>
-          <FormControl>
-            <FormLabel color="grey" fontFamily="mono" fontSize="md">
-              Username (a.k.a. your unique ID)
-            </FormLabel>
-            <Input
-              color="white"
-              fontFamily="mono"
-              fontSize="sm"
-              ref={initialRef}
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </FormControl>
+        <ModalOverlay />
+        <ModalContent
+          bg="brand.900"
+          top="20px"
+          right="40px"
+          position="absolute"
+          transform="none"
+        >
+          <ModalHeader color="white" fontFamily="mono" fontSize="lg">
+            Secure Login: Enter Your Credentials
+          </ModalHeader>
+          <ModalCloseButton color="white" />
+          <ModalBody pb={6}>
+            <FormControl>
+              <FormLabel color="grey" fontFamily="mono" fontSize="md">
+                Username (a.k.a. your unique ID)
+              </FormLabel>
+              <Input
+                color="white"
+                fontFamily="mono"
+                fontSize="sm"
+                ref={initialRef}
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </FormControl>
 
-          <FormControl mt={4}>
-            <FormLabel color="grey" fontFamily="mono" fontSize="md">
-              Password (the secret sauce)
-            </FormLabel>
-            <Input
-              type="password"
-              color="white"
-              fontFamily="mono"
-              fontSize="sm"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </FormControl>
-        </ModalBody>
+            <FormControl mt={4}>
+              <FormLabel color="grey" fontFamily="mono" fontSize="md">
+                Password (the secret sauce)
+              </FormLabel>
+              <Input
+                type="password"
+                color="white"
+                fontFamily="mono"
+                fontSize="sm"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </FormControl>
+          </ModalBody>
 
-        <ModalFooter mb={4}>
-          <Button
-            colorScheme="orange"
-            mr={3}
-            size="sm"
-            fontFamily="mono"
-            isDisabled={!username || !password}
-            onClick={handleLogin}
-            ref={finalRef}
-          >
-            Authenticate
-          </Button>
-          <Button size="sm" fontFamily="mono" onClick={handleClose}>
-            Abort Mission
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+          <ModalFooter mb={4}>
+            <Button
+              colorScheme="orange"
+              mr={3}
+              size="sm"
+              fontFamily="mono"
+              isDisabled={!username || !password}
+              onClick={handleLogin}
+              ref={finalRef}
+            >
+              Authenticate
+            </Button>
+            <Button size="sm" fontFamily="mono" onClick={handleClose}>
+              Abort Mission
+            </Button>
+            <Button
+              variant="link"
+              colorScheme="orange"
+              size="sm"
+              fontFamily="mono"
+              onClick={handleResetPassword}
+            >
+              Forgot Password?
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <PasswordReset
+        isOpen={isResetPasswordOpen}
+        onClose={handleResetPasswordClose}
+        onSuccess={() => {
+          handleResetPasswordClose();
+          toast({
+            title: 'Password Reset Sent',
+            description: 'Please check your email to reset your password.',
+            status: 'success',
+            variant: 'subtle',
+            position: 'bottom-left',
+            isClosable: true,
+          });
+        }}
+      />
+    </>
   );
 }

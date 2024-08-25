@@ -10,12 +10,16 @@ import {
 } from '@chakra-ui/react';
 import NavigationBar from '@components/Bars/NavigationBar';
 import SignUp from '@components/Modals/SignUp';
+import ResetPasswordModal from '@components/Modals/ResetPassword';
 import backgroundImage from '../assets/ahjHe3h.jpg';
 import useTypingEffect from '../hooks/useTypingEffect';
+import { useLocation } from 'react-router-dom';
 
 const Home = () => {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [animationStarted, setAnimationStarted] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const location = useLocation();
 
   const handleOpenSignUp = () => setIsSignUpOpen(true);
   const handleCloseSignUp = () => setIsSignUpOpen(false);
@@ -23,6 +27,15 @@ const Home = () => {
   useEffect(() => {
     setAnimationStarted(true);
   }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (location.pathname === '/reset-password') {
+        setShowModal(true);
+      }
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   const typedText = useTypingEffect(
     '  Collabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.',
@@ -41,6 +54,7 @@ const Home = () => {
         minH="100vh"
         p={5}
         textAlign="center"
+        position="relative"
       >
         {/* Background Image Wrapper */}
         <Box
@@ -154,6 +168,21 @@ const Home = () => {
           handleCloseSignUp();
         }}
       />
+
+      {/* ResetPasswordModal */}
+      {showModal && (
+        <Box
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          zIndex={9999}
+          bg="rgba(0, 0, 0, 0.5)"
+        >
+          <ResetPasswordModal />
+        </Box>
+      )}
     </>
   );
 };

@@ -11,6 +11,7 @@ import About from './pages/About';
 // import NavigationBar from './components/Bars/NavigationBar';
 import useAuthRefresh from './hooks/useAuthRefresh';
 import useLogOut from './hooks/useLogOut';
+import ResetPasswordModal from '@components/Modals/ResetPassword';
 
 const App: React.FC = () => {
   useAuthRefresh();
@@ -27,6 +28,7 @@ const App: React.FC = () => {
         <Route path="/dashboard" element={<DashboardPage />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
         <Route path="/editor/:projectId" element={<Editor />}></Route>
+        <Route path="/reset-password" element={<ResetPasswordModal />} />
       </Routes>
     </>
   );

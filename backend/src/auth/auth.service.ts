@@ -61,7 +61,9 @@ export class AuthService {
         user_id,
       });
       console.log(`------------> ${job}`);
-      throw new UnauthorizedException('User is not verified. Please verify your email');
+      throw new UnauthorizedException(
+        'User is not verified. Please verify your email',
+      );
     }
     return {
       accessToken: await this.jwtService.signAsync(payload),
@@ -95,7 +97,7 @@ export class AuthService {
     }
 
     await this.usersService.update(user.username, { is_verified: true });
-    return { "message": "User verified" };
+    return { message: 'User verified' };
   }
 
   async verificationId(email: string): Promise<string> {
@@ -147,7 +149,7 @@ export class AuthService {
             `User with username ${parsedDto.username} already exists`,
           );
         }
-      } catch (err) { }
+      } catch (err) {}
 
       const newUser = await this.usersService.create(parsedDto);
 
@@ -175,7 +177,6 @@ export class AuthService {
     return this.usersService.removePasswordHash(user);
   }
 
-
   async sendResetPasswordEmail(email: string): Promise<{ message: string }> {
     const user = await this.usersService.findOneBy({ email });
     if (!user) {
@@ -189,12 +190,20 @@ export class AuthService {
       user_id: user.user_id,
       url: `${process.env.FRONTEND_URL}/reset-password?token=${token}`,
     });
+    console.log(
+      `'Job URL:'--------> ${process.env.FRONTEND_URL}/reset-password?token=${token}`,
+    );
     console.log(`------------> ${job}`);
     return { message: 'Password reset email sent' };
   }
 
-  async validateToken(token: string, newPassword: string): Promise<{ message: string }> {
-    const user = await this.usersService.findOneBy({ user_id: await this.redisService.get(token) });
+  async validateToken(
+    token: string,
+    newPassword: string,
+  ): Promise<{ message: string }> {
+    const user = await this.usersService.findOneBy({
+      user_id: await this.redisService.get(token),
+    });
     if (!user) {
       throw new NotFoundException('Invalid token');
     }
@@ -225,7 +234,11 @@ export class AuthService {
   }
 
   async revokeRefreshToken(refreshToken: string) {
-    await this.redisService.set(`revoked:${refreshToken}`, 'true', 7 * 24 * 3600); // Refresh token revocation for 7 days
+    await this.redisService.set(
+      `revoked:${refreshToken}`,
+      'true',
+      7 * 24 * 3600,
+    ); // Refresh token revocation for 7 days
   }
 
   async isAccessTokenRevoked(jti: string): Promise<boolean> {
