@@ -24,6 +24,7 @@ const setAccessToken = (token: string | null) => {
   } else {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('userDetails');
+    localStorage.removeItem('refreshToken');
   }
 };
 

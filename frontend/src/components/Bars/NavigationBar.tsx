@@ -4,12 +4,32 @@ import {
   Flex,
   Spacer,
   Divider,
-  Text,
   Button,
-  Heading
+  Heading,
+  useDisclosure,
 } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
+import SignUp from '@components/Modals/SignUp';
+import SignIn from '@components/Modals/SignIn';
 
 export default function NavigationBar() {
+  const {
+    isOpen: isSignUpOpen,
+    onOpen: openSignUp,
+    onClose: closeSignUp,
+  } = useDisclosure();
+
+  const {
+    isOpen: isSignInOpen,
+    onOpen: openSignIn,
+    onClose: closeSignIn,
+  } = useDisclosure();
+
+  const handleSignUpSuccess = () => {
+    closeSignUp();
+    openSignIn();
+  };
+
   return (
     <Flex alignItems="center" bg="black" p={3}>
       <Image src="/logo-bb.png" h="25px" ml={3} />
@@ -28,14 +48,13 @@ export default function NavigationBar() {
         <Heading color="white" fontFamily="mono" ml={5} mr={5} size="xs">
           Features
         </Heading>
-        <Heading color="white" fontFamily="mono" ml={5} size="xs">
-          About
-        </Heading>
+        <Link to="/about">
+          <Heading color="white" fontFamily="mono" ml={5} size="xs">
+            About
+          </Heading>
+        </Link>
       </Box>
       <Spacer />
-      <Heading color="white" fontFamily="mono" size="xs">
-        Sign Up
-      </Heading>
       <Button
         ml={7}
         color="white"
@@ -44,9 +63,28 @@ export default function NavigationBar() {
         size="xs"
         fontFamily="mono"
         _hover={{ bg: 'white', color: 'black' }}
+        onClick={openSignUp} // open sign up modal
       >
-        Log in
+        Sign Up
       </Button>
+      <Button
+        ml={7}
+        color="white"
+        colorScheme="gray"
+        variant="outline"
+        size="xs"
+        fontFamily="mono"
+        _hover={{ bg: 'white', color: 'black' }}
+        onClick={openSignIn} // open login modal
+      >
+        Sign in
+      </Button>
+      <SignUp
+        isOpen={isSignUpOpen}
+        onClose={closeSignUp}
+        onSuccess={handleSignUpSuccess}
+      />
+      <SignIn isOpen={isSignInOpen} onClose={closeSignIn} />
     </Flex>
   );
 }
