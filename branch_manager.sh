@@ -14,11 +14,45 @@ show_help() {
 	echo "  -r  Checkout a remote branch"
 	echo "  -h  Show this help message"
 	echo "  -v  Enable verbose output"
+	echo "  -m  Resolve merge conflicts"
 	echo
 	echo "Branch name should be prepended with one of the following:"
 	echo "  chore/, feat/, fixbug/, hotfix/"
 	echo
 	exit 1
+}
+
+# Check if there are merge conflicts
+resolve_merge(){
+		conflict_files=$(git diff --name-only --diff-filter=U)
+
+		if [ -z "$conflict_files" ]; then
+			echo "No merge conflicts detected."
+			exit 0
+		fi
+
+		echo "Merge conflicts detected in the following files:"
+		echo "$conflict_files"
+
+	# Iterate through each conflicting file and open in nvim
+	for file in $conflict_files; do
+		echo "Opening $file in nvim to resolve conflicts..."
+		nvim "$file"
+
+		echo "Have you resolved the conflicts in $file? (y/n)"
+		read -r answer
+
+		if [ "$answer" == "y" ]; then
+			# Mark the file as resolved
+			git add "$file"
+			echo "$file has been marked as resolved."
+		else
+			echo "Skipping $file. Please resolve it manually."
+		fi
+	done
+
+	echo "All conflicts resolved or skipped. You may now continue with your git workflow."
+
 }
 
 # Function to validate branch name
@@ -112,11 +146,18 @@ fetch_and_select_branch() {
 
 # Function to pull latest changes and check/update dependencies
 pull_and_check_dependencies() {
-	local branch_name=$1
 	git fetch origin || {
 		echo "Failed to fetch latest changes"
 		exit 1
 	}
+
+		echo "Select a branch to switch to (local) or checkout (remote). Press Ctrl+C to cancel."
+		local branch_name=$(git branch -a | fzf --height 15 --border --ansi --preview "git log --oneline {}" | sed 's/\* //g' | sed 's/remotes\/origin\///g' | xargs)
+
+		if [ -z "$branch_name" ]; then
+			echo "No branch selected."
+			exit 1
+		fi
 
 	local local_commit=$(git rev-parse "$branch_name")
 	local remote_commit=$(git rev-parse origin/"$branch_name")
@@ -156,13 +197,14 @@ create_branch_interactively() {
 
 # Parse options
 verbose=false
-while getopts "cfprhv" opt; do
+while getopts "cfprhvm" opt; do
 	case ${opt} in
 	c) create_branch=true ;;
 	f) fetch_branch=true ;;
 	p) pull_and_update=true ;;
 	r) checkout_remote_branch=true ;;
 	v) verbose=true ;;
+	m) resolve_merge ;;
 	h | -) show_help ;;
 	\?)
 		echo "Invalid option: -$OPTARG" >&2
@@ -177,7 +219,7 @@ if [ "$create_branch" = true ]; then
 	create_branch_interactively
 fi
 
-if [ "$fetch_branch" = true ] || [ "$pull_and_update" = true ] || [ "$checkout_remote_branch" = true ]; then
+if [ "$fetch_branch" = true ] || [ "$checkout_remote_branch" = true ]; then
 	fetch_and_select_branch
 fi
 

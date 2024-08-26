@@ -6,7 +6,7 @@
 # Commands
 TMUX := $(shell which tmux 2> /dev/null)
 NPM := $(shell which npm 2> /dev/null)
-
+NODEMON := $(shell which nodemon 2> /dev/null)
 # Colors
 RED := \e[31m
 GREEN := \e[32m
@@ -14,16 +14,18 @@ BOLD := \e[1m
 RESET := \e[0m
 
 # Sessions
-REACT_SESSION := ReactTS
+REACT_SESSION := ReactJS
 NEST_SESSION := NestJS
+SOCKET_SESSION := SocketIO
 
 # Scripts
 FRONTEND_SCRIPT := npm --prefix frontend run dev
 BACKEND_SCRIPT := npm --prefix backend run start:dev
+SOCKET_SCRIPT := npm --prefix socket_server run dev
 
 # Define run session
 define run_session
-	@$(TMUX) new-session -d -s "$(1)" "$(2) > $(1)_log.txt 2>&1"
+	@$(TMUX) new-session -d -s "$(1)" "$(2)"
 	@echo -e '$(1) app is $(GREEN)running \e[5m\e[1m...\e[0m$(RESET)'
 endef
 
@@ -40,7 +42,7 @@ endef
 # Check environment
 check-environment:
 	@if [ -z "$(TMUX)" ]; then \
-		echo "Error: tmux is not installed. Please install tmux."; \
+		echo "Error: tmux is not installed. Please install tmux.";
 		exit 1; \
 	fi
 	@if [ -z "$(NPM)" ]; then \
@@ -50,7 +52,7 @@ check-environment:
 
 # Target to set up the project
 setup: ## Setup project and install core tools and dependencies
-	@$(MAKE) -s check-environment
+	# @$(MAKE) -s check-environment
 	@$(MAKE) -s check-dependencies || exit 1
 
 # Check and install dependencies
@@ -65,6 +67,7 @@ check-dependencies:
 		echo "Installing project dependencies..."; \
 		$(NPM) --prefix frontend install; \
 		$(NPM) --prefix backend install; \
+		$(NPM) --prefix socket_server install; \
 	fi
 
 # Clean project dependencies
@@ -72,12 +75,14 @@ clean: ## Clean project dependencies
 	@echo "Removing node_modules and reinstalling dependencies..."
 	@rm -rf frontend/node_modules
 	@rm -rf backend/node_modules
+	@rm -rf socket_server/node_modules
 	@$(MAKE) setup
 
 # Run sessions
 run: ## Run frontend and backend in tmux sessions
 	$(call run_session,$(REACT_SESSION),$(FRONTEND_SCRIPT))
 	$(call run_session,$(NEST_SESSION),$(BACKEND_SCRIPT))
+	$(call run_session,$(SOCKET_SESSION),$(SOCKET_SCRIPT))
 
 run_react: ## Run React app in a tmux session
 	$(call run_session,$(REACT_SESSION),$(FRONTEND_SCRIPT))
@@ -85,10 +90,14 @@ run_react: ## Run React app in a tmux session
 run_nest: ## Run NestJS app in a tmux session
 	$(call run_session,$(NEST_SESSION),$(BACKEND_SCRIPT))
 
+run_socket: ## Run SocketIO server in a tmux session
+	$(call run_session,$(SOCKET_SESSION),$(SOCKET_SCRIPT))
+
 # Stop sessions
 stop: ## Stop all running sessions
 	$(call kill_session,$(REACT_SESSION))
 	$(call kill_session,$(NEST_SESSION))
+	$(call kill_session,$(SOCKET_SESSION))
 
 stop_react: ## Stop React app session
 	$(call kill_session,$(REACT_SESSION))
@@ -96,6 +105,8 @@ stop_react: ## Stop React app session
 stop_nest: ## Stop NestJS app session
 	$(call kill_session,$(NEST_SESSION))
 
+stop_socket: ## Stop SocketIO server session
+	$(call kill_session,$(SOCKET_SESSION))
 # List running tmux sessions
 list: ## List all running tmux sessions
 	@$(TMUX) ls

@@ -8,8 +8,6 @@ import { Users } from '@users/user.entity';
 import { ProjectsModule } from '@projects/projects.module';
 import { ProjectShares } from '@project-shares/project-shares.entity';
 import { ProjectSharesModule } from '@project-shares/project-shares.module';
-import { ProjectSharesMongoModule } from '@project-shares-mongo/project-shares-mongo.module';
-import { ProjectSharesMongo } from '@project-shares-mongo/project-shares-mongo.entity';
 import { Projects } from '@projects/project.entity';
 import { FileMongoModule } from '@file-mongo/file-mongo.module';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
@@ -20,13 +18,29 @@ import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
 import { ProjectMongoModule } from '@project-mongo/project-mongo.module';
 import { FileMongo } from '@file-mongo/file-mongo.entity';
 import { AuthModule } from '@auth/auth.module';
-import { AuthGuard } from '@auth/guards/auth.guard';
+import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
+// import { AuthGuard } from '@auth/guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
+// import { EventsModule } from './events/events.module';
+// import { HocuspocusService } from '@hocuspocus/hocuspocus.service';
 // import { RolesGuard } from '@auth/guards/roles.guard';
+// import { RolesGuard } from '@auth/guards/roles.guard';
+import { AdminModule } from './admin/admin.module';
+import { MailModule } from './mail/mail.module';
+import { RedisService } from './redis/redis.service';
+import { RedisModule } from './redis/redis.module';
+import { LoggingModule } from './logging/logging.module';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), //  load .env
+    ConfigModule.forRoot({ isGlobal: true, cache: true }), //  load .env
+    BullModule.forRoot({ // 👈️ Job Queue
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
     TypeOrmModule.forRoot({
       name: 'mysqlConnection',
       type: 'mysql',
@@ -46,7 +60,6 @@ import { APP_GUARD } from '@nestjs/core';
       entities: [
         EnvironmentMongo,
         ProjectMongo,
-        ProjectSharesMongo,
         DirectoryMongo,
         FileMongo,
       ],
@@ -57,18 +70,23 @@ import { APP_GUARD } from '@nestjs/core';
     ProjectSharesModule,
     DirectoryMongoModule,
     ProjectMongoModule,
-    ProjectSharesMongoModule,
     FileMongoModule,
     EnvironmentMongoModule,
     AuthModule,
+    AdminModule,
+    MailModule,
+    RedisModule,
+    LoggingModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    // HocuspocusService,
     {
       provide: APP_GUARD,
-      useClass: AuthGuard,
+      useClass: JwtAuthGuard,
     },
+    RedisService,
   ],
 })
-export class AppModule {}
+export class AppModule { }

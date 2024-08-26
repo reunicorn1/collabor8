@@ -1,7 +1,6 @@
 import {
   Entity,
   ObjectIdColumn,
-  ObjectId,
   Column,
   OneToMany,
   ManyToOne,
@@ -9,6 +8,7 @@ import {
 import { EnvironmentMongo } from '@environment-mongo/environment-mongo.entity';
 import { FileMongo } from '@file-mongo/file-mongo.entity';
 import { DirectoryMongo } from '@directory-mongo/directory-mongo.entity';
+import { ObjectId } from 'mongodb';
 
 @Entity('projects')
 export class ProjectMongo {
@@ -18,11 +18,20 @@ export class ProjectMongo {
   @Column()
   project_name: string;
 
-  @Column() // passed from mysql
+  @Column({ nullable: true, default: null }) // passed from mysql
   project_id: string;
 
   @Column()
+  owner_id: string;
+
+  @Column()
+  username: string;
+
+  @Column()
   created_at: Date;
+
+  @Column()
+  updated_at: Date;
 
   @Column({ nullable: true })
   environment_id: string;

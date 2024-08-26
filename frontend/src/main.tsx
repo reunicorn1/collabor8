@@ -6,6 +6,7 @@ import store from './store/store.ts';
 import { menuTheme } from './theme/MenuTheme.tsx';
 import App from './App.tsx';
 import './index.css';
+import { YjsProvider } from './context/YjsContext.tsx';
 
 // Define custom colors for the theme
 const colors = {
@@ -15,6 +16,7 @@ const colors = {
     700: '#333333',
     600: '#E6E85C',
     200: '#6BE3E1',
+    100: '#524175',
   },
 };
 
@@ -30,7 +32,9 @@ createRoot(document.getElementById('root')!).render(
   <Provider store={store}>
     <ChakraProvider theme={theme}>
       <BrowserRouter>
-        <App />
+        <YjsProvider>
+          <App />
+        </YjsProvider>
       </BrowserRouter>
     </ChakraProvider>
   </Provider>,
