@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Projects } from './project.entity';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { ProjectMongoService } from '@project-mongo/project-mongo.service';
@@ -59,11 +59,26 @@ export class ProjectsService {
       });
       await this.projectsRepository.save(newProject);
       newProjectMongo.project_id = newProject.project_id;
-      await this.projectMongoService.save(newProjectMongo);
+        await this.projectMongoService.save(newProjectMongo);
       return newProject;
     } catch (error) {
       throw new BadRequestException(error.message);
     }
+  }
+
+  async searchForProjects(name: string, username: string): Promise<Projects[]> {
+    const projects = this.projectsRepository.find({
+      where: {
+        project_name: Like(`%${name}%`),
+        username: username,
+      },
+    });
+    const projectShares = await this.projectSharesService.partialSearch(
+      name,
+      username,
+    );
+
+
   }
 
   // Retrieve all projects

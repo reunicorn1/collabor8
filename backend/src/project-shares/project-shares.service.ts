@@ -46,6 +46,16 @@ export class ProjectSharesService {
     };
   }
 
+  async partialSearch(query: string, username: string): Promise<ProjectSharesOutDto[]> {
+    const shares = await this.projectSharesRepository.createQueryBuilder('project_shares')
+    .where('project_shares.username = :username', { username })
+    .where('project_shares.username LIKE :query', { query: `%${query}%` })
+    .getMany();
+    return Promise.all(shares.map(async (projectShare) => {
+      return await this.mapProjectShareData(projectShare);
+    }));
+  }
+
   async getProjectShares(project_id: string, username: string): Promise<ProjectShares> {
     return await this.projectSharesRepository.findOneBy({ project_id, username });
   }

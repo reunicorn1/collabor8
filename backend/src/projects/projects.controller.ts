@@ -40,6 +40,14 @@ export class ProjectsController {
     return this.projectsService.findAllBy('owner_id', req.user.id);
   }
 
+  // @Docs.searchForProjects()
+  @Get('search')
+  async searchForProjects(
+    @Request() req: any,
+  ): Promise<any> {
+    return this.projectsService.searchForProjects(req.query.name, req.user.username);
+  }
+
   // @Docs.findOneDepth()
   @Get('depth/:id')
   async findOneDepth(
