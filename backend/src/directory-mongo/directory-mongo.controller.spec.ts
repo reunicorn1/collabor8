@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DirectoryMongoController } from './directory-mongo.controller';
+import { DirectoryMongoController } from '@directory-mongo/directory-mongo.controller';
 
 describe('DirectoryMongoController', () => {
   let controller: DirectoryMongoController;

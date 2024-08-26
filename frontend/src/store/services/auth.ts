@@ -48,9 +48,9 @@ export const authApi = api.injectEndpoints({
         body: email,
       }),
     }),
-    logout: builder.query<void, void>({
+    signout: builder.query<void, void>({
       query: ()=> ({
-        url: '/auth/logout',
+        url: '/auth/signout',
         method: 'DELETE',
       })
     }),
@@ -93,5 +93,5 @@ export const {
   useChangePasswordMutation,
   useResetPasswordMutation,
   useValidateResetTokenMutation,
-  useLogoutQuery,
+  useSignoutQuery,
 } = authApi;
