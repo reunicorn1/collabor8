@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Project } from '@types';
 import { projectApi } from '@store/services/project';
 import * as projectUtils from '@utils/dashboard.utils';
-
+import { ProjectSharesOutDto } from '@types';
 interface projects {
   project_name: string;
   username: string;
@@ -23,7 +23,7 @@ interface recentProjectsInterface {
   project_id: string;
   _id: string;
   projectShares: string[];
-  laseEdited: string;
+  lastEdited: string;
 }
 
 interface recentProjects {
@@ -47,8 +47,8 @@ interface userProjects {
   error?: string;
 }
 
-interface sharedProjects {
-  sharedProjects: Partial<projects[]>;
+export interface sharedProjects {
+  sharedProjects: ProjectSharesOutDto[];
   page: number;
   limit: number;
   total: number;
@@ -131,7 +131,7 @@ const projectSlice = createSlice({
   initialState,
   reducers: {
     setRecentProjects: (state, action: PayloadAction<recentProjects>) => {
-      const payload = action.payload;
+      const payload: any = action.payload;
       state.recentProjects = {
         recentProjects: projectUtils.setRecentProjectsFromAllProjects(payload.projects),
         page: payload.page,
@@ -145,7 +145,7 @@ const projectSlice = createSlice({
       state.pagination.recentProjects = action.payload;
     },
     setUserProjects: (state, action: PayloadAction<userProjects>) => {
-      const payload = action.payload;
+      const payload: any = action.payload;
       console.log('Setting user projects', payload);
       state.userProjects = {
         userProjects: payload.projects,
@@ -160,15 +160,33 @@ const projectSlice = createSlice({
     setUserProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {
       state.pagination.userProjects = action.payload;
     },
-    setSharedProjects: (state, action: PayloadAction<sharedProjects>) => {
-      console.error('Setting shared projects', action.payload);
-      state.sharedProjects = action.payload;
+    setSharedProjects: (state, action: PayloadAction<any>) => {
+      const payload = action.payload;
+      state.sharedProjects =  {
+        sharedProjects: payload.projects,
+        page: payload.page,
+        limit: payload.limit,
+        total: payload.total,
+        sort: payload.sort,
+        totalPages: payload.totalPages,
+        status: 'succeeded',
+      };
+
     },
     setSharedProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {
       state.pagination.sharedProjects = action.payload;
     },
-    setAllProjects: (state, action: PayloadAction<allProjects>) => {
-      state.allProjects = action.payload;
+    setAllProjects: (state, action: PayloadAction<any>) => {
+      const payload = action.payload;
+      state.allProjects = {
+        allProjects: payload.projects,
+        page: payload.page,
+        limit: payload.limit,
+        total: payload.total,
+        sort: payload.sort,
+        totalPages: payload.totalPages,
+        status: 'succeeded',
+      };
     },
     setAllProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {
       state.pagination.allProjects = action.payload;
@@ -186,16 +204,6 @@ const projectSlice = createSlice({
       state.allProjects = initialState.allProjects;
     },
   },
-  // extraReducers: (builder) => {
-  //   builder
-  //     .addMatcher(
-  //       projectApi.endpoints.createProject.matchFulfilled,
-  //       (state, action) => {
-  //         setRecentProjects(state, action);
-  //       })
-  // },
-
-
 
 });
 

@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, Logger } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { Repository } from 'typeorm';
 import { ProjectMongo } from './project-mongo.entity';
@@ -188,18 +188,34 @@ export class ProjectMongoService {
     const files = await this.fileService.findFilesByParent(id);
     await Promise.all(
       directories.map(async (dir) => {
+        try {
         await this.directoryService.remove(dir._id.toString());
+        } catch (e) {
+          Logger.error(e);
+        }
       }),
     );
     await Promise.all(
       files.map(async (file) => {
+        try {
         await this.fileService.remove(file._id.toString());
+        } catch (e) {
+          Logger.error(e);
+        }
       }),
     );
+    try {
     await this.projectMongoRepository.delete({ project_id: id });
+    } catch (e) {
+      Logger.error(e);
+    }
   }
 
   async removeAllByEnvironment(environment_id: string): Promise<void> {
+    try {
     await this.projectMongoRepository.delete({ environment_id });
+    } catch (e) {
+      Logger.error(e);
+    }
   }
 }

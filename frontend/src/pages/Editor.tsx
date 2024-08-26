@@ -1,7 +1,7 @@
 import { Grid, GridItem, Box, Text, Divider } from '@chakra-ui/react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useParams, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 // import FileTree from '../components/FileTree/FileTree';
 import { EditorProvider } from '../context/EditorContext';
 import CodeEditor from '../components/CodeEditor/CodeEditor';
@@ -9,6 +9,7 @@ import Shares from '../components/Bars/Shares';
 import MenuBar from '../components/Bars/MenuBar';
 import Tree from '../components/FileTree/Tree';
 import * as Y from 'yjs';
+import { useGetProjectByIdQuery } from '@store/services/project';
 // retrieve project name from state of navigate eg.
 //  navigate(`/editor/${id}`, { state: { project_name } });
 //
@@ -20,7 +21,32 @@ export default function Editor() {
 
   const [isDragging, setIsDragging] = useState(false);
   const location = useLocation();
-  const project = location.state;
+  const { projectId } = useParams<{ projectId: string }>();
+  const [project, setProject] = useState<any>(null); // State to hold project data
+  const projectRef = useRef<any>(null);
+
+  // Fetch the project data based on the ID
+  const { data, refetch } = useGetProjectByIdQuery(projectId! && typeof projectId == 'string' ? projectId : '', { refetchOnReconnect: true });
+
+  useEffect(() => {
+    // If location.state exists, use it; otherwise, fetch from API
+    if (location.state) {
+      setProject(location.state);
+    } else if (projectId) {
+      refetch(); // Refetch if project is not passed in state
+    }
+  }, [location.state, projectId, refetch]);
+
+  useEffect(() => {
+    if (data) {
+      setProject(data);
+      projectRef.current = data;
+    }
+  }, [data]);
+
+  if (!project) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <EditorProvider>

@@ -16,7 +16,8 @@ This project consists of both a frontend (ReactJS) and a backend (NestJS) applic
 
 To run the project, you can use the provided `Makefile`, which utilizes `tmux` to manage the sessions.
 
-This `Makefile` provides a convenient way to manage your development workflow, from setting up the environment to running, stopping, and testing the application.
+This `Makefile` provides a convenient way to manage your development workflow, from setting up the 
+environment to running, stopping, and testing the application.
 Here’s how to get started:
 
 #### Prerequisites
@@ -40,7 +41,8 @@ To install the necessary dependencies and set up the project, run:
 make setup
 ```
 
-This command will install `tmux` and `npm` if they are not already installed and will install all necessary dependencies for both the frontend and backend.
+This command will install `tmux` and `npm` if they are not already installed and will 
+install all necessary dependencies for both the frontend and backend.
 
 #### Running the Application
 

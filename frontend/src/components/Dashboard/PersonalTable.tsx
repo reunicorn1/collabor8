@@ -60,14 +60,14 @@ export default function PersonalTable() {
     }
   };
 
-  const { data, err, isFetching, refetch, isSuccess, isLoading } =
+  const { data, refetch, isSuccess } =
     useGetAllProjectsPaginatedQuery(
       { ...userProjectsPagination },
       { refetchOnReconnect: true }, // Optional: refetch when reconnecting
     );
   useEffect(() => {
     if (isSuccess) {
-      dispatch(setUserProjects(data));
+      dispatch(setUserProjects(data as any));
     }
   }, [isSuccess, data, userProjects.total, dispatch, userProjectsPagination]);
 
@@ -75,28 +75,7 @@ export default function PersonalTable() {
     refetch();
   }, [userProjectsPagination]);
 
-  const handlePaginationChange = (
-    type: string,
-    page: number,
-    limit: number,
-  ) => {
-    // Update pagination state based on type and new page/limit values
-    switch (type) {
-      case 'userProjects':
-        dispatch(
-          setUserProjectsPagination({
-            page,
-            limit,
-            sort: userProjectsPagination.sort,
-          }),
-        );
-        break;
-      default:
-        break;
-    }
-  };
-  console.log(userProjects);
-
+ 
   if (userProjects.status === 'loading') {
     return <div>Loading...</div>;
   }
@@ -130,7 +109,9 @@ export default function PersonalTable() {
         mr={20}
         mb={5}
         overflowY="scroll"
-        maxH="250px"
+        minH="300px"
+        maxH="550px"
+        bgGradient="linear(to-t, brand.800, brand.900)"
       >
         <Table size="sm">
           <Thead>
@@ -162,7 +143,7 @@ export default function PersonalTable() {
                   <Td>3 Members TBD</Td>
                   <Td>{date.toDateString()}</Td>
                   <Td>
-                    <MenuProject>
+                    <MenuProject project={project}>
                       <HiDotsHorizontal />
                     </MenuProject>
                   </Td>

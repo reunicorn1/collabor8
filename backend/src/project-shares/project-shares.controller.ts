@@ -9,6 +9,7 @@ import {
   Request,
   Query,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { ProjectSharesService } from './project-shares.service';
 import { ProjectShares } from './project-shares.entity';
@@ -51,15 +52,6 @@ export class ProjectSharesController {
     return this.projectSharesService.updateStatus(id, updateProjectShareDto.status);
   }
 
-  // Retrieve a specific project share by ID
-  @ApiOperation({
-    summary: 'Retrieve a project share by ID',
-    description: 'Retrieve a specific project share by its unique ID.',
-  })
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<ProjectSharesOutDto> {
-    return this.projectSharesService.findOne(id);
-  }
 
   // Retrieve project shares by project ID
   @ApiOperation({
@@ -70,7 +62,7 @@ export class ProjectSharesController {
   @Get('/project/:project_id')
   async findByProject(
     @Param('project_id') project_id: string,
-  ): Promise<ProjectSharesOutDto> {
+  ): Promise<any[]> {
     return this.projectSharesService.findByProject(project_id);
   }
 
@@ -85,20 +77,6 @@ export class ProjectSharesController {
     @Request() req,
   ): Promise<ProjectSharesOutDto[]> {
     return this.projectSharesService.findByUser({ username: req.user.username });
-  }
-
-  // Update a project share
-  @ApiOperation({
-    summary: 'Update a project share',
-    description:
-      'Update the details of an existing project share using its ID.',
-  })
-  @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateProjectShareDto: Partial<UpdateProjectShareDto>,
-  ): Promise<ProjectShares> {
-    return this.projectSharesService.update(id, updateProjectShareDto);
   }
 
 
@@ -137,6 +115,30 @@ export class ProjectSharesController {
       );
     }
   }
+
+  // Update a project share
+  @ApiOperation({
+    summary: 'Update a project share',
+    description:
+      'Update the details of an existing project share using its ID.',
+  })
+  @Put(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() updateProjectShareDto: Partial<UpdateProjectShareDto>,
+  ): Promise<ProjectShares> {
+    return this.projectSharesService.update(id, updateProjectShareDto);
+  }
+  // Retrieve a specific project share by ID
+  @ApiOperation({
+    summary: 'Retrieve a project share by ID',
+    description: 'Retrieve a specific project share by its unique ID.',
+  })
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<ProjectSharesOutDto> {
+    return this.projectSharesService.findOne(id);
+  }
+
   // Delete a project share
   @ApiOperation({
     summary: 'Delete a project share',

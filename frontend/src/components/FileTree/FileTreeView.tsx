@@ -9,7 +9,7 @@ import { Text } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 
 interface FileTreeViewProps {
-  data: Record<string, Y.Text | Y.Map<YMapValueType>>;
+  data: any;
   ydoc: Y.Doc;
 }
 
@@ -38,6 +38,19 @@ const FileTreeView: React.FC<FileTreeViewProps> = ({ data, ydoc }) => {
     // This is a function that deals with creation of new y.text per file
     // Indexing is id, and this is ued to find the path from the root until the file and then this
     // path will be used to create the model corresponding to it
+    const getFileLanguage = (fileName: string): string => {
+      const ext = fileName.split('.').pop();
+      const languageMap: Record<string, string> = {
+        js: 'javascript',
+        py: 'python',
+        c: 'c',
+        ts: 'typescript',
+        md: 'markdown',
+        html: 'html',
+      };
+      return languageMap[ext || ''];
+    };
+
     if (fileSelected?.id === id) return;
     const file = createDocuments({
       parent,
@@ -47,10 +60,17 @@ const FileTreeView: React.FC<FileTreeViewProps> = ({ data, ydoc }) => {
       newName: name,
     });
     if (file) {
-      setFileSelected({ name: name, value: file, id: id });
+      const fileLanguage = getFileLanguage(name);
+      setFileSelected({
+        name: name,
+        value: file,
+        id: id,
+        language: fileLanguage,
+      });
     } else {
       console.log('An Error occured during creation of this file');
     }
+
     // const path = getPathFromId(data.filetree, id); // hopeless type error, I didn't assign types correcty at the beginning bc I did a lot of changes on how it was defined
     // if (path) {
     //   // extact parent base on fileId

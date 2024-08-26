@@ -1,7 +1,74 @@
-<p>Hey {{ name }},</p>
-<p>Please click below to confirm your email</p>
-<p>
-    <a href="{{ url }}">Verify</a>
-</p>
-
-<p>If you did not request this email you can safely ignore it.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Confirmation</title>
+    <style>
+        body {
+            font-family: 'Source Code Pro', monospace;
+            color: #444;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #eaeaea;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007acc;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 4px;
+            background-color: #007acc;
+            display: inline-block;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        a:hover {
+            background-color: #005a9e;
+            transform: scale(1.05);
+        }
+        .footer {
+            font-size: 0.875em;
+            color: #777;
+            margin-top: 20px;
+        }
+        .app-name {
+            font-family: 'Source Code Pro', monospace;
+            color: #333;
+        }
+        .app-name span {
+            color: #E86044;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Email Verification Required</h1>
+        
+        <p>Hello {{ name }},</p>
+        
+        <p>You’re one step away from joining the coolest code base! To confirm your email and complete your registration, just click the button below:</p>
+        
+        <p>
+            <a href="{{ url }}" class="button">Confirm My Email</a>
+        </p>
+        
+        <p>If this wasn’t you, just ignore this email and keep coding the good code!</p>
+        
+        <p class="footer">Cheers,<br>The <span class="app-name">collabor<span>8</span></span> Team</p>
+    </div>
+</body>
+</html>

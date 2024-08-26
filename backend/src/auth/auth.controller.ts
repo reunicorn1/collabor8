@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Request,
+  Res,
   Response,
   UseGuards,
 } from '@nestjs/common';
@@ -61,7 +62,7 @@ export class AuthController {
   @Post('signup')
   async create(@Body() createUserDto: CreateUserDto): Promise<Users> {
     try {
-      return this.authService.signUp(createUserDto);
+      return await this.authService.signUp(createUserDto);
     } catch (error) {
       // console.error(error);
       return error;
@@ -117,20 +118,24 @@ export class AuthController {
   // @docs.ApiVerifyEmail()
   @Public()
   @Get('verify')
-  async verifyEmail(@Request() req): Promise<{ message: string }> {
-    return this.authService.verifyUser(req.query.token);
+  async verifyEmail(@Request() req, @Response() res) {
+    const { refreshToken, accessToken, user } = await this.authService.verifyUser(req.query.token);
+    res
+      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
+      .cookie('accessToken', accessToken)
+      .send({ accessToken, user });
   }
 
   // @Docs.resetPassword()
   @Patch('me/change-password')
   async changePassword(
     @Request() req,
-    @Body() resetPasswordDto: { old: string; new: string },
-  ): Promise<Users> {
-    return this.authService.resetPassword(
+  ): Promise<{ message: string }> {
+    console.log('req.user', req.body);
+    return await this.authService.resetPassword(
       req.user.username,
-      resetPasswordDto.old,
-      resetPasswordDto.new,
+      req.body.old,
+      req.body.new,
     );
   }
 
@@ -141,7 +146,7 @@ export class AuthController {
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<{ message: string }> {
     const { email } = resetPasswordDto;
-    return this.authService.sendResetPasswordEmail(email);
+    return await this.authService.sendResetPasswordEmail(email);
   }
   // after user clicks forgot password, send link in email
   // user clicks link, redirect to reset password page
@@ -152,8 +157,7 @@ export class AuthController {
   @Post('validate-reset-token')
   async validateResetToken(
     @Request() req,
-    @Body() password: string,
   ): Promise<{ message: string }> {
-    return this.authService.validateToken(req.query.token, password);
+    return await this.authService.validateToken(req.query.token, req.body.password);
   }
 }

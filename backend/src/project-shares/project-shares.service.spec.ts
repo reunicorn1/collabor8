@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProjectSharesService } from './project-shares.service';
+import { ProjectSharesService } from '@project-shares/project-shares.service';
 
 describe('ProjectSharesService', () => {
   let service: ProjectSharesService;

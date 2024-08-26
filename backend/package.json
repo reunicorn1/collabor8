@@ -9,10 +9,10 @@
     "ws-client": "nodemon src/events/client.ts",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start": "NODE_ENV=development nest start",
+    "start:dev": "NODE_ENV=development nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "NODE_ENV=production node dist/src/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "typeorm": "ts-node --require tsconfig-paths/register ./node_modules/typeorm/cli",
     "migration:run": "npm run typeorm migration:run -- -d ./db/typeorm.config.ts",
@@ -111,7 +111,24 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+   "^@admin/(.*)$": "<rootDir>/admin/$1",
+    "^@auth/(.*)$": "<rootDir>/auth/$1",
+    "^@users/(.*)$": "<rootDir>/users/$1",
+    "^@projects/(.*)$": "<rootDir>/projects/$1",
+    "^@project-shares/(.*)$": "<rootDir>/project-shares/$1",
+    "^@environment-mongo/(.*)$": "<rootDir>/environment-mongo/$1",
+    "^@project-mongo/(.*)$": "<rootDir>/project-mongo/$1",
+    "^@project-shares-mongo/(.*)$": "<rootDir>/project-shares-mongo/$1",
+    "^@directory-mongo/(.*)$": "<rootDir>/directory-mongo/$1",
+    "^@file-mongo/(.*)$": "<rootDir>/file-mongo/$1",
+    "^@utils/(.*)$": "<rootDir>/utils/$1",
+    "^@filters/(.*)$": "<rootDir>/filters/$1",
+    "^@constants$": "<rootDir>/constants",
+    "^@config/(.*)$": "<rootDir>/config/$1",
+    "^@hocuspocus/(.*)$": "<rootDir>/hocuspocus/$1",
+    "^@events/(.*)$": "<rootDir>/events/$1",
+    "^@mail/(.*)$": "<rootDir>/mail/$1",
+    "^@redis/(.*)$": "<rootDir>/redis/$1",
+    "^@logging/(.*)$": "<rootDir>/logging/$1"
   }
 }

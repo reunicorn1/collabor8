@@ -62,14 +62,14 @@ export default function Home() {
     }
   }
 
-  const { data, err, isFetching, refetch, isSuccess, isLoading } =
+  const { data, refetch, isSuccess } =
     useGetAllProjectsPaginatedQuery(
       { ...recentProjectsPagination },
       { refetchOnReconnect: true }, // Optional: refetch when reconnecting
     );
   useEffect(() => {
     if (isSuccess) {
-      dispatch(setRecentProjects(data));
+      dispatch(setRecentProjects(data as any));
     }
   }, [
     isSuccess,
@@ -127,7 +127,7 @@ export default function Home() {
   return (
     <Flex justifyContent="center" h="100vh" flex={1}>
       <Box>
-        <Image src="/banner3.png" />
+        <Image src="/banner3.png" maxW="100%" />
         <Center>
           <Text color="white" fontFamily="mono" fontSize="2xl" m={5}>
             {`Good ${getTimeOfDay()}, ${userDetails?.first_name} ${userDetails?.last_name}`}

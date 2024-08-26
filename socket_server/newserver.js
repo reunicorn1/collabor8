@@ -9,10 +9,14 @@ import transformData from "./transform.js";
 
 dotenv.config();
 
+const env = {
+  development: process.env.NEST_SERVER_URL,
+  production: process.env.NEST_SERVER_URL_PRO
+}
 const port = process.env.PORT || 1234;
-const nestServerUrl =
-  process.env.NEST_SERVER_URL || "http://localhost:3000/api/v1";
+const nestServerUrl = env[process.env.NODE_ENV];
 const updateInterval = 60000;
+console.log('==================>', nestServerUrl)
 
 /**
  * TODO:

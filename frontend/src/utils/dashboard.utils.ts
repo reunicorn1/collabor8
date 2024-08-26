@@ -30,16 +30,8 @@ export function mutateProjects(projs) {
 export function setRecentProjectsFromAllProjects(projects) {
   console.log('Setting recent projects', projects);
   const recentProjects = [...projects]
-    ?.sort((a, b) => parseISO(b.updated_at) - parseISO(a.updated_at))
+    ?.sort((a, b) => (parseISO(b.updated_at) as any) - (parseISO(a.updated_at) as any))
     .slice(0, 5);
 
-    return mutateProjects(recentProjects); // Directly set the recent projects
+  return mutateProjects(recentProjects); // Directly set the recent projects
 }
-
-export function setUserProjects(projects) {
-  // This function should fetch the projects created by the user from the backend
-  const userProjects = [...projects]
-  ?.sort((a, b) => parseISO(b.updated_at) - parseISO(a.updated_at))
-  .slice(0, 10);
-}
-

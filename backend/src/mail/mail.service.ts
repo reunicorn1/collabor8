@@ -4,22 +4,28 @@ import { Users } from '@users/user.entity';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 
+interface UserEmail extends Users {
+  url: string;
+}
 @Processor('mailer')
 @Injectable()
 export class MailService extends WorkerHost {
   constructor(private readonly mailerService: MailerService) {
     super(); // must call super
+
   }
 
-  async process(job: Job<Users, any, string>): Promise<any> {
-    const environ = process.env.NODE_ENV;
-    const endpoint = {
-      development: 'http://localhost:3000/auth/verify',
-      production: 'https://collabor8.netlify.app/auth/verify',
-      signinDev: 'http://localhost:3000/auth/signin',
+  async process(job: Job<UserEmail, any, string>): Promise<any> {
+    const env = {
+      development: `${process.env.URL_DEV}/verify`,
+      production: `${process.env.URL_PROD}/verify`,
+      /*
+      signinDev: 'http://localhost:3000/auth/signin'|| process.env,
       signinProd: 'https://collabor8.netlify.app/auth/signin',
+      */
     };
-    const url = `${endpoint[environ] ?? endpoint.development}?token=${job.data.user_id}`;
+    console.log('------job queue--------->', env[process.env.NODE_ENV]);
+    const url = `${env[process.env.NODE_ENV]}?token=${job.data.user_id}`;
     switch (job.name) {
       case 'verification': {
         return await this.mailerService.sendMail({
@@ -41,7 +47,7 @@ export class MailService extends WorkerHost {
           template: './reset-password', // `.hbs` extension is appended automatically
           context: {
             name: job.data.username,
-            url,
+            url: job.data.url,
           },
         });
       }

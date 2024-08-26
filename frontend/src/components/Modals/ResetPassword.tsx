@@ -57,12 +57,25 @@ const ResetPasswordModal = () => {
         position: 'bottom-left',
         isClosable: true,
       });
-      // Redirect to login or home page
       window.location.href = '/';
     } catch (error) {
+      let errorMessage =
+        'An unexpected error occurred. Please try again later.';
+
+      if (error?.data?.statusCode === 404) {
+        if (error?.data?.message === 'Invalid token') {
+          errorMessage =
+            'The reset token is invalid or has expired. Please request a new password reset link.';
+        } else {
+          errorMessage = 'The requested resource was not found.';
+        }
+      } else if (error?.data?.message) {
+        errorMessage = error.data.message;
+      }
+
       toast({
         title: 'Error',
-        description: `An error occurred while resetting your password: ${error?.data.message}`,
+        description: errorMessage,
         status: 'error',
         variant: 'subtle',
         position: 'bottom-left',

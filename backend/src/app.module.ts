@@ -25,11 +25,11 @@ import { APP_GUARD } from '@nestjs/core';
 // import { HocuspocusService } from '@hocuspocus/hocuspocus.service';
 // import { RolesGuard } from '@auth/guards/roles.guard';
 // import { RolesGuard } from '@auth/guards/roles.guard';
-import { AdminModule } from './admin/admin.module';
-import { MailModule } from './mail/mail.module';
-import { RedisService } from './redis/redis.service';
-import { RedisModule } from './redis/redis.module';
-import { LoggingModule } from './logging/logging.module';
+import { AdminModule } from '@admin/admin.module';
+import { MailModule } from '@mail/mail.module';
+import { RedisService } from '@redis/redis.service';
+import { RedisModule } from '@redis/redis.module';
+import { LoggingModule } from '@logging/logging.module';
 import { BullModule } from '@nestjs/bullmq';
 
 @Module({

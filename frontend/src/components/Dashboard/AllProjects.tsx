@@ -60,42 +60,20 @@ export default function AllProjects() {
     }
   };
 
-  const { data, err, isFetching, refetch, isSuccess, isLoading } =
+  const { data, refetch, isSuccess } =
     useGetAllProjectsPaginatedQuery(
       { ...allProjectsPagination },
       { refetchOnReconnect: true }, // Optional: refetch when reconnecting
     );
   useEffect(() => {
     if (isSuccess) {
-      dispatch(setAllProjects(data));
+      dispatch(setAllProjects(data as any));
     }
   }, [isSuccess, data, allProjects.total, dispatch, allProjectsPagination]);
 
   useEffect(() => {
     refetch();
   }, [allProjectsPagination]);
-
-  const handlePaginationChange = (
-    type: string,
-    page: number,
-    limit: number,
-  ) => {
-    // Update pagination state based on type and new page/limit values
-    switch (type) {
-      case 'allProjects':
-        dispatch(
-          setAllProjectsPagination({
-            page,
-            limit,
-            sort: allProjectsPagination.sort,
-          }),
-        );
-        break;
-      default:
-        break;
-    }
-  };
-  console.log(allProjects);
 
   if (allProjects.status === 'loading') {
     return <div>Loading...</div>;
@@ -130,7 +108,9 @@ export default function AllProjects() {
         mr={20}
         mb={5}
         overflowY="scroll"
+        minH="300px"
         maxH="550px"
+        bgGradient="linear(to-t, brand.800, brand.900)"
       >
         <Table size="sm">
           <Thead>
@@ -160,7 +140,7 @@ export default function AllProjects() {
                   <Td>3 Members TBD</Td>
                   <Td>{date.toDateString()}</Td>
                   <Td>
-                    <MenuProject>
+                    <MenuProject project={project}>
                       <HiDotsHorizontal />
                     </MenuProject>
                   </Td>
