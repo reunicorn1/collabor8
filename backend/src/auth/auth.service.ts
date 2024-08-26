@@ -198,11 +198,12 @@ export class AuthService {
     }
     const token = uuidv4();
     await this.redisService.set(token, user.user_id, 3600); // Token expires after an hour
+    const BASE_URL = `${process.env.NODE_ENV === "production" ? process.env.URL_PROD : process.env.URL_DEV}`;
     const job = await this.mailerQueue.add('reset-password', {
       email,
       username: user.username,
       user_id: user.user_id,
-      url: `${process.env.FRONTEND_URL}/reset-password?token=${token}`,
+      url: `${BASE_URL}/reset-password?token=${token}`,
     });
     console.log(
       `'Job URL:'--------> ${process.env.FRONTEND_URL}/reset-password?token=${token}`,
