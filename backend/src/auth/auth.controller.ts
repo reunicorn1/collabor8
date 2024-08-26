@@ -117,7 +117,7 @@ export class AuthController {
   // @docs.ApiVerifyEmail()
   @Public()
   @Get('verify')
-  async verifyEmail(@Request() req): Promise<{ message: string }> {
+  async verifyEmail(@Request() req): Promise<{ [k in 'first_name' | 'last_name']: string }> {
     return this.authService.verifyUser(req.query.token);
   }
 
