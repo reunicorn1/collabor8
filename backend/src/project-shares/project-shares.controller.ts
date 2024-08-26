@@ -16,7 +16,11 @@ import {
 import { ProjectSharesService } from './project-shares.service';
 import { ProjectShares } from './project-shares.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ProjectSharesOutDto, CreateProjectShareDto, UpdateProjectShareDto } from './dto/create-project-shares.dto';
+import {
+  ProjectSharesOutDto,
+  CreateProjectShareDto,
+  UpdateProjectShareDto,
+} from './dto/create-project-shares.dto';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { Res } from '@nestjs/common';
@@ -28,7 +32,7 @@ export class ProjectSharesController {
   constructor(
     private readonly projectSharesService: ProjectSharesService,
     @InjectQueue('mailer') private mailerQueue: Queue,
-  ) { }
+  ) {}
 
   // Create a new project share
   @ApiOperation({
@@ -58,14 +62,21 @@ export class ProjectSharesController {
     @Param('id') id: string,
     @Body() updateProjectShareDto: Partial<ProjectShares>,
   ): Promise<ProjectShares | { message: string }> {
-    return this.projectSharesService.updateStatus(id, updateProjectShareDto.status);
+    return this.projectSharesService.updateStatus(
+      id,
+      updateProjectShareDto.status,
+    );
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('invite/:project_id')
   async inviteUser(
     @Param('project_id') project_id: string,
-    @Body() { inviter_email, invitee_email }: { inviter_email: string, invitee_email: string },
+    @Body()
+    {
+      inviter_email,
+      invitee_email,
+    }: { inviter_email: string; invitee_email: string },
     @Res() res: Response,
   ) {
     /**
@@ -81,7 +92,7 @@ export class ProjectSharesController {
       inviter_email,
     });
 
-    res.send({ message: 'Email sent successfully!' })
+    res.send({ message: 'Email sent successfully!' });
   }
 
   // Retrieve project shares by project ID
@@ -91,9 +102,7 @@ export class ProjectSharesController {
       'Retrieve all project shares associated with a specific project by its ID.',
   })
   @Get('/project/:project_id')
-  async findByProject(
-    @Param('project_id') project_id: string,
-  ): Promise<any[]> {
+  async findByProject(@Param('project_id') project_id: string): Promise<any[]> {
     return this.projectSharesService.findByProject(project_id);
   }
 
@@ -104,12 +113,11 @@ export class ProjectSharesController {
       'Retrieve all project shares associated with a specific user by their ID.',
   })
   @Get('/user/')
-  async findByUser(
-    @Request() req,
-  ): Promise<ProjectSharesOutDto[]> {
-    return this.projectSharesService.findByUser({ username: req.user.username });
+  async findByUser(@Request() req): Promise<ProjectSharesOutDto[]> {
+    return this.projectSharesService.findByUser({
+      username: req.user.username,
+    });
   }
-
 
   // project criteria must be owner or contributor
   //
