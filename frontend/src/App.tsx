@@ -1,6 +1,5 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Login from './components/Login';
 import useAuthRefresh from './hooks/useAuthRefresh';
 import useLogOut from './hooks/useLogOut';
 import ResetPasswordModal from '@components/Modals/ResetPassword';
@@ -30,7 +29,7 @@ const App: React.FC = () => {
         <Route path="/editor/:projectId" element={<Editor />}></Route>
         <Route path="/reset-password" element={<ResetPasswordModal />} />
         <Route path="/verify" element={<Verify />} />
-        <Route path="*" element={<NotFoundPage />}></Route>
+        <Route path="*" element={<NotFound />}></Route>
       </Routes>
     </>
   );
