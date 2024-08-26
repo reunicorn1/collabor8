@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DirectoryMongo } from './directory-mongo.entity';
@@ -126,14 +126,27 @@ export class DirectoryMongoService {
     const files = await this.fileService.findFilesByParent(id);
     await Promise.all(
       directories.map(async (dir) => {
-        await this.remove(dir._id.toString());
+        try {
+          await this.remove(dir._id.toString());
+        }catch(e){
+          Logger.error(e);
+        }
       }),
     );
     await Promise.all(
       files.map(async (file) => {
+        try {
         await this.fileService.remove(file._id.toString());
+        }
+        catch(e){
+          Logger.error(e);
+        }
       }),
     );
+    try {
     await this.directoryRepository.delete(id);
+    } catch(e){
+      Logger.error(e);
+    }
   }
 }

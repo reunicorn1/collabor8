@@ -36,9 +36,9 @@ export const authApi = api.injectEndpoints({
     // reset password
     changePassword: builder.mutation<User, { old: string; new: string }>({
       query: (data) => ({
-        url: '/admin/me/change-password',
+        url: '/auth/me/change-password',
         method: 'PATCH',
-        body: JSON.stringify(data),
+        body: data,
       }),
     }),
     resetPassword: builder.mutation<User, { email: string }>({
@@ -48,6 +48,13 @@ export const authApi = api.injectEndpoints({
         body: email,
       }),
     }),
+    logout: builder.query<void, void>({
+      query: ()=> ({
+        url: '/auth/logout',
+        method: 'DELETE',
+      })
+    }),
+
     // Validate reset token and update password
     validateResetToken: builder.mutation<
       { message: string },
@@ -86,4 +93,5 @@ export const {
   useChangePasswordMutation,
   useResetPasswordMutation,
   useValidateResetTokenMutation,
+  useLogoutQuery,
 } = authApi;

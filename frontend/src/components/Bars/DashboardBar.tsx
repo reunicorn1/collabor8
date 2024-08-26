@@ -30,6 +30,7 @@ export default function DashboardBar() {
       alignItems="center"
       borderBottom="2px solid #524175"
       p={3}
+      w="100%"
     >
       <Image
         src="/logo-bb.png"

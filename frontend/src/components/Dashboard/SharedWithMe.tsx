@@ -60,13 +60,14 @@ export default function SharedWithMe() {
     }
   };
 
-  const { data, err, isFetching, refetch, isSuccess, isLoading } =
+  const { data, refetch, isSuccess } =
     useGetProjectSharesPaginatedQuery(
       { ...userProjectsPagination },
       { refetchOnReconnect: true }, // Optional: refetch when reconnecting
     );
   useEffect(() => {
     if (isSuccess) {
+      console.log('Setting shared projects', data);
       dispatch(setSharedProjects(data));
     }
   }, [isSuccess, data, userProjects.total, dispatch, userProjectsPagination]);
@@ -74,28 +75,6 @@ export default function SharedWithMe() {
   useEffect(() => {
     refetch();
   }, [userProjectsPagination]);
-
-  const handlePaginationChange = (
-    type: string,
-    page: number,
-    limit: number,
-  ) => {
-    // Update pagination state based on type and new page/limit values
-    switch (type) {
-      case 'SharedProjects':
-        dispatch(
-          setSharedProjectsPagination({
-            page,
-            limit,
-            sort: userProjectsPagination.sort,
-          }),
-        );
-        break;
-      default:
-        break;
-    }
-  };
-
   if (userProjects.status === 'loading') {
     return <div>Loading...</div>;
   }
@@ -128,7 +107,10 @@ export default function SharedWithMe() {
         mr={20}
         mb={5}
         overflowY="scroll"
+        minH="300px"
         maxH="550px"
+        // gradient from gray to blue
+        bgGradient="linear(to-t, brand.800, brand.900)"
       >
         <Table size="sm">
           <Thead>
@@ -155,10 +137,10 @@ export default function SharedWithMe() {
                   onClick={() => handleGoToProject(project)}
                 >
                   <Td>{project.project_name}</Td>
-                  <Td>3 Members TBD</Td>
+                  <Td>{project.member_count} Member(s)</Td>
                   <Td>{date.toDateString()}</Td>
                   <Td>
-                    <MenuProject>
+                    <MenuProject project={project}>
                       <HiDotsHorizontal />
                     </MenuProject>
                   </Td>

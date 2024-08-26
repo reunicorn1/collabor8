@@ -1,5 +1,5 @@
 import { api } from './api';
-import { ProjectShares } from '@types';
+import { ProjectShares, ProjectSharesOutDto } from '@types';
 
 export const projectShareApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -35,7 +35,13 @@ export const projectShareApi = api.injectEndpoints({
       providesTags: ['ProjectShare'],
     }),
     getProjectSharesPaginated: builder.query<
-      ProjectShares[],
+    {
+        total: number;
+        projects: ProjectSharesOutDto[];
+        page: number;
+        limit: number;
+        totalPages: number;
+    },
       { page: number; limit: number; sort: string }
     >({
       query: ({ page, limit, sort }) =>

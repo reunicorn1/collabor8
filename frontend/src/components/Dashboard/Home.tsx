@@ -127,7 +127,7 @@ export default function Home() {
   return (
     <Flex justifyContent="center" h="100vh">
       <Box>
-        <Image src="/banner3.png" />
+        <Image src="/banner3.png" maxW="100%" />
         <Center>
           <Text color="white" fontFamily="mono" fontSize="2xl" m={5}>
             {`Good ${getTimeOfDay()}, ${userDetails?.first_name} ${userDetails?.last_name}`}

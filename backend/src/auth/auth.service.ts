@@ -5,6 +5,7 @@ import {
   ConflictException,
   InternalServerErrorException,
   Logger,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { Users } from '@users/user.entity';
@@ -82,8 +83,9 @@ export class AuthService {
         await this.jwtService.verifyAsync(refreshToken);
       payload.timestamp = new Date().getTime();
       payload.jti = uuidv4();
+      const accessToken = await this.jwtService.signAsync(payload);
       return {
-        accessToken: await this.jwtService.signAsync(payload),
+        accessToken: accessToken,
       };
     } catch (err) {
       throw new UnauthorizedException('Invalid refresh token');
@@ -165,16 +167,24 @@ export class AuthService {
     username: string,
     oldPassword: string,
     newPassword: string,
-  ): Promise<Users> {
-    const user = await this.usersService.findOneBy({ username }, true);
+  ): Promise<{ message: string }> {
+    if (!oldPassword || !newPassword) {
+      throw new BadRequestException('Old and new password are required');
+    }
+    if (oldPassword === newPassword) {
+      throw new ConflictException('Old and new password cannot be the same');
+    }
+    const validUser = await this.validateUser(username, oldPassword);
 
-    if (this.comparePwd(oldPassword, user.password_hash)) {
+    if (!validUser) {
       throw new UnauthorizedException('Old password is incorrect');
     }
+    const user = await this.usersService.findOneBy({ username });
 
     user.password_hash = this.encryptPwd(newPassword);
     await this.usersService.save(user);
-    return this.usersService.removePasswordHash(user);
+    await this.usersService.removePasswordHash(user);
+    return { "message": "Password reset successfully" };
   }
 
   async sendResetPasswordEmail(email: string): Promise<{ message: string }> {

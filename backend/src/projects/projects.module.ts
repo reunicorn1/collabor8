@@ -9,6 +9,7 @@ import { EnvironmentMongoModule } from '@environment-mongo/environment-mongo.mod
 import { DirectoryMongoModule } from '@directory-mongo/directory-mongo.module';
 import { FileMongoModule } from '@file-mongo/file-mongo.module';
 import { MYSQL_CONN } from '@constants';
+import { ProjectSharesModule } from '@project-shares/project-shares.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MYSQL_CONN } from '@constants';
     forwardRef(() => EnvironmentMongoModule),
     forwardRef(() => DirectoryMongoModule),
     forwardRef(() => FileMongoModule),
+    forwardRef(() => ProjectSharesModule),
   ],
   providers: [ProjectsService],
   controllers: [ProjectsController],

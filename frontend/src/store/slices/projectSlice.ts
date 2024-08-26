@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Project } from '@types';
 import { projectApi } from '@store/services/project';
 import * as projectUtils from '@utils/dashboard.utils';
-
+import { ProjectSharesOutDto } from '@types';
 interface projects {
   project_name: string;
   username: string;
@@ -23,7 +23,7 @@ interface recentProjectsInterface {
   project_id: string;
   _id: string;
   projectShares: string[];
-  laseEdited: string;
+  lastEdited: string;
 }
 
 interface recentProjects {
@@ -47,8 +47,8 @@ interface userProjects {
   error?: string;
 }
 
-interface sharedProjects {
-  sharedProjects: Partial<projects[]>;
+export interface sharedProjects {
+  sharedProjects: ProjectSharesOutDto[];
   page: number;
   limit: number;
   total: number;
@@ -161,14 +161,32 @@ const projectSlice = createSlice({
       state.pagination.userProjects = action.payload;
     },
     setSharedProjects: (state, action: PayloadAction<sharedProjects>) => {
-      console.error('Setting shared projects', action.payload);
-      state.sharedProjects = action.payload;
+      const payload = action.payload;
+      state.sharedProjects =  {
+        sharedProjects: payload.projects,
+        page: payload.page,
+        limit: payload.limit,
+        total: payload.total,
+        sort: payload.sort,
+        totalPages: payload.totalPages,
+        status: 'succeeded',
+      };
+
     },
     setSharedProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {
       state.pagination.sharedProjects = action.payload;
     },
     setAllProjects: (state, action: PayloadAction<allProjects>) => {
-      state.allProjects = action.payload;
+      const payload = action.payload;
+      state.allProjects = {
+        allProjects: payload.projects,
+        page: payload.page,
+        limit: payload.limit,
+        total: payload.total,
+        sort: payload.sort,
+        totalPages: payload.totalPages,
+        status: 'succeeded',
+      };
     },
     setAllProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {
       state.pagination.allProjects = action.payload;

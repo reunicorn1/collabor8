@@ -169,10 +169,10 @@ export class ProjectSharesService {
     Logger.log(`given input: ${username}, ${page}, ${limit}, ${sort}`);
     const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
     const sortDirection = sort.startsWith('-') ? 'DESC' : 'ASC';
-    const total = await this.projectSharesRepository.createQueryBuilder('projectShares')
+    const total = await this.projectSharesRepository.createQueryBuilder('project_shares')
       .where('project_shares.username = :username', { username })
       .getCount();
-    const projects = await this.projectSharesRepository.createQueryBuilder('projectShares')
+    const projects = await this.projectSharesRepository.createQueryBuilder('project_shares')
       .where('project_shares.username = :username', { username })
       .skip(skip)
       .take(limit)
@@ -218,4 +218,14 @@ export class ProjectSharesService {
   async remove(id: string): Promise<void> {
     await this.projectSharesRepository.delete(id);
   }
+  async remove_project(id: string): Promise<void> {
+    try {
+      await this.projectSharesRepository.delete({ project_id: id });
+    }
+    catch (error) {
+      Logger.error(error);
+    }
+  }
+
+
 }

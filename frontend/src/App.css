@@ -26,6 +26,8 @@
     animation: logo-spin infinite 20s linear;
   }
 }
+body {
+  overflow-x: hidden;
 
 .card {
   @apply p-8;
@@ -61,7 +63,7 @@
 /* HTML: <div class="loader"></div> */
 .loader {
   width: 50px;
-  --b: 8px; 
+  --b: 8px;
   aspect-ratio: 1;
   border-radius: 50%;
   padding: 1px;
