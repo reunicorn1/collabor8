@@ -116,7 +116,7 @@ export default function Home() {
   const handleGoToProject = (project: any) => {
     // This function handles the click of a project item in the table it recives the id of the project
     // And it navigates to the project page using the id
-    navigate(`/editor/${project._id}`, { state: { project } });
+    navigate(`/editor/${project._id}`, { state: project });
   };
 
   // BUG: Since the shared projects, all projects tab are underprogress, clicking them currently crashed the app
