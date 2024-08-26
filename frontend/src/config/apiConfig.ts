@@ -1,7 +1,7 @@
 const env: { [key: string]: string } = {
   development: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1',
   test: 'http://localhost:3000/api/v1',
-  production: 'https://www.collabor8.com',
+  production: 'https://co11abor8.netlify.app/',
 };
 
 const apiConfig = {
