@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 // import { File, Directory } from '@types';
 import { FaFolder, FaFolderOpen, FaFileCode } from 'react-icons/fa';
-import { Box, Icon, Text, Spacer } from '@chakra-ui/react';
+import { Box, Icon, Text, Spacer, Image } from '@chakra-ui/react';
 import { useFile } from '../../context/EditorContext';
 import OptionsMenu from './OptionsMenu';
 import * as Y from 'yjs';
+import { LanguageCode } from '../../utils/codeExamples';
 
 interface File {
   type: 'file';
   id: string;
   name: string;
+  language?: LanguageCode;
 }
 
 interface Directory {
@@ -32,6 +34,35 @@ interface EntryProps {
 const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
   const { fileSelected } = useFile()!;
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
+  const extensionToLanguageCode: Record<string, LanguageCode> = {
+    js: 'javascript',
+    ts: 'typescript',
+    py: 'python',
+    c: 'c',
+    md: 'markdown',
+    html: 'html',
+  };
+
+  const languageIcons: Record<LanguageCode, string> = {
+    javascript: 'javascript.png',
+    python: 'python.png',
+    c: 'c.png',
+    typescript: 'typescript.png',
+    markdown: 'markdown.png',
+    html: 'html.png',
+  };
+
+  const getFileExtension = (filename: string): string => {
+    const parts = filename.split('.');
+    return parts.length > 1 ? parts.pop()!.toLowerCase() : '';
+  };
+
+  const getFileIcon = (filename: string): string => {
+    const ext = getFileExtension(filename);
+    const languageCode = extensionToLanguageCode[ext] || 'unknown';
+    return `/lang-logo/${languageIcons[languageCode] || 'unknown.png'}`;
+  };
 
   return (
     <>
@@ -60,7 +91,12 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
             <Icon fontSize="14px" as={FaFolder} />
           )
         ) : (
-          <Icon fontSize="14px" as={FaFileCode} />
+          <Image
+            src={getFileIcon(entry.name)}
+            boxSize="15px"
+            mr={2}
+            alt="file icon"
+          />
         )}
         <Text fontFamily="mono" fontSize="xs" pl={2}>
           {entry.type === 'directory' ? entry.name : entry.name}

@@ -1,6 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable no-unused-vars */
-import { createContext, useState, ReactNode, useContext } from 'react';
+import {
+  createContext,
+  useState,
+  ReactNode,
+  useContext,
+  useEffect,
+} from 'react';
 import * as Y from 'yjs';
 
 export type YMapValueType = Y.Text | null | Y.Map<YMapValueType>;
@@ -16,6 +22,7 @@ export type FileType = {
   name: string;
   value: YMapValueType;
   id: string;
+  language: Language;
 };
 
 interface SettingsContextType {
@@ -59,6 +66,12 @@ export function EditorProvider({ children }: EditorProviderProps) {
   const [awareness, setAwareness] = useState<Awareness>([]);
   const [fileTree, setFileTree] = useState<Y.Map<YMapValueType> | null>(null);
   const [mode, setMode] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (fileSelected) {
+      setLanguage(fileSelected.language);
+    }
+  }, [fileSelected]);
 
   return (
     <SettingsContext.Provider
