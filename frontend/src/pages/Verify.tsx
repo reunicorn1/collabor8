@@ -19,7 +19,7 @@ function Verify() {
     //    console.log('-----token------>', { token });
     verify({ token })
       .unwrap()
-      .then((data) => {
+      .then((data: any) => {
         console.log('------verify--------->', { data });
         toast({
           title: 'Verification',
