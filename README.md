@@ -40,7 +40,8 @@ To install the necessary dependencies and set up the project, run:
 make setup
 ```
 
-This command will install `tmux` and `npm` if they are not already installed and will install all necessary dependencies for both the frontend and backend.
+This command will install `tmux` and `npm` if they are not already installed and will 
+install all necessary dependencies for both the frontend and backend.
 
 #### Running the Application
 
