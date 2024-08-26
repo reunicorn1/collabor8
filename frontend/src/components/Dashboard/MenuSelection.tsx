@@ -38,7 +38,7 @@ export default function MenuSelection({
   useEffect(() => {
     dispatch(
       setPagination({
-        ...pagination,
+        ...(pagination as any),
         page: 1,
         sort: `${orderMap[order]}${sortMap[sort]}`,
       }),

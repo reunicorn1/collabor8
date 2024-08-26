@@ -48,7 +48,7 @@ const baseQueryWithReauth: BaseQueryFn<
     if (localStorage.getItem('accessToken')) {
       api.dispatch(
         setCredentials({
-          accessToken: localStorage.getItem('accessToken') | null,
+          accessToken: localStorage.getItem('accessToken'),
         }),
       );
       result = await baseQuery(args, api, extraOptions);

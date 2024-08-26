@@ -60,14 +60,14 @@ export default function SharedWithMe() {
     }
   };
 
-  const { data, err, isFetching, refetch, isSuccess, isLoading } =
+  const { data, refetch, isSuccess } =
     useGetProjectSharesPaginatedQuery(
       { ...userProjectsPagination },
       { refetchOnReconnect: true }, // Optional: refetch when reconnecting
     );
   useEffect(() => {
     if (isSuccess) {
-      dispatch(setSharedProjects(data));
+      dispatch(setSharedProjects(data as any));
     }
   }, [isSuccess, data, userProjects.total, dispatch, userProjectsPagination]);
 

@@ -14,8 +14,8 @@ interface DirectoryNode {
 type TreeNode = FileNode | DirectoryNode;
 
 export function addLeaf(
-  tree: TreeNode,
-  newFile: FileNode,
+  tree: any,
+  newFile: any,
   parentId: string, // ID of the directory where the new file should be added taken from the last value of fullPath or directly
 ): TreeNode {
   console.log('addleaf', tree, newFile, parentId);

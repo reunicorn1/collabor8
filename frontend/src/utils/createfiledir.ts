@@ -3,7 +3,7 @@ import { YMapValueType } from '../context/EditorContext';
 
 type P = {
   parent: string;
-  root: YMapValueType;
+  root: any;
   _id: string;
   filedir: string;
   newName: string;

@@ -23,7 +23,7 @@ type DBMenuProps = {
 export default function DBMenu({ children }: DBMenuProps) {
   const navigate = useNavigate();
   const toast = useToast();
-  const userDetails = useSelector(selectUserDetails) || 'username';
+  const userDetails: any = useSelector(selectUserDetails) || 'username';
   const dispatch = useDispatch();
   // TODO: to logout you need to do two actions: logout using the API endpoint, and unset credentials
   // Unset credentials is done below, but this should be made from the service after removing the

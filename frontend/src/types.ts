@@ -61,6 +61,7 @@ export interface Project {
   created_at: Date;
   updated_at: Date;
   _id: string;
+  children: any;
 }
 
 export interface ProjectShares {
@@ -106,8 +107,9 @@ export interface ProjectMongo {
  */
 export interface CreateDirectoryDto {
   name: string;
-  username: string;
+  username?: string;
   parent_id: string;
+  project_id: string;
 }
 
 export interface Directory {
