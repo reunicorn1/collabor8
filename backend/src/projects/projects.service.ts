@@ -68,7 +68,7 @@ export class ProjectsService {
       });
       await this.projectsRepository.save(newProject);
       newProjectMongo.project_id = newProject.project_id;
-        await this.projectMongoService.save(newProjectMongo);
+      await this.projectMongoService.save(newProjectMongo);
       return newProject;
     } catch (error) {
       throw new BadRequestException(error.message);
@@ -85,7 +85,10 @@ export class ProjectsService {
     return projects;
 
   }
-
+  async getMongoProject(id: string): Promise<ProjectMongo> {
+    const IDS = await this.getIds(id);
+    return await this.projectMongoService.findOneBy( '_id', IDS._id );
+  }
   // Retrieve all projects
   async findAll(): Promise<Projects[]> {
     return this.projectsRepository.find();
@@ -210,9 +213,11 @@ export class ProjectsService {
     if (!project) {
       throw new NotFoundException('Project not found');
     }
-    const conflict = await this.projectsRepository.findOneBy({
-      project_name: parsedDto.project_name ? parsedDto.project_name : project.project_name,
-      username: project.username ? project.username : parsedDto.username,
+    const conflict = await this.projectsRepository.find({
+      where: {
+        project_name: parsedDto.project_name ? parsedDto.project_name : project.project_name,
+        username: project.username,
+      },
     });
     if (conflict) {
       throw new ConflictException('Project name already exists');

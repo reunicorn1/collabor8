@@ -116,6 +116,15 @@ export class ProjectSharesController {
     }
   }
 
+  @Get('room/token/:project_id')
+  async getRoomToken(
+    @Request() req: any,
+  ): Promise<{token: string}> {
+    const token = await this.projectSharesService.getRoomToken(req.user.username, req.params.project_id);
+    return { token };
+  }
+
+
   // Update a project share
   @ApiOperation({
     summary: 'Update a project share',

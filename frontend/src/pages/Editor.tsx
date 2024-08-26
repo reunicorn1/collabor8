@@ -10,7 +10,8 @@ import MenuBar from '../components/Bars/MenuBar';
 import Tree from '../components/FileTree/Tree';
 import * as Y from 'yjs';
 import { useGetProjectByIdQuery } from '@store/services/project';
-import JitsiMeetComponent from '@components/Audio/JitsiMeetComponent';
+import React from 'react';
+import { Mapped } from '../components/Audio/Modal';
 // retrieve project name from state of navigate eg.
 //  navigate(`/editor/${id}`, { state: { project_name } });
 //
@@ -112,6 +113,7 @@ export default function Editor() {
                             p={3}
                           >
                             Output
+                            <Mapped />
                           </Text>
                         </Box>
                         <Divider color="grey" />

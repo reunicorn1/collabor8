@@ -21,15 +21,17 @@ export class DirectoryMongoService {
     private fileService: FileMongoService,
     @Inject(forwardRef(() => ProjectsService))
     private projectService: ProjectsService,
-  ) {}
+  ) { }
 
   async create(
     createDirectoryDto: CreateDirectoryOutDto,
   ): Promise<DirectoryMongo> {
     const parsedDto = parseCreateDirectoryMongoDto(createDirectoryDto);
-    const conflict = await this.directoryRepository.findOne({
-      parent_id: parsedDto.parent_id,
-      name: parsedDto.name,
+    const conflict = await this.directoryRepository.find({
+      where: {
+        parent_id: parsedDto.parent_id,
+        name: parsedDto.name,
+      },
     });
     if (conflict) {
       throw new ConflictException('Directory already exists');
@@ -145,7 +147,7 @@ export class DirectoryMongoService {
       directories.map(async (dir) => {
         try {
           await this.remove(dir._id.toString());
-        }catch(e){
+        } catch (e) {
           Logger.error(e);
         }
       }),
@@ -153,16 +155,16 @@ export class DirectoryMongoService {
     await Promise.all(
       files.map(async (file) => {
         try {
-        await this.fileService.remove(file._id.toString());
+          await this.fileService.remove(file._id.toString());
         }
-        catch(e){
+        catch (e) {
           Logger.error(e);
         }
       }),
     );
     try {
-    await this.directoryRepository.delete(id);
-    } catch(e){
+      await this.directoryRepository.delete(id);
+    } catch (e) {
       Logger.error(e);
     }
   }
