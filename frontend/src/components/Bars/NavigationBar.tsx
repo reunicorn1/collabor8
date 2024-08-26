@@ -11,6 +11,7 @@ import {
 import { Link } from 'react-router-dom';
 import SignUp from '@components/Modals/SignUp';
 import SignIn from '@components/Modals/SignIn';
+import { ArrowForwardIcon } from '@chakra-ui/icons';
 
 export default function NavigationBar() {
   const {
@@ -31,7 +32,12 @@ export default function NavigationBar() {
   };
 
   return (
-    <Flex alignItems="center" bg="black" p={3}>
+    <Flex
+      alignItems="center"
+      bg="black"
+      p={3}
+      borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
+    >
       <Image src="/logo-bb.png" h="25px" ml={3} />
       <Divider
         ml={10}
@@ -43,20 +49,35 @@ export default function NavigationBar() {
       />
       <Box display="flex">
         <Heading color="white" fontFamily="mono" mr={5} size="xs">
-          Home
+          <a href="#home">Home</a>
         </Heading>
         <Heading color="white" fontFamily="mono" ml={5} mr={5} size="xs">
-          Features
+          <a href="#features">Features</a>
         </Heading>
-        <Link to="/about">
+        <Heading color="white" fontFamily="mono" ml={5} mr={5} size="xs">
+          <a href="#about-us">About us</a>
+        </Heading>
+        <Link to="/mission">
           <Heading color="white" fontFamily="mono" ml={5} size="xs">
-            About
+            Mission
           </Heading>
         </Link>
       </Box>
       <Spacer />
       <Button
-        ml={7}
+        color="white"
+        colorScheme="gray"
+        variant="ghost"
+        size="xs"
+        fontFamily="mono"
+        _hover={{ bg: 'white', color: 'black' }}
+        onClick={openSignIn} // open login modal
+      >
+        Log in
+      </Button>
+      <Button
+        ml={3}
+        mr={3}
         color="white"
         colorScheme="gray"
         variant="outline"
@@ -64,20 +85,10 @@ export default function NavigationBar() {
         fontFamily="mono"
         _hover={{ bg: 'white', color: 'black' }}
         onClick={openSignUp} // open sign up modal
+        rounded="full"
+        rightIcon={<ArrowForwardIcon />}
       >
         Sign Up
-      </Button>
-      <Button
-        ml={7}
-        color="white"
-        colorScheme="gray"
-        variant="outline"
-        size="xs"
-        fontFamily="mono"
-        _hover={{ bg: 'white', color: 'black' }}
-        onClick={openSignIn} // open login modal
-      >
-        Sign in
       </Button>
       <SignUp
         isOpen={isSignUpOpen}
