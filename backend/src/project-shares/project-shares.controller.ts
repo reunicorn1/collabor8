@@ -10,16 +10,25 @@ import {
   Query,
   BadRequestException,
   Logger,
+  HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { ProjectSharesService } from './project-shares.service';
 import { ProjectShares } from './project-shares.entity';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProjectSharesOutDto, CreateProjectShareDto, UpdateProjectShareDto } from './dto/create-project-shares.dto';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+import { Res } from '@nestjs/common';
+import { Response } from 'express';
 
 @ApiTags('ProjectShares')
 @Controller('project-shares')
 export class ProjectSharesController {
-  constructor(private readonly projectSharesService: ProjectSharesService) {}
+  constructor(
+    private readonly projectSharesService: ProjectSharesService,
+    @InjectQueue('mailer') private mailerQueue: Queue,
+  ) { }
 
   // Create a new project share
   @ApiOperation({
@@ -30,7 +39,7 @@ export class ProjectSharesController {
   async create(
     @Body() createProjectShareDto: CreateProjectShareDto,
   ): Promise<ProjectSharesOutDto> {
-  return this.projectSharesService.create(createProjectShareDto);
+    return this.projectSharesService.create(createProjectShareDto);
   }
 
   // Retrieve all project shares
@@ -52,6 +61,28 @@ export class ProjectSharesController {
     return this.projectSharesService.updateStatus(id, updateProjectShareDto.status);
   }
 
+  @HttpCode(HttpStatus.OK)
+  @Post('invite/:project_id')
+  async inviteUser(
+    @Param('project_id') project_id: string,
+    @Body() { inviter_email, invitee_email }: { inviter_email: string, invitee_email: string },
+    @Res() res: Response,
+  ) {
+    /**
+     * TODO:
+     *send project invitation to this email
+     * use job queue to send the email
+     * then return status success to front
+     * swagger docs
+     */
+    await this.mailerQueue.add('invitation', {
+      invitee_email,
+      project_id,
+      inviter_email,
+    });
+
+    res.send({ message: 'Email sent successfully!' })
+  }
 
   // Retrieve project shares by project ID
   @ApiOperation({
