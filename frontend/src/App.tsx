@@ -23,15 +23,14 @@ const App: React.FC = () => {
     <>
       {/* <NavigationBar /> */}
       <Routes>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/about" element={<About />}></Route>
-        <Route path="/notfound" element={<NotFound />}></Route>
+        <Route path="/mission" element={<About />}></Route>
         <Route path="/" element={<Home />}></Route>
         <Route path="/dashboard" element={<Dashboard />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
         <Route path="/editor/:projectId" element={<Editor />}></Route>
         <Route path="/reset-password" element={<ResetPasswordModal />} />
         <Route path="/verify" element={<Verify />} />
+        <Route path="*" element={<NotFoundPage />}></Route>
       </Routes>
     </>
   );
