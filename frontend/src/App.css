@@ -74,3 +74,31 @@
   animation:l4 1s infinite steps(10);
 }
 @keyframes l4 {to{transform: rotate(1turn)}}
+
+.fade {
+  opacity: 1;
+  animation: fade 2s linear;
+}
+
+
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ultimate {
+  background-color: #F16145;
+  color: white
+}
+
+.glass {
+  border-radius: 16px;
+  box-shadow: 0 4px 30px #0d78c41a;
+  backdrop-filter: blur(11px);
+  -webkit-backdrop-filter: blur(11px);
+  border: 1px solid rgba(96, 163, 250, 0.3);
+}
+
+html {
+  scroll-behavior: smooth;
+}

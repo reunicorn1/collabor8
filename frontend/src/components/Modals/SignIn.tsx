@@ -10,10 +10,19 @@ import {
   FormLabel,
   Input,
   Button,
-Flex,
+  Flex,
+  Center,
+  Box,
+  Heading,
   useToast,
+  Text,
+  Image,
+  InputGroup,
+  InputLeftAddon,
+  Divider,
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
+import { IoChevronForwardCircle } from 'react-icons/io5';
 import { useLoginUserMutation } from '@store/services/auth';
 import { useNavigate } from 'react-router-dom';
 import PasswordReset from './PasswordReset';
@@ -118,74 +127,112 @@ export default function SignIn({ isOpen, onClose }: ModalProps) {
         onClose={handleClose}
       >
         <ModalOverlay />
-        <ModalContent
-          bg="brand.900"
-          top="20px"
-          right="40px"
-          position="absolute"
-          transform="none"
-        >
-          <ModalHeader color="white" fontFamily="mono" fontSize="lg">
+        <ModalContent background="linear-gradient(to bottom, #001845, #524175)">
+          {/* <ModalHeader color="white" fontFamily="mono" fontSize="sm">
             Secure Login: Enter Your Credentials
-          </ModalHeader>
+          </ModalHeader> */}
           <ModalCloseButton color="white" />
           <ModalBody pb={6}>
-            <FormControl>
-              <FormLabel color="grey" fontFamily="mono" fontSize="md">
-                Username (a.k.a. your unique ID)
-              </FormLabel>
-              <Input
-                color="white"
-                fontFamily="mono"
-                fontSize="sm"
-                ref={initialRef}
-                placeholder="Enter your username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </FormControl>
+            <Flex alignItems="center" justifyContent="center">
+              <Box mt={5} alignItems="center" justifyContent="center">
+                <Heading color="white" fontFamily="mono">
+                  Sign In
+                </Heading>
+                <Center>
+                  <Heading
+                    fontSize="sm"
+                    mt={2}
+                    fontFamily="sans-serif"
+                    color="white"
+                    opacity="0.7"
+                  >
+                    Let's get you in
+                  </Heading>
+                </Center>
+              </Box>
+            </Flex>
+            <Center>
+              <Divider mt={6} mb={5} w="90%" />
+            </Center>
+            <Box
+              mt={3}
+              display="flex"
+              flexDirection="column"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <FormControl w="95%">
+                <FormLabel
+                  color="white"
+                  opacity="0.7"
+                  fontFamily="mono"
+                  fontSize="sm"
+                >
+                  Username (a.k.a. your unique ID)
+                </FormLabel>
+                <Input
+                  w="95%"
+                  color="white"
+                  fontFamily="mono"
+                  fontSize="sm"
+                  ref={initialRef}
+                  placeholder="Enter your Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </FormControl>
 
-            <FormControl mt={4}>
-              <FormLabel color="grey" fontFamily="mono" fontSize="md">
-                Password (the secret sauce)
-              </FormLabel>
-              <Input
-                type="password"
-                color="white"
-                fontFamily="mono"
-                fontSize="sm"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </FormControl>
+              <FormControl mt={6} w="95%">
+                <FormLabel
+                  color="white"
+                  opacity="0.7"
+                  fontFamily="mono"
+                  fontSize="sm"
+                >
+                  Password (the secret sauce)
+                </FormLabel>
+                <Input
+                  w="95%"
+                  type="password"
+                  color="white"
+                  fontFamily="mono"
+                  fontSize="sm"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </FormControl>
+            </Box>
           </ModalBody>
-
-          <ModalFooter mb={4}>
+          <Box display="flex" justifyContent="center" mt={6}>
             <Button
-              colorScheme="orange"
-              mr={3}
-              size="sm"
-              fontFamily="mono"
+              ref={finalRef}
               isDisabled={!username || !password}
               onClick={handleLogin}
-              ref={finalRef}
+              rounded="full"
+              w="60%"
+              size="md"
+              colorScheme="orange"
+              fontFamily="mono"
+              rightIcon={<IoChevronForwardCircle fontSize="22px" />}
             >
               Authenticate
             </Button>
-            <Button size="sm" fontFamily="mono" onClick={handleClose}>
-              Abort Mission
-            </Button>
+          </Box>
+          <Center>
             <Button
+              color="white"
+              mt={4}
+              fontFamily="sans-serif"
+              opacity="0.7"
+              fontSize="sm"
               variant="link"
-              colorScheme="orange"
-              size="sm"
-              fontFamily="mono"
               onClick={handleResetPassword}
             >
               Forgot Password?
             </Button>
-          </ModalFooter>
+          </Center>
+          <ModalFooter mb={4}></ModalFooter>
         </ModalContent>
       </Modal>
 
@@ -199,7 +246,7 @@ export default function SignIn({ isOpen, onClose }: ModalProps) {
             description: 'Please check your email to reset your password.',
             status: 'success',
             variant: 'subtle',
-            position: 'bottom-left',
+            position: 'bottom-right',
             isClosable: true,
           });
         }}

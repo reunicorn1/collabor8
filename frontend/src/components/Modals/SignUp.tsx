@@ -13,9 +13,15 @@ import {
   Checkbox,
   useToast,
   HStack,
+  Flex,
+  Heading,
+  Center,
+  Box,
+  Divider,
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 import { useCreateUserMutation } from '@store/services/auth';
+import { IoChevronForwardCircle } from 'react-icons/io5';
 
 interface ModalProps {
   isOpen: boolean;
@@ -114,162 +120,211 @@ export default function SignUp({ isOpen, onClose, onSuccess }: ModalProps) {
       onClose={handleClose}
     >
       <ModalOverlay />
-      <ModalContent
-        bg="brand.900"
-        top="20px"
-        right="40px"
-        position="absolute"
-        transform="none"
-      >
-        <ModalHeader color="white" fontFamily="mono" fontSize="xxx">
-          Sign Up
-        </ModalHeader>
+      <ModalContent background="linear-gradient(to bottom, #001845, #524175)">
         <ModalCloseButton color="white" />
         <ModalBody pb={6}>
-          <FormControl>
-            <FormLabel color="grey" fontFamily="mono" fontSize="xx">
-              Username
-            </FormLabel>
-            <Input
-              color="white"
-              fontFamily="mono"
-              fontSize="sm"
-              ref={initialRef}
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </FormControl>
-
-          <FormControl mt={4}>
-            <FormLabel color="grey" fontFamily="mono" fontSize="xx">
-              First Name
-            </FormLabel>
-            <Input
-              color="white"
-              fontFamily="mono"
-              fontSize="sm"
-              placeholder="Enter your first name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-          </FormControl>
-
-          <FormControl mt={4}>
-            <FormLabel color="grey" fontFamily="mono" fontSize="xx">
-              Last Name
-            </FormLabel>
-            <Input
-              color="white"
-              fontFamily="mono"
-              fontSize="sm"
-              placeholder="Enter your last name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-          </FormControl>
-
-          <FormControl mt={4}>
-            <FormLabel color="grey" fontFamily="mono" fontSize="xx">
-              Email
-            </FormLabel>
-            <Input
-              type="email"
-              color="white"
-              fontFamily="mono"
-              fontSize="sm"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </FormControl>
-
-          <FormControl mt={4}>
-            <FormLabel color="grey" fontFamily="mono" fontSize="xx">
-              Password
-            </FormLabel>
-            <Input
-              type="password"
-              color="white"
-              fontFamily="mono"
-              fontSize="sm"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </FormControl>
-
-          <FormControl mt={4}>
-            <FormLabel color="grey" fontFamily="mono" fontSize="xx">
-              Select your toolkit{' '}
-            </FormLabel>
-            <HStack spacing={3}>
-              <Checkbox
-                colorScheme="orange"
+          <Flex alignItems="center" justifyContent="center">
+            <Box mt={5} alignItems="center" justifyContent="center">
+              <Heading color="white" fontFamily="mono" textAlign="center">
+                Sign Up
+              </Heading>
+              <Center>
+                <Heading
+                  textAlign="center"
+                  fontSize="sm"
+                  mt={2}
+                  fontFamily="sans-serif"
+                  color="white"
+                  opacity="0.7"
+                >
+                  Let's create you an account
+                </Heading>
+              </Center>
+            </Box>
+          </Flex>
+          <Center>
+            <Divider mt={6} mb={5} w="90%" />
+          </Center>
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <FormControl w="95%">
+              <FormLabel
+                color="white"
+                opacity="0.7"
+                fontFamily="mono"
+                fontSize="sm"
+              >
+                Username
+              </FormLabel>
+              <Input
                 color="white"
                 fontFamily="mono"
-                size="sm"
                 fontSize="sm"
-                onChange={() => handleCheckboxChange('JavaScript')}
-                isChecked={favoriteLanguages.includes('JavaScript')}
+                ref={initialRef}
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </FormControl>
+
+            <FormControl mt={4} w="95%">
+              <FormLabel
+                color="white"
+                opacity="0.7"
+                fontFamily="mono"
+                fontSize="sm"
               >
-                JavaScript
-              </Checkbox>
-              <Checkbox
-                colorScheme="orange"
+                First Name
+              </FormLabel>
+              <Input
                 color="white"
                 fontFamily="mono"
-                size="sm"
                 fontSize="sm"
-                onChange={() => handleCheckboxChange('Python')}
-                isChecked={favoriteLanguages.includes('Python')}
+                placeholder="Enter your first name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+            </FormControl>
+
+            <FormControl mt={4} w="95%">
+              <FormLabel
+                color="white"
+                opacity="0.7"
+                fontFamily="mono"
+                fontSize="sm"
               >
-                Python
-              </Checkbox>
-              <Checkbox
-                colorScheme="orange"
+                Last Name
+              </FormLabel>
+              <Input
                 color="white"
                 fontFamily="mono"
-                size="sm"
                 fontSize="sm"
-                onChange={() => handleCheckboxChange('TypeScript')}
-                isChecked={favoriteLanguages.includes('TypeScript')}
+                placeholder="Enter your last name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </FormControl>
+
+            <FormControl mt={4} w="95%">
+              <FormLabel
+                color="white"
+                opacity="0.7"
+                fontFamily="mono"
+                fontSize="sm"
               >
-                TypeScript
-              </Checkbox>
-              <Checkbox
-                colorScheme="orange"
+                Email
+              </FormLabel>
+              <Input
+                type="email"
                 color="white"
                 fontFamily="mono"
-                size="sm"
                 fontSize="sm"
-                onChange={() => handleCheckboxChange('Swift')}
-                isChecked={favoriteLanguages.includes('Swift')}
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </FormControl>
+
+            <FormControl mt={4} w="95%">
+              <FormLabel
+                color="white"
+                opacity="0.7"
+                fontFamily="mono"
+                fontSize="sm"
               >
-                Swift
-              </Checkbox>
-            </HStack>
-          </FormControl>
+                Password
+              </FormLabel>
+              <Input
+                type="password"
+                color="white"
+                fontFamily="mono"
+                fontSize="sm"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </FormControl>
+
+            <FormControl mt={5} w="95%">
+              <FormLabel
+                color="white"
+                opacity="0.7"
+                fontFamily="mono"
+                fontSize="sm"
+              >
+                Select your toolkit
+              </FormLabel>
+              <HStack spacing={3}>
+                <Checkbox
+                  colorScheme="orange"
+                  color="white"
+                  opacity="0.7"
+                  fontFamily="mono"
+                  size="sm"
+                  onChange={() => handleCheckboxChange('JavaScript')}
+                  isChecked={favoriteLanguages.includes('JavaScript')}
+                >
+                  JavaScript
+                </Checkbox>
+                <Checkbox
+                  colorScheme="orange"
+                  color="white"
+                  opacity="0.7"
+                  fontFamily="mono"
+                  size="sm"
+                  onChange={() => handleCheckboxChange('Python')}
+                  isChecked={favoriteLanguages.includes('Python')}
+                >
+                  Python
+                </Checkbox>
+                <Checkbox
+                  colorScheme="orange"
+                  color="white"
+                  opacity="0.7"
+                  fontFamily="mono"
+                  size="sm"
+                  onChange={() => handleCheckboxChange('TypeScript')}
+                  isChecked={favoriteLanguages.includes('TypeScript')}
+                >
+                  TypeScript
+                </Checkbox>
+                <Checkbox
+                  colorScheme="orange"
+                  color="white"
+                  opacity="0.7"
+                  fontFamily="mono"
+                  size="sm"
+                  onChange={() => handleCheckboxChange('Swift')}
+                  isChecked={favoriteLanguages.includes('Swift')}
+                >
+                  Swift
+                </Checkbox>
+              </HStack>
+            </FormControl>
+          </Box>
         </ModalBody>
-
-        <ModalFooter mb={4}>
+        <Box display="flex" justifyContent="center" mt={3}>
           <Button
+            ref={finalRef}
+            rounded="full"
+            w="70%"
+            size="md"
             colorScheme="orange"
-            mr={3}
-            size="sm"
             fontFamily="mono"
             isDisabled={
               !username || !firstName || !lastName || !email || !password
             }
             onClick={handleCreate}
-            ref={finalRef}
+            rightIcon={<IoChevronForwardCircle fontSize="22px" />}
           >
             Join the Code Quest
           </Button>
-          <Button size="sm" fontFamily="mono" onClick={handleClose}>
-            Abort Registration
-          </Button>
-        </ModalFooter>
+        </Box>
+        <ModalFooter mb={4}></ModalFooter>
       </ModalContent>
     </Modal>
   );
