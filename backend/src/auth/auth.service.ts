@@ -60,7 +60,7 @@ export class AuthService {
         username: user.username,
         user_id,
       });
-      console.log(`------------> ${job}`);
+      //console.log(`------------> ${job}`);
       throw new UnauthorizedException(
         'User is not verified. Please verify your email',
       );
