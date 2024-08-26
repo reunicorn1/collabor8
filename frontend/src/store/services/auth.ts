@@ -33,6 +33,14 @@ export const authApi = api.injectEndpoints({
         credentials: 'include',
       }),
     }),
+    // Verify email
+    verifyEmail: builder.mutation<{ message: string }, { token: string }>({
+      query: ({ token }) => ({
+        url: `/auth/verify`,
+        method: 'GET',
+        params: { token },
+      }),
+    }),
     // reset password
     changePassword: builder.mutation<User, { old: string; new: string }>({
       query: (data) => ({
@@ -92,6 +100,7 @@ export const {
   useRefreshTokenMutation,
   useChangePasswordMutation,
   useResetPasswordMutation,
+  useVerifyEmailMutation,
   useValidateResetTokenMutation,
   useSignoutQuery,
 } = authApi;

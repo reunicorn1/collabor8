@@ -16,14 +16,16 @@ export class MailService extends WorkerHost {
   }
 
   async process(job: Job<UserEmail, any, string>): Promise<any> {
-    const environ = process.env.NODE_ENV;
-    const endpoint = {
-      development: 'http://localhost:3000/auth/verify',
-      production: 'https://collabor8.netlify.app/auth/verify',
-      signinDev: 'http://localhost:3000/auth/signin',
+    const env = {
+      development: `${process.env.URL_DEV}/verify`,
+      production: `${process.env.URL_PROD}/verify`,
+      /*
+      signinDev: 'http://localhost:3000/auth/signin'|| process.env,
       signinProd: 'https://collabor8.netlify.app/auth/signin',
+      */
     };
-    const url = `${endpoint[environ] ?? endpoint.development}?token=${job.data.user_id}`;
+    console.log('------job queue--------->', env[process.env.NODE_ENV]);
+    const url = `${env[process.env.NODE_ENV]}?token=${job.data.user_id}`;
     switch (job.name) {
       case 'verification': {
         return await this.mailerService.sendMail({

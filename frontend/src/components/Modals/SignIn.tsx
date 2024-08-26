@@ -10,7 +10,6 @@ import {
   FormLabel,
   Input,
   Button,
-Flex,
   useToast,
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
@@ -80,6 +79,9 @@ export default function SignIn({ isOpen, onClose }: ModalProps) {
         } else if (err.data.message.includes('User is not verified')) {
           errorMessage =
             'Account not verified. Check your email for the magic link.';
+        } else if (err.data.message.includes('Invalid password')) {
+          errorMessage =
+            'Invalid username or password. Double-check your creds!';
         }
 
         toast({

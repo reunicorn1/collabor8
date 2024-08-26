@@ -22,18 +22,18 @@ import {
   ModalCloseButton,
 } from '@chakra-ui/react'
 import { EditIcon } from '@chakra-ui/icons'
-import  FocusLock from "react-focus-lock"
+import FocusLock from "react-focus-lock"
 import { useState } from "react"
 
 // 1. Create a text input component
-const TextInput = React.forwardRef((props, ref) => {
+const TextInput = React.forwardRef((props: any, ref: any) => {
   return (
     <FormControl>
       <FormLabel htmlFor={props.id}>{props.label}</FormLabel>
       <Input ref={ref} id={props.id} {...props} />
     </FormControl>
-  )
-})
+  );
+});
 
 // 2. Create the form
 const Form = ({ onCancel, project_name, onSave }) => {
@@ -57,7 +57,7 @@ const Form = ({ onCancel, project_name, onSave }) => {
           Cancel
         </Button>
         <Button isDisabled={input === project_name || !input}
-        colorScheme='teal' onClick={() => onSave(input)}>
+          colorScheme='teal' onClick={() => onSave(input)}>
           Save
         </Button>
       </ButtonGroup>
@@ -66,25 +66,25 @@ const Form = ({ onCancel, project_name, onSave }) => {
 }
 
 
-export const RenamePopover = ({isOpen, onClose, project_name, onSave}) => {
+export const RenamePopover = ({ isOpen, onClose, project_name, onSave }) => {
   const projectNameRef = React.useRef(null)
-return (
-<>
-<Modal isOpen={isOpen} onClose={onClose}>
+  return (
+    <>
+      <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Modal Title</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-          <Form  onCancel={onClose} project_name={project_name} onSave={onSave}
-          />
+            <Form onCancel={onClose} project_name={project_name} onSave={onSave}
+            />
           </ModalBody>
 
           <ModalFooter>
           </ModalFooter>
         </ModalContent>
       </Modal>
-      </>
-)
+    </>
+  )
 }
 

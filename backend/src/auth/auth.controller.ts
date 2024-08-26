@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Request,
+  Res,
   Response,
   UseGuards,
 } from '@nestjs/common';
@@ -117,8 +118,12 @@ export class AuthController {
   // @docs.ApiVerifyEmail()
   @Public()
   @Get('verify')
-  async verifyEmail(@Request() req): Promise<{ message: string }> {
-    return await this.authService.verifyUser(req.query.token);
+  async verifyEmail(@Request() req, @Response() res) {
+    const { refreshToken, accessToken, user } = await this.authService.verifyUser(req.query.token);
+    res
+      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
+      .cookie('accessToken', accessToken)
+      .send({ accessToken, user });
   }
 
   // @Docs.resetPassword()

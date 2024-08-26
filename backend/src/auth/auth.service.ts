@@ -31,7 +31,7 @@ export class AuthService {
     private jwtService: JwtService,
     private redisService: RedisService,
     @InjectQueue('mailer') private mailerQueue: Queue,
-  ) {}
+  ) { }
 
   async signIn(user: Partial<Users>): Promise<{
     accessToken: string;
@@ -61,7 +61,7 @@ export class AuthService {
         username: user.username,
         user_id,
       });
-      console.log(`------------> ${job}`);
+      //console.log(`------------> ${job}`);
       throw new UnauthorizedException(
         'User is not verified. Please verify your email',
       );
@@ -92,14 +92,18 @@ export class AuthService {
     }
   }
 
-  async verifyUser(token: string): Promise<{ message: string }> {
+  async verifyUser(token: string): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    user: Partial<Users>;
+  }> {
     const user = await this.usersService.findOneBy({ user_id: token });
     if (!user) {
       throw new NotFoundException(`User with token ${token} not found`);
     }
 
     await this.usersService.update(user.username, { is_verified: true });
-    return { message: 'User verified' };
+    return await this.signIn(user);
   }
 
   async verificationId(email: string): Promise<string> {
@@ -152,7 +156,7 @@ export class AuthService {
             `User with username ${parsedDto.username} already exists`,
           );
         }
-      } catch (err) {}
+      } catch (err) { }
 
       const newUser = await this.usersService.create(parsedDto);
 
@@ -212,7 +216,7 @@ export class AuthService {
     token: string,
     newPassword: string,
   ): Promise<{ message: string }> {
-	const user_id = await this.redisService.get(token);
+    const user_id = await this.redisService.get(token);
     if (!user_id) {
       throw new NotFoundException('Invalid token');
     }
