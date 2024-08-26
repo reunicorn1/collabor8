@@ -33,12 +33,20 @@ export const authApi = api.injectEndpoints({
         credentials: 'include',
       }),
     }),
+    // Verify email
+    verifyEmail: builder.mutation<{ message: string }, { token: string }>({
+      query: ({ token }) => ({
+        url: `/auth/verify`,
+        method: 'GET',
+        params: { token },
+      }),
+    }),
     // reset password
     changePassword: builder.mutation<User, { old: string; new: string }>({
       query: (data) => ({
-        url: '/admin/me/change-password',
+        url: '/auth/me/change-password',
         method: 'PATCH',
-        body: JSON.stringify(data),
+        body: data,
       }),
     }),
     resetPassword: builder.mutation<User, { email: string }>({
@@ -48,6 +56,13 @@ export const authApi = api.injectEndpoints({
         body: email,
       }),
     }),
+    signout: builder.query<void, void>({
+      query: ()=> ({
+        url: '/auth/signout',
+        method: 'DELETE',
+      })
+    }),
+
     // Validate reset token and update password
     validateResetToken: builder.mutation<
       { message: string },
@@ -85,5 +100,7 @@ export const {
   useRefreshTokenMutation,
   useChangePasswordMutation,
   useResetPasswordMutation,
+  useVerifyEmailMutation,
   useValidateResetTokenMutation,
+  useSignoutQuery,
 } = authApi;

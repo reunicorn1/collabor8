@@ -41,7 +41,11 @@ export default function Password() {
     // This function isn't tested properly
     if (passSet.new === passSet.again) {
       try {
-        await changePassword({ old: passSet.old, new: passSet.new }).unwrap();
+        const payload = {
+          old: passSet.old,
+          new: passSet.new,
+        };
+        await changePassword(payload).unwrap();
         toast({
           title: `Password has been updated successfully!`,
           variant: 'subtle',

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProjectSharesController } from './project-shares.controller';
+import { ProjectSharesController } from '@project-shares/project-shares.controller';
 
 describe('ProjectSharesController', () => {
   let controller: ProjectSharesController;

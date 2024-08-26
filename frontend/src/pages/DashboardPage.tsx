@@ -15,7 +15,7 @@ import {
   HiUserGroup,
 } from 'react-icons/hi2';
 import DashboardBar from '../components/Bars/DashboardBar';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Home from '../components/Dashboard/Home';
 import SharedWithMe from '../components/Dashboard/SharedWithMe';
 import AllProjects from '../components/Dashboard/AllProjects';
@@ -108,7 +108,7 @@ export default function DashboardPage() {
             </Box>
           </>
         </Box>
-        <Box flex="1" bg="brand.900" h="100%" color="white">
+        <Box flex="1" bg="brand.900" h="100%" color="white" width="90%">
           {clicked === 'Home' ? (
             <Home />
           ) : clicked === 'Project' ? (

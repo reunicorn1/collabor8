@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileMongoController } from './file-mongo.controller';
+import { FileMongoController } from '@file-mongo/file-mongo.controller';
 
 describe('FileMongoController', () => {
   let controller: FileMongoController;
