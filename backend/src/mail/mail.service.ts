@@ -4,6 +4,10 @@ import { Users } from '@users/user.entity';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 
+interface UserEmail extends Users {
+  url: string;
+}
+
 @Processor('mailer')
 @Injectable()
 export class MailService extends WorkerHost {
@@ -11,7 +15,7 @@ export class MailService extends WorkerHost {
     super(); // must call super
   }
 
-  async process(job: Job<Users, any, string>): Promise<any> {
+  async process(job: Job<UserEmail, any, string>): Promise<any> {
     const environ = process.env.NODE_ENV;
     const endpoint = {
       development: 'http://localhost:3000/auth/verify',
@@ -41,7 +45,7 @@ export class MailService extends WorkerHost {
           template: './reset-password', // `.hbs` extension is appended automatically
           context: {
             name: job.data.username,
-            url,
+            url: job.data.url,
           },
         });
       }
