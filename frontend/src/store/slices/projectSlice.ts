@@ -160,7 +160,7 @@ const projectSlice = createSlice({
     setUserProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {
       state.pagination.userProjects = action.payload;
     },
-    setSharedProjects: (state, action: PayloadAction<sharedProjects>) => {
+    setSharedProjects: (state, action: PayloadAction<any>) => {
       const payload = action.payload;
       state.sharedProjects =  {
         sharedProjects: payload.projects,
@@ -176,7 +176,7 @@ const projectSlice = createSlice({
     setSharedProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {
       state.pagination.sharedProjects = action.payload;
     },
-    setAllProjects: (state, action: PayloadAction<allProjects>) => {
+    setAllProjects: (state, action: PayloadAction<any>) => {
       const payload = action.payload;
       state.allProjects = {
         allProjects: payload.projects,

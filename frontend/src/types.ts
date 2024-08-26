@@ -75,7 +75,7 @@ interface projects {
   projectShares: string[];
 }
 
- export interface ProjectSharesOutDto {
+export interface ProjectSharesOutDto {
   share_id: string;
   project_id: string;
   user_id: string;

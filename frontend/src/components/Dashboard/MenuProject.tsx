@@ -1,14 +1,16 @@
-import { Menu, MenuButton, MenuList, MenuItem, useDisclosure, PopoverTrigger } from '@chakra-ui/react';
+import { Menu, MenuButton, MenuList, MenuItem, useDisclosure } from '@chakra-ui/react';
 import { MdOutlineEdit, MdDeleteOutline } from 'react-icons/md';
 import { ReactNode } from 'react';
 import { useDeleteProjectMutation, useUpdateProjectMutation } from '@store/services/project';
 import { Project, ProjectShares, ProjectSharesOutDto } from '@types';
-import { PopoverForm, RenamePopover } from './RenamePopover';
+import { RenamePopover } from './RenamePopover';
 
+// TODO: fix types later
 type DBMenuProps = {
   children: ReactNode;
-  project: Project | ProjectShares | ProjectSharesOutDto;
+  project: any;
 };
+//project: Project | ProjectShares | ProjectSharesOutDto;
 
 export default function MenuProject({ children, project }: DBMenuProps) {
   const [updateProject] = useUpdateProjectMutation();
@@ -23,19 +25,18 @@ export default function MenuProject({ children, project }: DBMenuProps) {
     }).catch((err) => {
       console.error(err);
     });
-
   }
 
   const onSave = async (project_name: string) => {
     console.log(project_name);
-    await updateProject({ id: project.project_id, data: {project_name} })
+    await updateProject({ id: project.project_id, data: { project_name } })
       .unwrap()
       .then((_) => {
-          console.log('renamed project to: ', project_name);
-          })
-    .catch((err) => {
+        console.log('renamed project to: ', project_name);
+      })
+      .catch((err) => {
         console.error(err);
-        });
+      });
     onClose();
   }
 
