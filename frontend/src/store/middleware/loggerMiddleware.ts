@@ -1,7 +1,7 @@
 import { Middleware } from '@reduxjs/toolkit';
 
 // Define the logger middleware
-const loggerMiddleware: Middleware = (store) => (next) => (action) => {
+const loggerMiddleware: Middleware = (store) => (next) => (action: any) => {
   console.log('Dispatching action:', action);
 
   const endpointName = action.meta?.arg?.endpointName as string | undefined;

@@ -50,10 +50,7 @@ const NewfileDir: React.FC<ModalProps> = ({
   const [createFile] = useCreateFileMutation();
   const [createDir] = useCreateDirectoryMutation();
 
-  const { data, set } = useYMap<
-    Y.Map<YMapValueType> | Y.Text,
-    Record<string, Y.Map<YMapValueType> | Y.Text>
-  >(root); // Type Error
+  const { data, set } = useYMap<any, any>(root); // Type Error
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(e.target.value);

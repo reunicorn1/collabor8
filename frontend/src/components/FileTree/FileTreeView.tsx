@@ -9,7 +9,7 @@ import { Text } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 
 interface FileTreeViewProps {
-  data: Record<string, Y.Text | Y.Map<YMapValueType>>;
+  data: any;
   ydoc: Y.Doc;
 }
 

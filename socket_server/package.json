@@ -9,13 +9,13 @@
     "axios": "^1.7.4",
     "chalk": "^5.3.0",
     "dotenv": "^16.4.5",
-    "mongodb": "^6.8.0",
     "nodemon": "^3.1.4",
     "quill-delta": "^5.1.0",
     "yjs": "^13.6.18"
   },
   "scripts": {
     "start": "node newserver.ts",
-    "dev": "nodemon newserver.ts"
+    "dev": "NODE_ENV=development nodemon newserver.ts",
+    "pro": "NODE_ENV=production node newserver.ts"
   }
 }

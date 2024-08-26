@@ -82,7 +82,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
       },
     );
     provider.on('status', (event: { status: unknown }) => {
-      console.log(event.status); // logs "connected" or "disconnected"
+      console.log('%c======================>', 'background:white;color:red', {status:event.status}); // logs "connected" or "disconnected"
     });
 
     // An event listener to clean up once the user is removed
