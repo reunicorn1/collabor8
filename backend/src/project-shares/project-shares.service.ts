@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ConflictException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProjectShares } from './project-shares.entity';
@@ -24,6 +24,9 @@ export class ProjectSharesService {
 
 
   async mapProjectShareData(projectShare: ProjectShares): Promise<ProjectSharesOutDto> {
+    if (!projectShare) {
+      throw new NotFoundException('Project share not found');
+    }
     const { created_at, updated_at, username, ...projectShareData } = projectShare;
     const project = await this.projectsService.findOne(projectShare.project_id);
     const memberCount = await this.projectSharesRepository.createQueryBuilder('project_shares')
@@ -65,8 +68,13 @@ export class ProjectSharesService {
       }
       parsedDto.username = user.username;
     }
-    if (!await this.projectsService.findOne(parsedDto.project_id)) {
+    const project = await this.projectsService.findOne(parsedDto.project_id);
+    if (!project) {
       throw new NotFoundException('Project not found');
+    }
+    parsedDto._id = project._id;
+    if (await this.getProjectShares(parsedDto.project_id, parsedDto.username)) {
+      throw new ConflictException('Project share already exists');
     }
 
     const newProjectShare = this.projectSharesRepository.create(parsedDto);
@@ -106,9 +114,34 @@ export class ProjectSharesService {
     return await this.findOneByQuery({ share_id: id });
   }
 
+  async mapProjectUsers(shared_projects: ProjectShares[]): Promise<any[]> {
+    const users = await Promise.all(shared_projects.map(async (projectShare) => {
+      const user = await this.usersService.findOneBy({ username: projectShare.username });
+      return {
+        ...projectShare,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        username: user.username,
+        project_picture: user.profile_picture,
+      };
+    }));
+    return users;
+  }
+
+
   // Retrieve project shares by project ID
-  async findByProject(project_id: string): Promise<ProjectSharesOutDto> {
-    return await this.findOneByQuery({ project_id });
+  async findByProject(project_id: string): Promise<any[]> {
+    const originalProject = await this.projectsService.findOne(project_id);
+    if (!originalProject) {
+      throw new NotFoundException('Project not found');
+    }
+    const shared_projects = await this.projectSharesRepository.createQueryBuilder('project_shares')
+    .where('project_shares.project_id = :project_id', { project_id })
+    .getMany();
+    console.log(shared_projects.length);
+    return await this.mapProjectUsers(shared_projects);
+
+
   }
   // Retrieve project shares by user ID
   async findByUser(username: string | any): Promise<ProjectSharesOutDto[]> {
@@ -128,36 +161,48 @@ export class ProjectSharesService {
     page: number,
     limit: number,
     sort: string,
-  ): Promise<{ total: number; projects: Promise<ProjectSharesOutDto | any>[] }> {
+  ): Promise<{ total: number; projects: ProjectSharesOutDto[] }> {
     const skip = (page - 1) * limit;
     if (!sort) {
       sort = 'created_at';
     }
+    Logger.log(`given input: ${username}, ${page}, ${limit}, ${sort}`);
     const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
     const sortDirection = sort.startsWith('-') ? 'DESC' : 'ASC';
     const total = await this.projectSharesRepository.createQueryBuilder('projectShares')
-      .where('projects_shares.username = :username', { username })
+      .where('project_shares.username = :username', { username })
       .getCount();
     const projects = await this.projectSharesRepository.createQueryBuilder('projectShares')
       .where('project_shares.username = :username', { username })
       .skip(skip)
       .take(limit)
       .orderBy(`project_shares.${sortField}`, sortDirection)
-      .getMany().then((projectShares) => {
-        return projectShares.map(async (projectShare) => {
-          console.log(projectShare);
-          if (!projectShare) {
-            return null;
-          }
-          return await this.mapProjectShareData(projectShare);
-        });
-      })
-      .catch((error) => {
-        Logger.error(error);
-        return [];
-      });
+      .getMany()
 
-    return { total, projects };
+      console.log(projects);
+      // .then((project) => {
+      //   return project.map(async (project) => {
+      //     console.log(project);
+      //     if (!project) {
+      //       return null;
+      //     }
+      //     return await this.mapProjectShareData(project);
+      //   });
+      // })
+      // .catch((error) => {
+      //   Logger.error(error);
+      //   return [];
+      // });
+
+      const mappedProjects = await Promise.all(
+        projects.map(async (project) => {
+          return this.mapProjectShareData(project);
+        })
+      );
+      console.log(mappedProjects);
+
+
+    return { total, projects: mappedProjects };
   }
 
   // Update a project share

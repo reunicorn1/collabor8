@@ -152,8 +152,7 @@ export class AuthController {
   @Post('validate-reset-token')
   async validateResetToken(
     @Request() req,
-    @Body() password: string,
   ): Promise<{ message: string }> {
-    return this.authService.validateToken(req.query.token, password);
+    return this.authService.validateToken(req.query.token, req.body.password);
   }
 }

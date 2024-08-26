@@ -209,6 +209,7 @@ export class AuthService {
     }
     user.password_hash = this.encryptPwd(newPassword);
     await this.usersService.save(user);
+    await this.redisService.del(token);
     return { message: 'Password reset successfully' };
   }
   // async attachEnvironment(user: Users): Promise<Users> {
