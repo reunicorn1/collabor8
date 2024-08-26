@@ -9,7 +9,7 @@ import { User } from '@types';
 import { userApi } from '@store/services/user';
 
 interface UserState {
-  userDetails: User | null;
+  userDetails: Partial<User> | null;
   loading: boolean;
   error: string | null;
 }
@@ -21,7 +21,7 @@ const initialState: UserState = {
 };
 
 // Utility function to manage localStorage for user details
-const setUserLocalStorage = (user: User | null) => {
+const setUserLocalStorage = (user: Partial<User> | null) => {
   if (user) {
     localStorage.setItem('userDetails', JSON.stringify(user));
   } else {
@@ -30,7 +30,7 @@ const setUserLocalStorage = (user: User | null) => {
 };
 
 // Utility function to handle setting user details
-const setUserDetailsState = (state: UserState, user: User | null) => {
+const setUserDetailsState = (state: UserState, user: Partial<User> | null) => {
   state.userDetails = user;
   state.loading = false;
   state.error = null;

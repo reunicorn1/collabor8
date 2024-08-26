@@ -60,14 +60,14 @@ export default function PersonalTable() {
     }
   };
 
-  const { data, err, isFetching, refetch, isSuccess, isLoading } =
+  const { data, refetch, isSuccess } =
     useGetAllProjectsPaginatedQuery(
       { ...userProjectsPagination },
       { refetchOnReconnect: true }, // Optional: refetch when reconnecting
     );
   useEffect(() => {
     if (isSuccess) {
-      dispatch(setUserProjects(data));
+      dispatch(setUserProjects(data as any));
     }
   }, [isSuccess, data, userProjects.total, dispatch, userProjectsPagination]);
 

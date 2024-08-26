@@ -60,14 +60,14 @@ export default function AllProjects() {
     }
   };
 
-  const { data, err, isFetching, refetch, isSuccess, isLoading } =
+  const { data, refetch, isSuccess } =
     useGetAllProjectsPaginatedQuery(
       { ...allProjectsPagination },
       { refetchOnReconnect: true }, // Optional: refetch when reconnecting
     );
   useEffect(() => {
     if (isSuccess) {
-      dispatch(setAllProjects(data));
+      dispatch(setAllProjects(data as any));
     }
   }, [isSuccess, data, allProjects.total, dispatch, allProjectsPagination]);
 

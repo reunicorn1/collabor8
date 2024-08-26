@@ -67,8 +67,7 @@ export default function SharedWithMe() {
     );
   useEffect(() => {
     if (isSuccess) {
-      console.log('Setting shared projects', data);
-      dispatch(setSharedProjects(data));
+      dispatch(setSharedProjects(data as any));
     }
   }, [isSuccess, data, userProjects.total, dispatch, userProjectsPagination]);
 

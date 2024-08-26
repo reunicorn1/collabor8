@@ -12,6 +12,9 @@ export const corsConfig = {
     const allowedOrigins = [
       'http://localhost:3001',
       'http://localhost:1234',
+      'https://collabor8-socket.abdallah.tech',
+      'https://co11abor8.netlify.app/',
+      'https://co11abor8.netlify.app',
     ];
 
     if (!origin || allowedOrigins.includes(origin)) {
@@ -26,4 +29,9 @@ export const corsConfig = {
   credentials: true,
 };
 
-export const adminEmails = ['triplemg94@gmail.com', 'tr', 'trip'];
+export const adminEmails = [
+  'abdofola67@gmail.com',
+  'ireosama1@gmail.com',
+  'mohannadabdo21@gmail.com',
+  'mo7amedelfadil@gmail.com',
+];

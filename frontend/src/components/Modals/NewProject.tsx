@@ -35,7 +35,7 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
     setName(e.target.value);
   };
 
-  const handleChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeDescription = (e: any) => {
     setDescription(e.target.value);
   };
   const handleGoToProject = (project: any) => {

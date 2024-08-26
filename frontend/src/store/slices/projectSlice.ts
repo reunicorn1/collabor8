@@ -131,7 +131,7 @@ const projectSlice = createSlice({
   initialState,
   reducers: {
     setRecentProjects: (state, action: PayloadAction<recentProjects>) => {
-      const payload = action.payload;
+      const payload: any = action.payload;
       state.recentProjects = {
         recentProjects: projectUtils.setRecentProjectsFromAllProjects(payload.projects),
         page: payload.page,
@@ -145,7 +145,7 @@ const projectSlice = createSlice({
       state.pagination.recentProjects = action.payload;
     },
     setUserProjects: (state, action: PayloadAction<userProjects>) => {
-      const payload = action.payload;
+      const payload: any = action.payload;
       console.log('Setting user projects', payload);
       state.userProjects = {
         userProjects: payload.projects,
@@ -204,16 +204,6 @@ const projectSlice = createSlice({
       state.allProjects = initialState.allProjects;
     },
   },
-  // extraReducers: (builder) => {
-  //   builder
-  //     .addMatcher(
-  //       projectApi.endpoints.createProject.matchFulfilled,
-  //       (state, action) => {
-  //         setRecentProjects(state, action);
-  //       })
-  // },
-
-
 
 });
 

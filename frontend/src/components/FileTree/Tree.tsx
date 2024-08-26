@@ -28,10 +28,7 @@ const Tree: React.FC<TreeProps> = ({ ydoc, name }) => {
   const [filedir, setFileDir] = useState('');
   const root = ydoc.getMap(projectId); // This gets the value of the root if created before
 
-  const { data } = useYMap<
-    Y.Map<YMapValueType> | Y.Text,
-    Record<string, Y.Map<YMapValueType> | Y.Text>
-  >(root); // Type Error
+  const { data } = useYMap<any, any>(root);
 
   const handleCreateNew = (type: string) => {
     // Creating the file or dir starts by calling a menu to name the new file

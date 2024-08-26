@@ -5,8 +5,8 @@ import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 
 interface UserEmail extends Users {
-      url: string;
-    }
+  url: string;
+}
 @Processor('mailer')
 @Injectable()
 export class MailService extends WorkerHost {

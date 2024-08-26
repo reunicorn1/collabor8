@@ -22,10 +22,10 @@ interface Directory {
 type TreeNode = File | Directory;
 
 interface EntryProps {
-  entry: File | Directory;
+  entry: any;
   depth: number;
   // eslint-disable-next-line no-unused-vars
-  onFileClick: (fileId: string, filename: string) => void;
+  onFileClick: (fileId: string, filename: string, parent: string) => void;
   ydoc: Y.Doc;
 }
 
@@ -67,7 +67,6 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
         </Text>
 
         <Spacer />
-        {console.log('entry', entry)}
         <OptionsMenu
           type={entry.type}
           id={entry.id}
