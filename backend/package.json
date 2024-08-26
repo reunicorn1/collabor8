@@ -111,6 +111,7 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
+	"moduleNameMapper": {
    "^@admin/(.*)$": "<rootDir>/admin/$1",
     "^@auth/(.*)$": "<rootDir>/auth/$1",
     "^@users/(.*)$": "<rootDir>/users/$1",

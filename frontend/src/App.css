@@ -28,7 +28,7 @@
 }
 body {
   overflow-x: hidden;
-
+}
 .card {
   @apply p-8;
 }
