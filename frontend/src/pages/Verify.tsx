@@ -28,8 +28,8 @@ function Verify() {
           variant: 'subtle',
           position: 'bottom',
         });
-        dispatch(setCredentials({ accessToken: token }));
-        dispatch(setUserDetails(data));
+        dispatch(setCredentials({ accessToken: data.accessToken }));
+        dispatch(setUserDetails(data.user));
         navigate('/dashboard');
       })
       .catch((err) => {
@@ -45,7 +45,7 @@ function Verify() {
       .finally(() => {
         console.log('%c------------resolved------------->', 'background:green');
       });
-  }, [isUninitialized]);
+  }, []);
 
   return <Skeleton size="lg" isLoaded={isUninitialized || !isLoading} />;
 }

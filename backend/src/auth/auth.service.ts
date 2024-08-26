@@ -92,14 +92,18 @@ export class AuthService {
     }
   }
 
-  async verifyUser(token: string): Promise<{ [k in 'first_name' | 'last_name']: string }> {
+  async verifyUser(token: string): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    user: Partial<Users>;
+  }> {
     const user = await this.usersService.findOneBy({ user_id: token });
     if (!user) {
       throw new NotFoundException(`User with token ${token} not found`);
     }
 
     await this.usersService.update(user.username, { is_verified: true });
-    return { first_name: user.first_name, last_name: user.last_name };
+    return await this.signIn(user);
   }
 
   async verificationId(email: string): Promise<string> {
