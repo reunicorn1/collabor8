@@ -2,7 +2,6 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
   ModalFooter,
   ModalBody,
   ModalCloseButton,
@@ -15,10 +14,6 @@ import {
   Box,
   Heading,
   useToast,
-  Text,
-  Image,
-  InputGroup,
-  InputLeftAddon,
   Divider,
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
@@ -89,6 +84,9 @@ export default function SignIn({ isOpen, onClose }: ModalProps) {
         } else if (err.data.message.includes('User is not verified')) {
           errorMessage =
             'Account not verified. Check your email for the magic link.';
+        } else if (err.data.message.includes('Invalid password')) {
+          errorMessage =
+            'Invalid username or password. Double-check your creds!';
         }
 
         toast({
@@ -246,7 +244,7 @@ export default function SignIn({ isOpen, onClose }: ModalProps) {
             description: 'Please check your email to reset your password.',
             status: 'success',
             variant: 'subtle',
-            position: 'bottom-right',
+            position: 'bottom-left',
             isClosable: true,
           });
         }}
