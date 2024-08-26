@@ -7,12 +7,12 @@ import { Job } from 'bullmq';
 interface UserEmail extends Users {
   url: string;
 }
-
 @Processor('mailer')
 @Injectable()
 export class MailService extends WorkerHost {
   constructor(private readonly mailerService: MailerService) {
     super(); // must call super
+
   }
 
   async process(job: Job<UserEmail, any, string>): Promise<any> {

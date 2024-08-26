@@ -3,6 +3,7 @@ import {
   Inject,
   forwardRef,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -97,6 +98,10 @@ export class FileMongoService {
   }
 
   async remove(id: string): Promise<void> {
+    try {
     await this.fileRepository.delete(id);
+    } catch (err) {
+      Logger.error(err);
+    }
   }
 }

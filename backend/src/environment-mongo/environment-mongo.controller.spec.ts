@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EnvironmentMongoController } from './environment-mongo.controller';
+import { EnvironmentMongoController } from '@environment-mongo/environment-mongo.controller';
 
 describe('EnvironmentMongoController', () => {
   let controller: EnvironmentMongoController;

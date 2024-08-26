@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EnvironmentMongoService } from './environment-mongo.service';
+import { EnvironmentMongoService } from '@environment-mongo/environment-mongo.service';
 
 describe('EnvironmentMongoService', () => {
   let service: EnvironmentMongoService;

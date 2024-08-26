@@ -64,7 +64,43 @@ export interface Project {
   children: any;
 }
 
-export interface ProjectShares {
+interface projects {
+  project_name: string;
+  username: string;
+  description: string;
+  updated_at: string;
+  created_at: string;
+  project_id: string;
+  _id: string;
+  projectShares: string[];
+}
+
+ export interface ProjectSharesOutDto {
+  share_id: string;
+  project_id: string;
+  user_id: string;
+  favorite: boolean;
+  access_level: 'read' | 'write';
+  created_at: string;
+  updated_at: string;
+  member_count: number;
+  first_name: string;
+  last_name: string;
+  username: string;
+  project_name: string;
+  _id?: string;
+}
+export interface sharedProjects { // multiple mutated
+  sharedProjects: Partial<projects[]>;
+  page: number;
+  limit: number;
+  total: number;
+  sort: string;
+  totalPages: number;
+  status?: string;
+  error?: string;
+}
+export interface ProjectShares { // singlar
   share_id: string;
   project_id: string;
   _id: string;

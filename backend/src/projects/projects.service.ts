@@ -4,6 +4,7 @@ import {
   forwardRef,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -20,6 +21,7 @@ import {
   UpdateProjectDto,
 } from './dto/create-project.dto';
 import { validate as uuidValidate } from 'uuid';
+import { ProjectSharesService } from '@project-shares/project-shares.service';
 
 @Injectable()
 export class ProjectsService {
@@ -30,7 +32,10 @@ export class ProjectsService {
     private readonly projectMongoService: ProjectMongoService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
-  ) {}
+    @Inject(forwardRef(() => ProjectSharesService))
+    private readonly projectSharesService: ProjectSharesService,
+
+  ) { }
 
   // Create a new project
   // TODO: TODAY modify env to be obtained from user object
@@ -151,10 +156,16 @@ export class ProjectsService {
   }
 
   // Retrieve a specific project by ID
-  // Retrieve a specific project by ID
   async findOne(id: string): Promise<Projects> {
+    const IDS = await this.getIds(id);
+    if (!IDS.project_id) {
+      const project = await this.projectsRepository.findOneBy({ _id: id });
+      console.log('project 1', project);
+      return await this.wrapProject(project);
+    }
     const project = await this.projectsRepository.findOneBy({ project_id: id });
-    return this.wrapProject(project);
+    console.log('project 2', project);
+    return await this.wrapProject(project);
   }
 
   // Update a project
@@ -205,14 +216,27 @@ export class ProjectsService {
 
   // Delete a project
   async remove(id: string): Promise<void> {
-    await this.projectMongoService.remove(id);
-    await this.projectsRepository.delete(id);
+    try {
+      const IDS = await this.getIds(id);
+
+      await this.projectSharesService.remove_project(IDS.project_id).catch((error) => {
+        Logger.error(error);
+      });
+      await this.projectMongoService.remove(IDS._id).catch((error) => {
+        Logger.error(error);
+      });
+      await this.projectsRepository.delete(IDS.project_id).catch((error) => {
+        Logger.error(error);
+      });
+    }
+    catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   // Delete all projects by owner ID
   async removeAllByEnvironment(environment_id: string): Promise<void> {
-    const projects = await this.findAllBy('environment_id', environment_id);
-    const projectsMongo =
-      await this.projectMongoService.removeAllByEnvironment(environment_id);
+    await this.findAllBy('environment_id', environment_id);
+    await this.projectMongoService.removeAllByEnvironment(environment_id);
   }
 }

@@ -130,7 +130,7 @@ export class ProjectsController {
   @Docs.findOne()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Projects> {
-    return this.projectsService.findOne(id);
+    return await this.projectsService.findOne(id);
   }
 
 
@@ -140,12 +140,12 @@ export class ProjectsController {
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,
   ): Promise<Projects> {
-    return this.projectsService.update(id, updateProjectDto);
+    return await this.projectsService.update(id, updateProjectDto);
   }
 
   @Docs.remove()
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
-    return this.projectsService.remove(id);
+    return await this.projectsService.remove(id);
   }
 }

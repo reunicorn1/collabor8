@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DirectoryMongoService } from './directory-mongo.service';
+import { DirectoryMongoService } from '@directory-mongo/directory-mongo.service';
 
 describe('DirectoryMongoService', () => {
   let service: DirectoryMongoService;

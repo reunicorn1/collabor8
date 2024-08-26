@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileMongoService } from './file-mongo.service';
+import { FileMongoService } from '@file-mongo/file-mongo.service';
 
 describe('FileMongoService', () => {
   let service: FileMongoService;
