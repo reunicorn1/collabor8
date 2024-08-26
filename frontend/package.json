@@ -33,6 +33,7 @@
     "dotenv": "^16.4.5",
     "dotenv-safe": "^9.1.0",
     "framer-motion": "^11.3.30",
+    "lib-jitsi-meet": "^1.0.6",
     "mdb-react-ui-kit": "^8.0.0",
     "mongodb": "^6.8.0",
     "randomcolor": "^0.6.2",
