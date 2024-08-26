@@ -32,7 +32,7 @@ export default function Shares({ project }: SharesProps) {
         {Array.from(awareness).map(([_, value], index) => (
           <>
             <Tooltip
-              key={crypto.randomUUID()}
+              key={index}
               label={value['user'].name}
               placement="bottom"
             >

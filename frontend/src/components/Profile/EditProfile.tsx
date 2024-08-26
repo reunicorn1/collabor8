@@ -75,7 +75,7 @@ export default function EditProfile() {
     if (data) setInput(data);
   }, [data]);
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: any) => {
     const { name, value } = e.currentTarget;
     // TODO: when bio becomes part of the user data add handleInputchange to the textarea component.
     setInput({ ...input, [name]: value }); // hopeless TypeError related to the first one

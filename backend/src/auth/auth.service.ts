@@ -201,9 +201,11 @@ export class AuthService {
     token: string,
     newPassword: string,
   ): Promise<{ message: string }> {
-    const user = await this.usersService.findOneBy({
-      user_id: await this.redisService.get(token),
-    });
+	const user_id = await this.redisService.get(token);
+    if (!user_id) {
+      throw new NotFoundException('Invalid token');
+    }
+    const user = await this.usersService.findOneBy({ user_id });
     if (!user) {
       throw new NotFoundException('Invalid token');
     }
