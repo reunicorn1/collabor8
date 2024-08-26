@@ -16,7 +16,8 @@ This project consists of both a frontend (ReactJS) and a backend (NestJS) applic
 
 To run the project, you can use the provided `Makefile`, which utilizes `tmux` to manage the sessions.
 
-This `Makefile` provides a convenient way to manage your development workflow, from setting up the environment to running, stopping, and testing the application.
+This `Makefile` provides a convenient way to manage your development workflow, from setting up the 
+environment to running, stopping, and testing the application.
 Here’s how to get started:
 
 #### Prerequisites
