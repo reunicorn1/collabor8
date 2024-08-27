@@ -85,7 +85,7 @@ export class ProjectSharesService {
     const { user_id } = user;
     const channelName = `${project_id}`;
 
-    const cachedToken = await this.getCacheToken(channelName);
+    const cachedToken = await this.getCacheToken(`${channelName}${user_id}`);
     if (cachedToken) {
       return { token: cachedToken, uid: user_id, channel: channelName };
     }
@@ -101,7 +101,7 @@ export class ProjectSharesService {
     const token = RtcTokenBuilder.buildTokenWithAccount(appId,
       appCertificate, channelName,
       account, role, privilegeExpiredTs);
-    await this.cacheToken(token, channelName, delta);
+    await this.cacheToken(token, `${channelName}${user_id}`, delta);
 
     return { token, uid: user_id, channel: channelName };
 
