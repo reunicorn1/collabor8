@@ -12,9 +12,9 @@ import {
 } from './dto/create-project-shares.dto';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as jsonwebtoken from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
-import { privateKey } from '@config/configuration';
+import { appConfig } from '@config/configuration';
+import { RtcTokenBuilder, RtcRole } from 'agora-access-token';
 
 @Injectable()
 export class ProjectSharesService {
@@ -49,6 +49,78 @@ export class ProjectSharesService {
       updated_at: project.updated_at.toISOString(),
       member_count: memberCount,
     };
+  }
+
+  async getRoomToken(username: string, project_id: string): Promise<{
+    token: string;
+    uid: string;
+    channel: string;
+  }> {
+    const project = await this.projectsService.getMongoProject(project_id);
+    console.log(project);
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    if (!appConfig.appID || !appConfig.appCertificate) {
+      throw new Error('Agora app ID and certificate not found');
+    }
+
+    const user = await this.usersService.findOneBy({ username: username });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const { user_id } = user;
+    const { project_name, _id } = project;
+    const channelName = `${project_id}`;
+    const appId = appConfig.appID;
+    const appCertificate = appConfig.appCertificate;
+    const account = user_id;
+    const role = 1;
+    const start_time = new Date();
+    const delta = 12 * 60 * 60 * 1000;
+    const expire_time = new Date(start_time.getTime() + delta);
+    const privilegeExpiredTs = Math.floor(expire_time.getTime() / 1000);
+    const token = RtcTokenBuilder.buildTokenWithAccount(appId,
+      appCertificate, channelName,
+      account, role, privilegeExpiredTs);
+
+
+    return { token, uid: user_id, channel: channelName };
+
+
+    /*
+     *   channelName = session_id[:8] + student.id[:8] + mentor.id[:8]
+        token = (session.mentor_token, session.student_token)[user]
+        if token is not None:
+            return respond.ok({"token": token, "uid": user_id,
+                                "channel": channelName})
+        # generate room ID using session ID and student ID and mentor ID
+        appId = getenv('AGORA_APPID')
+        appCertificate = getenv('AGORA_CERTIFICATE')
+        account = user_id
+        role = 1
+        start_time = datetime.combine(session.date, session.time)
+        start_time = start_time + timedelta(hours=12)
+        print("start_time", start_time)
+        expire_time = start_time + timedelta(hours=session.duration.hour,
+                                    minutes=session.duration.minute)
+        print("expire_time", expire_time)
+        privilegeExpiredTs = int(expire_time.timestamp())
+        token = RtcTokenBuilder.buildTokenWithAccount(appId,
+                    appCertificate, channelName,
+                    account, role, privilegeExpiredTs)
+        if user:
+            session.student_token = token
+        else:
+            session.mentor_token = token
+        session.save()
+        return respond.ok({
+                            "token": token,
+                            "uid": user_id,
+                            "channel": channelName})
+
+*/
+
   }
 
   async partialSearch(query: string, username: string): Promise<ProjectSharesOutDto[]> {

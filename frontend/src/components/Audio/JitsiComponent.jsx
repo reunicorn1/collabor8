@@ -10,13 +10,13 @@ const JitsiMeet = () => {
   const jitsiRef = useRef(null);
   const apiRef = useRef(null);
   const { projectId } = useParams();
-  const { data, refetch, isFetching, isSuccess } = useGetRoomTokenQuery(projectId);
+  // const { data, refetch, isFetching, isSuccess } = useGetRoomTokenQuery(projectId);
   // console.log('data', data);
 
     
 
 
-  // const domain = 'meet.jit.si';
+  const domain = 'meet.jit.si';
   const options = {
     startWithVideoMuted: true,
     startWithAudioMuted: true,
@@ -112,9 +112,8 @@ const JitsiMeet = () => {
   }
 
   // console.log('data', data);
-  const roomToken =  null;
-  if (!roomToken) return <div>Room not found</div>;
-  console.log('roomToken', roomToken);
+  // const roomToken =  null;
+  // console.log('roomToken', roomToken);
   // console.log('data', data);
 
 
@@ -123,8 +122,8 @@ const JitsiMeet = () => {
      getIFrameRef = { iframeRef => { iframeRef.style.height = '700px'; } }
       roomName={projectId}
       displayName='My Name'
-      jwt={roomToken}
-      // domain={domain}
+      // jwt={roomToken}
+      domain={domain}
       loadingComponent={<div>Loading...</div>}
       errorComponent={<div>Error</div>}
       containerStyle={{ width: '100%', height: '800px', 

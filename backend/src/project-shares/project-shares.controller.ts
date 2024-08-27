@@ -79,6 +79,19 @@ export class ProjectSharesController {
     return this.projectSharesService.findByUser({ username: req.user.username });
   }
 
+  // generate agora token
+  @ApiOperation({
+    summary: 'Generate Agora Token',
+    description:
+      'Generate Agora Token for a specific project share by its ID.',
+  })
+  @Get('room/token/:id')
+  async getRoomToken(
+    @Param('id') id: string,
+    @Request() req,
+  ): Promise<any> {
+    return await this.projectSharesService.getRoomToken(req.user.username, id);
+  }
 
   // project criteria must be owner or contributor
   //
