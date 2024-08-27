@@ -59,7 +59,7 @@ export class MailService extends WorkerHost {
             project_id: job.data.project_id,
             invitee_email: job.data.invitee_email,
             inviter_email: job.data.inviter_email,
-            url: `${env[process.env.NODE_ENV]}/invite/${job.data.project_id}`,
+            url: `${env[process.env.NODE_ENV]}/invite/${job.data.project_id}?access_level=${job.data.access_level}&invitee_email=${job.data.invitee_email}`,
           },
         });
       }

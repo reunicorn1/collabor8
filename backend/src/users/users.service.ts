@@ -21,14 +21,14 @@ export class UsersService {
     private readonly usersRepository: Repository<Users>,
     @Inject(forwardRef(() => EnvironmentMongoService))
     private readonly environmentService: EnvironmentMongoService,
-  ) {}
+  ) { }
 
- async create(user: Partial<Users>): Promise<Users> {
-   let newUser = this.usersRepository.create(user);
-   const newEnv = await this.environmentService.create({ username: newUser.username });
-   newUser.environment_id = newEnv._id.toString();
-   await this.usersRepository.save(newUser);
-   return this.removePasswordHash(newUser);
+  async create(user: Partial<Users>): Promise<Users> {
+    let newUser = this.usersRepository.create(user);
+    const newEnv = await this.environmentService.create({ username: newUser.username });
+    newUser.environment_id = newEnv._id.toString();
+    await this.usersRepository.save(newUser);
+    return this.removePasswordHash(newUser);
 
   }
 
@@ -68,7 +68,7 @@ export class UsersService {
     };
 
     for (const [key, value] of Object.entries(query)) {
-        findOptions[key] = normalizeValue(value);
+      findOptions[key] = normalizeValue(value);
     }
     // this comes as empty even though i pass {username: 'admin'} as query
 
@@ -112,31 +112,38 @@ export class UsersService {
     return { message: `User with username ${username} successfully deleted` };
   }
 
-async remove(user_id: string): Promise<{ message: string }> {
-  const result = await this.usersRepository.delete(user_id);
+  async remove(user_id: string): Promise<{ message: string }> {
+    const result = await this.usersRepository.delete(user_id);
 
-  if (result.affected === 0) {
-    throw new NotFoundException(`User with ID ${user_id} not found`);
+    if (result.affected === 0) {
+      throw new NotFoundException(`User with ID ${user_id} not found`);
+    }
+
+    return { message: `User with ID ${user_id} successfully deleted` };
   }
 
-  return { message: `User with ID ${user_id} successfully deleted` };
-}
-
-async update(username: string, user: Partial<Users>): Promise<Users> {
-  await this.usersRepository.update({ username: username }, user);
-  return this.findOneBy({ username: username });
-}
+  async update(username: string, user: Partial<Users>): Promise<Users> {
+    await this.usersRepository.update({ username: username }, user);
+    return this.findOneBy({ username: username });
+  }
 
 
 
-async findAllBy(query: Query): Promise<Users[]> {
-  const users = await this.usersRepository.find(query);
-  return await this.removeAllPasswordHash(users);
-}
+  async findAllBy(query: Query): Promise<Users[]> {
+    const users = await this.usersRepository.find(query);
+    return await this.removeAllPasswordHash(users);
+  }
 
-async removeAll(): Promise<{ message: string }> {
-  await this.usersRepository.delete({});
-  return { message: 'All users successfully deleted' };
-}
+  async findByEmail(query: Query): Promise<Partial<Users|null>> {
+    const user = await this.usersRepository.findOneBy({ email: query.email });
+    if (!user) return null;
+    const {password_hash, ...user_} = user;
+    return (user_);
+  }
+
+  async removeAll(): Promise<{ message: string }> {
+    await this.usersRepository.delete({});
+    return { message: 'All users successfully deleted' };
+  }
 
 }

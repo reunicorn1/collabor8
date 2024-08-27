@@ -46,7 +46,13 @@ class LoginUserDto {
   password: string;
 }
 
-function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
+interface ICreateUserInvited extends CreateUserDto {
+  is_verified?: boolean;
+}
+
+function validateCreateUserDto(
+  dto: ICreateUserInvited,
+): CreateUserOutDto & { is_verified?: boolean } {
   if (!dto || typeof dto !== 'object') {
     throw new BadRequestException('Invalid input');
   }
@@ -101,7 +107,7 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
 
   const password_hash = encryptPwd(password);
 
-  return {
+  const validated: any = {
     username: username.trim(),
     first_name: first_name.trim(),
     last_name: last_name.trim(),
@@ -114,6 +120,10 @@ function validateCreateUserDto(dto: CreateUserDto): CreateUserOutDto {
       ? favorite_projects.map((project) => project.trim())
       : undefined,
   };
+  if (dto.is_verified) {
+    validated.is_verified = true;
+  }
+  return validated;
 }
 
 function parseCreateUserDto(requestBody: any): CreateUserOutDto {

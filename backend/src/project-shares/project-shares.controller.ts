@@ -32,7 +32,7 @@ export class ProjectSharesController {
   constructor(
     private readonly projectSharesService: ProjectSharesService,
     @InjectQueue('mailer') private mailerQueue: Queue,
-  ) {}
+  ) { }
 
   // Create a new project share
   @ApiOperation({
@@ -72,6 +72,7 @@ export class ProjectSharesController {
   @Post('invite/:project_id')
   async inviteUser(
     @Param('project_id') project_id: string,
+    @Query('access_level') access_level: 'write' | 'read',
     @Body()
     {
       inviter_email,
@@ -81,18 +82,37 @@ export class ProjectSharesController {
   ) {
     /**
      * TODO:
-     *send project invitation to this email
-     * use job queue to send the email
-     * then return status success to front
      * swagger docs
+     * email exits by jwt
      */
     await this.mailerQueue.add('invitation', {
       invitee_email,
       project_id,
       inviter_email,
+      access_level
     });
 
     res.send({ message: 'Email sent successfully!' });
+  }
+
+  @Get('invite/:project_id')
+  async verifyInvitation(
+    @Query('invitee_email') invitee_email: string,
+    @Query('access_level') access_level: 'write' | 'read',
+    @Param('project_id') project_id: string,
+    @Res() res: Response
+  ) {
+    const user = await this.projectSharesService.inviteeHasAccount(invitee_email)
+    let has_account = false;
+    if (user) {
+      const ps = this.projectSharesService.create({
+        project_id,
+        username: user.username,
+        access_level
+      });
+      has_account = true;
+    }
+    res.send({ message: 'Email sent successfully!', has_account });
   }
 
   // Retrieve project shares by project ID

@@ -15,6 +15,7 @@ import * as fs from 'fs';
 import * as jsonwebtoken from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import { privateKey } from '@config/configuration';
+import { Users } from '@users/user.entity';
 
 @Injectable()
 export class ProjectSharesService {
@@ -25,7 +26,7 @@ export class ProjectSharesService {
     private readonly projectsService: ProjectsService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
-  ) {}
+  ) { }
 
 
   async mapProjectShareData(projectShare: ProjectShares): Promise<ProjectSharesOutDto> {
@@ -155,8 +156,6 @@ export class ProjectSharesService {
       .getMany();
     console.log(shared_projects.length);
     return await this.mapProjectUsers(shared_projects);
-
-
   }
   // Retrieve project shares by user ID
   async findByUser(username: string | any): Promise<ProjectSharesOutDto[]> {
@@ -243,4 +242,7 @@ export class ProjectSharesService {
   }
 
 
+  async inviteeHasAccount(email: string): Promise<Partial<Users | null>> {
+    return await this.usersService.findByEmail({ email })
+  }
 }

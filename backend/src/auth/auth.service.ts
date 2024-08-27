@@ -22,6 +22,15 @@ import { RedisService } from '@redis/redis.service';
 import { v4 as uuidv4 } from 'uuid';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
+import { Role } from './enums/role.enum';
+
+export interface Payload {
+  username: string,
+  sub: string,
+  roles: Role[],
+  timestamp: number,
+  jti: any,
+}
 
 @Injectable()
 export class AuthService {
@@ -30,7 +39,7 @@ export class AuthService {
     private jwtService: JwtService,
     private redisService: RedisService,
     @InjectQueue('mailer') private mailerQueue: Queue,
-  ) {}
+  ) { }
 
   async signIn(user: Partial<Users>): Promise<{
     accessToken: string;
@@ -65,12 +74,19 @@ export class AuthService {
         'User is not verified. Please verify your email',
       );
     }
+    const toks = await this.generateTokens(payload);
+    return {
+      ...toks,
+      user: userinfo,
+    };
+  }
+
+  async generateTokens(payload: Payload): Promise<{ accessToken: string, refreshToken: string }> {
     return {
       accessToken: await this.jwtService.signAsync(payload),
       refreshToken: await this.jwtService.signAsync(payload, {
         expiresIn: '7d',
       }),
-      user: userinfo,
     };
   }
 
@@ -131,7 +147,7 @@ export class AuthService {
     return user;
   }
 
-  async signUp(createUserDto: CreateUserDto) {
+  async signUp(createUserDto: CreateUserDto & { is_invited?: boolean }) {
     if (adminEmails.includes(createUserDto.email)) {
       createUserDto['roles'] = ['admin'];
       createUserDto['is_verified'] = true;
@@ -139,32 +155,39 @@ export class AuthService {
     if (!createUserDto['favorite_languages']) {
       createUserDto['favorite_languages'] = [];
     }
+    if (createUserDto.is_invited) {
+      // user recieved invitation
+      return await this.create({ ...createUserDto, is_verified: true })
+    }
     return await this.create(createUserDto);
   }
 
   async create(user: Partial<Users>): Promise<Users> {
-    try {
-      const parsedDto = parseCreateUserDto(user);
+    const parsedDto = parseCreateUserDto(user);
+    const uniqueFields = ['username', 'email'];
+    // TODO: make single query to check if user,
+    // exist either by username or email
+    for (const field of uniqueFields) {
       try {
         const userExists = await this.usersService.findOneBy({
-          username: parsedDto.username,
+          [field]: parsedDto[field],
         });
-
         if (userExists) {
           throw new ConflictException(
-            `User with username ${parsedDto.username} already exists`,
+            `User with ${field} ${parsedDto[field]} already exists`,
           );
         }
-      } catch (err) { }
-
-      const newUser = await this.usersService.create(parsedDto);
-
-      return newUser;
-    } catch (err) {
-      throw new InternalServerErrorException(
-        `Failed to create user: ${err.message}`,
-      );
+      } catch (err) {
+        if (err instanceof NotFoundException) {
+          // do noting
+          continue;
+        } else {
+          throw err;
+        }
+      }
     }
+    const newUser = await this.usersService.create(parsedDto);
+    return newUser;
   }
 
   async resetPassword(

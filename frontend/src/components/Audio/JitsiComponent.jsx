@@ -11,12 +11,7 @@ const JitsiMeet = () => {
   const apiRef = useRef(null);
   const { projectId } = useParams();
   const { data, refetch, isFetching, isSuccess } = useGetRoomTokenQuery(projectId);
-  // console.log('data', data);
-
-    
-
-
-  // const domain = 'meet.jit.si';
+  const domain = 'meet.jit.si';
   const options = {
     startWithVideoMuted: true,
     startWithAudioMuted: true,
@@ -124,7 +119,7 @@ const JitsiMeet = () => {
       roomName={projectId}
       displayName='My Name'
       jwt={roomToken}
-      // domain={domain}
+      domain={domain}
       loadingComponent={<div>Loading...</div>}
       errorComponent={<div>Error</div>}
       containerStyle={{ width: '100%', height: '800px', 
