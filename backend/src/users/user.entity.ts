@@ -85,4 +85,9 @@ export class Users {
   })
   @JoinTable()
   favorite_projects: Projects[];
+  @ManyToMany(() => ProjectShares, (projectShare) => projectShare.favorite, {
+    cascade: true,
+  })
+  @JoinTable()
+  favorite_shares: ProjectShares[];
 }

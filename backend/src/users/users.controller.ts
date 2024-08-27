@@ -17,9 +17,11 @@ import { Users } from './user.entity';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import Docs from './users.docs';
 import { Projects } from '@projects/project.entity';
+import { ProjectShares } from '@project-shares/project-shares.entity';
 interface UserFavorite {
   user: Partial<Users>;
   favorite_projects: Projects[];
+  favorite_shares: ProjectShares[];
 }
 // TODO: complete RESTful API for user entity
 @ApiBearerAuth()

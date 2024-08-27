@@ -57,7 +57,7 @@ export const projectApi = api.injectEndpoints({
     >({
       query: ({ id, data }) => ({
         url: `/projects/${id}`,
-        method: 'PUT',
+        method: 'PATCH',
         body: data,
       }),
       invalidatesTags: ['Project'],

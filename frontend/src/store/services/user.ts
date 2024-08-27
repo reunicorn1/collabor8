@@ -3,6 +3,7 @@ import { CreateUserDto, User, Project } from '@types';
 interface UserFavorite {
   user: Partial<User>;
   favorite_projects: Project[];
+  favorite_shares: ProjectSharesOutDto[];
 }
 
 export const userApi = api.injectEndpoints({

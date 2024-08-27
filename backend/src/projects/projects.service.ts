@@ -12,7 +12,6 @@ import { Like, Repository } from 'typeorm';
 import { Projects } from './project.entity';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { ProjectMongoService } from '@project-mongo/project-mongo.service';
-import { EnvironmentMongoService } from '@environment-mongo/environment-mongo.service';
 import { UsersService } from '@users/users.service';
 import { MYSQL_CONN } from '@constants';
 import {
@@ -23,7 +22,6 @@ import {
 } from './dto/create-project.dto';
 import { validate as uuidValidate } from 'uuid';
 import { ProjectSharesService } from '@project-shares/project-shares.service';
-import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class ProjectsService {

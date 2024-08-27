@@ -10,6 +10,7 @@ import { Users } from './user.entity';
 import { EnvironmentMongoService } from '@environment-mongo/environment-mongo.service';
 import { MYSQL_CONN } from '@constants';
 import { Projects } from '@projects/project.entity';
+import { ProjectShares } from '@project-shares/project-shares.entity';
 
 interface Query {
   [key: string]: any;
@@ -18,6 +19,7 @@ interface Query {
 interface UserFavorite {
   user: Partial<Users>;
   favorite_projects: Projects[];
+  favorite_shares: ProjectShares[];
 }
 // TODO: complete all DB QUERY/MUTATION
 @Injectable()
@@ -51,7 +53,8 @@ export class UsersService {
 
   async addFavorites(user: Partial<Users>): Promise<UserFavorite> {
     const favorite_projects = user.favorite_projects;
-    return { user, favorite_projects };
+    const favorite_shares = user.favorite_shares;
+    return { user, favorite_projects, favorite_shares };
   }
 
   async getUserFavorites(username: string): Promise<UserFavorite> {

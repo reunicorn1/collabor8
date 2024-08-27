@@ -5,13 +5,13 @@ import {
   Body,
   Param,
   Delete,
-  Put,
   Request,
   Query,
   BadRequestException,
   Logger,
   HttpStatus,
   HttpCode,
+  Patch,
 } from '@nestjs/common';
 import { ProjectSharesService } from './project-shares.service';
 import { ProjectShares } from './project-shares.entity';
@@ -133,6 +133,13 @@ export class ProjectSharesController {
     return await this.projectSharesService.getRoomToken(req.user.username, id);
   }
 
+  @Patch('/favorites/:id')
+  async toggleFavorite(
+    @Param('id') id: string,
+    @Request() req: any,
+  ): Promise<ProjectShares> {
+    return this.projectSharesService.toggleFavorite(req.user.username, id);
+  }
   // project criteria must be owner or contributor
   //
   @ApiOperation({
@@ -175,7 +182,7 @@ export class ProjectSharesController {
     description:
       'Update the details of an existing project share using its ID.',
   })
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updateProjectShareDto: Partial<UpdateProjectShareDto>,

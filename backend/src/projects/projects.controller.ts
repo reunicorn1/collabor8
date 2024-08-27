@@ -6,7 +6,6 @@ import {
   Param,
   Delete,
   Request,
-  Put,
   Query,
   BadRequestException,
   Patch,
@@ -14,7 +13,7 @@ import {
 import { ProjectsService } from './projects.service';
 import { Projects } from './project.entity';
 import { CreateProjectDto, UpdateProjectDto } from './dto/create-project.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import Docs from './projects.docs';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 

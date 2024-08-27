@@ -10,9 +10,6 @@ import {
   CreateProjectShareDto,
   ProjectSharesOutDto,
 } from './dto/create-project-shares.dto';
-import * as path from 'path';
-import * as fs from 'fs';
-import { v4 as uuid } from 'uuid';
 import { appConfig } from '@config/configuration';
 import { RtcTokenBuilder, RtcRole } from 'agora-access-token';
 
@@ -70,7 +67,6 @@ export class ProjectSharesService {
       throw new NotFoundException('User not found');
     }
     const { user_id } = user;
-    const { project_name, _id } = project;
     const channelName = `${project_id}`;
     const appId = appConfig.appID;
     const appCertificate = appConfig.appCertificate;
@@ -87,39 +83,6 @@ export class ProjectSharesService {
 
     return { token, uid: user_id, channel: channelName };
 
-
-    /*
-     *   channelName = session_id[:8] + student.id[:8] + mentor.id[:8]
-        token = (session.mentor_token, session.student_token)[user]
-        if token is not None:
-            return respond.ok({"token": token, "uid": user_id,
-                                "channel": channelName})
-        # generate room ID using session ID and student ID and mentor ID
-        appId = getenv('AGORA_APPID')
-        appCertificate = getenv('AGORA_CERTIFICATE')
-        account = user_id
-        role = 1
-        start_time = datetime.combine(session.date, session.time)
-        start_time = start_time + timedelta(hours=12)
-        print("start_time", start_time)
-        expire_time = start_time + timedelta(hours=session.duration.hour,
-                                    minutes=session.duration.minute)
-        print("expire_time", expire_time)
-        privilegeExpiredTs = int(expire_time.timestamp())
-        token = RtcTokenBuilder.buildTokenWithAccount(appId,
-                    appCertificate, channelName,
-                    account, role, privilegeExpiredTs)
-        if user:
-            session.student_token = token
-        else:
-            session.mentor_token = token
-        session.save()
-        return respond.ok({
-                            "token": token,
-                            "uid": user_id,
-                            "channel": channelName})
-
-*/
 
   }
 
@@ -180,6 +143,36 @@ export class ProjectSharesService {
 
   }
 
+    async handleFavorite(username, favorite, project) {
+    const user = await this.usersService.findOneBy({ username });
+    if (favorite) {
+      if (!user.favorite_shares) {
+        user.favorite_shares = [project];
+      } else {
+        user.favorite_shares.push(project);
+      }
+    } else {
+      if (user.favorite_shares) {
+        const idx = user.favorite_shares.indexOf(project);
+        user.favorite_shares.splice(idx, 1);
+      }
+    }
+    this.usersService.save(user);
+  }
+
+  async toggleFavorite(username: string, id: string): Promise<ProjectShares> {
+    const project = await this.projectSharesRepository.findOneBy({ share_id: id });
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    if (project.username !== username) {
+      throw new NotFoundException('Project not found');
+    }
+    project.favorite = !project.favorite;
+    await this.handleFavorite(project.username, project.favorite, project);
+    await this.projectSharesRepository.save(project);
+    return project;
+  }
   async updateStatus(id: string, status: string): Promise<ProjectShares | { message: string }> {
     const projectShare = await this.projectSharesRepository.findOneBy({ share_id: id });
     if (status !== 'accepted' && status !== 'rejected') {
@@ -267,19 +260,7 @@ export class ProjectSharesService {
       .getMany()
 
     console.log(projects);
-    // .then((project) => {
-    //   return project.map(async (project) => {
-    //     console.log(project);
-    //     if (!project) {
-    //       return null;
-    //     }
-    //     return await this.mapProjectShareData(project);
-    //   });
-    // })
-    // .catch((error) => {
-    //   Logger.error(error);
-    //   return [];
-    // });
+
 
     const mappedProjects = await Promise.all(
       projects.map(async (project) => {
