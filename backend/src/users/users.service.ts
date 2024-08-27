@@ -9,9 +9,17 @@ import { Repository, FindOptionsWhere, FindOperator, In } from 'typeorm';
 import { Users } from './user.entity';
 import { EnvironmentMongoService } from '@environment-mongo/environment-mongo.service';
 import { MYSQL_CONN } from '@constants';
+import { Projects } from '@projects/project.entity';
+import { ProjectShares } from '@project-shares/project-shares.entity';
 
 interface Query {
   [key: string]: any;
+}
+
+interface UserFavorite {
+  user: Partial<Users>;
+  favorite_projects: Projects[];
+  favorite_shares: ProjectShares[];
 }
 // TODO: complete all DB QUERY/MUTATION
 @Injectable()
@@ -24,12 +32,13 @@ export class UsersService {
   ) { }
 
   async create(user: Partial<Users>): Promise<Users> {
-    let newUser = this.usersRepository.create(user);
-    const newEnv = await this.environmentService.create({ username: newUser.username });
+    const newUser = this.usersRepository.create(user);
+    const newEnv = await this.environmentService.create({
+      username: newUser.username,
+    });
     newUser.environment_id = newEnv._id.toString();
     await this.usersRepository.save(newUser);
     return this.removePasswordHash(newUser);
-
   }
 
   async save(user: Users): Promise<Users> {
@@ -42,9 +51,20 @@ export class UsersService {
     return user;
   }
 
+  async addFavorites(user: Partial<Users>): Promise<UserFavorite> {
+    const favorite_projects = user.favorite_projects;
+    const favorite_shares = user.favorite_shares;
+    return { user, favorite_projects, favorite_shares };
+  }
+
+  async getUserFavorites(username: string): Promise<UserFavorite> {
+    const user = await this.findOneBy({ username });
+    return await this.addFavorites(user);
+  }
+
   async removeAllPasswordHash(users: Users[]): Promise<Users[]> {
     return await Promise.all(
-      users.map(user => this.removePasswordHash(user)),
+      users.map((user) => this.removePasswordHash(user)),
     );
   }
 
@@ -101,8 +121,7 @@ export class UsersService {
     return this.findOneBy({ username });
   }
 
-  async removeByUsername(username: string
-  ): Promise<{ message: string }> {
+  async removeByUsername(username: string): Promise<{ message: string }> {
     const result = await this.usersRepository.delete({ username });
 
     if (result.affected === 0) {
@@ -127,8 +146,6 @@ export class UsersService {
     return this.findOneBy({ username: username });
   }
 
-
-
   async findAllBy(query: Query): Promise<Users[]> {
     const users = await this.usersRepository.find(query);
     return await this.removeAllPasswordHash(users);
@@ -145,5 +162,4 @@ export class UsersService {
     await this.usersRepository.delete({});
     return { message: 'All users successfully deleted' };
   }
-
 }

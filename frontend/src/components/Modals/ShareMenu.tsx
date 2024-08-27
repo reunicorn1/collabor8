@@ -28,6 +28,7 @@ import {
   useCreateProjectShareMutation,
   useGetProjectSharesByProjectIdQuery,
   useInviteUserMutation,
+  useUpdateProjectShareMutation,
 } from '@store/services/projectShare';
 import { useSelector } from 'react-redux';
 import { selectUserDetails } from '@store/selectors/userSelectors';
@@ -38,6 +39,7 @@ interface ModalProps {
   onClose: () => void;
   project: Project | ProjectShares;
 }
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
   /**
@@ -48,11 +50,13 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
    */
   const url = import.meta.env.VITE_URL;
   const [createProjectShare] = useCreateProjectShareMutation();
-  const obj = useGetProjectSharesByProjectIdQuery(project.project_id); // Give it project id
   const [invite, { isLoading }] = useInviteUserMutation();
+  const { data, refetch } = useGetProjectSharesByProjectIdQuery(
+    project.project_id,
+  );
+  const [updateShares] = useUpdateProjectShareMutation();
   const userDetails = useSelector(selectUserDetails);
   const finalRef = useRef(null);
-  const location = useLocation();
   const [clicked, setClicked] = useState(false);
   const [inviteeType, setInviteeType] = useState('');
   const [value, setValue] = useState('');
@@ -60,27 +64,6 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
   const [permission, setPermission] = useState('read');
   const toast = useToast();
   const { projectId: project_id } = useParams();
-
-  // This function handles copying the link to the clipboard
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(
-      () => {
-        // Success feedback (optional)
-        console.log('Link copied to clipboard!');
-      },
-      (err) => {
-        // Error handling (optional)
-        console.error('Failed to copy the link: ', err);
-      },
-    );
-  };
-
-  // This function handles clicking the "copy link" button
-  const handleClick = () => {
-    console.log(`${url}${location.pathname}`);
-    copyToClipboard(`${url}${location.pathname}`);
-    setClicked(true);
-  };
 
   // This function handles closing the menu
   const handleClose = () => {
@@ -94,17 +77,24 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
   const handleInvite = async () => {
     if (inviteeType === 'email') {
       // send email to user
+      if (!emailRegex.test(value)) {
+        setErrMsg('Please enter a valid email address.');
+        return;
+      } else {
+        setErrMsg('');
+      }
       invite({
         invitee_email: value,
         access_level: permission,
         project_id,
-        inviter_email: userDetails.email ?? userDetails.username
+        inviter_email: userDetails.email ?? userDetails.username,
       })
         .unwrap()
         .then(_ => {
           toast({
             title: 'Project Invitation',
-            description: 'Email has been sent successfully to your parnter',
+            description: 'Email has been sent successfully to your partner',
+            variant: 'subtle',
             status: 'success',
             position: 'bottom-left',
           });
@@ -112,6 +102,7 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
         .catch(err => {
           toast({
             title: 'Project Invitation',
+            variant: 'subtle',
             description: `Oops, an error occured: ${err.data?.message}`,
             status: 'error',
             position: 'bottom-left',
@@ -135,6 +126,7 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
         status: 'success',
         isClosable: true,
       });
+      refetch();
     } catch (err: any) {
       console.log('Failed to send invitataion to the user', err);
       if (err.status === 500) {
@@ -145,7 +137,33 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
     }
   };
 
-  console.log('-----------------------@>', { project_id })
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPermission(e.target.value);
+  };
+
+  const handleChangeInvtation = async (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    invitee,
+  ) => {
+    console.log('You selected', e.target.value);
+    const permission = e.target.value === 'can edit' ? 'write' : 'read';
+    await updateShares({
+      id: invitee.share_id,
+      data: { access_level: permission },
+    })
+      .unwrap()
+      .then((_) => {
+        refetch();
+        console.log('Access level has been changed');
+      })
+      .catch((err) => {
+        console.log(
+          'An error occured during updating the access level of this user',
+          err,
+        );
+      });
+  };
+
   return (
     <Modal finalFocusRef={finalRef} isOpen={isOpen} onClose={handleClose}>
       <ModalOverlay />
@@ -156,38 +174,21 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
               Share this project
             </Heading>
             <Spacer />
-            <Button
-              size="sm"
-              variant="ghost"
-              color="orange"
-              leftIcon={<FaLink />}
-              _hover={{
-                color: 'black',
-                bg: 'white',
-              }}
-              onClick={handleClick}
-            >
-              {clicked ? `Link copied!` : `Copy link`}
-            </Button>
           </Flex>
         </ModalHeader>
         <ModalBody>
-          <Alert status="info" bg="orange.200" fontSize="sm" mb={6}>
-            <AlertIcon color="orange.600" />
-            Sharing project via link only allow people to view
-          </Alert>
           <Select
-            placeholder='Share project by'
-            size='sm'
-            color='orange'
+            placeholder="Share project by"
+            size="sm"
+            color="orange"
             value={inviteeType}
             onChange={(e) => setInviteeType(e.target.value)}
-            mb='0.5rem'
-            className='!mb-2'
-            outline='white'
+            mb="0.5rem"
+            className="!mb-2"
+            outline="white"
           >
-            <option value='text'>username</option>
-            <option value='email'>email</option>
+            <option value="text">username</option>
+            <option value="email">email</option>
           </Select>
           {inviteeType && (
             <InviteBy
@@ -222,39 +223,43 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
               </Text>
             </Flex>
             {/* This is a list of all contributors with their access mode as a toggle which sends a request when changed */}
-            <Flex alignItems="center">
-              <Avatar name="Mohamed Elfadil" src="" size="sm" />
-              <Text m={3} fontSize="sm" color="white">
-                Mohamed Elfadil
-              </Text>
-              <Spacer />
-              <Select w="5.5rem" size="sm" variant="unstyled" color="white">
-                <option value="option1">can edit</option>
-                <option value="option2">can view</option>
-              </Select>
-            </Flex>
-            <Flex alignItems="center">
-              <Avatar name="Mohannad Babiker" src="" size="sm" />
-              <Text m={3} fontSize="sm" color="white">
-                Mohannad Babiker
-              </Text>
-              <Spacer />
-              <Select w="5.5rem" size="sm" variant="unstyled" color="white">
-                <option value="option1">can edit</option>
-                <option value="option2">can view</option>
-              </Select>
-            </Flex>
-            <Flex alignItems="center">
-              <Avatar name="Abdallah Abdelrahman" src="" size="sm" />
-              <Text m={3} fontSize="sm" color="white">
-                Abdallah Abdelrahman
-              </Text>
-              <Spacer />
-              <Select w="5.5rem" size="sm" variant="unstyled" color="white">
-                <option value="option1">can edit</option>
-                <option value="option2">can view</option>
-              </Select>
-            </Flex>
+            {data?.map((invitee, index) => {
+              console.log(invitee);
+              return (
+                <Flex alignItems="center" key={index}>
+                  <Avatar
+                    name={`${invitee?.first_name} ${invitee?.last_name}`}
+                    src={invitee?.profile_picture}
+                    size="sm"
+                  />
+                  <Text m={3} fontSize="sm" color="white">
+                    {`${invitee?.first_name} ${invitee?.last_name}`}
+                  </Text>
+                  <Spacer />
+                  {invitee?.status === 'pending' ? (
+                    <Text fontSize="sm" color="white">
+                      {invitee?.status}
+                    </Text>
+                  ) : (
+                    <Select
+                      w="5.5rem"
+                      size="sm"
+                      variant="unstyled"
+                      color="white"
+                      value={
+                        invitee?.access_level === 'write'
+                          ? 'can edit'
+                          : 'can view'
+                      }
+                      onChange={(e) => handleChangeInvtation(e, invitee)}
+                    >
+                      <option value="can edit">can edit</option>
+                      <option value="can view">can view</option>
+                    </Select>
+                  )}
+                </Flex>
+              );
+            })}
           </Box>
         </ModalBody>
       </ModalContent>
@@ -273,7 +278,6 @@ function InviteBy({
   return (
     <InputGroup size="sm">
       <Input
-        required
         pr="4.5rem"
         placeholder={`Invite others by ${type === 'text' ? 'username' : 'email'}`}
         fontFamily="mono"

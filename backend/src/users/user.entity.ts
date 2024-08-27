@@ -6,8 +6,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  // OneToOne,
-  // JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Projects } from '@projects/project.entity';
 import { ProjectShares } from '@project-shares/project-shares.entity';
@@ -37,15 +37,11 @@ export class Users {
   favorite_languages: string[] | null;
 
   // TODO: add profile picture and other user details as needed
-  @Column({ type: 'varchar',nullable: true, default: '' })
+  @Column({ type: 'varchar', nullable: true, default: '' })
   profile_picture: string | null;
 
-  // TODO: create favorite projects list
-  @Column('simple-array', { nullable: true })
-  favorite_projects: string[] | null;
-
   // bio
-  @Column({ type: 'varchar',nullable: true, default: '' })
+  @Column({ type: 'varchar', nullable: true, default: '' })
   bio: string | null;
 
   // default 'user'
@@ -67,16 +63,22 @@ export class Users {
   @UpdateDateColumn()
   updated_at: Date;
 
-  // @OneToOne(() => EnvironmentMongo, (environment) => environment.user, {
-  //   nullable: true,
-  //   cascade: true,
-  // })
-  // @JoinColumn({ name: 'environment_id', referencedColumnName: '_id' })
-  // environment: EnvironmentMongo | null; // User's environment
-
   @OneToMany(() => Projects, (project) => project.owner)
   ownedProjects: Projects[]; // Projects owned by the user
 
   @OneToMany(() => ProjectShares, (projectShare) => projectShare.user)
   projectShares: ProjectShares[]; // Project shares associated with the user
+
+  // TODO: create favorite projects list
+
+  @ManyToMany(() => Projects, (project) => project.favorite, {
+    cascade: true,
+  })
+  @JoinTable()
+  favorite_projects: Projects[];
+  @ManyToMany(() => ProjectShares, (projectShare) => projectShare.favorite, {
+    cascade: true,
+  })
+  @JoinTable()
+  favorite_shares: ProjectShares[];
 }

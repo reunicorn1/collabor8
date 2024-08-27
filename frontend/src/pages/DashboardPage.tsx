@@ -5,6 +5,8 @@ import {
   InputGroup,
   InputLeftElement,
   Text,
+  Divider,
+  Heading,
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { GoHome, GoHomeFill } from 'react-icons/go';
@@ -13,15 +15,41 @@ import {
   HiSquares2X2,
   HiOutlineUserGroup,
   HiUserGroup,
+  HiOutlineFolder,
 } from 'react-icons/hi2';
 import DashboardBar from '../components/Bars/DashboardBar';
-import { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import Home from '../components/Dashboard/Home';
 import SharedWithMe from '../components/Dashboard/SharedWithMe';
 import AllProjects from '../components/Dashboard/AllProjects';
+import { useSelector } from 'react-redux';
+import { selectUserDetails } from '@store/selectors';
+import { useNavigate } from 'react-router-dom';
 
 export default function DashboardPage() {
+  const userDetails = useSelector(selectUserDetails);
   const [clicked, setClicked] = useState('Home');
+  const [search, setSearch] = useState('');
+  const navigate = useNavigate();
+
+  const handleInputChange = (
+    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+  ) => {
+    const { value } = e.currentTarget;
+    setSearch(value);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      console.log('Input value:', search);
+    }
+  };
+
+  const handleGoToProject = (project: any) => {
+    // This function handles the click of a project item in the table it recives the id of the project
+    // And it navigates to the project page using the id
+    navigate(`/editor/${project._id}`, { state: project });
+  };
 
   return (
     <>
@@ -54,6 +82,9 @@ export default function DashboardPage() {
               m={3}
               pr={3}
               border="1px solid #524175"
+              value={search}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
             />
           </InputGroup>
           <>
@@ -106,6 +137,35 @@ export default function DashboardPage() {
                 Shared with me
               </Text>
             </Box>
+            {userDetails && userDetails?.favorite_projects && (
+              <>
+                <Divider mt={20} mb={4} opacity="0.3" />
+                <Box pl={4}>
+                  <Heading fontSize="xs" fontFamily="mono">
+                    Starred
+                  </Heading>
+                  <Box pt={1}>
+                    {/* This part contains the favorite projects of the user */}
+                    {userDetails?.favorite_projects?.map((project, index) => (
+                      <Box
+                        key={index}
+                        p={2}
+                        display="flex"
+                        alignItems="center"
+                        _hover={{ bg: '#524175' }}
+                        onClick={() => handleGoToProject(project)}
+                        cursor="pointer"
+                      >
+                        <HiOutlineFolder />
+                        <Text pl={2} fontFamily="mono" fontSize="xs">
+                          {project.name}
+                        </Text>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              </>
+            )}
           </>
         </Box>
         <Box flex="1" bg="brand.900" h="100%" color="white" width="90%">

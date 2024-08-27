@@ -51,7 +51,13 @@ export const projectShareApi = api.injectEndpoints({
         `/project-shares/page?page=${page}&limit=${limit}&sort=${sort}`,
       providesTags: ['ProjectShare'],
     }),
-
+    toggleFavorite: builder.mutation<ProjectShares, boolean>({
+      query: (id) => ({
+        url: `/project-shares/favorites/${id}`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Project', 'User'],
+    }),
     // Update a project share
     updateProjectShare: builder.mutation<
       ProjectShares,
@@ -59,7 +65,7 @@ export const projectShareApi = api.injectEndpoints({
     >({
       query: ({ id, data }) => ({
         url: `/project-shares/${id}`,
-        method: 'PUT',
+        method: 'PATCH',
         body: data,
       }),
       invalidatesTags: ['ProjectShare'],
@@ -110,4 +116,5 @@ export const {
   useInviteUserMutation,
   useGetRoomTokenQuery,
   useLazyInviteGuestQuery,
+  useToggleFavoriteMutation,
 } = projectShareApi;

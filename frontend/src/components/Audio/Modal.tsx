@@ -10,7 +10,7 @@ import {
   ModalCloseButton,
   useDisclosure,
 } from '@chakra-ui/react';
-import JitsiMeet from './JitsiComponent';
+import RoomComponent from './RoomComponent';
 
 export function Mapped() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -40,7 +40,8 @@ export function Mapped() {
           <ModalCloseButton />
           <ModalBody style={{ height: '800px', padding: 0 }}>
             <div style={{ height: '100%', width: '100%' }}>
-              <JitsiMeet style={{ height: '100%', width: '100%' }} />
+            <RoomComponent style={{ height: '100%', width: '100%' }}
+/>
             </div>
           </ModalBody>
           <ModalFooter>

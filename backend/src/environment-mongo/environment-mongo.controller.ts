@@ -13,8 +13,8 @@ export class EnvironmentMongoController {
       'Retrieve a list of all environment documents stored in MongoDB.',
   })
   @Get()
-  findAll() {
-    return this.environService.findAll();
+  async findAll() {
+    return await this.environService.findAll();
   }
 
   @ApiOperation({
@@ -23,8 +23,8 @@ export class EnvironmentMongoController {
       'Retrieve a specific environment document from MongoDB using its unique username.',
   })
   @Get('me')
-  getMyEnvironment(@Request() req) {
-    return this.environService.getEnvironmentUsername(req.user.username);
+  async getMyEnvironment(@Request() req) {
+    return await this.environService.getEnvironmentUsername(req.user.username);
   }
 
   @ApiOperation({
@@ -33,7 +33,7 @@ export class EnvironmentMongoController {
       'Delete a specific environment document from MongoDB using its unique ID. Creates a new environment for the user.',
   })
   @Delete('me')
-  remove(@Request() req) {
-    return this.environService.remove(req.user.username);
+  async remove(@Request() req) {
+    return await this.environService.remove(req.user.username);
   }
 }

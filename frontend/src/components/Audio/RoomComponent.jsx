@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import AgoraRTC from "agora-rtc-sdk-ng";
-import { useParams } from 'react-router-dom';
-import { Button, Heading, Text, Flex } from '@chakra-ui/react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Button, Heading, Text, Flex, IconButton } from '@chakra-ui/react';
+import { FaMicrophone, FaMicrophoneSlash, FaSignOutAlt } from 'react-icons/fa';
+import { useGetRoomTokenQuery } from '@store/services/projectShare';
+import apiConfig from '@config/apiConfig';
 
-const RoomComponent = ({ sessionid }) => {
+const RoomComponent = ({ autoJoin = false }) => {
   
   const [client, setClient] = React.useState(null);
   const [localUid, setLocalUid] = React.useState(null);
@@ -11,14 +14,17 @@ const RoomComponent = ({ sessionid }) => {
   const [localAudioMuted, setLocalAudioMuted] = React.useState(false);
   const [remoteTracks, setRemoteTracks] = React.useState({});
   const { projectId } = useParams();
+  const navigate = useNavigate();
+  const sessionid = projectId;
+  // console.log('data', data);
+  const { data, refetch, isFetching, isSuccess } = useGetRoomTokenQuery(projectId);
+
 
   const getToken = async () => {
-    const response = await executor.get(`/sessions/room/${sessionid}`);     
-    if (response && response.status === 200) {
-      return response.data;
-    } else {
-      throw new Error('Failed to get token');
+    if (!isSuccess || !data) {
+      await refetch();
     }
+    return data;
   };
 
   const joinRoom = async () => {
@@ -30,7 +36,7 @@ const RoomComponent = ({ sessionid }) => {
     agoraClient.on('volume-indicator', handleVolumeIndicator);
     agoraClient.enableAudioVolumeIndicator();
     
-    await agoraClient.join(import.meta.env.VITE_AGORA_APPID, channel, token || null, uid || null);
+    await agoraClient.join(apiConfig.appID, channel, token || null, uid || null);
     const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
 
     setClient(agoraClient);
@@ -44,7 +50,7 @@ const RoomComponent = ({ sessionid }) => {
     await agoraClient.publish([audioTrack]);
 
     // Show UI for audio controls
-    document.getElementById('join-wrapper').style.display = 'none';
+    // document.getElementById('join-wrapper').style.display = 'none';
     document.getElementById('foot').style.display = 'flex';
   };
 
@@ -74,17 +80,21 @@ const RoomComponent = ({ sessionid }) => {
       setLocalUid(null);
       setRemoteTracks({});
 
-      // Navigate away
-      navigate('/');
     }
   };
 
   const handleUserJoined = async (user, mediaType) => {
     // Handle audio only
+     if (!client || mediaType !== 'audio') return;
     if (mediaType === 'audio') {
       await client.subscribe(user, mediaType);
-      user.audioTrack.play();
-      
+      if (user.audioTrack) {
+        user.audioTrack.setVolume(100);
+        user.audioTrack.play();
+      } else {
+        console.warn('No audio track found for the user');
+      };
+
       // Update remote tracks
       setRemoteTracks(prevTracks => ({
         ...prevTracks,
@@ -102,7 +112,9 @@ const RoomComponent = ({ sessionid }) => {
     });
 
     // Unsubscribe from the user
-    client.unsubscribe(user);
+      if (client) {
+      client.unsubscribe(user);
+      }
   };
 
   const handleVolumeIndicator = (evt) => {
@@ -117,31 +129,68 @@ const RoomComponent = ({ sessionid }) => {
     });
   };
 
-  return (
-    <div className='room'>
-      <Flex 
-        id='join-wrapper'
-        direction={'row'}
-        justify={'space-around'}
-        align={'center'}
-        wrap={'wrap'}
+    useEffect(() => {
+    if (autoJoin) {
+      joinRoom();
+    }
+  }, [autoJoin]);
+
+ return (
+   <Flex direction="column" align="center" p={4}>
+      <Flex
+        id="join-wrapper"
+        direction="column"
+        align="center"
+        justify="center"
+        display={autoJoin ? 'none' : 'flex'}
+        p={4}
       >
-        <Heading>You are in the waiting room</Heading>
-        <Text fontSize={'xl'}>Click the button below to join the meeting</Text>
-        <Button width={'50%'} mt={4} bg='brand.700' color={'white'} fontSize={'x-large'} size={'lg'} onClick={joinRoom}>
+        <Heading mb={4}>You are in the waiting room</Heading>
+        <Text fontSize="xl" mb={4}>
+          Click the button below to join the meeting
+        </Text>
+        <Button
+          colorScheme="teal"
+          size="lg"
+          onClick={joinRoom}
+        >
           Join
         </Button>
       </Flex>
-      <div id="foot" style={{ display: 'none' }}>
-        <button id='mic-btn' onClick={handleMicClick}>
-          <img height={20} width={20} src="/img/assets/microphone.svg" alt="Toggle Mic" />
-        </button>
-        <button id="leave-btn" onClick={handleLeaveButtonClick}>
-          <img height={25} width={25} src="/img/assets/leave.svg" alt="Leave" />
-        </button>
-      </div>
-    </div>
-  );
+      <Flex
+        id="foot"
+        display={autoJoin ? 'flex' : 'none'}
+        direction="row"
+        align="center"
+        justify="center"
+        p={4}
+        gap={4}
+      >
+        <IconButton
+          icon={localAudioMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
+          aria-label="Toggle Mic"
+          onClick={handleMicClick}
+        />
+        <IconButton
+          icon={<FaSignOutAlt />}
+          aria-label="Leave Room"
+          onClick={handleLeaveButtonClick}
+        />
+      </Flex>
+      <Flex direction="row" align="center" justify="center" p={4} gap={4}>
+        {Object.keys(remoteTracks).map(uid => (
+          <Flex key={uid} direction="column" align="center">
+            <Text>{`User ${uid}`}</Text>
+            <Icon
+              as={volumeIndicators[uid] ? FaVolumeUp : FaVolumeMute}
+              boxSize={6}
+              color={volumeIndicators[uid] ? 'green.400' : 'red.400'}
+              id={`volume-${uid}`}
+            />
+          </Flex>
+        ))}
+      </Flex>
+    </Flex>  );
 };
 
 export default RoomComponent;

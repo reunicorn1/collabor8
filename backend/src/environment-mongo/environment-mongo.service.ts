@@ -33,22 +33,25 @@ export class EnvironmentMongoService {
   ): Promise<EnvironmentMongo> {
     // TODO: create validation for createEnvironmentDto
     const newEnvironment = this.environRepository.create(createEnvironmentDto);
-    return this.environRepository.save(newEnvironment);
+    return await this.environRepository.save(newEnvironment);
   }
 
-  findAll(): Promise<EnvironmentMongo[]> {
-    return this.environRepository.find();
+  async findAll(): Promise<EnvironmentMongo[]> {
+    return await this.environRepository.find();
   }
 
 
-  findOne(_id: string): Promise<EnvironmentMongo | null> {
-    return this.environRepository.findOneBy({ _id: new ObjectId(_id) });
+  async findOne(_id: string): Promise<EnvironmentMongo | null> {
+    return await this.environRepository.findOneBy({ _id: new ObjectId(_id) });
   }
 
   // TODO: TODAY create method to remove environment projects using projectService
 
   async remove(username: string): Promise<EnvironmentMongo> {
     const env = await this.findOneBy({ username });
+    if (!env) {
+      throw new NotFoundException(`Environment for user ${username} not found`);
+    }
     const projects = await this.projectService.findAllBy('environment_id', env._id.toString());
     await Promise.all(projects.map(async (project) => {
       await this.projectService.remove(project.project_id);

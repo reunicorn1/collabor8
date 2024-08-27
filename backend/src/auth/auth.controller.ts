@@ -54,6 +54,7 @@ export class AuthController {
     const { accessToken, refreshToken, user } = await this.authService.signIn(
       { ...req.user, is_invited },
     );
+
     res
       .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
       .cookie('accessToken', accessToken)
@@ -130,7 +131,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Request() req) {
-    return req.user;
+    return await this.authService.getProfile(req.user.username);
   }
 
   @docs.ApiRefreshToken()

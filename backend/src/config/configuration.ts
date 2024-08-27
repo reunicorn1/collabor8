@@ -38,4 +38,10 @@ export const adminEmails = [
   'mo7amedelfadil@gmail.com',
 ];
 
-export const privateKey = process.env.PRIVATE_KEY;
+export const appConfig = {
+  appName: 'Collabor8',
+  appUrl: 'https://co11abor8.netlify.app',
+  appID: process.env.AGORA_APPID,
+  appCertificate: process.env.AGORA_CERTIFICATE,
+};
+

@@ -1,5 +1,5 @@
 import { api } from './api';
-import { Project, CreateProjectDto, UpdateProjectDto } from '@types';
+import { Project, CreateProjectDto, UpdateProjectDto, ProjectWithMembers } from '@types';
 
 export const projectApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -29,7 +29,7 @@ export const projectApi = api.injectEndpoints({
     getAllProjectsPaginated: builder.query<
       {
         total: number;
-        projects: Project[];
+        projects: ProjectWithMembers[];
         page: number;
         limit: number;
         totalPages: number;
@@ -57,11 +57,19 @@ export const projectApi = api.injectEndpoints({
     >({
       query: ({ id, data }) => ({
         url: `/projects/${id}`,
-        method: 'PUT',
+        method: 'PATCH',
         body: data,
       }),
       invalidatesTags: ['Project'],
     }),
+    toggleFavorite: builder.mutation<Project, boolean>({
+      query: (id) => ({
+        url: `/projects/favorites/${id}`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Project', 'User'],
+    }),
+
     // Delete a project by ID
     deleteProject: builder.mutation<void, string>({
       query: (id) => ({
@@ -83,4 +91,5 @@ export const {
   useGetProjectByIdQuery,
   useUpdateProjectMutation,
   useDeleteProjectMutation,
+  useToggleFavoriteMutation,
 } = projectApi;

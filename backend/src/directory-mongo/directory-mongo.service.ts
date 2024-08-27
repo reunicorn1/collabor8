@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef, Logger, ConflictException } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, Logger, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DirectoryMongo } from './directory-mongo.entity';
@@ -39,17 +39,18 @@ export class DirectoryMongoService {
     const newDirectory = this.directoryRepository.create({
       parent_id: parsedDto.parent_id,
       name: parsedDto.name,
+      project_id: parsedDto.project_id,
     });
-    return this.directoryRepository.save(newDirectory);
+    return await this.directoryRepository.save(newDirectory);
   }
 
-  findAll(): Promise<DirectoryMongo[]> {
-    return this.directoryRepository.find();
+  async findAll(): Promise<DirectoryMongo[]> {
+    return await this.directoryRepository.find();
   }
 
-  findOne(id: string): Promise<DirectoryMongo | null> {
+  async findOne(id: string): Promise<DirectoryMongo | null> {
     const _id = new ObjectId(id);
-    return this.directoryRepository.findOneBy({ _id });
+    return await this.directoryRepository.findOneBy({ _id });
   }
 
   // general method to find all directories by a field
@@ -149,6 +150,7 @@ export class DirectoryMongoService {
           await this.remove(dir._id.toString());
         } catch (e) {
           Logger.error(e);
+          throw new NotFoundException('Directory not found');
         }
       }),
     );
@@ -159,6 +161,7 @@ export class DirectoryMongoService {
         }
         catch (e) {
           Logger.error(e);
+          throw new NotFoundException('File not found');
         }
       }),
     );
@@ -166,6 +169,7 @@ export class DirectoryMongoService {
       await this.directoryRepository.delete(id);
     } catch (e) {
       Logger.error(e);
+      throw new NotFoundException('Directory not found');
     }
   }
 }

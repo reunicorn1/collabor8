@@ -84,9 +84,9 @@ const server = new Hocuspocus({
   },
   async onStoreDocument(context) {
     console.log('-----onStoreDocument---------->')
-	const projectId = context.document.name
-	const ymap = context.document.getMap(projectId);
-	console.log(ymap);
+    const projectId = context.document.name
+    const ymap = context.document.getMap(projectId);
+    console.log(ymap);
 
     const token = context.requestParameters.get('token');
     Array.from(ymap.entries()).forEach(async ([k, v]) => {
@@ -115,11 +115,11 @@ async function handleLoadDocument(context, { token, username }) {
     const project = await axios.get(`${nestServerUrl}/projects/${username}/${projectId}?depth=0`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    console.log( project.data )
+    console.log(project.data)
 
     //console.log({ user: username })
     const transformedData = transformData(project.data[0]);
-	console.log('----------------> ', transformedData);
+    console.log('----------------> ', transformedData);
     yMap.set("filetree", transformedData);
   } catch (err) {
     //console.log({ resp: err.response.message })
@@ -236,7 +236,6 @@ async function handleOnStoreDocument({ token, projectId, yText, fileMeta }) {
   const fileId = fileMeta.id
   //const yText = value;
   console.log(`FileId: ${fileId}`);
-  //const fileMeta = metaArray[`${key}_metadata`]; // Is metadata never stored in database a9lan!
   console.log('FileMeta:', fileMeta);
   if (fileMeta && fileMeta['new']) {
     // update the file from the database
@@ -256,13 +255,13 @@ async function loadfileFromDb({ fileMeta, projectId, fileId, yText, token }) {
       { headers: { Authorization: `Bearer ${token}` } }
     );
     const content = file.data.file_content;
-	const newtext = new Y.Text()
+    const newtext = new Y.Text()
 
     newtext.applyDelta(content);
     if (content && JSON.stringify(yText.toDelta()) !== JSON.stringify(content)) {
       //causing error f not function
       // Y.transact(async () => {
-        yText.applyDelta(content);
+      yText.applyDelta(content);
       // }, 'loading-content');
 
     }
@@ -276,10 +275,10 @@ async function updateFileInDb(fileId, yText, token) {
   const update = yText.toDelta(); // Saving the changes as delta rather than using encodeStateAsUpdate
 
   try {
-	console.log("I'm here 2");
-    const result = await axios.patch(`${nestServerUrl}/files/${fileId}`, { file_content: update  }, { headers: { Authorization: `Bearer ${token}` } }
-)
-	console.log("I'm here 1");
+    console.log("I'm here 2");
+    const result = await axios.patch(`${nestServerUrl}/files/${fileId}`, { file_content: update }, { headers: { Authorization: `Bearer ${token}` } }
+    )
+    console.log("I'm here 1");
   } catch (err) {
     console.error('Error during request-------------->', { err })
   }

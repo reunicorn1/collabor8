@@ -12,7 +12,6 @@ import { Like, Repository } from 'typeorm';
 import { Projects } from './project.entity';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { ProjectMongoService } from '@project-mongo/project-mongo.service';
-import { EnvironmentMongoService } from '@environment-mongo/environment-mongo.service';
 import { UsersService } from '@users/users.service';
 import { MYSQL_CONN } from '@constants';
 import {
@@ -23,7 +22,10 @@ import {
 } from './dto/create-project.dto';
 import { validate as uuidValidate } from 'uuid';
 import { ProjectSharesService } from '@project-shares/project-shares.service';
-import { NotFoundError } from 'rxjs';
+
+interface ProjectWithMembers extends Projects {
+  member_count: number;
+}
 
 @Injectable()
 export class ProjectsService {
@@ -36,8 +38,7 @@ export class ProjectsService {
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => ProjectSharesService))
     private readonly projectSharesService: ProjectSharesService,
-
-  ) { }
+  ) {}
 
   // Create a new project
   // TODO: TODAY modify env to be obtained from user object
@@ -73,6 +74,19 @@ export class ProjectsService {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
+  }
+  async toggleFavorite(username: string, id: string): Promise<Projects> {
+    const project = await this.projectsRepository.findOneBy({ project_id: id });
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    if (project.username !== username) {
+      throw new NotFoundException('Project not found');
+    }
+    project.favorite = !project.favorite;
+    await this.handleFavorite(project.username, project.favorite, project);
+    await this.projectsRepository.save(project);
+    return project;
   }
 
   async searchForProjects(name: string, username: string): Promise<Projects[]> {
@@ -150,7 +164,7 @@ export class ProjectsService {
     page: number,
     limit: number,
     sort: string,
-  ): Promise<{ total: number; projects: Projects[] }> {
+  ): Promise<{ total: number; projects: ProjectWithMembers[] }> {
     const skip = (page - 1) * limit;
     if (!sort) {
       sort = 'created_at';
@@ -168,7 +182,16 @@ export class ProjectsService {
       .take(limit)
       .orderBy(`projects.${sortField}`, sortDirection)
       .getMany();
-    return { total, projects };
+      const projectWithMembers: ProjectWithMembers[] = await Promise.all(
+        projects.map(async (project) => {
+          const member_count = await this.projectSharesService.memberCount(project.project_id);
+          return {
+            ...project,
+            member_count,
+          };
+        })
+      );
+    return { total, projects: projectWithMembers };
   }
 
   async wrapProject(project: Projects): Promise<Projects> {
@@ -192,6 +215,23 @@ export class ProjectsService {
   }
 
   // Update a project
+  async handleFavorite(username, favorite, project) {
+    const user = await this.usersService.findOneBy({ username });
+    if (favorite) {
+      if (!user.favorite_projects) {
+        user.favorite_projects = [project];
+      } else {
+        user.favorite_projects.push(project);
+      }
+    } else {
+      if (user.favorite_projects) {
+        const idx = user.favorite_projects.indexOf(project);
+        user.favorite_projects.splice(idx, 1);
+      }
+    }
+    this.usersService.save(user);
+  }
+
   async update(
     id: string,
     updateProjectDto: UpdateProjectDto,
@@ -243,6 +283,8 @@ export class ProjectsService {
     mongoProject.updated_at = newDate;
     project.updated_at = newDate;
     await this.projectMongoService.save(mongoProject);
+    if (parsedDto.favorite !== null || parsedDto.favorite !== undefined)
+      await this.handleFavorite(project.username, parsedDto.favorite, project);
     return await this.projectsRepository.save(project);
   }
 
@@ -251,17 +293,18 @@ export class ProjectsService {
     try {
       const IDS = await this.getIds(id);
 
-      await this.projectSharesService.remove_project(IDS.project_id).catch((error) => {
-        Logger.error(error);
-      });
+      await this.projectSharesService
+        .remove_project(IDS.project_id)
+        .catch((error) => {
+          Logger.error(error);
+        });
       await this.projectMongoService.remove(IDS._id).catch((error) => {
         Logger.error(error);
       });
       await this.projectsRepository.delete(IDS.project_id).catch((error) => {
         Logger.error(error);
       });
-    }
-    catch (error) {
+    } catch (error) {
       throw new BadRequestException(error.message);
     }
   }

@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { encryptPwd } from '@utils/encrypt_password';
 import { IsOptional } from 'class-validator';
+import { Projects } from '@projects/project.entity';
 // TODO: create dto for all the entities
 //
 class CreateUserDto {
@@ -20,7 +21,6 @@ class CreateUserDto {
   favorite_languages: string[];
   profile_picture?: string;
   bio?: string;
-  favorite_projects?: string[];
 }
 
 interface ResetPasswordDto {
@@ -36,7 +36,6 @@ interface CreateUserOutDto {
   favorite_languages: string[];
   profile_picture?: string;
   bio?: string;
-  favorite_projects?: string[];
 }
 
 class LoginUserDto {
@@ -65,7 +64,6 @@ function validateCreateUserDto(
     favorite_languages,
     profile_picture,
     bio,
-    favorite_projects,
   } = dto;
 
   for (const field of [
@@ -101,10 +99,6 @@ function validateCreateUserDto(
     throw new BadRequestException('bio must be a string');
   }
 
-  if (favorite_projects && !Array.isArray(favorite_projects)) {
-    throw new BadRequestException('favorite_projects must be an array');
-  }
-
   const password_hash = encryptPwd(password);
 
   const validated: any = {
@@ -116,9 +110,6 @@ function validateCreateUserDto(
     favorite_languages: favorite_languages.map((lang) => lang.trim()),
     profile_picture: profile_picture ? profile_picture?.trim() : undefined,
     bio: bio ? bio.trim() : undefined,
-    favorite_projects: favorite_projects
-      ? favorite_projects.map((project) => project.trim())
-      : undefined,
   };
   if (dto.is_verified) {
     validated.is_verified = true;

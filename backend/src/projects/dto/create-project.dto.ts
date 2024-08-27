@@ -18,6 +18,8 @@ class UpdateProjectDto {
   description?: string;
   @ApiProperty()
   updated_at?: Date;
+  @ApiProperty()
+  favorite?: boolean;
 }
 
 function validateCreateProjectDto(dto: any): CreateProjectDto {
@@ -54,7 +56,7 @@ function validateUpdateProjectDto(dto: any): UpdateProjectDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { project_name, description, updated_at } = dto;
+  const { project_name, description, updated_at, favorite } = dto;
 
   if (project_name && typeof project_name !== 'string') {
     throw new BadRequestException('Project name must be a string');
@@ -63,11 +65,15 @@ function validateUpdateProjectDto(dto: any): UpdateProjectDto {
   if (description && typeof description !== 'string') {
     throw new BadRequestException('Description must be a string');
   }
+  if (favorite && typeof favorite !== 'boolean') {
+    throw new BadRequestException('Favorite must be a boolean');
+  }
 
   return {
     project_name: project_name?.trim(),
     description,
     updated_at: updated_at?.toString()?.trim(),
+    favorite,
   };
 }
 

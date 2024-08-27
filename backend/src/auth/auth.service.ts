@@ -91,6 +91,9 @@ export class AuthService {
       }),
     };
   }
+  async getProfile(username: string): Promise<Partial<Users>> {
+    return await this.usersService.findOneBy({ username });
+  }
 
   async refreshToken(refreshToken: string): Promise<{
     accessToken: string;

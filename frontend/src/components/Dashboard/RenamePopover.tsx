@@ -1,18 +1,11 @@
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent } from 'react';
 import {
-  Box,
   Button,
   ButtonGroup,
   FormControl,
   FormLabel,
   Input,
-  Popover,
-  PopoverContent,
-  PopoverArrow,
-  PopoverCloseButton,
   Stack,
-  useDisclosure,
-  IconButton,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -20,10 +13,10 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-} from '@chakra-ui/react'
-import { EditIcon } from '@chakra-ui/icons'
-import FocusLock from "react-focus-lock"
-import { useState } from "react"
+  Heading,
+  Text,
+} from '@chakra-ui/react';
+import { useState } from 'react';
 
 // 1. Create a text input component
 const TextInput = React.forwardRef((props: any, ref: any) => {
@@ -37,7 +30,7 @@ const TextInput = React.forwardRef((props: any, ref: any) => {
 
 // 2. Create the form
 const Form = ({ onCancel, project_name, onSave }) => {
-  const [input, setInput] = useState(project_name)
+  const [input, setInput] = useState(project_name);
   const handleInputChange = (
     e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
@@ -46,45 +39,64 @@ const Form = ({ onCancel, project_name, onSave }) => {
   };
   return (
     <Stack spacing={4}>
+      <Text
+        fontFamily="mono"
+        color="white"
+        fontSize="xs"
+        opacity="0.8"
+        mb="-10px"
+      >
+        Project Name
+      </Text>
       <TextInput
-        label='Project Name'
-        id='project_name'
+        fontFamily="mono"
+        color="white"
+        fontSize="sm"
+        id="project_name"
         value={input}
         onChange={handleInputChange}
       />
-      <ButtonGroup display='flex' justifyContent='flex-end'>
-        <Button variant='outline' onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button isDisabled={input === project_name || !input}
-          colorScheme='teal' onClick={() => onSave(input)}>
+      <ButtonGroup display="flex" justifyContent="flex-end">
+        <Button
+          isDisabled={input === project_name || !input}
+          colorScheme="orange"
+          size="sm"
+          onClick={() => onSave(input)}
+        >
           Save
         </Button>
+        <Button size="sm" onClick={onCancel}>
+          Cancel
+        </Button>
+
       </ButtonGroup>
     </Stack>
-  )
-}
-
+  );
+};
 
 export const RenamePopover = ({ isOpen, onClose, project_name, onSave }) => {
-  const projectNameRef = React.useRef(null)
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
-          <ModalCloseButton />
+        <ModalContent bg="brand.900">
+          <ModalHeader>
+            <Heading as="h6" size="xs" fontFamily="mono" color="white">
+              Rename a Project
+            </Heading>
+          </ModalHeader>
+          <ModalCloseButton color="white" />
           <ModalBody>
-            <Form onCancel={onClose} project_name={project_name} onSave={onSave}
+            <Form
+              onCancel={onClose}
+              project_name={project_name}
+              onSave={onSave}
             />
           </ModalBody>
 
-          <ModalFooter>
-          </ModalFooter>
+          <ModalFooter></ModalFooter>
         </ModalContent>
       </Modal>
     </>
-  )
-}
-
+  );
+};

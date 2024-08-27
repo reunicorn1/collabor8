@@ -1,27 +1,41 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Project } from '@types';
-import { projectApi } from '@store/services/project';
-import * as projectUtils from '@utils/dashboard.utils';
 
-interface projectShares {
-  project_name: string;
-  username: string;
-  description: string;
-  updated_at: string;
-  created_at: string;
+interface roomInterface {
+  token: string;
+  uid: string;
+  channel: string;
   project_id: string;
-  _id: string;
-  projectShares: string[];
 }
 
-interface recentProjectsInterface {
-  project_name: string;
-  username: string;
-  description: string;
-  updated_at: string;
-  created_at: string;
-  project_id: string;
-  _id: string;
-  projectShares: string[];
-  laseEdited: string;
+
+interface ROOM {
+  room: roomInterface;
 }
+
+const initialState: ROOM = {
+  room: {
+    token: '',
+    uid: '',
+    channel: '',
+    project_id: '',
+  },
+};
+
+const projectSharesSlice = createSlice({
+  name: 'ROOM',
+  initialState,
+  reducers: {
+    setRoom(state, action: PayloadAction<roomInterface>) {
+      state.room.token = action.payload.token;
+      state.room.uid = action.payload.uid;
+      state.room.channel = action.payload.channel;
+      state.room.project_id = action.payload.project_id;
+    },
+  },
+});
+
+
+
+export const { setRoom } = projectSharesSlice.actions;
+export default projectSharesSlice.reducer;
+

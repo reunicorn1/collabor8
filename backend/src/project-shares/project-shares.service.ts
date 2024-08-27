@@ -10,13 +10,11 @@ import {
   CreateProjectShareDto,
   ProjectSharesOutDto,
 } from './dto/create-project-shares.dto';
-import * as path from 'path';
-import * as fs from 'fs';
-import * as jsonwebtoken from 'jsonwebtoken';
-import { v4 as uuid } from 'uuid';
-import { privateKey } from '@config/configuration';
 import { Users } from '@users/user.entity';
 import { ObjectId } from 'mongodb';
+import { appConfig } from '@config/configuration';
+import { RtcTokenBuilder, RtcRole } from 'agora-access-token';
+import { RedisService } from '@redis/redis.service';
 
 @Injectable()
 export class ProjectSharesService {
@@ -27,8 +25,15 @@ export class ProjectSharesService {
     private readonly projectsService: ProjectsService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
-  ) { }
+    @Inject(forwardRef(() => RedisService))
+    private readonly redisService: RedisService,
+  ) {}
 
+  async memberCount(project_id: string): Promise<number> {
+    return await this.projectSharesRepository.createQueryBuilder('project_shares')
+      .where('project_shares.project_id = :project_id', { project_id })
+      .getCount();
+  }
 
   async mapProjectShareData(projectShare: ProjectShares): Promise<ProjectSharesOutDto> {
     if (!projectShare) {
@@ -36,9 +41,7 @@ export class ProjectSharesService {
     }
     const { created_at, updated_at, username, ...projectShareData } = projectShare;
     const project = await this.projectsService.findOne(projectShare.project_id);
-    const memberCount = await this.projectSharesRepository.createQueryBuilder('project_shares')
-      .where('project_shares.project_id = :project_id', { project_id: project.project_id })
-      .getCount();
+    const memberCount = await this.memberCount(projectShare.project_id);
     const user = await this.usersService.findOneBy({ username: project.username });
     return {
       ...projectShareData, // share_id, project_id, user_id, favorite, access_level
@@ -53,12 +56,64 @@ export class ProjectSharesService {
     };
   }
 
+  async cacheToken(token: string, key: string, ttl) {
+    await this.redisService.set(key, token, ttl);
+  }
+
+  async getCacheToken(key: string) {
+    return await this.redisService.get(key);
+  }
+
+  async getRoomToken(username: string, project_id: string): Promise<{
+    token: string;
+    uid: string;
+    channel: string;
+  }> {
+    const project = await this.projectsService.getMongoProject(project_id);
+    console.log(project);
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    if (!appConfig.appID || !appConfig.appCertificate) {
+      throw new Error('Agora app ID and certificate not found');
+    }
+
+    const user = await this.usersService.findOneBy({ username: username });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const { user_id } = user;
+    const channelName = `${project_id}`;
+
+    const cachedToken = await this.getCacheToken(channelName);
+    if (cachedToken) {
+      return { token: cachedToken, uid: user_id, channel: channelName };
+    }
+
+    const appId = appConfig.appID;
+    const appCertificate = appConfig.appCertificate;
+    const account = user_id;
+    const role = 1;
+    const start_time = new Date();
+    const delta = 12 * 60 * 60 * 1000;
+    const expire_time = new Date(start_time.getTime() + delta);
+    const privilegeExpiredTs = Math.floor(expire_time.getTime() / 1000);
+    const token = RtcTokenBuilder.buildTokenWithAccount(appId,
+      appCertificate, channelName,
+      account, role, privilegeExpiredTs);
+    await this.cacheToken(token, channelName, delta);
+
+    return { token, uid: user_id, channel: channelName };
+
+
+  }
+
   async partialSearch(query: string, username: string): Promise<ProjectSharesOutDto[]> {
     const shares = await this.projectSharesRepository.createQueryBuilder('project_shares')
       .where('project_shares.username = :username', { username })
       .where('project_shares.username LIKE :query', { query: `%${query}%` })
       .getMany();
-    return Promise.all(shares.map(async (projectShare) => {
+    return await Promise.all(shares.map(async (projectShare) => {
       return await this.mapProjectShareData(projectShare);
     }));
   }
@@ -112,12 +167,42 @@ export class ProjectSharesService {
   // Retrieve all project shares
   async findAll(): Promise<ProjectSharesOutDto[]> {
     const shares = await this.projectSharesRepository.find();
-    return Promise.all(shares.map(async (projectShare) => {
+    return await Promise.all(shares.map(async (projectShare) => {
       return await this.mapProjectShareData(projectShare);
     }));
 
   }
 
+    async handleFavorite(username, favorite, project) {
+    const user = await this.usersService.findOneBy({ username });
+    if (favorite) {
+      if (!user.favorite_shares) {
+        user.favorite_shares = [project];
+      } else {
+        user.favorite_shares.push(project);
+      }
+    } else {
+      if (user.favorite_shares) {
+        const idx = user.favorite_shares.indexOf(project);
+        user.favorite_shares.splice(idx, 1);
+      }
+    }
+    this.usersService.save(user);
+  }
+
+  async toggleFavorite(username: string, id: string): Promise<ProjectShares> {
+    const project = await this.projectSharesRepository.findOneBy({ share_id: id });
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    if (project.username !== username) {
+      throw new NotFoundException('Project not found');
+    }
+    project.favorite = !project.favorite;
+    await this.handleFavorite(project.username, project.favorite, project);
+    await this.projectSharesRepository.save(project);
+    return project;
+  }
   async updateStatus(id: string, status: string): Promise<ProjectShares | { message: string }> {
     const projectShare = await this.projectSharesRepository.findOneBy({ share_id: id });
     if (status !== 'accepted' && status !== 'rejected') {
@@ -173,7 +258,7 @@ export class ProjectSharesService {
 
   async findAllByQuery(query: any): Promise<ProjectSharesOutDto[]> {
     const projectShares = await this.projectSharesRepository.find(query);
-    return Promise.all(projectShares.map(async (projectShare) => {
+    return await Promise.all(projectShares.map(async (projectShare) => {
       return await this.mapProjectShareData(projectShare);
     }));
   }
@@ -203,19 +288,7 @@ export class ProjectSharesService {
       .getMany()
 
     console.log(projects);
-    // .then((project) => {
-    //   return project.map(async (project) => {
-    //     console.log(project);
-    //     if (!project) {
-    //       return null;
-    //     }
-    //     return await this.mapProjectShareData(project);
-    //   });
-    // })
-    // .catch((error) => {
-    //   Logger.error(error);
-    //   return [];
-    // });
+
 
     const mappedProjects = await Promise.all(
       projects.map(async (project) => {
@@ -239,10 +312,20 @@ export class ProjectSharesService {
 
   // Delete a project share
   async remove(id: string): Promise<void> {
+    if (!await this.projectSharesRepository.findOneBy({ share_id: id })) {
+      throw new NotFoundException('Project share not found');
+    }
     await this.projectSharesRepository.delete(id);
   }
   async remove_project(id: string): Promise<void> {
+
     try {
+      if (!await this.projectsService.findOne(id)) {
+        throw new NotFoundException('Project not found');
+      }
+      if (!await this.projectSharesRepository.findOneBy({ project_id: id })) {
+        throw new NotFoundException('Project share not found');
+      }
       await this.projectSharesRepository.delete({ project_id: id });
     }
     catch (error) {

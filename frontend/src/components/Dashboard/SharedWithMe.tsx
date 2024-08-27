@@ -10,6 +10,7 @@ import {
   Box,
   Text,
   Spacer,
+  Center,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import MenuSelection from './MenuSelection';
@@ -60,11 +61,10 @@ export default function SharedWithMe() {
     }
   };
 
-  const { data, refetch, isSuccess } =
-    useGetProjectSharesPaginatedQuery(
-      { ...userProjectsPagination },
-      { refetchOnReconnect: true }, // Optional: refetch when reconnecting
-    );
+  const { data, refetch, isSuccess } = useGetProjectSharesPaginatedQuery(
+    { ...userProjectsPagination },
+    { refetchOnReconnect: true }, // Optional: refetch when reconnecting
+  );
   useEffect(() => {
     if (isSuccess) {
       dispatch(setSharedProjects(data as any));
@@ -111,43 +111,51 @@ export default function SharedWithMe() {
         // gradient from gray to blue
         bgGradient="linear(to-t, brand.800, brand.900)"
       >
-        <Table size="sm">
-          <Thead>
-            <Tr>
-              <Th color="#B4B4B4" opacity="0.7" fontFamily="mono">
-                Name
-              </Th>
-              <Th color="#B4B4B4" opacity="0.7" fontFamily="mono">
-                Members
-              </Th>
-              <Th color="#B4B4B4" opacity="0.7" fontFamily="mono">
-                Last Modified
-              </Th>
-              <Th></Th>
-            </Tr>
-          </Thead>
-          <Tbody fontFamily="mono">
-            {userProjects.sharedProjects?.map((project, index) => {
-              const date = new Date(project.updated_at);
-              return (
-                <Tr
-                  cursor="pointer"
-                  key={index}
-                  onClick={() => handleGoToProject(project)}
-                >
-                  <Td>{project.project_name}</Td>
-                  <Td>{project.member_count} Member(s)</Td>
-                  <Td>{date.toDateString()}</Td>
-                  <Td>
-                    <MenuProject project={project}>
-                      <HiDotsHorizontal />
-                    </MenuProject>
-                  </Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
+        {!userProjects.sharedProjects?.length ? (
+          <Center mt={20}>
+            <Text fontFamily="mono" fontSize="sm">
+              No Projects created yet...
+            </Text>
+          </Center>
+        ) : (
+          <Table size="sm">
+            <Thead>
+              <Tr>
+                <Th color="#B4B4B4" opacity="0.7" fontFamily="mono">
+                  Name
+                </Th>
+                <Th color="#B4B4B4" opacity="0.7" fontFamily="mono">
+                  Members
+                </Th>
+                <Th color="#B4B4B4" opacity="0.7" fontFamily="mono">
+                  Last Modified
+                </Th>
+                <Th></Th>
+              </Tr>
+            </Thead>
+            <Tbody fontFamily="mono">
+              {userProjects.sharedProjects?.map((project, index) => {
+                const date = new Date(project.updated_at);
+                return (
+                  <Tr
+                    cursor="pointer"
+                    key={index}
+                    onClick={() => handleGoToProject(project)}
+                  >
+                    <Td>{project.project_name}</Td>
+                    <Td>{project.member_count} Member(s)</Td>
+                    <Td>{date.toDateString()}</Td>
+                    <Td>
+                      <MenuProject project={project}>
+                        <HiDotsHorizontal />
+                      </MenuProject>
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+        )}
       </TableContainer>
 
       <Box
