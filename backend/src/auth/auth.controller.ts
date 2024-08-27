@@ -45,10 +45,14 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  async signIn(@Request() req, @Response() res) {
+  async signIn(
+    @Request() req,
+    @Response() res,
+    @Body('is_invited') is_invited: boolean,
+  ) {
     //Logger.log('--------------->', { user: req.user });
     const { accessToken, refreshToken, user } = await this.authService.signIn(
-      req.user,
+      { ...req.user, is_invited },
     );
     res
       .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
@@ -57,6 +61,7 @@ export class AuthController {
   }
 
   @docs.ApiSignUp()
+  //@UseGuards(LocalAuthGuard)
   @Public()
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')
@@ -77,9 +82,10 @@ export class AuthController {
       if (createUserDto.is_invited) {
         // edge case for invited guest
         // will be verified directly after signup
+        console.log('===================================>', { is_invited: createUserDto.is_invited, payload });
         const { accessToken, refreshToken } =
           await this.authService.generateTokens(payload);
-        res
+        return res
           .cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: true,
@@ -87,7 +93,7 @@ export class AuthController {
           .cookie('accessToken', accessToken)
           .send({ accessToken, user });
       } else {
-        return (user);
+        res.send(user);
       }
     } catch (error) {
       throw error;

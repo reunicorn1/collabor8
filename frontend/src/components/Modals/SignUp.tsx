@@ -27,10 +27,11 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (data: any) => Promise<void>;
+  is_invited: boolean,
 }
 
 // SignUp Modal to handle user registration.
-export default function SignUp({ isOpen, onClose, onSuccess }: ModalProps) {
+export default function SignUp({is_invited, isOpen, onClose, onSuccess }: ModalProps) {
   const initialRef = useRef(null);
   const finalRef = useRef(null);
   const [username, setUsername] = useState('');
@@ -60,6 +61,7 @@ export default function SignUp({ isOpen, onClose, onSuccess }: ModalProps) {
       email,
       password,
       favorite_languages: favoriteLanguages,
+      is_invited,
     })
       .unwrap()
       .then((data) => {
@@ -72,7 +74,7 @@ export default function SignUp({ isOpen, onClose, onSuccess }: ModalProps) {
           position: 'bottom-left',
           isClosable: true,
         });
-        return data
+        return data;
       })
       .then(async (data) => {
         if (onSuccess) {

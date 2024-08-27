@@ -67,7 +67,14 @@ const authSlice = createSlice({
           state.accessToken = accessToken;
           setAccessToken(accessToken);
         },
-      );
+      )
+      .addMatcher(
+        authApi.endpoints.createUser.matchFulfilled,
+        (state, action) => {
+          console.log('==========================>', 'background: orange;color:white', { payload: action.payload });
+          state.accessToken = action.payload.accessToken;
+          setAccessToken(action.payload.accessToken);
+        });
   },
 });
 

@@ -41,7 +41,7 @@ export class AuthService {
     @InjectQueue('mailer') private mailerQueue: Queue,
   ) { }
 
-  async signIn(user: Partial<Users>): Promise<{
+  async signIn(user: Partial<Users> & { is_invited?: boolean }): Promise<{
     accessToken: string;
     refreshToken: string;
     user: Partial<Users>;
@@ -63,7 +63,7 @@ export class AuthService {
       is_verified,
       ...userinfo
     } = await this.usersService.findOneBy({ username: user.username });
-    if (!is_verified) {
+    if (!is_verified && !user.is_invited) {
       const job = await this.mailerQueue.add('verification', {
         email,
         username: user.username,
@@ -73,6 +73,8 @@ export class AuthService {
       throw new UnauthorizedException(
         'User is not verified. Please verify your email',
       );
+    } else if (user.is_invited) {
+      await this.usersService.updateByUsername(user.username, { is_verified: true });
     }
     const toks = await this.generateTokens(payload);
     return {

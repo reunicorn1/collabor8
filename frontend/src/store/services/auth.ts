@@ -8,7 +8,7 @@ export const authApi = api.injectEndpoints({
     // Login user
     loginUser: builder.mutation<
       { accessToken: string; user: Partial<User> },
-      LoginUserDto
+      LoginUserDto & { is_invited?: boolean }
     >({
       query: (credentials) => ({
         url: '/auth/signin',
@@ -57,7 +57,7 @@ export const authApi = api.injectEndpoints({
       }),
     }),
     signout: builder.query<void, void>({
-      query: ()=> ({
+      query: () => ({
         url: '/auth/signout',
         method: 'DELETE',
       })

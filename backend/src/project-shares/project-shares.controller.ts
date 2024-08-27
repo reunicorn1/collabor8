@@ -84,11 +84,16 @@ export class ProjectSharesController {
      * TODO:
      * swagger docs
      */
+    let has_account = null;
+    const user = await this.projectSharesService.inviteeHasAccount(invitee_email)
+    if (user) has_account = user.username;
+
     await this.mailerQueue.add('invitation', {
       invitee_email,
       project_id,
       inviter_email,
-      access_level
+      access_level,
+      has_account,
     });
 
     res.send({ message: 'Email sent successfully!' });
@@ -98,23 +103,24 @@ export class ProjectSharesController {
   @Get('/invite/:project_id')
   async verifyInvitation(
     @Query('invitee_email') invitee_email: string,
+    @Query('has_account') has_account: string,
     @Query('access_level') access_level: 'write' | 'read',
     @Param('project_id') project_id: string,
-  ) {
-    console.log('-------------------->')
-    const user = await this.projectSharesService.inviteeHasAccount(invitee_email)
-    let has_account = false;
-    if (user) {
+    @Response() res,
+  ): Promise<any> {
+    console.log('-------------------->', { invitee_email, access_level, project_id, has_account });
+    //const user = await this.projectSharesService.inviteeHasAccount(invitee_email)
+    //let has_account = false;
+    if (has_account) {
       // already has an account
-      const ps = this.projectSharesService.create({
+      const ps = await this.projectSharesService.create({
         project_id,
-        username: user.username,
-        access_level
+        username: has_account,
+        access_level,
       });
-      has_account = true;
     }
     // new account
-    return({message: 'success', has_account });
+    res.send({ message: 'success', has_account });
   }
 
   // Retrieve project shares by project ID

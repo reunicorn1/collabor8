@@ -13,10 +13,11 @@ import {
   Dashboard,
 } from '@pages/index';
 import './App.css';
+import InviteGuest from '@components/Invite';
 
 const App: React.FC = () => {
-  useAuthRefresh();
-  useLogOut();
+  //useAuthRefresh();
+  //useLogOut();
 
   return (
     <>
@@ -29,6 +30,7 @@ const App: React.FC = () => {
         <Route path="/editor/:projectId" element={<Editor />}></Route>
         <Route path="/reset-password" element={<ResetPasswordModal />} />
         <Route path="/verify" element={<Verify />} />
+        <Route path="/invite" element={<InviteGuest />} />
         <Route path="*" element={<NotFound />}></Route>
       </Routes>
     </>

@@ -16,6 +16,7 @@ import * as jsonwebtoken from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import { privateKey } from '@config/configuration';
 import { Users } from '@users/user.entity';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class ProjectSharesService {
@@ -83,6 +84,14 @@ export class ProjectSharesService {
         throw new NotFoundException('User not found');
       }
       parsedDto.username = user.username;
+    }
+    if (ObjectId.isValid(parsedDto.project_id)) {
+      try {
+        const { project_id } = await this.projectsService.getMongoProject(parsedDto.project_id)
+        parsedDto.project_id = project_id;
+      } catch (err) {
+        throw new NotFoundException('Project not found!')
+      }
     }
     const project = await this.projectsService.findOne(parsedDto.project_id);
     if (!project) {

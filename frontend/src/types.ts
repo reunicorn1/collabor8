@@ -16,6 +16,7 @@ export interface CreateUserDto {
   last_name: string;
   email: string;
   password: string;
+  is_invited?: boolean;
   favorite_languages?: string[];
 }
 
@@ -36,6 +37,7 @@ export interface User {
   created_at: Date;
   updated_at: Date;
   roles: Role[];
+  is_invited?: boolean;
 }
 
 /**

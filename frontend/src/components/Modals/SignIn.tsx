@@ -24,10 +24,11 @@ import PasswordReset from './PasswordReset';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess?: (data: any) => void;
+  is_invited?: boolean;
 }
 
-export default function SignIn({ isOpen, onClose, onSuccess }: ModalProps) {
+export default function SignIn({ is_invited, isOpen, onClose, onSuccess }: ModalProps) {
   const initialRef = useRef(null);
   const finalRef = useRef(null);
   const [username, setUsername] = useState('');
@@ -51,7 +52,7 @@ export default function SignIn({ isOpen, onClose, onSuccess }: ModalProps) {
       return;
     }
 
-    login({ username, password })
+    login({ username, password, is_invited })
       .unwrap()
       .then((data) => {
         console.log('Login successful ===========>', data);
@@ -64,7 +65,9 @@ export default function SignIn({ isOpen, onClose, onSuccess }: ModalProps) {
           isClosable: true,
         });
         // we use Inversion of Control here
-        onSuccess();
+        if (onSuccess && typeof onSuccess === 'function') {
+          onSuccess(data);
+        }
         handleClose(); // Close & navigate to dashboard modal on success
       })
       .catch((err) => {
