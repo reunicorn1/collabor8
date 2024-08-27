@@ -26,7 +26,7 @@ import { IoChevronForwardCircle } from 'react-icons/io5';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (data: any) => Promise<void>;
 }
 
 // SignUp Modal to handle user registration.
@@ -72,16 +72,19 @@ export default function SignUp({ isOpen, onClose, onSuccess }: ModalProps) {
           position: 'bottom-left',
           isClosable: true,
         });
-        handleClose();
+        return data
+      })
+      .then(async (data) => {
         if (onSuccess) {
-          onSuccess();
+          await onSuccess(data);
+          //handleClose();
         }
       })
       .catch((err) => {
         let errorMessage = 'Oops! Something went wrong.';
 
         // custom error handling based on the response error message
-        if (err.data.message.includes('Duplicate entry')) {
+        if (err.data?.message.includes('Duplicate entry')) {
           if (err.data.message.includes('IDX_')) {
             errorMessage = 'Email already in use. Try a different one!';
           } else if (err.data.message.includes('idx_username')) {

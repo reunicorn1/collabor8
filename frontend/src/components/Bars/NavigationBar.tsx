@@ -8,12 +8,13 @@ import {
   Heading,
   useDisclosure,
 } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SignUp from '@components/Modals/SignUp';
 import SignIn from '@components/Modals/SignIn';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 
 export default function NavigationBar() {
+  const navigate = useNavigate();
   const {
     isOpen: isSignUpOpen,
     onOpen: openSignUp,
@@ -95,7 +96,11 @@ export default function NavigationBar() {
         onClose={closeSignUp}
         onSuccess={handleSignUpSuccess}
       />
-      <SignIn isOpen={isSignInOpen} onClose={closeSignIn} />
+      <SignIn
+        isOpen={isSignInOpen}
+        onClose={closeSignIn}
+        onSuccess={() => navigate('/dashboard')}
+      />
     </Flex>
   );
 }

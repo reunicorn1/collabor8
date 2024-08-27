@@ -19,15 +19,15 @@ import {
 import { useRef, useState } from 'react';
 import { IoChevronForwardCircle } from 'react-icons/io5';
 import { useLoginUserMutation } from '@store/services/auth';
-import { useNavigate } from 'react-router-dom';
 import PasswordReset from './PasswordReset';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
-export default function SignIn({ isOpen, onClose }: ModalProps) {
+export default function SignIn({ isOpen, onClose, onSuccess }: ModalProps) {
   const initialRef = useRef(null);
   const finalRef = useRef(null);
   const [username, setUsername] = useState('');
@@ -35,7 +35,6 @@ export default function SignIn({ isOpen, onClose }: ModalProps) {
   const [login] = useLoginUserMutation();
   const [isResetPasswordOpen, setResetPasswordOpen] = useState(false);
   const toast = useToast();
-  const navigate = useNavigate();
 
   // Handles the login process
   const handleLogin = () => {
@@ -64,7 +63,8 @@ export default function SignIn({ isOpen, onClose }: ModalProps) {
           position: 'bottom-left',
           isClosable: true,
         });
-        navigate('/dashboard');
+        // we use Inversion of Control here
+        onSuccess();
         handleClose(); // Close & navigate to dashboard modal on success
       })
       .catch((err) => {

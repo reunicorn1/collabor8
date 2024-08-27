@@ -165,8 +165,6 @@ export class AuthService {
   async create(user: Partial<Users>): Promise<Users> {
     const parsedDto = parseCreateUserDto(user);
     const uniqueFields = ['username', 'email'];
-    // TODO: make single query to check if user,
-    // exist either by username or email
     for (const field of uniqueFields) {
       try {
         const userExists = await this.usersService.findOneBy({

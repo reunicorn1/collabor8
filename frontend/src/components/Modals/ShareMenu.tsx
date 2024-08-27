@@ -22,11 +22,12 @@ import {
 } from '@chakra-ui/react';
 import React, { useRef } from 'react';
 import { FaLink } from 'react-icons/fa6';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useState } from 'react';
 import {
   useCreateProjectShareMutation,
   useGetProjectSharesByProjectIdQuery,
+  useInviteUserMutation,
 } from '@store/services/projectShare';
 import { useSelector } from 'react-redux';
 import { selectUserDetails } from '@store/selectors/userSelectors';
@@ -48,15 +49,17 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
   const url = import.meta.env.VITE_URL;
   const [createProjectShare] = useCreateProjectShareMutation();
   const obj = useGetProjectSharesByProjectIdQuery(project.project_id); // Give it project id
-  console.log('===============> object to be printed', obj); // This seems wrong so I'll postpone it
+  const [invite, { isLoading }] = useInviteUserMutation();
   const userDetails = useSelector(selectUserDetails);
   const finalRef = useRef(null);
   const location = useLocation();
   const [clicked, setClicked] = useState(false);
-  const [invitee, setInvitee] = useState('');
+  const [inviteeType, setInviteeType] = useState('');
+  const [value, setValue] = useState('');
   const [errmsg, setErrMsg] = useState('');
-  const [permission, setPermission] = useState('can edit');
+  const [permission, setPermission] = useState('read');
   const toast = useToast();
+  const { projectId: project_id } = useParams();
 
   // This function handles copying the link to the clipboard
   const copyToClipboard = (text: string) => {
@@ -83,25 +86,50 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
   const handleClose = () => {
     if (errmsg) setErrMsg('');
     setClicked(false);
-    setInvitee('');
-    setPermission('can edit');
+    setInviteeType('');
+    setPermission('');
     onClose();
   };
 
   const handleInvite = async () => {
-    // TODO: info sent, email in the input plus the option selected in the menu
-    // This will be sent to an endpoint to send an email to this user about the invitation
-    // And also to notify the user in his email so he accepts the invitation. This function is triggered by clicking the invite button
+    if (inviteeType === 'email') {
+      // send email to user
+      invite({
+        invitee_email: value,
+        access_level: permission,
+        project_id,
+        inviter_email: userDetails.email ?? userDetails.username
+      })
+        .unwrap()
+        .then(_ => {
+          toast({
+            title: 'Project Invitation',
+            description: 'Email has been sent successfully to your parnter',
+            status: 'success',
+            position: 'bottom-left',
+          });
+        })
+        .catch(err => {
+          toast({
+            title: 'Project Invitation',
+            description: `Oops, an error occured: ${err.data?.message}`,
+            status: 'error',
+            position: 'bottom-left',
+          })
+        });
+      return;
+    }
+    // send invitation by username
     try {
       await createProjectShare({
         project_id: project.project_id,
         access_level: permission === 'can read' ? 'read' : 'write',
-        username: invitee,
+        username: value,
         project_name: 'project',
       }).unwrap();
       // The list of project shared should be updated with a refetch();
       toast({
-        title: `User ${invitee} has been invited to collaborate successfully`,
+        title: `User ${value} has been invited to collaborate successfully`,
         variant: 'subtle',
         position: 'bottom-right',
         status: 'success',
@@ -117,15 +145,7 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInvitee(e.target.value);
-    if (errmsg) setErrMsg('');
-  };
-
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setPermission(e.target.value);
-  };
-
+  console.log('-----------------------@>', { project_id })
   return (
     <Modal finalFocusRef={finalRef} isOpen={isOpen} onClose={handleClose}>
       <ModalOverlay />
@@ -156,41 +176,29 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
             <AlertIcon color="orange.600" />
             Sharing project via link only allow people to view
           </Alert>
-          <InputGroup size="sm">
-            <Input
-              pr="4.5rem"
-              placeholder="Invite others by username"
-              fontFamily="mono"
-              value={invitee}
-              color="white"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleChange(e)
-              }
+          <Select
+            placeholder='Share project by'
+            size='sm'
+            color='orange'
+            value={inviteeType}
+            onChange={(e) => setInviteeType(e.target.value)}
+            mb='0.5rem'
+            className='!mb-2'
+            outline='white'
+          >
+            <option value='text'>username</option>
+            <option value='email'>email</option>
+          </Select>
+          {inviteeType && (
+            <InviteBy
+              handleInvitation={handleInvite}
+              handleInputChange={(e) => setValue(e.target.value)}
+              handlePermission={setPermission}
+              permission={permission}
+              value={value}
+              type={inviteeType}
             />
-            <InputRightElement width={invitee ? '8.8rem' : '3.25rem'} pr={1}>
-              {invitee && (
-                <Select
-                  size="sm"
-                  variant="unstyled"
-                  color="white"
-                  value={permission}
-                  onChange={handleSelectChange}
-                >
-                  <option value="option1">can edit</option>
-                  <option value="option2">can view</option>
-                </Select>
-              )}
-              <Button
-                h="1.5rem"
-                size="sm"
-                onClick={handleInvite}
-                colorScheme="orange"
-                isDisabled={!invitee}
-              >
-                Invite
-              </Button>
-            </InputRightElement>
-          </InputGroup>
+          )}
           <Text color="red.300" fontFamily="mono" fontSize="xs" mt={2}>
             {errmsg}
           </Text>
@@ -254,4 +262,50 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
   );
 };
 
+function InviteBy({
+  type,
+  value,
+  permission,
+  handlePermission,
+  handleInputChange,
+  handleInvitation,
+}) {
+  return (
+    <InputGroup size="sm">
+      <Input
+        required
+        pr="4.5rem"
+        placeholder={`Invite others by ${type === 'text' ? 'username' : 'email'}`}
+        fontFamily="mono"
+        value={value}
+        color="white"
+        onChange={handleInputChange}
+        type={type}
+      />
+      <InputRightElement width={value ? '8.8rem' : '3.25rem'} pr={1}>
+        {value && (
+          <Select
+            size="sm"
+            variant='unstyled'
+            value={permission}
+            onChange={(e) => handlePermission(e.target.value)}
+            color='orange'
+          >
+            <option value="write">can edit</option>
+            <option value="read"> can view</option>
+          </Select>
+        )}
+        <Button
+          h="1.5rem"
+          size="sm"
+          onClick={handleInvitation}
+          colorScheme="orange"
+          isDisabled={!value}
+        >
+          Invite
+        </Button>
+      </InputRightElement>
+    </InputGroup>
+  );
+}
 export default ShareMenu;

@@ -9,6 +9,7 @@ import { HiUsers } from 'react-icons/hi2';
 import { PiCursorClickFill } from 'react-icons/pi';
 import { ImDatabase } from 'react-icons/im';
 import { TbLayoutDashboardFilled } from 'react-icons/tb';
+import InviteGuest from '@components/Invite';
 
 const Home = () => {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -41,6 +42,7 @@ const Home = () => {
     <>
       <NavigationBar />
       <Flex bg="black" justifyContent="center">
+        <InviteGuest />
         <Box
           bgGradient="radial-gradient(circle at 20% 600%, #ff7e5f, #6699CC, #76449A, transparent)"
           w="100%"

@@ -9,8 +9,8 @@ import {
   Param,
   Patch,
   Post,
-  Req,
-  Res,
+  Request,
+  Response,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '@auth/auth.service';
@@ -29,7 +29,6 @@ import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { RefreshAuthGuard } from './guards/refresh-jwt-auth.guard';
 import docs from './auth-docs.decorator';
-import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
 // TODO: Add guards and roles where necessary
@@ -46,7 +45,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  async signIn(@Req() req: Request, @Res() res: Response) {
+  async signIn(@Request() req, @Response() res) {
     //Logger.log('--------------->', { user: req.user });
     const { accessToken, refreshToken, user } = await this.authService.signIn(
       req.user,
@@ -63,7 +62,7 @@ export class AuthController {
   @Post('signup')
   async create(
     @Body() createUserDto: CreateUserDto & { is_invited?: boolean },
-    @Res() res: Response,
+    @Response() res,
   ) {
     try {
       const user = await this.authService.signUp(createUserDto);
@@ -88,7 +87,7 @@ export class AuthController {
           .cookie('accessToken', accessToken)
           .send({ accessToken, user });
       } else {
-        res.send(user);
+        return (user);
       }
     } catch (error) {
       throw error;
@@ -98,7 +97,7 @@ export class AuthController {
   // @docs.ApiSignOut()
   @HttpCode(HttpStatus.OK)
   @Delete('signout')
-  async signOut(@Req() req, @Res() res: Response) {
+  async signOut(@Request() req, @Response() res) {
     // revoke session
 
     await this.authService.revokeAccessToken(req.user.jti);
@@ -124,7 +123,7 @@ export class AuthController {
   @docs.ApiGetProfile()
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async getProfile(@Req() req: Request) {
+  async getProfile(@Request() req) {
     return req.user;
   }
 
@@ -132,7 +131,7 @@ export class AuthController {
   @Public()
   // @UseGuards(RefreshAuthGuard)
   @Post('refresh')
-  async refreshToken(@Req() req: Request, @Res() res: Response) {
+  async refreshToken(@Request() req, @Response() res) {
     const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
       return res.status(401).send({ message: 'Unauthorized' });
@@ -144,7 +143,7 @@ export class AuthController {
   // @docs.ApiVerifyEmail()
   @Public()
   @Get('verify')
-  async verifyEmail(@Req() req, @Res() res: Response) {
+  async verifyEmail(@Request() req, @Response() res) {
     const { refreshToken, accessToken, user } = await this.authService.verifyUser(req.query.token);
     res
       .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
@@ -155,7 +154,7 @@ export class AuthController {
   // @Docs.resetPassword()
   @Patch('me/change-password')
   async changePassword(
-    @Req() req,
+    @Request() req,
   ): Promise<{ message: string }> {
     console.log('req.user', req.body);
     return await this.authService.resetPassword(
@@ -182,7 +181,7 @@ export class AuthController {
   @Public()
   @Post('validate-reset-token')
   async validateResetToken(
-    @Req() req,
+    @Request() req,
   ): Promise<{ message: string }> {
     return await this.authService.validateToken(req.query.token, req.body.password);
   }

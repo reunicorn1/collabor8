@@ -7,6 +7,7 @@ import {
   Delete,
   Put,
   Request,
+  Response,
   Query,
   BadRequestException,
   Logger,
@@ -23,8 +24,7 @@ import {
 } from './dto/create-project-shares.dto';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Public } from '@auth/decorators/isPublic.decorator';
 
 @ApiTags('ProjectShares')
 @Controller('project-shares')
@@ -78,12 +78,11 @@ export class ProjectSharesController {
       inviter_email,
       invitee_email,
     }: { inviter_email: string; invitee_email: string },
-    @Res() res: Response,
+    @Response() res,
   ) {
     /**
      * TODO:
      * swagger docs
-     * email exits by jwt
      */
     await this.mailerQueue.add('invitation', {
       invitee_email,
@@ -95,16 +94,18 @@ export class ProjectSharesController {
     res.send({ message: 'Email sent successfully!' });
   }
 
-  @Get('invite/:project_id')
+  @Public()
+  @Get('/invite/:project_id')
   async verifyInvitation(
     @Query('invitee_email') invitee_email: string,
     @Query('access_level') access_level: 'write' | 'read',
     @Param('project_id') project_id: string,
-    @Res() res: Response
   ) {
+    console.log('-------------------->')
     const user = await this.projectSharesService.inviteeHasAccount(invitee_email)
     let has_account = false;
     if (user) {
+      // already has an account
       const ps = this.projectSharesService.create({
         project_id,
         username: user.username,
@@ -112,7 +113,8 @@ export class ProjectSharesController {
       });
       has_account = true;
     }
-    res.send({ message: 'Email sent successfully!', has_account });
+    // new account
+    return({message: 'success', has_account });
   }
 
   // Retrieve project shares by project ID
