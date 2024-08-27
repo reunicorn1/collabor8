@@ -94,7 +94,7 @@ export default function NavigationBar() {
       <SignUp
         isOpen={isSignUpOpen}
         onClose={closeSignUp}
-        onSuccess={handleSignUpSuccess}
+        onSuccess={async () => handleSignUpSuccess()}
       />
       <SignIn
         isOpen={isSignInOpen}

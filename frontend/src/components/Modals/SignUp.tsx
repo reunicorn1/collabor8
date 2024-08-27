@@ -26,8 +26,12 @@ import { IoChevronForwardCircle } from 'react-icons/io5';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (data: any) => Promise<void>;
-  is_invited: boolean,
+// (data: any) => Promise<void> for the next developer,
+// trying to fix type annotation for this function:
+// I've tried: 0x0f (in hex)
+// pass the number of tries to the next developer
+  onSuccess?: any;
+  is_invited?: boolean;
 }
 
 // SignUp Modal to handle user registration.

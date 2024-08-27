@@ -42,7 +42,7 @@ const Home = () => {
     <>
       <NavigationBar />
       <Flex bg="black" justifyContent="center">
-{/*        <InviteGuest />*/}
+        {/*        <InviteGuest />*/}
         <Box
           bgGradient="radial-gradient(circle at 20% 600%, #ff7e5f, #6699CC, #76449A, transparent)"
           w="100%"
@@ -362,7 +362,7 @@ const Home = () => {
       <SignUp
         isOpen={isSignUpOpen}
         onClose={handleCloseSignUp}
-        onSuccess={() => {
+        onSuccess={async () => {
           handleCloseSignUp();
         }}
       />

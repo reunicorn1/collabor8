@@ -26,6 +26,7 @@ export interface LoginUserDto {
 }
 
 export interface User {
+  accessToken?: string;
   user_id: string;
   username: string;
   first_name: string;
