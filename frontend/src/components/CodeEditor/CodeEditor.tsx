@@ -86,7 +86,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
         status: event.status,
       }); // logs "connected" or "disconnected"
     });
-
+    console.log('this is provider', provider);
     // An event listener to clean up once the user is removed
     provider.on('close', () => {
       provider.awareness.setLocalState(null); // Removes the local awareness state
