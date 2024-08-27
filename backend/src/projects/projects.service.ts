@@ -38,7 +38,7 @@ export class ProjectsService {
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => ProjectSharesService))
     private readonly projectSharesService: ProjectSharesService,
-  ) {}
+  ) { }
 
   // Create a new project
   // TODO: TODAY modify env to be obtained from user object
@@ -101,7 +101,7 @@ export class ProjectsService {
   }
   async getMongoProject(id: string): Promise<ProjectMongo> {
     const IDS = await this.getIds(id);
-    return await this.projectMongoService.findOneBy( '_id', IDS._id );
+    return await this.projectMongoService.findOneBy('_id', IDS._id);
   }
   // Retrieve all projects
   async findAll(): Promise<Projects[]> {
@@ -182,15 +182,15 @@ export class ProjectsService {
       .take(limit)
       .orderBy(`projects.${sortField}`, sortDirection)
       .getMany();
-      const projectWithMembers: ProjectWithMembers[] = await Promise.all(
-        projects.map(async (project) => {
-          const member_count = await this.projectSharesService.memberCount(project.project_id);
-          return {
-            ...project,
-            member_count,
-          };
-        })
-      );
+    const projectWithMembers: ProjectWithMembers[] = await Promise.all(
+      projects.map(async (project) => {
+        const member_count = await this.projectSharesService.memberCount(project.project_id);
+        return {
+          ...project,
+          member_count,
+        };
+      })
+    );
     return { total, projects: projectWithMembers };
   }
 
@@ -232,6 +232,7 @@ export class ProjectsService {
     this.usersService.save(user);
   }
 
+
   async update(
     id: string,
     updateProjectDto: UpdateProjectDto,
@@ -253,14 +254,14 @@ export class ProjectsService {
     if (!project) {
       throw new NotFoundException('Project not found');
     }
-    const conflict = await this.projectsRepository.find({
-      where: {
-        project_name: parsedDto.project_name ? parsedDto.project_name : project.project_name,
+    if (parsedDto.project_name) {
+      const conflict = await this.projectsRepository.findOneBy({
+        project_name: parsedDto.project_name,
         username: project.username,
-      },
-    });
-    if (conflict) {
-      throw new ConflictException('Project name already exists');
+      });
+      if (conflict) {
+        throw new ConflictException('Project name already exists');
+      }
     }
     const mongoProject = await this.projectMongoService.findOneBy(
       '_id',
