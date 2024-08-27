@@ -23,6 +23,10 @@ import {
 import { validate as uuidValidate } from 'uuid';
 import { ProjectSharesService } from '@project-shares/project-shares.service';
 
+interface ProjectWithMembers extends Projects {
+  member_count: number;
+}
+
 @Injectable()
 export class ProjectsService {
   constructor(
@@ -159,7 +163,7 @@ export class ProjectsService {
     page: number,
     limit: number,
     sort: string,
-  ): Promise<{ total: number; projects: Projects[] }> {
+  ): Promise<{ total: number; projects: ProjectWithMembers[] }> {
     const skip = (page - 1) * limit;
     if (!sort) {
       sort = 'created_at';
@@ -177,7 +181,16 @@ export class ProjectsService {
       .take(limit)
       .orderBy(`projects.${sortField}`, sortDirection)
       .getMany();
-    return { total, projects };
+      const projectWithMembers: ProjectWithMembers[] = await Promise.all(
+        projects.map(async (project) => {
+          const member_count = await this.projectSharesService.memberCount(project.project_id);
+          return {
+            ...project,
+            member_count,
+          };
+        })
+      );
+    return { total, projects: projectWithMembers };
   }
 
   async wrapProject(project: Projects): Promise<Projects> {

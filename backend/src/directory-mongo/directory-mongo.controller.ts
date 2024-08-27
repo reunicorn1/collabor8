@@ -23,20 +23,20 @@ export class DirectoryMongoController {
 
   @DirDocs.findAll()
   @Get()
-  findAll() {
-    return this.dirService.findAll();
+  async findAll() {
+    return await this.dirService.findAll();
   }
 
   @DirDocs.create()
   @Post()
-  create(@Body() createDirectoryDto: CreateDirectoryOutDto) {
-    return this.dirService.create(createDirectoryDto);
+  async create(@Body() createDirectoryDto: CreateDirectoryOutDto) {
+    return await this.dirService.create(createDirectoryDto);
   }
 
   @DirDocs.findOne()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.dirService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.dirService.findOne(id);
   }
 
   @DirDocs.update()
@@ -50,7 +50,7 @@ export class DirectoryMongoController {
 
   @DirDocs.remove()
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.dirService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.dirService.remove(id);
   }
 }

@@ -28,7 +28,7 @@ export class FileMongoService {
     private directoryService: DirectoryMongoService,
     @Inject(forwardRef(() => ProjectsService))
     private projectService: ProjectsService,
-  ) {}
+  ) { }
 
   async create(createFileDto: CreateFileOutDto): Promise<FileMongo> {
     const parsedDto = parseCreateFileMongoDto(createFileDto);
@@ -89,7 +89,7 @@ export class FileMongoService {
     const conflict = await this.fileRepository.findOne({
       where: {
         name: parsedDto.name ? parsedDto.name : file.name,
-        parent_id: parsedDto.parent_id ? parsedDto.parent_id : file.parent_id,
+        parent_id: parsedDto.parent_id ? parsedDto.parent_id : file.parent_id
       },
     });
     if (conflict) {
@@ -114,6 +114,10 @@ export class FileMongoService {
 
   async remove(id: string): Promise<void> {
     try {
+      const file = await this.findOne(id);
+      if (!file) {
+        throw new NotFoundException('File not found');
+      }
       await this.fileRepository.delete(id);
     } catch (err) {
       Logger.error(err);

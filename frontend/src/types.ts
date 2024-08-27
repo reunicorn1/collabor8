@@ -53,6 +53,10 @@ export interface UpdateProjectDto {
   favorite: boolean;
 }
 
+export interface ProjectWithMembers extends projects {
+  member_count: number;
+}
+
 export interface Project {
   project_id: string;
   project_name: string;

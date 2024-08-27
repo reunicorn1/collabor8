@@ -27,6 +27,11 @@ export class ProjectSharesService {
     private readonly redisService: RedisService,
   ) {}
 
+  async memberCount(project_id: string): Promise<number> {
+    return await this.projectSharesRepository.createQueryBuilder('project_shares')
+      .where('project_shares.project_id = :project_id', { project_id })
+      .getCount();
+  }
 
   async mapProjectShareData(projectShare: ProjectShares): Promise<ProjectSharesOutDto> {
     if (!projectShare) {
@@ -34,9 +39,7 @@ export class ProjectSharesService {
     }
     const { created_at, updated_at, username, ...projectShareData } = projectShare;
     const project = await this.projectsService.findOne(projectShare.project_id);
-    const memberCount = await this.projectSharesRepository.createQueryBuilder('project_shares')
-      .where('project_shares.project_id = :project_id', { project_id: project.project_id })
-      .getCount();
+    const memberCount = await this.memberCount(projectShare.project_id);
     const user = await this.usersService.findOneBy({ username: project.username });
     return {
       ...projectShareData, // share_id, project_id, user_id, favorite, access_level
@@ -108,7 +111,7 @@ export class ProjectSharesService {
       .where('project_shares.username = :username', { username })
       .where('project_shares.username LIKE :query', { query: `%${query}%` })
       .getMany();
-    return Promise.all(shares.map(async (projectShare) => {
+    return await Promise.all(shares.map(async (projectShare) => {
       return await this.mapProjectShareData(projectShare);
     }));
   }
@@ -154,7 +157,7 @@ export class ProjectSharesService {
   // Retrieve all project shares
   async findAll(): Promise<ProjectSharesOutDto[]> {
     const shares = await this.projectSharesRepository.find();
-    return Promise.all(shares.map(async (projectShare) => {
+    return await Promise.all(shares.map(async (projectShare) => {
       return await this.mapProjectShareData(projectShare);
     }));
 
@@ -247,7 +250,7 @@ export class ProjectSharesService {
 
   async findAllByQuery(query: any): Promise<ProjectSharesOutDto[]> {
     const projectShares = await this.projectSharesRepository.find(query);
-    return Promise.all(projectShares.map(async (projectShare) => {
+    return await Promise.all(projectShares.map(async (projectShare) => {
       return await this.mapProjectShareData(projectShare);
     }));
   }
@@ -301,10 +304,20 @@ export class ProjectSharesService {
 
   // Delete a project share
   async remove(id: string): Promise<void> {
+    if (!await this.projectSharesRepository.findOneBy({ share_id: id })) {
+      throw new NotFoundException('Project share not found');
+    }
     await this.projectSharesRepository.delete(id);
   }
   async remove_project(id: string): Promise<void> {
+
     try {
+      if (!await this.projectsService.findOne(id)) {
+        throw new NotFoundException('Project not found');
+      }
+      if (!await this.projectSharesRepository.findOneBy({ project_id: id })) {
+        throw new NotFoundException('Project share not found');
+      }
       await this.projectSharesRepository.delete({ project_id: id });
     }
     catch (error) {

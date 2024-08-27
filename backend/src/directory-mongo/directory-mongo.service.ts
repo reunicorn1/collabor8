@@ -4,6 +4,7 @@ import {
   forwardRef,
   Logger,
   ConflictException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -47,11 +48,11 @@ export class DirectoryMongoService {
       name: parsedDto.name,
       project_id: parsedDto.project_id,
     });
-    return this.directoryRepository.save(newDirectory);
+    return await this.directoryRepository.save(newDirectory);
   }
 
-  findAll(): Promise<DirectoryMongo[]> {
-    return this.directoryRepository.find();
+  async findAll(): Promise<DirectoryMongo[]> {
+    return await this.directoryRepository.find();
   }
 
   async findOne(id: string): Promise<DirectoryMongo | null> {
@@ -163,6 +164,7 @@ export class DirectoryMongoService {
           await this.remove(dir._id.toString());
         } catch (e) {
           Logger.error(e);
+          throw new NotFoundException('Directory not found');
         }
       }),
     );
@@ -172,6 +174,7 @@ export class DirectoryMongoService {
           await this.fileService.remove(file._id.toString());
         } catch (e) {
           Logger.error(e);
+          throw new NotFoundException('File not found');
         }
       }),
     );
@@ -179,6 +182,7 @@ export class DirectoryMongoService {
       await this.directoryRepository.delete(id);
     } catch (e) {
       Logger.error(e);
+      throw new NotFoundException('Directory not found');
     }
   }
 }
