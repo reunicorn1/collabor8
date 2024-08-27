@@ -62,6 +62,14 @@ export const projectApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Project'],
     }),
+    toggleFavorite: builder.mutation<Project, boolean>({
+      query: (id) => ({
+        url: `/projects/favorites/${id}`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Project', 'User'],
+    }),
+
     // Delete a project by ID
     deleteProject: builder.mutation<void, string>({
       query: (id) => ({
@@ -83,4 +91,5 @@ export const {
   useGetProjectByIdQuery,
   useUpdateProjectMutation,
   useDeleteProjectMutation,
+  useToggleFavoriteMutation,
 } = projectApi;

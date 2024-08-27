@@ -50,6 +50,7 @@ export interface UpdateProjectDto {
   project_name: string;
   description: string;
   updated_at: Date;
+  favorite: boolean;
 }
 
 export interface Project {
@@ -100,7 +101,10 @@ export interface sharedProjects { // multiple mutated
   status?: string;
   error?: string;
 }
-export interface ProjectShares { // singlar
+export interface ProjectShares {
+  status: string;
+  profile_picture: string; // Declared property
+  // singlar
   share_id: string;
   project_id: string;
   _id: string;

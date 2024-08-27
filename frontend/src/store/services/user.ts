@@ -1,5 +1,9 @@
 import { api } from './api';
-import { CreateUserDto, User } from '@types';
+import { CreateUserDto, User, Project } from '@types';
+interface UserFavorite {
+  user: Partial<User>;
+  favorite_projects: Project[];
+}
 
 export const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -30,6 +34,7 @@ export const userApi = api.injectEndpoints({
       query: (id) => `/users/${id}`,
       providesTags: ['User'],
     }),
+
     // Update user by ID
     updateUserById: builder.mutation<
       User,
@@ -50,6 +55,10 @@ export const userApi = api.injectEndpoints({
       }),
       invalidatesTags: ['User'],
     }),
+    getUserByFavorites: builder.query<UserFavorite, void>({
+      query: () => `/users/me/favorites`,
+      providesTags: ['User'],
+    }),
   }),
   overrideExisting: false,
 });
@@ -61,4 +70,5 @@ export const {
   useGetUserByIdQuery,
   useUpdateUserByIdMutation,
   useDeleteUserByIdMutation,
+  useGetUserByFavoritesQuery,
 } = userApi;

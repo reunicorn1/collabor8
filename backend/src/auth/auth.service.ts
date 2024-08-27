@@ -20,7 +20,6 @@ import * as bcrypt from 'bcrypt';
 import { adminEmails } from '@config/configuration';
 import { RedisService } from '@redis/redis.service';
 import { v4 as uuidv4 } from 'uuid';
-import { MailService } from '@mail/mail.service';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
 
@@ -144,28 +143,20 @@ export class AuthService {
   }
 
   async create(user: Partial<Users>): Promise<Users> {
-    try {
-      const parsedDto = parseCreateUserDto(user);
-      try {
+    const parsedDto = parseCreateUserDto(user);
+    const uniqueFields = ['username', 'email'];
+      for (const field of uniqueFields) {
         const userExists = await this.usersService.findOneBy({
-          username: parsedDto.username,
+          [field]: parsedDto[field],
         });
-
         if (userExists) {
           throw new ConflictException(
-            `User with username ${parsedDto.username} already exists`,
+            `User with ${field} ${parsedDto[field]} already exists`,
           );
         }
-      } catch (err) { }
-
-      const newUser = await this.usersService.create(parsedDto);
-
-      return newUser;
-    } catch (err) {
-      throw new InternalServerErrorException(
-        `Failed to create user: ${err.message}`,
-      );
-    }
+      }
+    const newUser = await this.usersService.create(parsedDto);
+    return newUser;
   }
 
   async resetPassword(

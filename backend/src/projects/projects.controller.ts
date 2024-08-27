@@ -135,6 +135,15 @@ export class ProjectsController {
     }
   }
 
+  @Patch('/favorites/:id')
+  async toggleFavorite(
+    @Param('id') id: string,
+    @Request() req: any,
+  ): Promise<Projects> {
+    return this.projectsService.toggleFavorite(req.user.username, id);
+  }
+
+
   @Docs.findOne()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Projects> {
@@ -143,7 +152,7 @@ export class ProjectsController {
 
 
   @Docs.update()
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,

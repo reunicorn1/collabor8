@@ -62,11 +62,10 @@ export default function Home() {
     }
   }
 
-  const { data, refetch, isSuccess } =
-    useGetAllProjectsPaginatedQuery(
-      { ...recentProjectsPagination },
-      { refetchOnReconnect: true }, // Optional: refetch when reconnecting
-    );
+  const { data, refetch, isSuccess } = useGetAllProjectsPaginatedQuery(
+    { ...recentProjectsPagination },
+    { refetchOnReconnect: true }, // Optional: refetch when reconnecting
+  );
   useEffect(() => {
     if (isSuccess) {
       dispatch(setRecentProjects(data as any));
@@ -125,7 +124,7 @@ export default function Home() {
   // When this happens userDetails disappear, but accessToken is still there
 
   return (
-    <Flex justifyContent="center" h="100vh">
+    <Flex justifyContent="center" h="100vh" flex={1}>
       <Box>
         <Image src="/banner3.png" maxW="100%" />
         <Center>
@@ -133,64 +132,68 @@ export default function Home() {
             {`Good ${getTimeOfDay()}, ${userDetails?.first_name} ${userDetails?.last_name}`}
           </Text>
         </Center>
+        {recentProjects.recentProjects?.length !== 0 && (
+          <>
+            <Flex alignItems="center" ml={20} mt={10}>
+              <Box w="10px" h="10px" bg="yellow.200" borderRadius="50%" />
+              <Text fontFamily="mono" fontSize="xs" ml={2}>
+                Recent Projects
+              </Text>
+            </Flex>
 
-        <Flex alignItems="center" ml={20} mt={10}>
-          <Box w="10px" h="10px" bg="yellow.200" borderRadius="50%" />
-          <Text fontFamily="mono" fontSize="xs" ml={2}>
-            Recent Projects
-          </Text>
-        </Flex>
-        <Box
-          ml={20}
-          mr={20}
-          mt="15px"
-          display="flex"
-          overflowX="scroll"
-          maxW="1020"
-          whiteSpace="nowrap"
-        >
-          {/* top 3 recent projects will be shown here */}
-          {recentProjects.recentProjects?.map((project, index) => {
-            const color = getRandomColor(project.project_name);
-            return (
-              <Box
-                key={index}
-                display="flex"
-                border="0.5px solid white"
-                borderBottom={`6px solid ${color}`}
-                w="320px"
-                h="90px"
-                p={6}
-                pt={5}
-                mr={5}
-                alignItems="center"
-                flexShrink={0}
-                cursor="pointer"
-                onClick={() => handleGoToProject(project)}
-              >
-                <Icon as={FaFolder} fontSize="45px" color={color} />
-                <Box ml={5}>
-                  <Text
-                    fontSize="sm"
-                    fontFamily="mono"
-                    textOverflow="ellipsis"
-                    whiteSpace="nowrap"
-                    overflow="hidden"
-                    maxW="150px"
+            <Box
+              ml={20}
+              mr={20}
+              mt="15px"
+              display="flex"
+              overflowX="scroll"
+              maxW="1020"
+              whiteSpace="nowrap"
+            >
+              {/* top 3 recent projects will be shown here */}
+              {recentProjects.recentProjects?.map((project, index) => {
+                const color = getRandomColor(project.project_name);
+                return (
+                  <Box
+                    key={index}
+                    display="flex"
+                    border="0.5px solid white"
+                    borderBottom={`6px solid ${color}`}
+                    w="320px"
+                    h="90px"
+                    p={6}
+                    pt={5}
+                    mr={5}
+                    alignItems="center"
+                    flexShrink={0}
+                    cursor="pointer"
+                    onClick={() => handleGoToProject(project)}
                   >
-                    {project.project_name}
-                  </Text>
-                  <Text fontSize="xs" fontFamily="mono">
-                    {project.lastEdited}
-                  </Text>
-                </Box>
-                <Spacer />
-                {/* The avatar of the owner */}
-                <Avatar boxSize="23px" bg="gray.500" />
-              </Box>
-            );
-          })}
-        </Box>
+                    <Icon as={FaFolder} fontSize="45px" color={color} />
+                    <Box ml={5}>
+                      <Text
+                        fontSize="sm"
+                        fontFamily="mono"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                        overflow="hidden"
+                        maxW="150px"
+                      >
+                        {project.project_name}
+                      </Text>
+                      <Text fontSize="xs" fontFamily="mono">
+                        {project.lastEdited}
+                      </Text>
+                    </Box>
+                    <Spacer />
+                    {/* The avatar of the owner */}
+                    <Avatar boxSize="23px" bg="gray.500" />
+                  </Box>
+                );
+              })}
+            </Box>
+          </>
+        )}
         {/* projects table */}
         <PersonalTable />
       </Box>

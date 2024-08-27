@@ -14,9 +14,13 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '@users/users.service';
 import { Users } from './user.entity';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import Docs from './users.docs';
-
+import { Projects } from '@projects/project.entity';
+interface UserFavorite {
+  user: Partial<Users>;
+  favorite_projects: Projects[];
+}
 // TODO: complete RESTful API for user entity
 @ApiBearerAuth()
 @ApiTags('Users')
@@ -48,7 +52,10 @@ export class UsersController {
     return this.usersService.removeByUsername(req.user.username);
   }
 
-
+  @Get('me/favorites')
+  async getUserFavorites(@Request() req): Promise<UserFavorite> {
+    return this.usersService.getUserFavorites(req.user.username);
+  }
 
   // endpoints for other non-admin users
   @Docs.findOneById()

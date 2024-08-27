@@ -11,6 +11,8 @@ import {
   Input,
   Button,
   useToast,
+  Box,
+  Divider,
 } from '@chakra-ui/react';
 import { useRef, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -84,58 +86,67 @@ const ResetPasswordModal = () => {
     }
   };
 
+  const handleClose = () => {
+    window.location.href = '/';
+  };
+
   return (
     <Modal
       initialFocusRef={initialRef}
       finalFocusRef={finalRef}
       isOpen={true}
-      onClose={() => {}}
+      onClose={handleClose}
     >
       <ModalOverlay />
-      <ModalContent
-        bg="brand.900"
-        top="20px"
-        right="40px"
-        position="absolute"
-        transform="none"
-      >
+      <ModalContent background="linear-gradient(to bottom, #001845, #524175)">
         <ModalHeader color="white" fontFamily="mono" fontSize="lg">
           Reset Your Password
         </ModalHeader>
-        <ModalCloseButton color="white" />
+        <ModalCloseButton color="white" onClick={handleClose} />{' '}
         <ModalBody pb={6}>
-          <FormControl>
-            <FormLabel color="grey" fontFamily="mono" fontSize="sm">
-              New Password
-            </FormLabel>
-            <Input
-              type="password"
-              color="white"
-              fontFamily="mono"
-              fontSize="sm"
-              placeholder="Enter your new password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </FormControl>
+          <Box>
+            <FormControl>
+              <FormLabel
+                color="white"
+                opacity="0.7"
+                fontFamily="mono"
+                fontSize="sm"
+              >
+                New Password
+              </FormLabel>
+              <Input
+                type="password"
+                color="white"
+                fontFamily="mono"
+                fontSize="sm"
+                placeholder="Enter your new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </FormControl>
 
-          <FormControl mt={4}>
-            <FormLabel color="grey" fontFamily="mono" fontSize="sm">
-              Confirm New Password
-            </FormLabel>
-            <Input
-              type="password"
-              color="white"
-              fontFamily="mono"
-              fontSize="sm"
-              placeholder="Confirm your new password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </FormControl>
+            <FormControl mt={4}>
+              <FormLabel
+                color="white"
+                opacity="0.7"
+                fontFamily="mono"
+                fontSize="sm"
+              >
+                Confirm New Password
+              </FormLabel>
+              <Input
+                type="password"
+                color="white"
+                fontFamily="mono"
+                fontSize="sm"
+                placeholder="Confirm your new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </FormControl>
+          </Box>
         </ModalBody>
-
-        <ModalFooter mb={4}>
+        <Box display="flex" justifyContent="center" mt={6}>
           <Button
             colorScheme="orange"
             mr={3}
@@ -145,15 +156,21 @@ const ResetPasswordModal = () => {
             onClick={handleResetPassword}
             ref={finalRef}
             isLoading={isLoading}
+            rounded="full"
+            w="60%"
           >
             Reset Password
           </Button>
+        </Box>
+        <Divider mt={6} mb={5} w="90%" mx="auto" />
+        <ModalFooter>
           <Button
             size="sm"
             fontFamily="mono"
-            onClick={() => {
-              window.location.href = '/';
-            }}
+            color="white"
+            opacity="0.7"
+            variant="link"
+            onClick={handleClose}
           >
             Cancel
           </Button>

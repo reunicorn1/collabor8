@@ -82,9 +82,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
       },
     );
     provider.on('status', (event: { status: unknown }) => {
-      console.log('%c======================>', 'background:white;color:red', {status:event.status}); // logs "connected" or "disconnected"
+      console.log('%c======================>', 'background:white;color:red', {
+        status: event.status,
+      }); // logs "connected" or "disconnected"
     });
-
+    console.log('this is provider', provider);
     // An event listener to clean up once the user is removed
     provider.on('close', () => {
       provider.awareness.setLocalState(null); // Removes the local awareness state
@@ -163,16 +165,27 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
     }
   }, [fileSelected]);
 
+  useEffect(() => {
+    if (fileSelected?.id) {
+      editorRef.current?.setOption(
+        'mode',
+        languageModes[language as LanguageCode] || 'javascript',
+      );
+    }
+  }, [language, fileSelected]);
+
   return (
     <Box h="100%" bg="brand.900">
       <Tabs />
       <Box opacity={fileSelected ? '1' : '0'}>
         <CodeMirror
           options={{
-            mode: languageModes[language],
+            mode: languageModes[language as LanguageCode] || 'javascript',
             theme: theme,
             lineNumbers: true,
             readOnly: mode,
+            tabSize: 2,
+            indentUnit: 4,
           }}
           editorDidMount={(editor) => {
             editorRef.current = editor;

@@ -38,13 +38,13 @@ export const projectShareApi = api.injectEndpoints({
       providesTags: ['ProjectShare'],
     }),
     getProjectSharesPaginated: builder.query<
-    {
+      {
         total: number;
         projects: ProjectSharesOutDto[];
         page: number;
         limit: number;
         totalPages: number;
-    },
+      },
       { page: number; limit: number; sort: string }
     >({
       query: ({ page, limit, sort }) =>
@@ -72,6 +72,20 @@ export const projectShareApi = api.injectEndpoints({
       }),
       invalidatesTags: ['ProjectShare'],
     }),
+    // Invite a user to collaborate on a project
+    inviteUser: builder.mutation<
+      void,
+      { project_id: string; inviter_email: string; invitee_email: string }
+    >({
+      query: ({ project_id, inviter_email, invitee_email }) => ({
+        url: `/project-shares/invite/${project_id}`,
+        method: 'POST',
+        body: {
+          inviter_email,
+          invitee_email,
+        },
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -86,4 +100,5 @@ export const {
   useDeleteProjectShareMutation,
   useGetUserProjectSharesQuery,
   useGetRoomTokenQuery,
+  useInviteUserMutation,
 } = projectShareApi;

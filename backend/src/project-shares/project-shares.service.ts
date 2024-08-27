@@ -25,7 +25,7 @@ export class ProjectSharesService {
     private readonly projectsService: ProjectsService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
-  ) { }
+  ) {}
 
 
   async mapProjectShareData(projectShare: ProjectShares): Promise<ProjectSharesOutDto> {

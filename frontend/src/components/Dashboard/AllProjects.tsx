@@ -10,6 +10,7 @@ import {
   Box,
   Text,
   Spacer,
+  Center,
 } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import MenuSelection from './MenuSelection';
@@ -60,11 +61,10 @@ export default function AllProjects() {
     }
   };
 
-  const { data, refetch, isSuccess } =
-    useGetAllProjectsPaginatedQuery(
-      { ...allProjectsPagination },
-      { refetchOnReconnect: true }, // Optional: refetch when reconnecting
-    );
+  const { data, refetch, isSuccess } = useGetAllProjectsPaginatedQuery(
+    { ...allProjectsPagination },
+    { refetchOnReconnect: true }, // Optional: refetch when reconnecting
+  );
   useEffect(() => {
     if (isSuccess) {
       dispatch(setAllProjects(data as any));
@@ -112,43 +112,51 @@ export default function AllProjects() {
         maxH="550px"
         bgGradient="linear(to-t, brand.800, brand.900)"
       >
-        <Table size="sm">
-          <Thead>
-            <Tr>
-              <Th color="#B4B4B4" opacity="0.7" fontFamily="mono">
-                Name
-              </Th>
-              <Th color="#B4B4B4" opacity="0.7" fontFamily="mono">
-                Members
-              </Th>
-              <Th color="#B4B4B4" opacity="0.7" fontFamily="mono">
-                Last Modified
-              </Th>
-              <Th></Th>
-            </Tr>
-          </Thead>
-          <Tbody fontFamily="mono">
-            {allProjects.allProjects?.map((project, index) => {
-              const date = new Date(project.updated_at);
-              return (
-                <Tr
-                  cursor="pointer"
-                  key={index}
-                  onClick={() => handleGoToProject(project)}
-                >
-                  <Td>{project.project_name}</Td>
-                  <Td>3 Members TBD</Td>
-                  <Td>{date.toDateString()}</Td>
-                  <Td>
-                    <MenuProject project={project}>
-                      <HiDotsHorizontal />
-                    </MenuProject>
-                  </Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
+        {!allProjects.allProjects?.length ? (
+          <Center mt={20}>
+            <Text fontFamily="mono" fontSize="sm">
+              No Projects created yet...
+            </Text>
+          </Center>
+        ) : (
+          <Table size="sm">
+            <Thead>
+              <Tr>
+                <Th color="#B4B4B4" opacity="0.7" fontFamily="mono">
+                  Name
+                </Th>
+                <Th color="#B4B4B4" opacity="0.7" fontFamily="mono">
+                  Members
+                </Th>
+                <Th color="#B4B4B4" opacity="0.7" fontFamily="mono">
+                  Last Modified
+                </Th>
+                <Th></Th>
+              </Tr>
+            </Thead>
+            <Tbody fontFamily="mono">
+              {allProjects.allProjects?.map((project, index) => {
+                const date = new Date(project.updated_at);
+                return (
+                  <Tr
+                    cursor="pointer"
+                    key={index}
+                    onClick={() => handleGoToProject(project)}
+                  >
+                    <Td>{project.project_name}</Td>
+                    <Td>3 Members TBD</Td>
+                    <Td>{date.toDateString()}</Td>
+                    <Td>
+                      <MenuProject project={project}>
+                        <HiDotsHorizontal />
+                      </MenuProject>
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+        )}
       </TableContainer>
 
       <Box

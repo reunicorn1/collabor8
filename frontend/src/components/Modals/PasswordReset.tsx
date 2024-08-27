@@ -11,6 +11,8 @@ import {
   Input,
   Button,
   useToast,
+  Box,
+  Divider,
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 import { useResetPasswordMutation } from '@store/services/auth';
@@ -83,20 +85,19 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
       onClose={handleClose}
     >
       <ModalOverlay />
-      <ModalContent
-        bg="brand.900"
-        top="20px"
-        right="40px"
-        position="absolute"
-        transform="none"
-      >
+      <ModalContent background="linear-gradient(to bottom, #001845, #524175)">
         <ModalHeader color="white" fontFamily="mono" fontSize="lg">
           Reset Password
         </ModalHeader>
-        <ModalCloseButton color="white" />
+        <ModalCloseButton color="white" onClick={handleClose} />{' '}
         <ModalBody pb={6}>
           <FormControl>
-            <FormLabel color="grey" fontFamily="mono" fontSize="sm">
+            <FormLabel
+              color="white"
+              opacity="0.7"
+              fontFamily="mono"
+              fontSize="sm"
+            >
               Email
             </FormLabel>
             <Input
@@ -104,15 +105,13 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
               color="white"
               fontFamily="mono"
               fontSize="sm"
-              ref={initialRef}
               placeholder="Enter your email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </FormControl>
         </ModalBody>
-
-        <ModalFooter mb={4}>
+        <Box display="flex" justifyContent="center" mt={6}>
           <Button
             colorScheme="orange"
             mr={3}
@@ -121,10 +120,22 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
             isDisabled={!email}
             onClick={handleResetPassword}
             ref={finalRef}
+            rounded="full"
+            w="60%"
           >
             Send Reset Link
           </Button>
-          <Button size="sm" fontFamily="mono" onClick={handleClose}>
+        </Box>
+        <Divider mt={6} mb={5} w="90%" mx="auto" />
+        <ModalFooter>
+          <Button
+            size="sm"
+            fontFamily="mono"
+            color="white"
+            opacity="0.7"
+            variant="link"
+            onClick={handleClose}
+          >
             Cancel
           </Button>
         </ModalFooter>

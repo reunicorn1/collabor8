@@ -6,8 +6,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToMany,
   // OneToOne,
   // JoinColumn,
+  JoinTable,
 } from 'typeorm';
 import { Projects } from '@projects/project.entity';
 import { ProjectShares } from '@project-shares/project-shares.entity';
@@ -37,15 +39,11 @@ export class Users {
   favorite_languages: string[] | null;
 
   // TODO: add profile picture and other user details as needed
-  @Column({ type: 'varchar',nullable: true, default: '' })
+  @Column({ type: 'varchar', nullable: true, default: '' })
   profile_picture: string | null;
 
-  // TODO: create favorite projects list
-  @Column('simple-array', { nullable: true })
-  favorite_projects: string[] | null;
-
   // bio
-  @Column({ type: 'varchar',nullable: true, default: '' })
+  @Column({ type: 'varchar', nullable: true, default: '' })
   bio: string | null;
 
   // default 'user'
@@ -79,4 +77,12 @@ export class Users {
 
   @OneToMany(() => ProjectShares, (projectShare) => projectShare.user)
   projectShares: ProjectShares[]; // Project shares associated with the user
+
+  // TODO: create favorite projects list
+
+  @ManyToMany(() => Projects, (project) => project.favorite, {
+    cascade: true,
+  })
+  @JoinTable()
+  favorite_projects: Projects[];
 }
