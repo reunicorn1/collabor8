@@ -102,7 +102,7 @@ export interface sharedProjects { // multiple mutated
   error?: string;
 }
 export interface ProjectShares {
-  status: ReactNode;
+  status: string;
   profile_picture: string; // Declared property
   // singlar
   share_id: string;
