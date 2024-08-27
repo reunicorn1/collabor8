@@ -12,6 +12,7 @@ import {
 } from './dto/create-project-shares.dto';
 import { appConfig } from '@config/configuration';
 import { RtcTokenBuilder, RtcRole } from 'agora-access-token';
+import { RedisService } from '@redis/redis.service';
 
 @Injectable()
 export class ProjectSharesService {
@@ -22,6 +23,8 @@ export class ProjectSharesService {
     private readonly projectsService: ProjectsService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => RedisService))
+    private readonly redisService: RedisService,
   ) {}
 
 
@@ -48,6 +51,14 @@ export class ProjectSharesService {
     };
   }
 
+  async cacheToken(token: string, key: string, ttl) {
+    await this.redisService.set(key, token, ttl);
+  }
+
+  async getCacheToken(key: string) {
+    return await this.redisService.get(key);
+  }
+
   async getRoomToken(username: string, project_id: string): Promise<{
     token: string;
     uid: string;
@@ -68,6 +79,12 @@ export class ProjectSharesService {
     }
     const { user_id } = user;
     const channelName = `${project_id}`;
+
+    const cachedToken = await this.getCacheToken(channelName);
+    if (cachedToken) {
+      return { token: cachedToken, uid: user_id, channel: channelName };
+    }
+
     const appId = appConfig.appID;
     const appCertificate = appConfig.appCertificate;
     const account = user_id;
@@ -79,7 +96,7 @@ export class ProjectSharesService {
     const token = RtcTokenBuilder.buildTokenWithAccount(appId,
       appCertificate, channelName,
       account, role, privilegeExpiredTs);
-
+    await this.cacheToken(token, channelName, delta);
 
     return { token, uid: user_id, channel: channelName };
 

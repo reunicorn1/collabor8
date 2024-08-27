@@ -7,12 +7,14 @@ import { MYSQL_CONN } from '@constants';
 import { ProjectsModule } from '@projects/projects.module';
 import { UsersModule } from '@users/users.module';
 import { BullModule } from '@nestjs/bullmq';
+import { RedisModule } from '@redis/redis.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ProjectShares], MYSQL_CONN),
     forwardRef(() => ProjectsModule),
     forwardRef(() => UsersModule),
+    forwardRef(() => RedisModule),
     BullModule.registerQueue({
       name: 'mailer',
     }),
