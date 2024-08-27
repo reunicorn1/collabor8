@@ -16,24 +16,20 @@ interface Project {
 
 export function getPathFromId(
   project: Project, // This is filetree object
-  targetId: string, // The file id selected
-): string[] | null {
-  function findNodePath(
-    node: ProjectNode,
-    id: string,
-    path: string[],
-  ): string[] | null {
+  targetId: string, // The file id to be found
+): unknown | null {
+  function findNode(node: any, id: string): any | null {
     // Check if current node is the target node
     if (node.id === id) {
-      return path;
+      return node;
     }
 
     // If it's a directory, recursively search its children
     if (node.type === 'directory' && node.children) {
       for (const child of node.children) {
-        const childPath = findNodePath(child, id, [...path, node.id || '']);
-        if (childPath) {
-          return childPath;
+        const childFound = findNode(child, id);
+        if (childFound) {
+          return childFound;
         }
       }
     }
@@ -43,13 +39,12 @@ export function getPathFromId(
 
   // Start the search from the root
   for (const child of project.children) {
-    const fullPath = findNodePath(child, targetId, []); // I'll be creating a list of ids which creates the path
-    if (fullPath) {
-      return fullPath;
+    const node = findNode(child, targetId);
+    if (node) {
+      return node;
     }
   }
-
-  return []; // If the ID is not found
+  return null;
 }
 
 // use previous function to get fullpath which is a string full of ids

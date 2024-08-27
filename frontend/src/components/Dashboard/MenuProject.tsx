@@ -30,7 +30,6 @@ export default function MenuProject({ children, project }: DBMenuProps) {
   const [updateProject] = useUpdateProjectMutation();
   const [deleteProject] = useDeleteProjectMutation();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  console.log(project);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();

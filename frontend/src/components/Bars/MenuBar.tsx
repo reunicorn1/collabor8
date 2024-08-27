@@ -13,9 +13,15 @@ import { GoHome } from 'react-icons/go';
 import { LanguageSelector, ThemeSelector } from '../CodeEditor';
 import { useSettings } from '../../context/EditorContext';
 import ComingSoon from '@components/CodeEditor/ComingSoon';
+import VoiceDrawer from '@components/CodeEditor/VoiceDrawer';
 
 export default function MenuBar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenV,
+    onOpen: onOpenV,
+    onClose: onCloseV,
+  } = useDisclosure();
   const navigate = useNavigate();
   const { mode } = useSettings()!;
 
@@ -70,6 +76,7 @@ export default function MenuBar() {
           fontSize="18px"
           size="xs"
           icon={<MdOutlineKeyboardVoice />}
+          onClick={onOpenV}
           ml={2}
         />
         <IconButton
@@ -87,6 +94,7 @@ export default function MenuBar() {
         />
       </Flex>
       <ComingSoon isOpen={isOpen} onClose={onClose} />
+      <VoiceDrawer isOpen={isOpenV} onClose={onCloseV} />
     </div>
   );
 }

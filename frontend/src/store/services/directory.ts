@@ -26,7 +26,7 @@ export const directoryApi = api.injectEndpoints({
     >({
       query: ({ id, data }) => ({
         url: `/directory/${id}`,
-        method: 'POST',
+        method: 'PATCH',
         body: data,
       }),
     }),

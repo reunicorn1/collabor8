@@ -1,4 +1,13 @@
-import { Controller, Delete, Get, Param, Post, Body, Request, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Body,
+  Request,
+  Patch,
+} from '@nestjs/common';
 import { DirectoryMongoService } from './directory-mongo.service';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -30,14 +39,13 @@ export class DirectoryMongoController {
     return this.dirService.findOne(id);
   }
 
-
   @DirDocs.update()
-  @Post(':id')
-  update(
+  @Patch(':id')
+  async update(
     @Param('id') id: string,
     @Body() updateDirectoryDto: UpdateDirectoryOutDto,
   ) {
-    return this.dirService.update(id, updateDirectoryDto);
+    return await this.dirService.update(id, updateDirectoryDto);
   }
 
   @DirDocs.remove()

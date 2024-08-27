@@ -66,7 +66,7 @@ const NewfileDir: React.FC<ModalProps> = ({
       console.log('xxxxxxxxxxxFor parent: ', {
         parent_id: parent === '0' ? project_id : parent,
       });
-      console.log('xxxxxxxxxxxParent is project: ', { parent: parent === '0' });
+      console.log('xxxxxxxxxxxParent is project: ', parent);
       if (filedir === 'file') {
         await createFile({
           project_id,

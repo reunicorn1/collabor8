@@ -87,8 +87,10 @@ export class FileMongoService {
       throw new NotFoundException('File not found');
     }
     const conflict = await this.fileRepository.findOne({
-      where: { name: parsedDto.name ? parsedDto.name : file.name,
-        parent_id: parsedDto.parent_id ?  parsedDto.parent_id : file.parent_id },
+      where: {
+        name: parsedDto.name ? parsedDto.name : file.name,
+        parent_id: parsedDto.parent_id ? parsedDto.parent_id : file.parent_id,
+      },
     });
     if (conflict) {
       throw new ConflictException('File already exists');
@@ -112,7 +114,7 @@ export class FileMongoService {
 
   async remove(id: string): Promise<void> {
     try {
-    await this.fileRepository.delete(id);
+      await this.fileRepository.delete(id);
     } catch (err) {
       Logger.error(err);
     }
