@@ -6,6 +6,7 @@ interface CreateProjectShareDto {
   _id?: string;
   username?: string;
   user_id?: string;
+  email?: string;
   access_level: 'read' | 'write';
 }
 
@@ -13,7 +14,6 @@ interface UpdateProjectShareDto {
   access_level?: 'read' | 'write';
   favorite?: boolean;
 }
-
 
 interface ProjectSharesOutDto {
   share_id: string;
@@ -189,9 +189,6 @@ function validateProjectSharesOutDto(dto: any): ProjectSharesOutDto {
     _id: _id ? _id.trim() : null,
   };
 }
-
-
-
 
 function parseCreateProjectDto(requestBody: any): CreateProjectShareDto {
   const validated = validateCreateProjectShareDto(requestBody);

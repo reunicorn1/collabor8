@@ -31,6 +31,7 @@ import { RedisService } from '@redis/redis.service';
 import { RedisModule } from '@redis/redis.module';
 import { LoggingModule } from '@logging/logging.module';
 import { BullModule } from '@nestjs/bullmq';
+import { MYSQL_CONN, MONGO_CONN } from '@constants';
 
 @Module({
   imports: [
@@ -42,7 +43,7 @@ import { BullModule } from '@nestjs/bullmq';
       },
     }),
     TypeOrmModule.forRoot({
-      name: 'mysqlConnection',
+      name: MYSQL_CONN,
       type: 'mysql',
       host: process.env.HOST,
       port: Number(process.env.PORT_MYSQL),
@@ -53,7 +54,7 @@ import { BullModule } from '@nestjs/bullmq';
       synchronize: true,
     }),
     TypeOrmModule.forRoot({
-      name: 'mongoConnection',
+      name: MONGO_CONN,
       type: 'mongodb',
       url: `mongodb://${process.env.HOST}:${process.env.PORT_MONGO}/${process.env.DB_NAME}`,
       database: process.env.DB_NAME,
