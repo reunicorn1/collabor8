@@ -1,5 +1,5 @@
 import { api } from './api';
-import { CreateUserDto, User, Project } from '@types';
+import { CreateUserDto, User, Project, ProjectSharesOutDto } from '@types';
 interface UserFavorite {
   user: Partial<User>;
   favorite_projects: Project[];
