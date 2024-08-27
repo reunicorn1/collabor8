@@ -10,6 +10,11 @@ import {
   CreateProjectShareDto,
   ProjectSharesOutDto,
 } from './dto/create-project-shares.dto';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as jsonwebtoken from 'jsonwebtoken';
+import { v4 as uuid } from 'uuid';
+import { privateKey } from '@config/configuration';
 
 @Injectable()
 export class ProjectSharesService {
@@ -44,6 +49,16 @@ export class ProjectSharesService {
       updated_at: project.updated_at.toISOString(),
       member_count: memberCount,
     };
+  }
+
+  async partialSearch(query: string, username: string): Promise<ProjectSharesOutDto[]> {
+    const shares = await this.projectSharesRepository.createQueryBuilder('project_shares')
+      .where('project_shares.username = :username', { username })
+      .where('project_shares.username LIKE :query', { query: `%${query}%` })
+      .getMany();
+    return Promise.all(shares.map(async (projectShare) => {
+      return await this.mapProjectShareData(projectShare);
+    }));
   }
 
   async getProjectShares(project_id: string, username: string): Promise<ProjectShares> {
@@ -136,8 +151,8 @@ export class ProjectSharesService {
       throw new NotFoundException('Project not found');
     }
     const shared_projects = await this.projectSharesRepository.createQueryBuilder('project_shares')
-    .where('project_shares.project_id = :project_id', { project_id })
-    .getMany();
+      .where('project_shares.project_id = :project_id', { project_id })
+      .getMany();
     console.log(shared_projects.length);
     return await this.mapProjectUsers(shared_projects);
 
@@ -179,27 +194,27 @@ export class ProjectSharesService {
       .orderBy(`project_shares.${sortField}`, sortDirection)
       .getMany()
 
-      console.log(projects);
-      // .then((project) => {
-      //   return project.map(async (project) => {
-      //     console.log(project);
-      //     if (!project) {
-      //       return null;
-      //     }
-      //     return await this.mapProjectShareData(project);
-      //   });
-      // })
-      // .catch((error) => {
-      //   Logger.error(error);
-      //   return [];
-      // });
+    console.log(projects);
+    // .then((project) => {
+    //   return project.map(async (project) => {
+    //     console.log(project);
+    //     if (!project) {
+    //       return null;
+    //     }
+    //     return await this.mapProjectShareData(project);
+    //   });
+    // })
+    // .catch((error) => {
+    //   Logger.error(error);
+    //   return [];
+    // });
 
-      const mappedProjects = await Promise.all(
-        projects.map(async (project) => {
-          return this.mapProjectShareData(project);
-        })
-      );
-      console.log(mappedProjects);
+    const mappedProjects = await Promise.all(
+      projects.map(async (project) => {
+        return this.mapProjectShareData(project);
+      })
+    );
+    console.log(mappedProjects);
 
 
     return { total, projects: mappedProjects };

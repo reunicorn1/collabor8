@@ -10,6 +10,8 @@ import MenuBar from '../components/Bars/MenuBar';
 import Tree from '../components/FileTree/Tree';
 import * as Y from 'yjs';
 import { useGetProjectByIdQuery } from '@store/services/project';
+import React from 'react';
+import { Mapped } from '../components/Audio/Modal';
 // retrieve project name from state of navigate eg.
 //  navigate(`/editor/${id}`, { state: { project_name } });
 //
@@ -26,7 +28,10 @@ export default function Editor() {
   const projectRef = useRef<any>(null);
 
   // Fetch the project data based on the ID
-  const { data, refetch } = useGetProjectByIdQuery(projectId! && typeof projectId == 'string' ? projectId : '', { refetchOnReconnect: true });
+  const { data, refetch } = useGetProjectByIdQuery(
+    projectId! && typeof projectId == 'string' ? projectId : '',
+    { refetchOnReconnect: true },
+  );
 
   useEffect(() => {
     // If location.state exists, use it; otherwise, fetch from API
@@ -57,7 +62,7 @@ export default function Editor() {
           h="100%"
           borderRight="2px solid #524175"
         >
-          <Shares project={project}/>
+          <Shares project={project} />
         </GridItem>
 
         {/* Second Section */}
@@ -108,6 +113,7 @@ export default function Editor() {
                             p={3}
                           >
                             Output
+                            <Mapped />
                           </Text>
                         </Box>
                         <Divider color="grey" />
@@ -115,6 +121,7 @@ export default function Editor() {
                     </Panel>
                   </PanelGroup>
                 </Panel>
+
                 {/* Bottom Panel */}
               </PanelGroup>
             </GridItem>

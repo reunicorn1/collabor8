@@ -1,7 +1,17 @@
 import axios from 'axios';
-
+import * as projects from './example_projects.json';
 const baseURL = 'http://localhost:3000/api/v1';
 
+interface Project {
+  name: string;
+  description: string;
+}
+
+
+
+const projectList: Project[] = projects as Project[];
+
+const fileExtensions = ['py', 'js', 'ts', 'html', 'css'];
 // Function to sign in and get the access token
 async function signIn(username: string, password: string): Promise<string> {
   try {
@@ -77,19 +87,19 @@ async function createProjectStructure(
   }
 
   for (let i = 0; i < remainingFiles; i++) {
-    const fileName = `File_${Math.random().toString(36).substring(7)}.txt`;
+    const fileName = `File_${Math.random().toString(36).substring(7)}.${fileExtensions[Math.floor(Math.random() * fileExtensions.length)]}`;
     await createFile(fileName, parentIds[Math.floor(Math.random() * parentIds.length)], project_id, accessToken);
   }
 }
 
 // Function to create the initial project
-async function createProject(accessToken: string): Promise<{ project_id: string }> {
+async function createProject(accessToken: string, project: Project): Promise<{ project_id: string }> {
   try {
     const response = await axios.post(
       `${baseURL}/projects`,
       {
-        project_name: 'New Project',
-        description: 'A project with random structure',
+        project_name: project.name,
+        description: project.description,
       },
       {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -126,14 +136,14 @@ async function main() {
     const username = 'trip';
     const password = 'w';
     const accessToken = await signIn(username, password);
-
-    const { project_id }= await createProject(accessToken);
+    for (let i = 0; i < projectList.length; i++) {
+    const { project_id }= await createProject(accessToken, projectList[i]);
     const parentIds = [project_id];
 
     const n = 3; // Depth of directories
-    const m = 14; // Total number of files and directories
+    const m = 7; // Total number of files and directories
     await createProjectStructure(parentIds, project_id, n, m, accessToken);
-
+    }
     await signOut(accessToken);
   } catch (error) {
     console.error('An error occurred:', error.message);

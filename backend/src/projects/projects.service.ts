@@ -5,9 +5,10 @@ import {
   NotFoundException,
   BadRequestException,
   Logger,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Projects } from './project.entity';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { ProjectMongoService } from '@project-mongo/project-mongo.service';
@@ -22,6 +23,7 @@ import {
 } from './dto/create-project.dto';
 import { validate as uuidValidate } from 'uuid';
 import { ProjectSharesService } from '@project-shares/project-shares.service';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class ProjectsService {
@@ -48,6 +50,13 @@ export class ProjectsService {
       // const environment = await this.environmentService.findOneBy({
       //   username: user.username,
       // });
+      const conflict = await this.projectsRepository.findOneBy({
+        project_name: parsedDto.project_name,
+        username: parsedDto.username,
+      });
+      if (conflict) {
+        throw new Error('Project name already exists');
+      }
       parsedDto['environment_id'] = user.environment_id;
       parsedDto['owner_id'] = user.user_id;
       const newProjectMongo = await this.projectMongoService.create(
@@ -66,6 +75,20 @@ export class ProjectsService {
     }
   }
 
+  async searchForProjects(name: string, username: string): Promise<Projects[]> {
+    const projects = this.projectsRepository.find({
+      where: {
+        project_name: Like(`%${name}%`),
+        username: username,
+      },
+    });
+    return projects;
+
+  }
+  async getMongoProject(id: string): Promise<ProjectMongo> {
+    const IDS = await this.getIds(id);
+    return await this.projectMongoService.findOneBy( '_id', IDS._id );
+  }
   // Retrieve all projects
   async findAll(): Promise<Projects[]> {
     return this.projectsRepository.find();
@@ -188,14 +211,23 @@ export class ProjectsService {
       project = await this.projectsRepository.findOneBy({ _id: IDS._id });
     }
     if (!project) {
-      throw new Error('Project not found');
+      throw new NotFoundException('Project not found');
+    }
+    const conflict = await this.projectsRepository.find({
+      where: {
+        project_name: parsedDto.project_name ? parsedDto.project_name : project.project_name,
+        username: project.username,
+      },
+    });
+    if (conflict) {
+      throw new ConflictException('Project name already exists');
     }
     const mongoProject = await this.projectMongoService.findOneBy(
       '_id',
       IDS._id,
     );
     if (!mongoProject) {
-      throw new Error('Project not found');
+      throw new NotFoundException('Project not found');
     }
     for (const key in parsedDto) {
       if (parsedDto[key]) {

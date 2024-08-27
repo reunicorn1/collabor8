@@ -134,6 +134,7 @@ export class AuthService {
   async signUp(createUserDto: CreateUserDto) {
     if (adminEmails.includes(createUserDto.email)) {
       createUserDto['roles'] = ['admin'];
+      createUserDto['is_verified'] = true;
     }
     if (!createUserDto['favorite_languages']) {
       createUserDto['favorite_languages'] = [];

@@ -4,6 +4,7 @@ import {
   forwardRef,
   NotFoundException,
   Logger,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -31,6 +32,12 @@ export class FileMongoService {
 
   async create(createFileDto: CreateFileOutDto): Promise<FileMongo> {
     const parsedDto = parseCreateFileMongoDto(createFileDto);
+    const conflict = await this.fileRepository.findOne({
+      where: { name: parsedDto.name, parent_id: parsedDto.parent_id },
+    });
+    if (conflict) {
+      throw new ConflictException('File already exists');
+    }
     const newFile = this.fileRepository.create({
       parent_id: parsedDto.parent_id,
       name: parsedDto.name,
@@ -79,7 +86,13 @@ export class FileMongoService {
     if (!file) {
       throw new NotFoundException('File not found');
     }
-    console.log(parsedDto.file_content);
+    const conflict = await this.fileRepository.findOne({
+      where: { name: parsedDto.name ? parsedDto.name : file.name,
+        parent_id: parsedDto.parent_id ?  parsedDto.parent_id : file.parent_id },
+    });
+    if (conflict) {
+      throw new ConflictException('File already exists');
+    }
     const newDate = new Date();
     if (parsedDto.name) file.name = parsedDto.name;
     if (parsedDto.file_content) file.file_content = parsedDto.file_content;

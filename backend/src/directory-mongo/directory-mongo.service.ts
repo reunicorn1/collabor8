@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef, Logger } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, Logger, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DirectoryMongo } from './directory-mongo.entity';
@@ -21,12 +21,21 @@ export class DirectoryMongoService {
     private fileService: FileMongoService,
     @Inject(forwardRef(() => ProjectsService))
     private projectService: ProjectsService,
-  ) {}
+  ) { }
 
   async create(
     createDirectoryDto: CreateDirectoryOutDto,
   ): Promise<DirectoryMongo> {
     const parsedDto = parseCreateDirectoryMongoDto(createDirectoryDto);
+    const conflict = await this.directoryRepository.find({
+      where: {
+        parent_id: parsedDto.parent_id,
+        name: parsedDto.name,
+      },
+    });
+    if (conflict) {
+      throw new ConflictException('Directory already exists');
+    }
     const newDirectory = this.directoryRepository.create({
       parent_id: parsedDto.parent_id,
       name: parsedDto.name,
@@ -101,6 +110,16 @@ export class DirectoryMongoService {
     if (!directory) {
       throw new Error('Directory not found');
     }
+    const conflict = await this.directoryRepository.findOne({
+      where: {
+        name: parsedDto.name ? parsedDto.name : directory.name,
+        parent_id: parsedDto.parent_id ? parsedDto.parent_id : directory.parent_id,
+      },
+    });
+    if (conflict) {
+      throw new ConflictException('Directory already exists');
+    }
+
     for (const key in parsedDto) {
       if (parsedDto[key]) {
         directory[key] = parsedDto[key];
@@ -128,7 +147,7 @@ export class DirectoryMongoService {
       directories.map(async (dir) => {
         try {
           await this.remove(dir._id.toString());
-        }catch(e){
+        } catch (e) {
           Logger.error(e);
         }
       }),
@@ -136,16 +155,16 @@ export class DirectoryMongoService {
     await Promise.all(
       files.map(async (file) => {
         try {
-        await this.fileService.remove(file._id.toString());
+          await this.fileService.remove(file._id.toString());
         }
-        catch(e){
+        catch (e) {
           Logger.error(e);
         }
       }),
     );
     try {
-    await this.directoryRepository.delete(id);
-    } catch(e){
+      await this.directoryRepository.delete(id);
+    } catch (e) {
       Logger.error(e);
     }
   }

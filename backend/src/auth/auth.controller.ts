@@ -46,7 +46,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('signin')
   async signIn(@Request() req, @Response() res) {
-    Logger.log('--------------->', { user: req.user });
+    //Logger.log('--------------->', { user: req.user });
     const { accessToken, refreshToken, user } = await this.authService.signIn(
       req.user,
     );
