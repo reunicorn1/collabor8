@@ -81,19 +81,21 @@ export default function Editor() {
             <GridItem bg="gray.100">
               <PanelGroup direction="horizontal">
                 {/* Top Panel Group with horizontal panels */}
-                <Panel defaultSize={20} minSize={20} maxSize={50}>
+                <Panel
+                  defaultSize={20}
+                  minSize={20}
+                  maxSize={50}
+                  style={{ overflow: 'scroll' }}
+                >
                   {/* <FileTree /> */}
                   <Tree ydoc={ydoc} name={project.project_name} />
                 </Panel>
                 <PanelResizeHandle
                   style={{
-                    backgroundColor: isDragging ? 'blue' : 'grey',
-                    width: '0.5px',
+                    backgroundColor: 'grey',
+                    width: '1px',
                     opacity: '1',
                   }}
-                  onMouseDown={() => setIsDragging(true)}
-                  onMouseUp={() => setIsDragging(false)}
-                  onMouseLeave={() => setIsDragging(false)}
                 />
                 <Panel>
                   <PanelGroup direction="vertical">
