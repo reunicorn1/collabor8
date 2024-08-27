@@ -25,6 +25,7 @@ import { useParams } from 'react-router-dom';
 import { useCreateFileMutation } from '@store/services/file';
 import { useCreateDirectoryMutation } from '@store/services/directory';
 import { createDocuments } from '@utils/createfiledir';
+import { LanguageCode } from '@utils/codeExamples';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -114,8 +115,15 @@ const NewfileDir: React.FC<ModalProps> = ({
         }); //type error. This function creates the new ytext/ymap
 
         set('filetree', data.filetree); // trigger to re-render the structure for all clients connected
-        if (file instanceof Y.Text)
-          setFileSelected({ name: newName, value: file, id });
+        if (file instanceof Y.Text) {
+          const defaultLanguage: LanguageCode = 'javascript';
+          setFileSelected({
+            name: newName,
+            value: file,
+            id,
+            language: defaultLanguage,
+          });
+        }
       }
     }
     handleClose();

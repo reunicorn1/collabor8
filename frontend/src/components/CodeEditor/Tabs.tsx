@@ -1,5 +1,5 @@
 import { Box, Text, Image, Spacer, CloseButton } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LanguageCode } from '../../utils/codeExamples';
 import { useSettings, useFile } from '../../context/EditorContext';
 import { FileType } from '../../context/EditorContext';
@@ -32,8 +32,9 @@ export default function Tabs() {
     setFileSelected(file);
   };
 
-  const handleClose = (file: FileType) => {
-    const updatedFile = tabslist.filter((tab) => tab !== file);
+  const handleClose = (file: FileType, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updatedFile = tabslist.filter((tab) => tab.id !== file.id);
     setTabsList(updatedFile);
     if (updatedFile.length > 0) {
       setFileSelected(updatedFile[updatedFile.length - 1]);
@@ -52,51 +53,46 @@ export default function Tabs() {
         // overflowX="scroll"
         // whiteSpace="nowrap"
       >
-        {tabslist &&
-          tabslist.map((file, index) => (
-            <Box
-              key={crypto.randomUUID()}
-              w="20%"
-              display="flex"
-              bg="brand.900"
-              cursor="pointer"
-              onClick={() => handleClick(file)}
-              borderTop={
-                fileSelected && fileSelected === file
-                  ? '2px solid yellow'
-                  : '0.5px solid rgba(128, 128, 128, 0.5)'
-              }
-              borderRight="0.5px solid rgba(128, 128, 128, 0.5)"
-              borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
-              borderLeft="0.5px solid rgba(128, 128, 128, 0.5)"
-              alignContent="center"
-              alignItems="center"
-              overflow="hidden"
-              textOverflow="ellipsis"
-              pl={6}
-            >
-              <Image
-                key={crypto.randomUUID()}
-                src={`/lang-logo/${languageModes[language]}`}
-                boxSize="15px"
-                mr={2}
-              />
-              <Text color="white" fontSize="xs" fontFamily="mono" key={index}>
-                {file.name}
-              </Text>
-              <Spacer />
-              <CloseButton
-                color="white"
-                size="sm"
-                _hover={{ bg: '#323232', color: 'white' }}
-                mr={2}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleClose(file);
-                }}
-              />
-            </Box>
-          ))}
+        {tabslist.map((file) => (
+          <Box
+            key={file.id}
+            w="20%"
+            display="flex"
+            bg="brand.900"
+            cursor="pointer"
+            onClick={() => handleClick(file)}
+            borderTop={
+              fileSelected && fileSelected.id === file.id
+                ? '2px solid yellow'
+                : '0.5px solid rgba(128, 128, 128, 0.5)'
+            }
+            borderRight="0.5px solid rgba(128, 128, 128, 0.5)"
+            borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
+            borderLeft="0.5px solid rgba(128, 128, 128, 0.5)"
+            alignContent="center"
+            alignItems="center"
+            overflow="hidden"
+            textOverflow="ellipsis"
+            pl={6}
+          >
+            <Image
+              src={`/lang-logo/${languageModes[file.language as LanguageCode] || 'unknown.png'}`}
+              boxSize="15px"
+              mr={2}
+            />
+            <Text color="white" fontSize="xs" fontFamily="mono">
+              {file.name}
+            </Text>
+            <Spacer />
+            <CloseButton
+              color="white"
+              size="sm"
+              _hover={{ bg: '#323232', color: 'white' }}
+              mr={2}
+              onClick={(e) => handleClose(file, e)}
+            />
+          </Box>
+        ))}
       </Box>
     </>
   );
