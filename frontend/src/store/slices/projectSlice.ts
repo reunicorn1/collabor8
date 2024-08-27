@@ -11,6 +11,7 @@ interface projects {
   created_at: string;
   project_id: string;
   _id: string;
+  member_count: number;
   projectShares: string[];
 }
 

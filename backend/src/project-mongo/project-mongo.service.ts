@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef, Logger } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, Logger, NotFoundException } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { Repository } from 'typeorm';
 import { ProjectMongo } from './project-mongo.entity';
@@ -62,7 +62,7 @@ export class ProjectMongoService {
   }
 
   async save(project: ProjectMongo): Promise<ProjectMongo> {
-    return this.projectMongoRepository.save(project);
+    return await this.projectMongoRepository.save(project);
   }
 
   // Find projects by username
@@ -192,6 +192,7 @@ export class ProjectMongoService {
         await this.directoryService.remove(dir._id.toString());
         } catch (e) {
           Logger.error(e);
+          throw new NotFoundException('Directory not found');
         }
       }),
     );
@@ -201,13 +202,15 @@ export class ProjectMongoService {
         await this.fileService.remove(file._id.toString());
         } catch (e) {
           Logger.error(e);
+          throw new NotFoundException('File not found');
         }
       }),
     );
     try {
-    await this.projectMongoRepository.delete({ project_id: id });
+      await this.projectMongoRepository.delete({ project_id: id });
     } catch (e) {
       Logger.error(e);
+      throw new NotFoundException('Project not found');
     }
   }
 
@@ -216,6 +219,7 @@ export class ProjectMongoService {
     await this.projectMongoRepository.delete({ environment_id });
     } catch (e) {
       Logger.error(e);
+      throw new NotFoundException('Projects not found');
     }
   }
 }

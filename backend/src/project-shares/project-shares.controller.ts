@@ -43,7 +43,7 @@ export class ProjectSharesController {
   async create(
     @Body() createProjectShareDto: CreateProjectShareDto,
   ): Promise<ProjectSharesOutDto> {
-    return this.projectSharesService.create(createProjectShareDto);
+    return await this.projectSharesService.create(createProjectShareDto);
   }
 
   // Retrieve all project shares
@@ -54,7 +54,7 @@ export class ProjectSharesController {
   })
   @Get()
   async findAll(): Promise<ProjectSharesOutDto[]> {
-    return this.projectSharesService.findAll();
+    return await this.projectSharesService.findAll();
   }
 
   @Post('status/:id')
@@ -62,7 +62,7 @@ export class ProjectSharesController {
     @Param('id') id: string,
     @Body() updateProjectShareDto: Partial<ProjectShares>,
   ): Promise<ProjectShares | { message: string }> {
-    return this.projectSharesService.updateStatus(
+    return await this.projectSharesService.updateStatus(
       id,
       updateProjectShareDto.status,
     );
@@ -103,7 +103,7 @@ export class ProjectSharesController {
   })
   @Get('/project/:project_id')
   async findByProject(@Param('project_id') project_id: string): Promise<any[]> {
-    return this.projectSharesService.findByProject(project_id);
+    return await this.projectSharesService.findByProject(project_id);
   }
 
   // Retrieve project shares by user ID
@@ -114,7 +114,7 @@ export class ProjectSharesController {
   })
   @Get('/user/')
   async findByUser(@Request() req): Promise<ProjectSharesOutDto[]> {
-    return this.projectSharesService.findByUser({
+    return await this.projectSharesService.findByUser({
       username: req.user.username,
     });
   }
@@ -138,7 +138,7 @@ export class ProjectSharesController {
     @Param('id') id: string,
     @Request() req: any,
   ): Promise<ProjectShares> {
-    return this.projectSharesService.toggleFavorite(req.user.username, id);
+    return await this.projectSharesService.toggleFavorite(req.user.username, id);
   }
   // project criteria must be owner or contributor
   //
@@ -187,7 +187,7 @@ export class ProjectSharesController {
     @Param('id') id: string,
     @Body() updateProjectShareDto: Partial<UpdateProjectShareDto>,
   ): Promise<ProjectShares> {
-    return this.projectSharesService.update(id, updateProjectShareDto);
+    return await this.projectSharesService.update(id, updateProjectShareDto);
   }
   // Retrieve a specific project share by ID
   @ApiOperation({
@@ -196,7 +196,7 @@ export class ProjectSharesController {
   })
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<ProjectSharesOutDto> {
-    return this.projectSharesService.findOne(id);
+    return await this.projectSharesService.findOne(id);
   }
 
   // Delete a project share
@@ -207,6 +207,6 @@ export class ProjectSharesController {
   })
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
-    return this.projectSharesService.remove(id);
+    return await this.projectSharesService.remove(id);
   }
 }

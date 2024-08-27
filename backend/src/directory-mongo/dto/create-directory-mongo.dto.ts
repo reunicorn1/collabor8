@@ -4,6 +4,7 @@ import { BadRequestException } from '@nestjs/common';
 interface CreateDirectoryOutDto {
   name: string;
   parent_id: string;
+  project_id: string;
 }
 
 interface UpdateDirectoryOutDto {
@@ -17,7 +18,7 @@ function validateCreateDirectoryDto(dto: any): CreateDirectoryOutDto {
     throw new BadRequestException('Invalid input');
   }
 
-  const { name, parent_id } = dto;
+  const { name, parent_id, project_id } = dto;
 
   if (typeof parent_id !== 'string' || parent_id.trim() === '') {
     throw new BadRequestException('parent ID is required and must be a string');
@@ -29,9 +30,16 @@ function validateCreateDirectoryDto(dto: any): CreateDirectoryOutDto {
     );
   }
 
+  if (typeof project_id !== 'string' || project_id.trim() === '') {
+    throw new BadRequestException(
+      'Project ID is required and must be a string',
+    );
+  }
+
   return {
     name: name.trim(),
     parent_id: parent_id.trim(),
+    project_id: project_id.trim(),
   };
 }
 

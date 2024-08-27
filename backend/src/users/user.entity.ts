@@ -7,8 +7,6 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToMany,
-  // OneToOne,
-  // JoinColumn,
   JoinTable,
 } from 'typeorm';
 import { Projects } from '@projects/project.entity';
@@ -64,13 +62,6 @@ export class Users {
 
   @UpdateDateColumn()
   updated_at: Date;
-
-  // @OneToOne(() => EnvironmentMongo, (environment) => environment.user, {
-  //   nullable: true,
-  //   cascade: true,
-  // })
-  // @JoinColumn({ name: 'environment_id', referencedColumnName: '_id' })
-  // environment: EnvironmentMongo | null; // User's environment
 
   @OneToMany(() => Projects, (project) => project.owner)
   ownedProjects: Projects[]; // Projects owned by the user

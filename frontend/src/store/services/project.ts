@@ -1,5 +1,5 @@
 import { api } from './api';
-import { Project, CreateProjectDto, UpdateProjectDto } from '@types';
+import { Project, CreateProjectDto, UpdateProjectDto, ProjectWithMembers } from '@types';
 
 export const projectApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -29,7 +29,7 @@ export const projectApi = api.injectEndpoints({
     getAllProjectsPaginated: builder.query<
       {
         total: number;
-        projects: Project[];
+        projects: ProjectWithMembers[];
         page: number;
         limit: number;
         totalPages: number;

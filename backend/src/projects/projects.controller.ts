@@ -16,7 +16,9 @@ import { CreateProjectDto, UpdateProjectDto } from './dto/create-project.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import Docs from './projects.docs';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
-
+interface ProjectWithMembers extends Projects {
+  member_count: number;
+}
 @ApiBearerAuth()
 @ApiTags('Projects')
 @Controller('projects')
