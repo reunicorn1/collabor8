@@ -28,7 +28,12 @@ interface ModalProps {
   is_invited?: boolean;
 }
 
-export default function SignIn({ is_invited, isOpen, onClose, onSuccess }: ModalProps) {
+export default function SignIn({
+  is_invited,
+  isOpen,
+  onClose,
+  onSuccess,
+}: ModalProps) {
   const initialRef = useRef(null);
   const finalRef = useRef(null);
   const [username, setUsername] = useState('');
@@ -75,8 +80,8 @@ export default function SignIn({ is_invited, isOpen, onClose, onSuccess }: Modal
 
         // Custom error handling based on the response error message
         if (
-          err.data.message.includes('User with query') &&
-          err.data.message.includes('not found')
+          err.data?.message.includes('User with query') &&
+          err.data?.message.includes('not found')
         ) {
           if (username.trim() === '') {
             errorMessage = 'Username can’t be empty or just spaces. Try again!';
@@ -84,10 +89,10 @@ export default function SignIn({ is_invited, isOpen, onClose, onSuccess }: Modal
             errorMessage =
               'Invalid username or password. Double-check your creds!';
           }
-        } else if (err.data.message.includes('User is not verified')) {
+        } else if (err.data?.message.includes('User is not verified')) {
           errorMessage =
             'Account not verified. Check your email for the magic link.';
-        } else if (err.data.message.includes('Invalid password')) {
+        } else if (err.data?.message.includes('Invalid password')) {
           errorMessage =
             'Invalid username or password. Double-check your creds!';
         }

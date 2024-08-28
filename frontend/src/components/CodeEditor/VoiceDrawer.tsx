@@ -33,5 +33,6 @@ export default function VoiceDrawer({ isOpen, onClose }: ModalProps) {
         </VStack>
       </Box>
     </Draggable>
+
   );
 }

@@ -1,5 +1,10 @@
 import { api } from './api';
-import { Project, CreateProjectDto, UpdateProjectDto, ProjectWithMembers } from '@types';
+import {
+  Project,
+  CreateProjectDto,
+  UpdateProjectDto,
+  ProjectWithMembers,
+} from '@types';
 
 export const projectApi = api.injectEndpoints({
   endpoints: (builder) => ({
