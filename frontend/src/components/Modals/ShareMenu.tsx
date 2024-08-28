@@ -1,12 +1,10 @@
-import React, { useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useLocation, useParams } from 'react-router-dom';
-import { useToast } from '@chakra-ui/react';
 import {
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
+  Alert,
+  AlertIcon,
   ModalBody,
   Button,
   Heading,
@@ -20,14 +18,18 @@ import {
   InputGroup,
   Select,
   Divider,
+  useToast,
 } from '@chakra-ui/react';
+import React, { useRef } from 'react';
 import { FaLink } from 'react-icons/fa6';
+import { useLocation } from 'react-router-dom';
+import { useState } from 'react';
 import {
   useCreateProjectShareMutation,
   useGetProjectSharesByProjectIdQuery,
-  useInviteUserMutation,
   useUpdateProjectShareMutation,
 } from '@store/services/projectShare';
+import { useSelector } from 'react-redux';
 import { selectUserDetails } from '@store/selectors/userSelectors';
 import { Project, ProjectShares } from '@types';
 
@@ -37,8 +39,6 @@ interface ModalProps {
   project: Project | ProjectShares;
 }
 
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
 const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
   /**
    * TODO:
@@ -46,99 +46,93 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
    * 2- Display people who have access: if they are pending we display pending, if not we display their access mode
    * 3- Be able to toggle the menu button is enough to make a request to update the project share entity access level
    */
-
+  const url = import.meta.env.VITE_URL;
   const [createProjectShare] = useCreateProjectShareMutation();
-  const [inviteUser, { isLoading }] = useInviteUserMutation();
-  const [updateShares] = useUpdateProjectShareMutation();
-  const { data: shares, refetch } = useGetProjectSharesByProjectIdQuery(
+  const { data, refetch } = useGetProjectSharesByProjectIdQuery(
     project.project_id,
   );
+  const [updateShares] = useUpdateProjectShareMutation();
   const userDetails = useSelector(selectUserDetails);
-  const { projectId } = useParams();
-
   const finalRef = useRef(null);
-  const [isClicked, setClicked] = useState(false);
-  const [inviteeType, setInviteeType] = useState('');
-  const [inviteeValue, setInviteeValue] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [accessPermission, setAccessPermission] = useState('read');
+  const location = useLocation();
+  const [clicked, setClicked] = useState(false);
+  const [invitee, setInvitee] = useState('');
+  const [errmsg, setErrMsg] = useState('');
+  const [permission, setPermission] = useState('can edit');
   const toast = useToast();
 
+  // // This function handles copying the link to the clipboard
+  // const copyToClipboard = (text: string) => {
+  //   navigator.clipboard.writeText(text).then(
+  //     () => {
+  //       // Success feedback (optional)
+  //       console.log('Link copied to clipboard!');
+  //     },
+  //     (err) => {
+  //       // Error handling (optional)
+  //       console.error('Failed to copy the link: ', err);
+  //     },
+  //   );
+  // };
+
+  // This function handles clicking the "copy link" button
+  // const handleClick = () => {
+  //   console.log(`${url}${location.pathname}`);
+  //   copyToClipboard(`${url}${location.pathname}`);
+  //   setClicked(true);
+  // };
+
+  // This function handles closing the menu
   const handleClose = () => {
-    resetForm();
+    if (errmsg) setErrMsg('');
+    setClicked(false);
+    setInvitee('');
+    setPermission('can edit');
     onClose();
   };
 
-  const resetForm = () => {
-    setErrorMessage('');
-    setClicked(false);
-    setInviteeType('');
-    setAccessPermission('');
-  };
-
   const handleInvite = async () => {
-    if (inviteeType === 'email') {
-      handleEmailInvite();
-    } else {
-      handleUsernameInvite();
-    }
-  };
-
-  const handleEmailInvite = async () => {
-    if (!emailRegex.test(inviteeValue)) {
-      setErrorMessage('Please enter a valid email address.');
-      return;
-    }
-    setErrorMessage('');
-
-    try {
-      await inviteUser({
-        invitee_email: inviteeValue,
-        access_level: accessPermission,
-        project_id: projectId,
-        inviter_email: userDetails.email ?? userDetails.username,
-      }).unwrap();
-
-      toastSuccess('Email has been sent successfully to your partner');
-    } catch (error: any) {
-      toastError(`Oops, an error occurred: ${error.data?.message}`);
-    }
-  };
-
-  const handleUsernameInvite = async () => {
+    // TODO: info sent, email in the input plus the option selected in the menu
+    // This will be sent to an endpoint to send an email to this user about the invitation
+    // And also to notify the user in his email so he accepts the invitation. This function is triggered by clicking the invite button
     try {
       await createProjectShare({
         project_id: project.project_id,
-        access_level: accessPermission === 'can read' ? 'read' : 'write',
-        username: inviteeValue,
-        project_name: project.project_name,
+        access_level: permission === 'can read' ? 'read' : 'write',
+        username: invitee,
+        project_name: 'project',
       }).unwrap();
-
-      toastSuccess(
-        `User ${inviteeValue} has been invited to collaborate successfully`,
-      );
+      // The list of project shared should be updated with a refetch();
+      toast({
+        title: `User ${invitee} has been invited to collaborate successfully`,
+        variant: 'subtle',
+        position: 'bottom-right',
+        status: 'success',
+        isClosable: true,
+      });
       refetch();
-    } catch (error: any) {
-      handleInviteError(error);
+    } catch (err: any) {
+      console.log('Failed to send invitataion to the user', err);
+      if (err.status === 500) {
+        setErrMsg('This user is already a contributer in this project');
+      } else if (err.status === 404) {
+        setErrMsg("This user doesn't exist");
+      }
     }
   };
 
-  const handleInviteError = (error: any) => {
-    console.log('Failed to send invitation to the user', error);
-    if (error.status === 500) {
-      setErrorMessage('This user is already a contributor to this project');
-    } else if (error.status === 404) {
-      setErrorMessage("This user doesn't exist");
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInvitee(e.target.value);
+    if (errmsg) setErrMsg('');
   };
 
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setAccessPermission(event.target.value);
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPermission(e.target.value);
   };
 
-  const handlePermissionChange = async (
-    event: React.ChangeEvent<HTMLSelectElement>,
-    invitee: any,
+  const handleChangeInvtation = async (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    invitee,
   ) => {
     const permission = e.target.value === 'can edit' ? 'write' : 'read';
     await updateShares({
@@ -168,37 +162,64 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
               Share this project
             </Heading>
             <Spacer />
+            {/* <Button
+              size="sm"
+              variant="ghost"
+              color="orange"
+              leftIcon={<FaLink />}
+              _hover={{
+                color: 'black',
+                bg: 'white',
+              }}
+              onClick={handleClick}
+            >
+              {clicked ? `Link copied!` : `Copy link`}
+            </Button> */}
           </Flex>
         </ModalHeader>
         <ModalBody>
-          <Select
-            placeholder="Share project by"
-            size="sm"
-            color="orange"
-            value={inviteeType}
-            onChange={(e) => setInviteeType(e.target.value)}
-            mb="0.5rem"
-            className="!mb-2"
-            outline="white"
-          >
-            <option value="text">username</option>
-            <option value="email">email</option>
-          </Select>
-          {inviteeType && (
-            <InviteBy
-              type={inviteeType}
-              value={inviteeValue}
-              permission={accessPermission}
-              handlePermission={setAccessPermission}
-              handleInputChange={(e) => setInviteeValue(e.target.value)}
-              handleInvitation={handleInvite}
+          {/* <Alert status="info" bg="orange.200" fontSize="sm" mb={6}>
+            <AlertIcon color="orange.600" />
+            Sharing project via link only allow people to view
+          </Alert> */}
+          <InputGroup size="sm">
+            <Input
+              pr="4.5rem"
+              placeholder="Invite others by username"
+              fontFamily="mono"
+              value={invitee}
+              color="white"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange(e)
+              }
             />
-          )}
-          {errorMessage && (
-            <Text color="red.300" fontFamily="mono" fontSize="xs" mt={2}>
-              {errorMessage}
-            </Text>
-          )}
+            <InputRightElement width={invitee ? '8.8rem' : '3.25rem'} pr={1}>
+              {invitee && (
+                <Select
+                  size="sm"
+                  variant="unstyled"
+                  color="white"
+                  value={permission}
+                  onChange={handleSelectChange}
+                >
+                  <option value="can edit">can edit</option>
+                  <option value="can view">can view</option>
+                </Select>
+              )}
+              <Button
+                h="1.5rem"
+                size="sm"
+                onClick={handleInvite}
+                colorScheme="orange"
+                isDisabled={!invitee}
+              >
+                Invite
+              </Button>
+            </InputRightElement>
+          </InputGroup>
+          <Text color="red.300" fontFamily="mono" fontSize="xs" mt={2}>
+            {errmsg}
+          </Text>
           <Heading as="h6" size="xs" fontFamily="mono" color="gray" mt={6}>
             Who has access
           </Heading>
@@ -261,91 +282,5 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
     </Modal>
   );
 };
-
-const InviteBy = ({
-  type,
-  value,
-  permission,
-  handlePermission,
-  handleInputChange,
-  handleInvitation,
-}) => (
-  <InputGroup size="sm">
-    <Input
-      pr="4.5rem"
-      placeholder={`Invite others by ${type === 'text' ? 'username' : 'email'}`}
-      fontFamily="mono"
-      value={value}
-      color="white"
-      onChange={handleInputChange}
-      type={type}
-    />
-    <InputRightElement width={value ? '8.8rem' : '3.25rem'} pr={1}>
-      {value && (
-        <Select
-          size="sm"
-          variant="unstyled"
-          value={permission}
-          onChange={(e) => handlePermission(e.target.value)}
-          color="orange"
-        >
-          <option value="write">can edit</option>
-          <option value="read"> can view</option>
-        </Select>
-      )}
-      <Button
-        h="1.5rem"
-        size="sm"
-        onClick={handleInvitation}
-        colorScheme="orange"
-        isDisabled={!value}
-      >
-        Invite
-      </Button>
-    </InputRightElement>
-  </InputGroup>
-);
-
-const AccessList = ({ userDetails, shares, handlePermissionChange }) => (
-  <>
-    <Flex alignItems="center">
-      <Avatar
-        name={`${userDetails?.first_name} ${userDetails?.last_name}`}
-        src={userDetails?.profile_picture}
-        size="sm"
-      />
-      <Text m={3} fontSize="sm" color="white">
-        {`${userDetails?.first_name} ${userDetails?.last_name} (you)`}
-      </Text>
-      <Spacer />
-      <Text fontSize="sm" color="white" pr={4}>
-        owner
-      </Text>
-    </Flex>
-    {shares?.map((invitee, index) => (
-      <Flex alignItems="center" key={index}>
-        <Avatar
-          name={`${invitee?.first_name} ${invitee?.last_name}`}
-          src={invitee?.profile_picture}
-          size="sm"
-        />
-        <Text m={3} fontSize="sm" color="white">
-          {invitee?.username}
-        </Text>
-        <Spacer />
-        <Select
-          size="sm"
-          w="150px"
-          color="orange"
-          value={invitee?.access_level === 'write' ? 'can edit' : 'can view'}
-          onChange={(e) => handlePermissionChange(e, invitee)}
-        >
-          <option value="write">can edit</option>
-          <option value="read">can view</option>
-        </Select>
-      </Flex>
-    ))}
-  </>
-);
 
 export default ShareMenu;

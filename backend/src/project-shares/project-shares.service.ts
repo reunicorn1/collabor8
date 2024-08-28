@@ -1,4 +1,11 @@
-import { ConflictException, forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProjectShares } from './project-shares.entity';
@@ -30,19 +37,25 @@ export class ProjectSharesService {
   ) {}
 
   async memberCount(project_id: string): Promise<number> {
-    return await this.projectSharesRepository.createQueryBuilder('project_shares')
+    return await this.projectSharesRepository
+      .createQueryBuilder('project_shares')
       .where('project_shares.project_id = :project_id', { project_id })
       .getCount();
   }
 
-  async mapProjectShareData(projectShare: ProjectShares): Promise<ProjectSharesOutDto> {
+  async mapProjectShareData(
+    projectShare: ProjectShares,
+  ): Promise<ProjectSharesOutDto> {
     if (!projectShare) {
       throw new NotFoundException('Project share not found');
     }
-    const { created_at, updated_at, username, ...projectShareData } = projectShare;
+    const { created_at, updated_at, username, ...projectShareData } =
+      projectShare;
     const project = await this.projectsService.findOne(projectShare.project_id);
     const memberCount = await this.memberCount(projectShare.project_id);
-    const user = await this.usersService.findOneBy({ username: project.username });
+    const user = await this.usersService.findOneBy({
+      username: project.username,
+    });
     return {
       ...projectShareData, // share_id, project_id, user_id, favorite, access_level
       first_name: user.first_name,
@@ -64,7 +77,10 @@ export class ProjectSharesService {
     return await this.redisService.get(key);
   }
 
-  async getRoomToken(username: string, project_id: string): Promise<{
+  async getRoomToken(
+    username: string,
+    project_id: string,
+  ): Promise<{
     token: string;
     uid: string;
     channel: string;
@@ -98,28 +114,43 @@ export class ProjectSharesService {
     const delta = 12 * 60 * 60 * 1000;
     const expire_time = new Date(start_time.getTime() + delta);
     const privilegeExpiredTs = Math.floor(expire_time.getTime() / 1000);
-    const token = RtcTokenBuilder.buildTokenWithAccount(appId,
-      appCertificate, channelName,
-      account, role, privilegeExpiredTs);
+    const token = RtcTokenBuilder.buildTokenWithAccount(
+      appId,
+      appCertificate,
+      channelName,
+      account,
+      role,
+      privilegeExpiredTs,
+    );
     await this.cacheToken(token, channelName, delta);
 
     return { token, uid: user_id, channel: channelName };
-
-
   }
 
-  async partialSearch(query: string, username: string): Promise<ProjectSharesOutDto[]> {
-    const shares = await this.projectSharesRepository.createQueryBuilder('project_shares')
+  async partialSearch(
+    query: string,
+    username: string,
+  ): Promise<ProjectSharesOutDto[]> {
+    const shares = await this.projectSharesRepository
+      .createQueryBuilder('project_shares')
       .where('project_shares.username = :username', { username })
       .where('project_shares.username LIKE :query', { query: `%${query}%` })
       .getMany();
-    return await Promise.all(shares.map(async (projectShare) => {
-      return await this.mapProjectShareData(projectShare);
-    }));
+    return await Promise.all(
+      shares.map(async (projectShare) => {
+        return await this.mapProjectShareData(projectShare);
+      }),
+    );
   }
 
-  async getProjectShares(project_id: string, username: string): Promise<ProjectShares> {
-    return await this.projectSharesRepository.findOneBy({ project_id, username });
+  async getProjectShares(
+    project_id: string,
+    username: string,
+  ): Promise<ProjectShares> {
+    return await this.projectSharesRepository.findOneBy({
+      project_id,
+      username,
+    });
   }
 
   // Create a new project share
@@ -128,13 +159,17 @@ export class ProjectSharesService {
   ): Promise<ProjectSharesOutDto> {
     const parsedDto = parseCreateProjectDto(createProjectShareDto);
     if (parsedDto.username) {
-      const user = await this.usersService.findOneBy({ username: parsedDto.username });
+      const user = await this.usersService.findOneBy({
+        username: parsedDto.username,
+      });
       if (!user) {
         throw new NotFoundException('User not found');
       }
       parsedDto.user_id = user.user_id;
     } else if (parsedDto.user_id) {
-      const user = await this.usersService.findOneBy({ _id: parsedDto.user_id });
+      const user = await this.usersService.findOneBy({
+        _id: parsedDto.user_id,
+      });
       if (!user) {
         throw new NotFoundException('User not found');
       }
@@ -142,10 +177,12 @@ export class ProjectSharesService {
     }
     if (ObjectId.isValid(parsedDto.project_id)) {
       try {
-        const { project_id } = await this.projectsService.getMongoProject(parsedDto.project_id)
+        const { project_id } = await this.projectsService.getMongoProject(
+          parsedDto.project_id,
+        );
         parsedDto.project_id = project_id;
       } catch (err) {
-        throw new NotFoundException('Project not found!')
+        throw new NotFoundException('Project not found!');
       }
     }
     const project = await this.projectsService.findOne(parsedDto.project_id);
@@ -158,22 +195,22 @@ export class ProjectSharesService {
     }
 
     const newProjectShare = this.projectSharesRepository.create(parsedDto);
-    await this.projectSharesRepository.save(newProjectShare)
+    await this.projectSharesRepository.save(newProjectShare);
     console.log(newProjectShare);
     return await this.mapProjectShareData(newProjectShare);
   }
 
-
   // Retrieve all project shares
   async findAll(): Promise<ProjectSharesOutDto[]> {
     const shares = await this.projectSharesRepository.find();
-    return await Promise.all(shares.map(async (projectShare) => {
-      return await this.mapProjectShareData(projectShare);
-    }));
-
+    return await Promise.all(
+      shares.map(async (projectShare) => {
+        return await this.mapProjectShareData(projectShare);
+      }),
+    );
   }
 
-    async handleFavorite(username, favorite, project) {
+  async handleFavorite(username, favorite, project) {
     const user = await this.usersService.findOneBy({ username });
     if (favorite) {
       if (!user.favorite_shares) {
@@ -191,7 +228,9 @@ export class ProjectSharesService {
   }
 
   async toggleFavorite(username: string, id: string): Promise<ProjectShares> {
-    const project = await this.projectSharesRepository.findOneBy({ share_id: id });
+    const project = await this.projectSharesRepository.findOneBy({
+      share_id: id,
+    });
     if (!project) {
       throw new NotFoundException('Project not found');
     }
@@ -203,20 +242,27 @@ export class ProjectSharesService {
     await this.projectSharesRepository.save(project);
     return project;
   }
-  async updateStatus(id: string, status: string): Promise<ProjectShares | { message: string }> {
-    const projectShare = await this.projectSharesRepository.findOneBy({ share_id: id });
+  async updateStatus(
+    id: string,
+    status: string,
+  ): Promise<ProjectShares | { message: string }> {
+    const projectShare = await this.projectSharesRepository.findOneBy({
+      share_id: id,
+    });
     if (status !== 'accepted' && status !== 'rejected') {
       throw new Error('Invalid status');
     } else if (projectShare.status === 'rejected') {
       await this.projectSharesRepository.delete(id);
-      return { "message": "Project share has been deleted" };
+      return { message: 'Project share has been deleted' };
     }
     projectShare.status = status;
     return await this.projectSharesRepository.save(projectShare);
   }
 
   async findOneByQuery(query: any): Promise<ProjectSharesOutDto> {
-    return await this.mapProjectShareData(await this.projectSharesRepository.findOneBy(query));
+    return await this.mapProjectShareData(
+      await this.projectSharesRepository.findOneBy(query),
+    );
   }
 
   // Retrieve a specific project share by ID
@@ -225,19 +271,22 @@ export class ProjectSharesService {
   }
 
   async mapProjectUsers(shared_projects: ProjectShares[]): Promise<any[]> {
-    const users = await Promise.all(shared_projects.map(async (projectShare) => {
-      const user = await this.usersService.findOneBy({ username: projectShare.username });
-      return {
-        ...projectShare,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        username: user.username,
-        project_picture: user.profile_picture,
-      };
-    }));
+    const users = await Promise.all(
+      shared_projects.map(async (projectShare) => {
+        const user = await this.usersService.findOneBy({
+          username: projectShare.username,
+        });
+        return {
+          ...projectShare,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          username: user.username,
+          project_picture: user.profile_picture,
+        };
+      }),
+    );
     return users;
   }
-
 
   // Retrieve project shares by project ID
   async findByProject(project_id: string): Promise<any[]> {
@@ -245,7 +294,8 @@ export class ProjectSharesService {
     if (!originalProject) {
       throw new NotFoundException('Project not found');
     }
-    const shared_projects = await this.projectSharesRepository.createQueryBuilder('project_shares')
+    const shared_projects = await this.projectSharesRepository
+      .createQueryBuilder('project_shares')
       .where('project_shares.project_id = :project_id', { project_id })
       .getMany();
     console.log(shared_projects.length);
@@ -258,11 +308,12 @@ export class ProjectSharesService {
 
   async findAllByQuery(query: any): Promise<ProjectSharesOutDto[]> {
     const projectShares = await this.projectSharesRepository.find(query);
-    return await Promise.all(projectShares.map(async (projectShare) => {
-      return await this.mapProjectShareData(projectShare);
-    }));
+    return await Promise.all(
+      projectShares.map(async (projectShare) => {
+        return await this.mapProjectShareData(projectShare);
+      }),
+    );
   }
-
 
   async findAllByUsernamePaginated(
     username: string,
@@ -277,26 +328,26 @@ export class ProjectSharesService {
     Logger.log(`given input: ${username}, ${page}, ${limit}, ${sort}`);
     const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
     const sortDirection = sort.startsWith('-') ? 'DESC' : 'ASC';
-    const total = await this.projectSharesRepository.createQueryBuilder('project_shares')
+    const total = await this.projectSharesRepository
+      .createQueryBuilder('project_shares')
       .where('project_shares.username = :username', { username })
       .getCount();
-    const projects = await this.projectSharesRepository.createQueryBuilder('project_shares')
+    const projects = await this.projectSharesRepository
+      .createQueryBuilder('project_shares')
       .where('project_shares.username = :username', { username })
       .skip(skip)
       .take(limit)
       .orderBy(`project_shares.${sortField}`, sortDirection)
-      .getMany()
+      .getMany();
 
     console.log(projects);
-
 
     const mappedProjects = await Promise.all(
       projects.map(async (project) => {
         return this.mapProjectShareData(project);
-      })
+      }),
     );
     console.log(mappedProjects);
-
 
     return { total, projects: mappedProjects };
   }
@@ -312,29 +363,26 @@ export class ProjectSharesService {
 
   // Delete a project share
   async remove(id: string): Promise<void> {
-    if (!await this.projectSharesRepository.findOneBy({ share_id: id })) {
+    if (!(await this.projectSharesRepository.findOneBy({ share_id: id }))) {
       throw new NotFoundException('Project share not found');
     }
     await this.projectSharesRepository.delete(id);
   }
   async remove_project(id: string): Promise<void> {
-
     try {
-      if (!await this.projectsService.findOne(id)) {
+      if (!(await this.projectsService.findOne(id))) {
         throw new NotFoundException('Project not found');
       }
-      if (!await this.projectSharesRepository.findOneBy({ project_id: id })) {
+      if (!(await this.projectSharesRepository.findOneBy({ project_id: id }))) {
         throw new NotFoundException('Project share not found');
       }
       await this.projectSharesRepository.delete({ project_id: id });
-    }
-    catch (error) {
+    } catch (error) {
       Logger.error(error);
     }
   }
 
-
   async inviteeHasAccount(email: string): Promise<Partial<Users | null>> {
-    return await this.usersService.findByEmail({ email })
+    return await this.usersService.findByEmail({ email });
   }
 }

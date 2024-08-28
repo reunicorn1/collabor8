@@ -1,4 +1,3 @@
-import React, { ReactNode } from 'react';
 import {
   Menu,
   MenuButton,
@@ -9,60 +8,90 @@ import {
   Avatar,
   Box,
   Text,
+  Icon,
+  Badge,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { BsBell } from 'react-icons/bs';
 
-type DBMenuProps = {
-  children: ReactNode;
+type BellMenuProps = {
+  invitations: Array<{
+    _id: string;
+    profile_picture: string;
+    first_name: string;
+    last_name: string;
+    username: string;
+    project_name: string;
+  }>;
+  notificationCount: number;
+  onApprove: (id: string) => void;
+  onDecline: (id: string) => void;
 };
 
 // Provide this component with a list of shared items either pass it as a prop or make the call for it here
 // in a useEffect, whenever the user accepts or reject you can either remove the inivitation or re-render the list
-export default function BellMenu({ children }: DBMenuProps) {
-  const [shared, setShared] = useState(['item']);
-
-  const handleClick = (value, id) => {
-    // Handle the click of one of the buttons of the invitation
-    // Suggestion, value is the status of the invitation, and id is the project share id to be updated
-    console.log(value, id);
-  };
-
+export default function BellMenu({
+  invitations,
+  notificationCount,
+  onApprove,
+  onDecline,
+}: BellMenuProps) {
   return (
     <Menu>
-      <MenuButton>{children}</MenuButton>
+      <MenuButton position="relative">
+        <Icon color="white" ml={4} boxSize="16px" as={BsBell} />
+        {notificationCount > 0 && (
+          <Badge
+            position="absolute"
+            top="-1px"
+            right="-1px"
+            borderRadius="full"
+            bgColor="red.500"
+            color="white"
+            fontSize="7px"
+            h="12px"
+            w="12px"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            {notificationCount}
+          </Badge>
+        )}
+      </MenuButton>
       <MenuList maxH="350px" overflowY="auto">
-        {!shared.length ? (
+        {invitations.length === 0 ? (
           <MenuItem>No Notifications to be displayed</MenuItem>
         ) : (
-          <>
-            {/* This is the part where you will map through a list of pending shared invitations */}
-            <MenuItem _hover={{ bg: 'orange.100' }}>
+          invitations.map((inv) => (
+            <MenuItem key={inv._id} _hover={{ bg: 'orange.100' }}>
               <Flex maxW="300px" gap={4} alignItems="center">
-                <Avatar size="md" src="" />
+                <Avatar size="md" src={inv.profile_picture} />
                 <Box>
                   <Text fontSize="xs">
-                    <b>Mohamed Elfadil</b> has requested to have you as a
-                    contributor
+                    <b>
+                      {inv.first_name} {inv.last_name}
+                    </b>{' '}
+                    has requested to have you as a contributor
                   </Text>
                   <Text mt={1} color="gray.600" fontSize="xs">
-                    <b>Project name</b>
+                    <b>{inv.project_name}</b>
                   </Text>
                   <Flex mt={2} gap={3}>
                     <Tag
                       colorScheme="green"
                       size="md"
-                      onClick={() => handleClick('Approved', 1)}
+                      onClick={() => onApprove(inv._id)}
                     >
                       Approve
                     </Tag>
-                    <Tag size="md" onClick={() => handleClick('Declined', 2)}>
+                    <Tag size="md" onClick={() => onDecline(inv._id)}>
                       Decline
                     </Tag>
                   </Flex>
                 </Box>
               </Flex>
             </MenuItem>
-          </>
+          ))
         )}
       </MenuList>
     </Menu>

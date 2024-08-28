@@ -8,25 +8,98 @@ import {
   Button,
   ButtonGroup,
   IconButton,
-  Badge,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
-import { BsBell } from 'react-icons/bs';
-import { ChevronDownIcon } from '@chakra-ui/icons';
+import { AddIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import DBMenu from '../Dashboard/DBMenu';
 import BellMenu from '@components/Dashboard/BellMenu';
 import NewProject from '@components/Modals/NewProject';
 import { useNavigate } from 'react-router-dom';
 import { selectUserDetails } from '@store/selectors/userSelectors';
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import {
+  useGetUserProjectSharesQuery,
+  useUpdateProjectShareMutation,
+} from '@store/services/projectShare';
 
 export default function DashboardBar() {
-  const [notificationCount, setNotificationCount] = useState(1);
+  const [invitations, setInvitations] = useState([]);
+  const [notificationCount, setNotificationCount] = useState(0);
   const userDetails = useSelector(selectUserDetails);
+  const userId = userDetails?.user_id || '';
+  const { data: userProjectShares } = useGetUserProjectSharesQuery(userId);
+  const [updateProjectShare] = useUpdateProjectShareMutation();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userProjectShares) {
+      const pendingInvitations = userProjectShares.filter(
+        (share) => share.status === 'pending',
+      );
+      setInvitations(pendingInvitations);
+      setNotificationCount(pendingInvitations.length);
+    }
+  }, [userProjectShares]);
+
+  const handleApproval = async (id) => {
+    try {
+      await updateProjectShare({ id, data: { status: 'approved' } }).unwrap();
+      setInvitations((prev) => prev.filter((inv) => inv._id !== id));
+      setNotificationCount((prev) => prev - 1);
+      toast({
+        title: 'Approval Confirmed',
+        description: 'You have successfully onboarded a new contributor! 🎉',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+        variant: 'subtle',
+      });
+    } catch (error) {
+      console.error('Failed to approve invitation:', error);
+      toast({
+        title: 'Approval Failed',
+        description: 'Oops! Something went wrong. Please try again. 🛠️',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+        variant: 'subtle',
+      });
+    }
+  };
+
+  const handleDecline = async (id) => {
+    try {
+      await updateProjectShare({ id, data: { status: 'declined' } }).unwrap();
+      setInvitations((prev) => prev.filter((inv) => inv._id !== id));
+      setNotificationCount((prev) => prev - 1);
+      toast({
+        title: 'Invitation Declined',
+        description: "You've declined the request. Maybe next time! 👋",
+        status: 'info',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+        variant: 'subtle',
+      });
+    } catch (error) {
+      console.error('Failed to decline invitation:', error);
+      toast({
+        title: 'Decline Failed',
+        description: 'Something went wrong while declining the invitation. ⚙️',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+        variant: 'subtle',
+      });
+    }
+  };
 
   return (
     <Flex
@@ -42,7 +115,7 @@ export default function DashboardBar() {
         ml={3}
         cursor="pointer"
         onClick={() => navigate('/dashboard')}
-      ></Image>
+      />
       <Spacer />
       <ButtonGroup size="xs" isAttached variant="outline" onClick={onOpen}>
         <Button
@@ -60,30 +133,12 @@ export default function DashboardBar() {
         />
       </ButtonGroup>
 
-      <BellMenu>
-        <Box position="relative">
-          <Icon color="white" ml={4} boxSize="16px" as={BsBell} />
-          {notificationCount > 0 && (
-            <Badge
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              textAlign="center"
-              position="absolute"
-              top="-1px"
-              right="-1px"
-              borderRadius="full"
-              bgColor="red.500"
-              color="white"
-              fontSize="7px"
-              h="12px"
-              w="12px"
-            >
-              {notificationCount}
-            </Badge>
-          )}
-        </Box>
-      </BellMenu>
+      <BellMenu
+        invitations={invitations}
+        notificationCount={notificationCount}
+        onApprove={handleApproval}
+        onDecline={handleDecline}
+      />
 
       <Box display="flex" alignItems="center">
         <DBMenu>

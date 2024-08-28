@@ -1,3 +1,4 @@
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { Grid, GridItem, Box, Text, Divider, useToast } from '@chakra-ui/react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
@@ -43,7 +44,7 @@ export default function Editor() {
   );
 
   useEffect(() => {
-    if (fetchError && fetchError.status === 404) {
+    if ('status' in fetchError && fetchError.status === 404) {
       setError('Project not found');
       toast({
         title: 'Project Not Found',
