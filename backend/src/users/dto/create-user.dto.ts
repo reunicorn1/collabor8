@@ -102,12 +102,12 @@ function validateCreateUserDto(
   const password_hash = encryptPwd(password);
 
   const validated: any = {
-    username: username.trim(),
+    username: username.trim().toLowerCase(),
     first_name: first_name.trim(),
     last_name: last_name.trim(),
-    email: email.trim(),
+    email: email.trim().toLowerCase(),
     password_hash: password_hash.trim(),
-    favorite_languages: favorite_languages.map((lang) => lang.trim()),
+    favorite_languages: favorite_languages.map((lang) => lang.trim().toLowerCase()),
     profile_picture: profile_picture ? profile_picture?.trim() : undefined,
     bio: bio ? bio.trim() : undefined,
   };
@@ -138,7 +138,7 @@ function validateLoginUserDto(dto: any): LoginUserDto {
   }
 
   return {
-    username: username.trim(),
+    username: username.trim().toLowerCase(),
     password: password.trim(),
   };
 }
