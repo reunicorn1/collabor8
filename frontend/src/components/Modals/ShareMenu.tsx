@@ -145,7 +145,6 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
     e: React.ChangeEvent<HTMLSelectElement>,
     invitee,
   ) => {
-    console.log('You selected', e.target.value);
     const permission = e.target.value === 'can edit' ? 'write' : 'read';
     await updateShares({
       id: invitee.share_id,
@@ -224,7 +223,6 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
             </Flex>
             {/* This is a list of all contributors with their access mode as a toggle which sends a request when changed */}
             {data?.map((invitee, index) => {
-              console.log(invitee);
               return (
                 <Flex alignItems="center" key={index}>
                   <Avatar

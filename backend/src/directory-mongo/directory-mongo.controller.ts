@@ -1,4 +1,13 @@
-import { Controller, Delete, Get, Param, Post, Body, Request, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Body,
+  Request,
+  Patch,
+} from '@nestjs/common';
 import { DirectoryMongoService } from './directory-mongo.service';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -29,7 +38,6 @@ export class DirectoryMongoController {
   async findOne(@Param('id') id: string) {
     return await this.dirService.findOne(id);
   }
-
 
   @DirDocs.update()
   @Patch(':id')

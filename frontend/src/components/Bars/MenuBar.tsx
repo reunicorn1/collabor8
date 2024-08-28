@@ -1,13 +1,27 @@
-import { Flex, Button, Spacer, IconButton, Text, Box } from '@chakra-ui/react';
+import {
+  Flex,
+  Spacer,
+  IconButton,
+  Text,
+  Box,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import { MdBuild } from 'react-icons/md';
-import { IoChatbubbleEllipsesOutline } from 'react-icons/io5';
 import { PiGithubLogo } from 'react-icons/pi';
+import { MdOutlineKeyboardVoice } from 'react-icons/md';
 import { GoHome } from 'react-icons/go';
 import { LanguageSelector, ThemeSelector } from '../CodeEditor';
 import { useSettings } from '../../context/EditorContext';
+import ComingSoon from '@components/CodeEditor/ComingSoon';
+import VoiceDrawer from '@components/CodeEditor/VoiceDrawer';
 
 export default function MenuBar() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenV,
+    onOpen: onOpenV,
+    onClose: onCloseV,
+  } = useDisclosure();
   const navigate = useNavigate();
   const { mode } = useSettings()!;
 
@@ -44,7 +58,7 @@ export default function MenuBar() {
         <Text color="white" fontSize="xs" ml={2}>
           {mode ? `Read Mode` : `Write Mode`}
         </Text>
-        <Button
+        {/* <Button
           leftIcon={<MdBuild />}
           size="xs"
           colorScheme="yellow"
@@ -52,7 +66,7 @@ export default function MenuBar() {
           ml={8}
         >
           Run
-        </Button>
+        </Button> */}
         <IconButton
           isRound={true}
           color="white"
@@ -61,7 +75,8 @@ export default function MenuBar() {
           aria-label="Done"
           fontSize="18px"
           size="xs"
-          icon={<IoChatbubbleEllipsesOutline />}
+          icon={<MdOutlineKeyboardVoice />}
+          onClick={onOpenV}
           ml={2}
         />
         <IconButton
@@ -74,9 +89,12 @@ export default function MenuBar() {
           size="xs"
           ml={1}
           mr={2}
+          onClick={onOpen}
           icon={<PiGithubLogo />}
         />
       </Flex>
+      <ComingSoon isOpen={isOpen} onClose={onClose} />
+      <VoiceDrawer isOpen={isOpenV} onClose={onCloseV} />
     </div>
   );
 }

@@ -31,7 +31,7 @@ export default function Shares({ project }: SharesProps) {
         flexDirection="column"
         alignItems="center"
       >
-        {Array.from(awareness).map(([_, value], index) => (
+        {Array.from(awareness)?.map(([_, value], index) => (
           <>
             <Tooltip key={index} label={value['user'].name} placement="bottom">
               <Avatar name={value['user'].name} size="md" m={1} />

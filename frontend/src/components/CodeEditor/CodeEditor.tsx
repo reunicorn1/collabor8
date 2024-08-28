@@ -62,7 +62,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
   // effects for socket provider and awareness
   useEffect(() => {
     const websocket = import.meta.env.VITE_WS_SERVER;
-    console.log('project info', project);
     if (!editorRef.current) return;
 
     // Creation of the connction with the websocket
@@ -85,8 +84,17 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
       console.log('%c======================>', 'background:white;color:red', {
         status: event.status,
       }); // logs "connected" or "disconnected"
+      if (event.status === 'connected') {
+        // Awareness information related to the presence of the user's cursor
+        awareness.current = provider.awareness;
+        awareness.current.setLocalStateField('user', {
+          name: user?.username || getRandomUsername(),
+          color: RandomColor(),
+        });
+
+      }
     });
-    console.log('this is provider', provider);
+
     // An event listener to clean up once the user is removed
     provider.on('close', () => {
       provider.awareness.setLocalState(null); // Removes the local awareness state
@@ -107,7 +115,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
     };
     updateAwareness();
 
-    //Observations and changes to awarness are tracked using these observers
+    // Observations and changes to awarness are tracked using these observers
     awareness.current.on('update', ({ added, removed }) => {
       if (awareness.current) {
         // Log added users
@@ -130,6 +138,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
         }
       }
     });
+
     // Clean up before the user leaves
     window.addEventListener('beforeunload', () => {
       provider.awareness.setLocalState(null);

@@ -1,4 +1,11 @@
-import { Injectable, Inject, forwardRef, Logger, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  forwardRef,
+  Logger,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DirectoryMongo } from './directory-mongo.entity';
@@ -21,7 +28,7 @@ export class DirectoryMongoService {
     private fileService: FileMongoService,
     @Inject(forwardRef(() => ProjectsService))
     private projectService: ProjectsService,
-  ) { }
+  ) {}
 
   async create(
     createDirectoryDto: CreateDirectoryOutDto,
@@ -33,7 +40,7 @@ export class DirectoryMongoService {
         name: parsedDto.name,
       },
     });
-    if (conflict) {
+    if (conflict.length) {
       throw new ConflictException('Directory already exists');
     }
     const newDirectory = this.directoryRepository.create({
@@ -106,16 +113,21 @@ export class DirectoryMongoService {
     id: string,
     updateDirectoryDto: UpdateDirectoryOutDto,
   ): Promise<DirectoryMongo> {
+    console.log('this is id of dir', id);
     const parsedDto = parseUpdateDirectoryMongoDto(updateDirectoryDto);
     const directory = await this.findOne(id);
     if (!directory) {
       throw new Error('Directory not found');
     }
+    const query: { name?: string; parent_id?: string } = {};
+    if (parsedDto.name) query.name = parsedDto.name;
+    if (parsedDto.parent_id) {
+      query.parent_id = parsedDto.parent_id;
+    } else {
+      query.parent_id = directory.parent_id;
+    }
     const conflict = await this.directoryRepository.findOne({
-      where: {
-        name: parsedDto.name ? parsedDto.name : directory.name,
-        parent_id: parsedDto.parent_id ? parsedDto.parent_id : directory.parent_id,
-      },
+      where: query,
     });
     if (conflict) {
       throw new ConflictException('Directory already exists');
@@ -127,6 +139,8 @@ export class DirectoryMongoService {
       }
     }
     directory.updated_at = new Date();
+    console.log('dir object', directory);
+    console.log('parent + project', directory.parent_id, directory.project_id);
     if (directory.parent_id === directory.project_id) {
       await this.projectService.update(directory.parent_id, {
         updated_at: new Date(),
@@ -158,8 +172,7 @@ export class DirectoryMongoService {
       files.map(async (file) => {
         try {
           await this.fileService.remove(file._id.toString());
-        }
-        catch (e) {
+        } catch (e) {
           Logger.error(e);
           throw new NotFoundException('File not found');
         }
