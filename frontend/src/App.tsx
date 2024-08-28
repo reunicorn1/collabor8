@@ -14,26 +14,38 @@ import {
 } from '@pages/index';
 import './App.css';
 import InviteGuest from '@components/Invite';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from '@components/ProtectedRoute';
 
 const App: React.FC = () => {
   useAuthRefresh();
   useLogOut();
 
   return (
-    <>
-      {/* <NavigationBar /> */}
+    <AuthProvider>
+      {' '}
+      {/* Wrap the whole app with AuthProvider */}
       <Routes>
-        <Route path="/mission" element={<About />}></Route>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/dashboard" element={<Dashboard />}></Route>
-        <Route path="/profile" element={<Profile />}></Route>
-        <Route path="/editor/:projectId" element={<Editor />}></Route>
+        <Route path="/mission" element={<About />} />
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/dashboard"
+          element={<ProtectedRoute element={<Dashboard />} />}
+        />
+        <Route
+          path="/profile"
+          element={<ProtectedRoute element={<Profile />} />}
+        />
+        <Route
+          path="/editor/:projectId"
+          element={<ProtectedRoute element={<Editor />} />}
+        />
         <Route path="/reset-password" element={<ResetPasswordModal />} />
         <Route path="/verify" element={<Verify />} />
         <Route path="/invite" element={<InviteGuest />} />
-        <Route path="*" element={<NotFound />}></Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
-    </>
+    </AuthProvider>
   );
 };
 
