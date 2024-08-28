@@ -50,12 +50,15 @@ const NewfileDir: React.FC<ModalProps> = ({
   // const root = ydoc.getMap('root'); // This gets the value of the root if created before
   const [createFile] = useCreateFileMutation();
   const [createDir] = useCreateDirectoryMutation();
+  const [errmsg, setErrMsg] = useState('');
 
   const { data, set } = useYMap<any, any>(root); // Type Error
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(e.target.value);
+    if (errmsg) setErrMsg('');
   };
+
   const handleSave = async () => {
     // TODO: Validation of the name in the database among sibling files should be made from database
     let id = null;
@@ -81,6 +84,7 @@ const NewfileDir: React.FC<ModalProps> = ({
           })
           .catch((err) => {
             console.error(err);
+            setErrMsg(err.data.message);
           });
       } else {
         await createDir({
@@ -95,6 +99,7 @@ const NewfileDir: React.FC<ModalProps> = ({
           })
           .catch((err) => {
             console.error(err);
+            setErrMsg(err.data.message);
           });
       }
       console.log('this is the id created =================>', { id });
@@ -126,10 +131,11 @@ const NewfileDir: React.FC<ModalProps> = ({
         }
       }
     }
-    handleClose();
+    if (!errmsg) handleClose();
   };
 
   const handleClose = () => {
+    if (errmsg) setErrMsg('');
     setNewName('');
     onClose();
   };
@@ -148,18 +154,19 @@ const NewfileDir: React.FC<ModalProps> = ({
           </ModalHeader>
           <ModalCloseButton color="white" />
           <ModalBody pb={4}>
-            <FormControl>
-              <Divider mb={7} />
-              <Input
-                ref={initialRef}
-                fontFamily="mono"
-                color="white"
-                fontSize="sm"
-                value={newName}
-                onChange={handleChange}
-                placeholder={`Choose your ${filedir} name`}
-              />
-            </FormControl>
+            <Divider mb={7} />
+            <Input
+              ref={initialRef}
+              fontFamily="mono"
+              color="white"
+              fontSize="sm"
+              value={newName}
+              onChange={handleChange}
+              placeholder={`Choose your ${filedir} name`}
+            />
+            <Text color="red.300" fontFamily="mono" fontSize="xs" mt={2}>
+              {errmsg}
+            </Text>
           </ModalBody>
 
           <ModalFooter mb={4}>
