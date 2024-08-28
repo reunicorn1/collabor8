@@ -71,7 +71,7 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
         pt={1}
         pb={1}
         _hover={{ bg: 'brand.800' }}
-        bg={fileSelected?.id === entry.id ? '#41335C' : 'transparennt'}
+        bg={fileSelected?.id === entry.id ? '#41335C' : 'transparent'}
         display="flex"
         alignItems="center"
         cursor="pointer"
@@ -98,15 +98,22 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
             alt="file icon"
           />
         )}
-        <Text fontFamily="mono" fontSize="xs" pl={2}>
-          {entry.type === 'directory' ? entry.name : entry.name}
+        <Text
+          fontFamily="mono"
+          fontSize="xs"
+          pl={2}
+          overflow="hidden"
+          textOverflow="ellipsis"
+          whiteSpace="nowrap"
+          flex="20"
+        >
+          {entry.name}
         </Text>
-
         <Spacer />
         <OptionsMenu
           type={entry.type}
           id={entry.id}
-          name={entry.name || entry.name}
+          name={entry.name}
           ydoc={ydoc}
         />
       </Box>

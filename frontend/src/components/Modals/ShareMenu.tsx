@@ -140,39 +140,22 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
     event: React.ChangeEvent<HTMLSelectElement>,
     invitee: any,
   ) => {
-    const newPermission = event.target.value === 'can edit' ? 'write' : 'read';
-
-    try {
-      await updateShares({
-        id: invitee.share_id,
-        data: { access_level: newPermission },
-      }).unwrap();
-
-      refetch();
-      console.log('Access level has been changed');
-    } catch (error: any) {
-      console.error('An error occurred while updating the access level', error);
-    }
-  };
-
-  const toastSuccess = (message: string) => {
-    toast({
-      title: 'Project Invitation',
-      description: message,
-      variant: 'subtle',
-      status: 'success',
-      position: 'bottom-left',
-    });
-  };
-
-  const toastError = (message: string) => {
-    toast({
-      title: 'Project Invitation',
-      description: message,
-      variant: 'subtle',
-      status: 'error',
-      position: 'bottom-left',
-    });
+    const permission = e.target.value === 'can edit' ? 'write' : 'read';
+    await updateShares({
+      id: invitee.share_id,
+      data: { access_level: permission },
+    })
+      .unwrap()
+      .then((_) => {
+        refetch();
+        console.log('Access level has been changed');
+      })
+      .catch((err) => {
+        console.log(
+          'An error occured during updating the access level of this user',
+          err,
+        );
+      });
   };
 
   return (
@@ -221,11 +204,57 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
           </Heading>
           <Divider opacity={0.5} mt={2} mb={2} />
           <Box mt={3} mb={3}>
-            <AccessList
-              userDetails={userDetails}
-              shares={shares}
-              handlePermissionChange={handlePermissionChange}
-            />
+            <Flex alignItems="center">
+              <Avatar
+                name={`${userDetails?.first_name} ${userDetails?.last_name}`}
+                src={userDetails?.profile_picture}
+                size="sm"
+              />
+              <Text m={3} fontSize="sm" color="white">
+                {`${userDetails?.first_name} ${userDetails?.last_name} (you)`}
+              </Text>
+              <Spacer />
+              <Text fontSize="sm" color="white" pr={4}>
+                owner
+              </Text>
+            </Flex>
+            {/* This is a list of all contributors with their access mode as a toggle which sends a request when changed */}
+            {data?.map((invitee, index) => {
+              return (
+                <Flex alignItems="center" key={index}>
+                  <Avatar
+                    name={`${invitee?.first_name} ${invitee?.last_name}`}
+                    src={invitee?.profile_picture}
+                    size="sm"
+                  />
+                  <Text m={3} fontSize="sm" color="white">
+                    {`${invitee?.first_name} ${invitee?.last_name}`}
+                  </Text>
+                  <Spacer />
+                  {invitee?.status === 'pending' ? (
+                    <Text fontSize="sm" color="white">
+                      {invitee?.status}
+                    </Text>
+                  ) : (
+                    <Select
+                      w="5.5rem"
+                      size="sm"
+                      variant="unstyled"
+                      color="white"
+                      value={
+                        invitee?.access_level === 'write'
+                          ? 'can edit'
+                          : 'can view'
+                      }
+                      onChange={(e) => handleChangeInvtation(e, invitee)}
+                    >
+                      <option value="can edit">can edit</option>
+                      <option value="can view">can view</option>
+                    </Select>
+                  )}
+                </Flex>
+              );
+            })}
           </Box>
         </ModalBody>
       </ModalContent>

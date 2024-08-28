@@ -1,13 +1,15 @@
-interface FileNode {
+export interface FileNode {
   type: 'file';
   id: string;
   name: string;
+  parent: string;
 }
 
-interface DirectoryNode {
-  type: 'directory';
+export interface DirectoryNode {
+  type: 'directory' | 'project';
   id: string;
   name: string;
+  parent: string;
   children?: (FileNode | DirectoryNode)[];
 }
 

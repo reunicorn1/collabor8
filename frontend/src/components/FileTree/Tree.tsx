@@ -92,7 +92,7 @@ const Tree: React.FC<TreeProps> = ({ ydoc, name }) => {
         ydoc={ydoc}
         parent={projectId}
       />
-      <Box bg="brand.900" h="100%" overflow="scroll">
+      <Box bg="brand.900" h="100%" overflow="hidden">
         <FileTreeView data={data} ydoc={ydoc} />
       </Box>
     </>

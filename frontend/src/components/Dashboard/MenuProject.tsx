@@ -30,7 +30,6 @@ export default function MenuProject({ children, project }: DBMenuProps) {
   const [updateProject] = useUpdateProjectMutation();
   const [deleteProject] = useDeleteProjectMutation();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  console.log(project);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -63,7 +62,7 @@ export default function MenuProject({ children, project }: DBMenuProps) {
     e.stopPropagation();
     await updateProject({
       id: project.project_id,
-      data: { ...project, favorite: true },
+      data: { description: 'hi hello 4' },
     })
       .unwrap()
       .then((_) => {
