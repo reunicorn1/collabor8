@@ -16,6 +16,7 @@ import { CreateProjectDto, UpdateProjectDto } from './dto/create-project.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import Docs from './projects.docs';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
+import { ProjectSharesOutDto } from '@project-shares/dto/create-project-shares.dto';
 interface ProjectWithMembers extends Projects {
   member_count: number;
 }
@@ -147,7 +148,7 @@ export class ProjectsController {
 
   @Docs.findOne()
   @Get(':id')
-  async findOne(@Param('id') id: string, @Request() req): Promise<Projects> {
+  async findOne(@Param('id') id: string, @Request() req): Promise<Projects | ProjectSharesOutDto> {
     return await this.projectsService.findMyProject(id, req.user.username);
   }
 
