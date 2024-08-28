@@ -22,6 +22,7 @@ import {
 } from './dto/create-project.dto';
 import { validate as uuidValidate } from 'uuid';
 import { ProjectSharesService } from '@project-shares/project-shares.service';
+import { ProjectSharesOutDto } from '@project-shares/dto/create-project-shares.dto';
 
 interface ProjectWithMembers extends Projects {
   member_count: number;
@@ -214,10 +215,10 @@ export class ProjectsService {
     return await this.wrapProject(project);
   }
 
-  async findMyProject(id:string, username: string): Promise<Projects> {
+  async findMyProject(id:string, username: string): Promise<Projects | ProjectSharesOutDto> {
     const IDS = await this.getIds(id);
     if (!IDS.project_id) {
-      const project = await this.projectsRepository.findOneBy({ _id: id, username: username });
+      const project = await this.projectsRepository.findOneBy({ _id: IDS._id, username: username });
       console.log('project 1', project);
       if (!project) {
         const projectShare = await this.projectSharesService.findOneByQuery({ _id: id, username: username });
@@ -225,6 +226,7 @@ export class ProjectsService {
         if (!projectShare) {
           throw new NotFoundException('Project not found');
         }
+        return projectShare;
       }
       return await this.wrapProject(project);
     }

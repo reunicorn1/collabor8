@@ -34,7 +34,7 @@ export class ProjectSharesService {
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => RedisService))
     private readonly redisService: RedisService,
-  ) {}
+  ) { }
 
   async memberCount(project_id: string): Promise<number> {
     return await this.projectSharesRepository
@@ -127,15 +127,10 @@ export class ProjectSharesService {
     const delta = 12 * 60 * 60 * 1000;
     const expire_time = new Date(start_time.getTime() + delta);
     const privilegeExpiredTs = Math.floor(expire_time.getTime() / 1000);
-    const token = RtcTokenBuilder.buildTokenWithAccount(
-      appId,
-      appCertificate,
-      channelName,
-      account,
-      role,
-      privilegeExpiredTs,
-    );
-    await this.cacheToken(token, channelName, delta);
+    const token = RtcTokenBuilder.buildTokenWithAccount(appId,
+      appCertificate, channelName,
+      account, role, privilegeExpiredTs);
+    await this.cacheToken(token, `${channelName}${user_id}`, delta);
 
     return { token, uid: user_id, channel: channelName };
   }
