@@ -44,7 +44,7 @@ export default function Editor() {
   );
 
   useEffect(() => {
-    if ('status' in fetchError && fetchError.status === 404) {
+    if (fetchError && 'status' in fetchError && fetchError.status === 404) {
       setError('Project not found');
       toast({
         title: 'Project Not Found',
