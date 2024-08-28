@@ -48,7 +48,7 @@ export default function DashboardBar() {
   const handleApproval = async (id) => {
     try {
       await updateProjectShare({ id, data: { status: 'accepted' } }).unwrap();
-      setInvitations((prev) => prev.filter((inv) => inv._id !== id));
+      setInvitations((prev) => prev.filter((inv) => inv.share_id !== id));
       setNotificationCount((prev) => prev - 1);
       toast({
         title: 'Approval Confirmed',
@@ -76,7 +76,7 @@ export default function DashboardBar() {
   const handleDecline = async (id) => {
     try {
       await updateProjectShare({ id, data: { status: 'rejected' } }).unwrap();
-      setInvitations((prev) => prev.filter((inv) => inv._id !== id));
+      setInvitations((prev) => prev.filter((inv) => inv.share_id !== id));
       setNotificationCount((prev) => prev - 1);
       toast({
         title: 'Invitation Declined',

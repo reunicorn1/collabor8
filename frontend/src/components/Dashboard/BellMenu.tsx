@@ -15,7 +15,7 @@ import { BsBell } from 'react-icons/bs';
 
 type BellMenuProps = {
   invitations: Array<{
-    _id: string;
+    share_id: string;
     profile_picture: string;
     first_name: string;
     last_name: string;
@@ -63,7 +63,7 @@ export default function BellMenu({
           <MenuItem>No Notifications to be displayed</MenuItem>
         ) : (
           invitations.map((inv) => (
-            <MenuItem key={inv._id} _hover={{ bg: 'orange.100' }}>
+            <MenuItem key={inv.share_id} _hover={{ bg: 'orange.100' }}>
               <Flex maxW="300px" gap={4} alignItems="center">
                 <Avatar size="md" src={inv.profile_picture} />
                 <Box>
@@ -80,11 +80,11 @@ export default function BellMenu({
                     <Tag
                       colorScheme="green"
                       size="md"
-                      onClick={() => onApprove(inv._id)}
+                      onClick={() => onApprove(inv.share_id)}
                     >
                       Approve
                     </Tag>
-                    <Tag size="md" onClick={() => onDecline(inv._id)}>
+                    <Tag size="md" onClick={() => onDecline(inv.share_id)}>
                       Decline
                     </Tag>
                   </Flex>
