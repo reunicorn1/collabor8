@@ -57,7 +57,7 @@ export class ProjectSharesController {
     return await this.projectSharesService.findAll();
   }
 
-  @Post('status/:id')
+  @Patch('status/:id')
   async updateStatus(
     @Param('id') id: string,
     @Body() updateProjectShareDto: Partial<ProjectShares>,

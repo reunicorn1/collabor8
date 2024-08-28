@@ -21,7 +21,7 @@ import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import {
   useGetUserProjectSharesQuery,
-  useUpdateProjectShareMutation,
+  useUpdateStatusMutation,
 } from '@store/services/projectShare';
 
 export default function DashboardBar() {
@@ -30,7 +30,7 @@ export default function DashboardBar() {
   const userDetails = useSelector(selectUserDetails);
   const userId = userDetails?.user_id || '';
   const { data: userProjectShares } = useGetUserProjectSharesQuery(userId);
-  const [updateProjectShare] = useUpdateProjectShareMutation();
+  const [updateShareStatus] = useUpdateStatusMutation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ export default function DashboardBar() {
 
   const handleApproval = async (id) => {
     try {
-      await updateProjectShare({ id, data: { status: 'accepted' } }).unwrap();
+      await updateShareStatus({ id, status: 'accepted' }).unwrap();
       setInvitations((prev) => prev.filter((inv) => inv._id !== id));
       setNotificationCount((prev) => prev - 1);
       toast({
@@ -75,7 +75,7 @@ export default function DashboardBar() {
 
   const handleDecline = async (id) => {
     try {
-      await updateProjectShare({ id, data: { status: 'rejected' } }).unwrap();
+      await updateShareStatus({ id, status: 'rejected' }).unwrap();
       setInvitations((prev) => prev.filter((inv) => inv._id !== id));
       setNotificationCount((prev) => prev - 1);
       toast({

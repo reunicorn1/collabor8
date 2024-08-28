@@ -81,6 +81,14 @@ export const projectShareApi = api.injectEndpoints({
       }),
       invalidatesTags: ['ProjectShare'],
     }),
+    updateStatus: builder.mutation<ProjectShares | {message: string }, { id: string; status: string }>({
+      query: ({ id, status }) => ({
+        url: `/project-shares/status/${id}`,
+        method: 'PATCH',
+        body: { status },
+      }),
+      invalidatesTags: ['ProjectShare'],
+    }),
     // Invite a user to collaborate on a project
     inviteUser: builder.mutation<
       void,
@@ -127,4 +135,5 @@ export const {
   useLazyInviteGuestQuery,
   useToggleShareFavoriteMutation,
   useFindMyShareQuery,
+  useUpdateStatusMutation,
 } = projectShareApi;

@@ -254,17 +254,21 @@ export class ProjectSharesService {
     id: string,
     status: string,
   ): Promise<ProjectShares | { message: string }> {
+    Logger.warn(`status: ${status}`);
     const projectShare = await this.projectSharesRepository.findOneBy({
       share_id: id,
     });
+    if (!projectShare) {
+      throw new NotFoundException('Project share not found');
+    }
     if (status !== 'accepted' && status !== 'rejected') {
       throw new Error('Invalid status');
-    } else if (projectShare.status === 'rejected') {
+    } else if (status === 'rejected') {
       await this.projectSharesRepository.delete(id);
       return { message: 'Project share has been deleted' };
     }
-    projectShare.status = status;
-    return await this.projectSharesRepository.save(projectShare);
+    await this.projectSharesRepository.update(id, { status });
+    return { message: 'Project share has been updated' };
   }
 
   async findOneByQuery(query: any): Promise<ProjectSharesOutDto> {
