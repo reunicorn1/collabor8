@@ -21,7 +21,6 @@ const ydoc = new Y.Doc();
 export default function Editor() {
   // The only thing to fix my issues is to avoid using context and use direct passing instead
 
-  const [isDragging, setIsDragging] = useState(false);
   const location = useLocation();
   const { projectId } = useParams<{ projectId: string }>();
   const [project, setProject] = useState<any>(null); // State to hold project data
@@ -98,25 +97,23 @@ export default function Editor() {
                   }}
                 />
                 <Panel>
-                  <PanelGroup direction="vertical"
-                  style={{
-                    minHeight: '100%',
-                    maxHeight: '100%',
-                    minWidth: '100%',
-                    maxWidth: '650px',
-                    overflow: 'hidden',
+                  <PanelGroup
+                    direction="vertical"
+                    style={{
+                      minHeight: '100%',
+                      maxHeight: '100%',
+                      minWidth: '100%',
+                      maxWidth: '650px',
+                      overflow: 'hidden',
                     }}
                   >
-                    <Panel minSize={20}
-
-
-                    >
+                    <Panel minSize={20}>
                       <CodeEditor project={project} ydoc={ydoc} />
                     </Panel>
                     <PanelResizeHandle
                       style={{ backgroundColor: 'grey', height: '2px' }}
                     />
-                      </PanelGroup>
+                  </PanelGroup>
                 </Panel>
 
                 {/* Bottom Panel */}

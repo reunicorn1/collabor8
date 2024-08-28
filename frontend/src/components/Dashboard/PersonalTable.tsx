@@ -148,7 +148,7 @@ export default function PersonalTable() {
                     <Td>3 Members TBD</Td>
                     <Td>{date.toDateString()}</Td>
                     <Td>
-                      <MenuProject project={project}>
+                      <MenuProject project={project} type={'personal'}>
                         <HiDotsHorizontal />
                       </MenuProject>
                     </Td>

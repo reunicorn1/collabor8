@@ -209,25 +209,20 @@ useEffect(() => {
 }, [autoJoin]);
 
 return (
-  <Flex direction="column" align="center" >
+  <Flex direction="column" align="center">
     <Flex
       id="join-wrapper"
-      direction="column"
       align="center"
       justify="center"
       display={joined ? 'none' : 'flex'}
-      p={4}
     >
-      <Heading mb={4}>You are in the waiting room</Heading>
-      <Text fontSize="xl" mb={4}>
-        Click the button below to join the meeting
-      </Text>
       <Button
-        colorScheme="teal"
-        size="lg"
+        colorScheme="orange"
+        size="sm"
+        fontFamily="mono"
         onClick={joinRoom}
       >
-        Join
+        Join Voice Call
       </Button>
     </Flex>
     <Flex
@@ -237,6 +232,8 @@ return (
       align="center"
       justify="center"
       p={4}
+      pt={0}
+      pb={0}
       gap={4}
     >
       <IconButton

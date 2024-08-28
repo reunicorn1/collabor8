@@ -17,7 +17,9 @@ import createfiletree from '../../utils/filetreeinit';
 import Tabs from './Tabs';
 import { useAppSelector } from '../../hooks/useApp';
 import { selectAccessToken, selectUserDetails } from '@store/selectors';
+import { useFindMyShareQuery } from '@store/services/projectShare';
 import { Project, ProjectShares } from '@types';
+import { useSelector } from 'react-redux';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -35,6 +37,9 @@ interface CodeEditorProps {
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
+  const userDetails = useSelector(selectUserDetails);
+  const { data } = useFindMyShareQuery(project._id);
+  console.log(data);
   const { theme, language, mode, setMode } = useSettings()!;
   const token = useAppSelector(selectAccessToken);
   const user = useAppSelector(selectUserDetails);
@@ -46,12 +51,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
   const awareness = useRef<Awareness | null>(null);
 
   projectRoot.current = ydoc_.current.getMap(project._id);
-  // createfiletree(projectRoot.current); // This initlizes the filetree metadata structure
 
-  // An event listener for updates happneing in the ydoc
-  ydoc_.current.on('update', (update) => {
-    // console.log('Yjs update', update);
-  });
   // A function to create a binding between file selected from the file tree and the editor
   const setupCodemirrorBinding = (text: Y.Text) => {
     return new CodemirrorBinding(text, editorRef.current!, awareness.current, {
@@ -61,6 +61,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
 
   // effects for socket provider and awareness
   useEffect(() => {
+    if (project?.username !== userDetails?.username) {
+      setMode(data?.access_level === 'read');
+    } else {
+      setMode(false);
+    }
+    // Creating a connection with the web socket
     const websocket = import.meta.env.VITE_WS_SERVER;
     if (!editorRef.current) return;
 
@@ -91,7 +97,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
           name: user?.username || getRandomUsername(),
           color: RandomColor(),
         });
-
       }
     });
 
@@ -162,14 +167,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
       fileSelected.value instanceof Y.Text
     ) {
       try {
-        setMode(false);
         binding.current?.destroy();
         binding.current = setupCodemirrorBinding(fileSelected.value);
       } catch (err) {
         console.error('Error occured during binding, but this is serious', err);
       }
     } else {
-      setMode(true);
       console.error('Error occured during binding of the file', fileSelected);
     }
   }, [fileSelected]);

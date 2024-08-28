@@ -62,7 +62,7 @@ export const projectApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Project'],
     }),
-    toggleFavorite: builder.mutation<Project, boolean>({
+    toggleFavorite: builder.mutation<void, string>({
       query: (id) => ({
         url: `/projects/favorites/${id}`,
         method: 'PATCH',

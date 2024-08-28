@@ -54,7 +54,7 @@ export const projectShareApi = api.injectEndpoints({
         `/project-shares/page?page=${page}&limit=${limit}&sort=${sort}`,
       providesTags: ['ProjectShare'],
     }),
-    toggleFavorite: builder.mutation<ProjectShares, boolean>({
+    toggleShareFavorite: builder.mutation<void, string>({
       query: (id) => ({
         url: `/project-shares/favorites/${id}`,
         method: 'PATCH',
@@ -84,7 +84,12 @@ export const projectShareApi = api.injectEndpoints({
     // Invite a user to collaborate on a project
     inviteUser: builder.mutation<
       void,
-      { project_id: string; inviter_email: string; invitee_email: string, access_level: string }
+      {
+        project_id: string;
+        inviter_email: string;
+        invitee_email: string;
+        access_level: string;
+      }
     >({
       query: ({ project_id, inviter_email, invitee_email, access_level }) => ({
         url: `/project-shares/invite/${project_id}?access_level=${access_level}`,
@@ -97,12 +102,13 @@ export const projectShareApi = api.injectEndpoints({
     }),
     inviteGuest: builder.query<
       { has_account: boolean } & { [k: string]: string },
-      { project_id: string; invitee_email: string, access_level: string }>({
-        query: ({ project_id, invitee_email, access_level }) => ({
-          url: `/project-shares/invite/${project_id}`,
-          params: { invitee_email, access_level },
-        }),
+      { project_id: string; invitee_email: string; access_level: string }
+    >({
+      query: ({ project_id, invitee_email, access_level }) => ({
+        url: `/project-shares/invite/${project_id}`,
+        params: { invitee_email, access_level },
       }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -119,6 +125,6 @@ export const {
   useInviteUserMutation,
   useGetRoomTokenQuery,
   useLazyInviteGuestQuery,
-  useToggleFavoriteMutation,
+  useToggleShareFavoriteMutation,
   useFindMyShareQuery,
 } = projectShareApi;

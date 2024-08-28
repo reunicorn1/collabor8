@@ -25,9 +25,12 @@ import AllProjects from '../components/Dashboard/AllProjects';
 import { useSelector } from 'react-redux';
 import { selectUserDetails } from '@store/selectors';
 import { useNavigate } from 'react-router-dom';
+import { useGetUserByFavoritesQuery } from '@store/services/user';
 
 export default function DashboardPage() {
   const userDetails = useSelector(selectUserDetails);
+  const obj = useGetUserByFavoritesQuery();
+  console.log('favorites', obj);
   const [clicked, setClicked] = useState('Home');
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
