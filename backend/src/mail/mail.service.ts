@@ -42,7 +42,7 @@ export class MailService extends WorkerHost {
           template: './reset-password', // `.hbs` extension is appended automatically
           context: {
             name: job.data.username,
-            url: `${env[process.env.NODE_ENV]}/reset-password`,
+            url: `${job.data.url}`,
           },
         });
       }

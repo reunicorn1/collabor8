@@ -176,7 +176,7 @@ export class ProjectSharesService {
       parsedDto.user_id = user.user_id;
     } else if (parsedDto.user_id) {
       const user = await this.usersService.findOneBy({
-        _id: parsedDto.user_id,
+        user_id: parsedDto.user_id,
       });
       if (!user) {
         throw new NotFoundException('User not found');
