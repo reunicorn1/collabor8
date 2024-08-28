@@ -8,18 +8,22 @@ import {
   Button,
   ButtonGroup,
   IconButton,
+  Badge,
   useDisclosure,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { BsBell } from 'react-icons/bs';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import DBMenu from '../Dashboard/DBMenu';
+import BellMenu from '@components/Dashboard/BellMenu';
 import NewProject from '@components/Modals/NewProject';
 import { useNavigate } from 'react-router-dom';
 import { selectUserDetails } from '@store/selectors/userSelectors';
 import { useSelector } from 'react-redux';
+import { useState } from 'react';
 
 export default function DashboardBar() {
+  const [notificationCount, setNotificationCount] = useState(1);
   const userDetails = useSelector(selectUserDetails);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
@@ -55,7 +59,32 @@ export default function DashboardBar() {
           icon={<AddIcon />}
         />
       </ButtonGroup>
-      <Icon color="white" ml={4} boxSize="16px" as={BsBell} />
+
+      <BellMenu>
+        <Box position="relative">
+          <Icon color="white" ml={4} boxSize="16px" as={BsBell} />
+          {notificationCount > 0 && (
+            <Badge
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              textAlign="center"
+              position="absolute"
+              top="-1px"
+              right="-1px"
+              borderRadius="full"
+              bgColor="red.500"
+              color="white"
+              fontSize="7px"
+              h="12px"
+              w="12px"
+            >
+              {notificationCount}
+            </Badge>
+          )}
+        </Box>
+      </BellMenu>
+
       <Box display="flex" alignItems="center">
         <DBMenu>
           <Avatar
