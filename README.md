@@ -1,5 +1,3 @@
-Here's a professional README for your portfolio project, **Collabor8**:
-
 # Collabor8
 
 Collabor8 is a web-based collaborative code editor that empowers multiple users to edit code simultaneously in real-time. Built using a robust tech stack of React, Nest.js, and Socket.io, Collabor8 offers seamless, real-time collaboration for coding enthusiasts and professionals alike. The application features syntax highlighting, code formatting, and a rich user interface to enhance the coding experience.
