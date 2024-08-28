@@ -56,7 +56,7 @@ export class UsersController {
 
   @Get('me/favorites')
   async getUserFavorites(@Request() req): Promise<UserFavorite> {
-    return this.usersService.getUserFavorites(req.user.username);
+    return await this.usersService.getUserFavorites(req.user.username);
   }
 
   // endpoints for other non-admin users

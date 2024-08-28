@@ -218,10 +218,6 @@ return (
       display={joined ? 'none' : 'flex'}
       p={4}
     >
-      <Heading mb={4}>You are in the waiting room</Heading>
-      <Text fontSize="xl" mb={4}>
-        Click the button below to join the meeting
-      </Text>
       <Button
         colorScheme="teal"
         size="lg"
