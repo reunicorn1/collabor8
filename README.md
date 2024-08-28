@@ -1,152 +1,197 @@
-# collabor8
-The Collaborative Code Editor is a web-based application that enables multiple
-users to edit code simultaneously in real-time. The application is built using
-React, Nest.js, and Socket.io. The frontend is built using React and the
-backend is built using Nest.js. The frontend and backend communicate using
-Socket.io to enable real-time collaboration. The application also supports
-syntax highlighting and code formatting.
+Here's a professional README for your portfolio project, **Collabor8**:
+
+# Collabor8
+
+Collabor8 is a web-based collaborative code editor that empowers multiple users to edit code simultaneously in real-time. Built using a robust tech stack of React, Nest.js, and Socket.io, Collabor8 offers seamless, real-time collaboration for coding enthusiasts and professionals alike. The application features syntax highlighting, code formatting, and a rich user interface to enhance the coding experience.
 
 ## Table of Contents
 
+1. [About Collabor8](#about-collabor8)
+2. [Technologies Used](#technologies-used)
+3. [Running the Project](#running-the-project)
+   - [Prerequisites](#prerequisites)
+   - [Setup](#setup)
+   - [Running the Application](#running-the-application)
+   - [Running Individually](#running-individually)
+   - [Stopping the Application](#stopping-the-application)
+   - [Checking the Status](#checking-the-status)
+   - [Cleaning Dependencies](#cleaning-dependencies)
+   - [Running Tests](#running-tests)
+   - [Docker](#docker)
+   - [Project Information](#project-information)
+   - [Help](#help)
+4. [Team](#team)
 
+## About Collabor8
+
+Collabor8 is designed to simplify the collaborative coding process by providing a platform where multiple developers can work together in real-time. The application ensures smooth interaction and communication between the frontend and backend through Socket.io, delivering an efficient and interactive coding environment. 
+
+## Technologies Used
+
+- **Frontend**: ReactJS
+- **Backend**: NestJS
+- **Real-time Communication**: Socket.io
+- **Styling**: Chakra UI
 
 ## Running the Project
 
-This project consists of both a frontend (ReactJS) and a backend (NestJS) application. 
+Collabor8 consists of both a frontend (ReactJS) and a backend (NestJS) application. To run the project, a `Makefile` is provided that utilizes `tmux` to manage sessions efficiently, allowing for easy development and testing.
 
-To run the project, you can use the provided `Makefile`, which utilizes `tmux` to manage the sessions.
+### Prerequisites
 
-This `Makefile` provides a convenient way to manage your development workflow, from setting up the 
-environment to running, stopping, and testing the application.
-Here’s how to get started:
+Ensure you have the following installed on your system:
 
-#### Prerequisites
-
-Before running the project, make sure you have the following installed on your system:
 - **tmux**: A terminal multiplexer.
 - **npm**: Node.js package manager.
 
-You can verify their installation using:
+Verify installation using:
+
 ```bash
 tmux -V
 npm -v
 ```
 
-If any of the prerequisites are missing, the setup process will attempt to install them.
+The setup process will attempt to install any missing prerequisites.
 
-#### Setup
+### Setup
 
-To install the necessary dependencies and set up the project, run:
+Install the necessary dependencies and set up the project by running:
+
 ```bash
 make setup
 ```
 
-This command will install `tmux` and `npm` if they are not already installed and will 
-install all necessary dependencies for both the frontend and backend.
+This command installs `tmux` and `npm` if not already installed and sets up all required dependencies for both the frontend and backend.
 
-#### Running the Application
+### Running the Application
 
-To run both the frontend and backend in separate `tmux` sessions, use:
+Run both the frontend and backend in separate `tmux` sessions:
+
 ```bash
 make run
 ```
 
 This command starts:
-- **ReactJS** in a `tmux` session named `ReactJS`.
-- **NestJS** in a `tmux` session named `NestJS`.
 
-#### Running Individually
+- **ReactJS**: In a `tmux` session named `ReactJS`.
+- **NestJS**: In a `tmux` session named `NestJS`.
 
-If you want to run only the frontend or backend, you can use the following commands:
+### Running Individually
 
-- To run the frontend:
+To run only the frontend or backend:
+
+- **Frontend**:
   ```bash
   make run_react
   ```
 
-- To run the backend:
+- **Backend**:
   ```bash
   make run_nest
   ```
 
-#### Stopping the Application
+### Stopping the Application
 
-To stop both the frontend and backend `tmux` sessions, use:
+To stop both frontend and backend sessions:
+
 ```bash
 make stop
 ```
 
-If you want to stop only one of the sessions:
-- To stop the frontend session:
+To stop individual sessions:
+
+- **Frontend**:
   ```bash
   make stop_react
   ```
-- To stop the backend session:
+
+- **Backend**:
   ```bash
   make stop_nest
   ```
 
-#### Checking the Status
+### Checking the Status
 
-To list all running `tmux` sessions, use:
+List all running `tmux` sessions:
+
 ```bash
 make list
 ```
 
-To check the status of the sessions:
+Check the status of the sessions:
+
 ```bash
 make status
 ```
 
-#### Cleaning Dependencies
+### Cleaning Dependencies
 
-To remove and reinstall all dependencies:
+Remove and reinstall all dependencies:
+
 ```bash
 make clean
 ```
 
-#### Running Tests
+### Running Tests
 
-To run tests for both the frontend and backend:
+Run tests for both the frontend and backend:
+
 ```bash
 make test
 ```
 
-You can also run tests individually:
-- For frontend tests:
+Run tests individually:
+
+- **Frontend**:
   ```bash
   make test_frontend
   ```
-- For backend tests:
+
+- **Backend**:
   ```bash
   make test_backend
   ```
 
-#### Docker
+### Docker
 
-To build Docker images for the frontend and backend:
+Build Docker images for the frontend and backend:
+
 ```bash
 make docker-build
 ```
 
-To push these Docker images to a repository:
+Push these Docker images to a repository:
+
 ```bash
 make docker-push
 ```
 
-#### Project Information
+### Project Information
 
-To view project version and scripts:
+View project version and scripts:
+
 ```bash
 make version
 make info
 ```
 
-#### Help
+### Help
 
-To display all available commands:
+Display all available commands:
+
 ```bash
 make help
 ```
 
+## Team
 
+Collabor8 is developed and maintained by a dedicated team of software engineers:
+
+- Mohamed Elfadil Ali
+- Abdallah Abdelrahman
+- Mohannad Babeker
+- Reem Osama
+
+---
+
+By following these instructions, you can efficiently set up, run, and manage the Collabor8 project. For any additional support or inquiries, feel free to reach out to our team. Happy coding! 🚀
