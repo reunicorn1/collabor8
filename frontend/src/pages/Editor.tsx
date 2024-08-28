@@ -98,30 +98,25 @@ export default function Editor() {
                   }}
                 />
                 <Panel>
-                  <PanelGroup direction="vertical">
-                    <Panel minSize={20}>
+                  <PanelGroup direction="vertical"
+                  style={{
+                    minHeight: '100%',
+                    maxHeight: '100%',
+                    minWidth: '100%',
+                    maxWidth: '650px',
+                    overflow: 'hidden',
+                    }}
+                  >
+                    <Panel minSize={20}
+
+
+                    >
                       <CodeEditor project={project} ydoc={ydoc} />
                     </Panel>
                     <PanelResizeHandle
                       style={{ backgroundColor: 'grey', height: '2px' }}
                     />
-                    <Panel defaultSize={20}>
-                      <Box bg="brand.800" h="100%">
-                        <Box bg="brand.900">
-                          <Text
-                            fontSize="xs"
-                            color="white"
-                            fontFamily="mono"
-                            p={3}
-                          >
-                            Output
-                            <Mapped />
-                          </Text>
-                        </Box>
-                        <Divider color="grey" />
-                      </Box>
-                    </Panel>
-                  </PanelGroup>
+                      </PanelGroup>
                 </Panel>
 
                 {/* Bottom Panel */}

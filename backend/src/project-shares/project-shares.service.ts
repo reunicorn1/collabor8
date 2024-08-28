@@ -35,6 +35,19 @@ export class ProjectSharesService {
       .getCount();
   }
 
+  async findMyShare(username: string, project_id: string): Promise<ProjectShares> {
+    const IDS = await this.projectsService.getIds(project_id);
+    if (IDS.project_id) {
+      const projectShare = await this.projectSharesRepository.findOneBy({ project_id: IDS.project_id, username });
+      return projectShare;
+    } else if (IDS._id) {
+      const projectShare = await this.projectSharesRepository.findOneBy({ _id: IDS._id, username });
+      return projectShare;
+    }
+    throw new NotFoundException('Project not found');
+  }
+
+
   async mapProjectShareData(projectShare: ProjectShares): Promise<ProjectSharesOutDto> {
     if (!projectShare) {
       throw new NotFoundException('Project share not found');

@@ -32,6 +32,9 @@ export const projectShareApi = api.injectEndpoints({
       query: (_id) => `/project-shares/project/${_id}`,
       providesTags: ['ProjectShare'],
     }),
+    findMyShare: builder.query<ProjectShares, string>({
+      query: (project_id) => `/project-shares/me/${project_id}`,
+    }),
     // Retrieve project shares by user ID
     getUserProjectShares: builder.query<ProjectShares[], string>({
       query: () => `/project-shares/user/`,
@@ -117,4 +120,5 @@ export const {
   useGetRoomTokenQuery,
   useLazyInviteGuestQuery,
   useToggleFavoriteMutation,
+  useFindMyShareQuery,
 } = projectShareApi;

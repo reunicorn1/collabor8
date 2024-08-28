@@ -39,12 +39,12 @@ body {
 }
 
 .react-codemirror2 {
-  overflow: scroll;
+  overflow: hidden;
+}
+.CodeMirror {
+  min-height: 765px;
 }
 
-.CodeMirror {
-  min-height: 678px;
-}
 
 .selectors {
   flex: 0 0 12rem;
@@ -57,9 +57,7 @@ body {
   overflow: auto;
 }
 
-.CodeMirror {
-  min-height: 678px;
-}
+
 
 /* HTML: <div class="loader"></div> */
 .loader {

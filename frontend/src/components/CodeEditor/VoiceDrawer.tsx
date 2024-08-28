@@ -12,6 +12,8 @@ import {
   VStack,
   Box,
 } from '@chakra-ui/react';
+import Draggable from 'react-draggable';
+import  RoomComponent  from '@components/Audio/RoomComponent';
 
 interface ModalProps {
   isOpen: boolean;
@@ -20,11 +22,10 @@ interface ModalProps {
 
 export default function VoiceDrawer({ isOpen, onClose }: ModalProps) {
   return (
+  <Draggable>
     <Box
       position="fixed"
-      left="50%"
-      bottom={isOpen ? '0' : `-${10}`}
-      transform="translateX(-225%)"
+      bottom={isOpen ? '0' : `-${150}`}
       width="290px"
       height="150px"
       maxHeight="90vh"
@@ -37,10 +38,12 @@ export default function VoiceDrawer({ isOpen, onClose }: ModalProps) {
       overflowY="auto"
     >
       <VStack spacing={4}>
+        <RoomComponent onClose={onClose} />
         <Button variant="outline" color="white" onClick={onClose}>
           Close
         </Button>
       </VStack>
     </Box>
+  </Draggable>
   );
 }

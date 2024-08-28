@@ -134,6 +134,15 @@ export class ProjectSharesController {
     return await this.projectSharesService.findByProject(project_id);
   }
 
+
+  @Get('/me/:project_id')
+  async findMyShare(
+    @Param('project_id') project_id: string,
+    @Request() req,
+  ): Promise<ProjectShares> {
+    return await this.projectSharesService.findMyShare(req.user.username, project_id);
+  }
+
   // Retrieve project shares by user ID
   @ApiOperation({
     summary: 'Retrieve project shares by user ID',
