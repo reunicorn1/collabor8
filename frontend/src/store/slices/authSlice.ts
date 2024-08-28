@@ -73,7 +73,8 @@ const authSlice = createSlice({
         (state, action) => {
           state.accessToken = action.payload.accessToken;
           setAccessToken(action.payload.accessToken);
-        });
+        },
+      );
   },
 });
 

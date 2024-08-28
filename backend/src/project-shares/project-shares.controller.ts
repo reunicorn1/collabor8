@@ -32,7 +32,7 @@ export class ProjectSharesController {
   constructor(
     private readonly projectSharesService: ProjectSharesService,
     @InjectQueue('mailer') private mailerQueue: Queue,
-  ) { }
+  ) {}
 
   // Create a new project share
   @ApiOperation({
@@ -85,7 +85,8 @@ export class ProjectSharesController {
      * swagger docs
      */
     let has_account = null;
-    const user = await this.projectSharesService.inviteeHasAccount(invitee_email)
+    const user =
+      await this.projectSharesService.inviteeHasAccount(invitee_email);
     if (user) has_account = user.username;
 
     await this.mailerQueue.add('invitation', {
@@ -108,7 +109,12 @@ export class ProjectSharesController {
     @Param('project_id') project_id: string,
     @Response() res,
   ): Promise<any> {
-    console.log('-------------------->', { invitee_email, access_level, project_id, has_account });
+    console.log('-------------------->', {
+      invitee_email,
+      access_level,
+      project_id,
+      has_account,
+    });
     //const user = await this.projectSharesService.inviteeHasAccount(invitee_email)
     //let has_account = false;
     if (has_account) {
@@ -150,14 +156,10 @@ export class ProjectSharesController {
   // generate agora token
   @ApiOperation({
     summary: 'Generate Agora Token',
-    description:
-      'Generate Agora Token for a specific project share by its ID.',
+    description: 'Generate Agora Token for a specific project share by its ID.',
   })
   @Get('room/token/:id')
-  async getRoomToken(
-    @Param('id') id: string,
-    @Request() req,
-  ): Promise<any> {
+  async getRoomToken(@Param('id') id: string, @Request() req): Promise<any> {
     return await this.projectSharesService.getRoomToken(req.user.username, id);
   }
 
@@ -166,7 +168,10 @@ export class ProjectSharesController {
     @Param('id') id: string,
     @Request() req: any,
   ): Promise<ProjectShares> {
-    return await this.projectSharesService.toggleFavorite(req.user.username, id);
+    return await this.projectSharesService.toggleFavorite(
+      req.user.username,
+      id,
+    );
   }
   // project criteria must be owner or contributor
   //

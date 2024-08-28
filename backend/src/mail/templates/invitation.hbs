@@ -26,6 +26,14 @@
             font-size: 24px;
             margin-bottom: 20px;
         }
+        p {
+            margin-bottom: 20px;
+        }
+        a {
+            color: #007acc;
+            text-decoration: none;
+            font-weight: bold;
+        }
         .footer {
             font-size: 0.875em;
             color: #777;
@@ -38,17 +46,36 @@
         .app-name span {
             color: #E86044;
         }
+        .code-block {
+            background-color: #f4f4f4;
+            border-left: 3px solid #007acc;
+            padding: 10px;
+            margin: 20px 0;
+            font-size: 1.1em;
+            font-family: 'Source Code Pro', monospace;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>You have recieved collaboration invite from {{inviter_email}}</h1>
+        <h1>Hello Code Ninja,</h1>
         <p>
-			Please follow the <a href={{ url }}>link</a> down below to start collaborating.
-		</p>
-        <p>If this wasn’t you, just ignore this email and keep coding the good code!</p>
-        
-        <p class="footer">Cheers,<br>The <span class="app-name">collabor<span>8</span></span> Team</p>
+            🥁 Exciting news! You've been invited to collaborate on a project by <strong>{{inviter_email}}</strong>.
+        </p>
+        <p>
+            🚀 Ready to dive in? Click the <a href="{{url}}">link</a> below to start your coding adventure with us:
+        </p>
+        <div class="code-block">
+            <code>{{url}}</code>
+        </div>
+        <p>
+            If this wasn’t you or you’re not ready to join the code quest, just ignore this email and keep coding the good code!
+        </p>
+        <p class="footer">
+            Keep on coding,<br>
+            The <span class="app-name">collabor<span>8</span></span> Team
+        </p>
     </div>
 </body>
 </html>
+

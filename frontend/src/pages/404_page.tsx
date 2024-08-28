@@ -6,8 +6,10 @@ import {
   keyframes,
   usePrefersReducedMotion,
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 export default function NotFoundPage() {
+  const navigate = useNavigate();
   const prefersReducedMotion = usePrefersReducedMotion();
 
   // Keyframes for the scanning animation
@@ -70,29 +72,30 @@ export default function NotFoundPage() {
       {/* Main content */}
       <Box zIndex={2} p={6} maxWidth="600px">
         <Heading as="h1" size="2xl" color="#E86044" mb={4}>
-          {' '}
           Error 404
         </Heading>
         <Text className="output" fontSize="lg" mb={4} color="#E86044">
-          {' '}
           The page you are looking for might have been removed, had its name
-          changed or is temporarily unavailable.
+          changed, or is temporarily unavailable.
+        </Text>
+        <Text
+          className="output"
+          fontSize="lg"
+          mb={4}
+          color="#E86044"
+          _hover={{ textDecoration: 'underline', cursor: 'pointer' }}
+          onClick={() => navigate(-1)}
+        >
+          Go back
         </Text>
         <Text className="output" fontSize="lg" mb={4} color="#E86044">
-          {' '}
-          <Link href="/" color="#6BE3E1">
-            {' '}
-            go back
-          </Link>{' '}
           or{' '}
           <Link href="/" color="#6BE3E1">
-            {' '}
-            return to the homepage
+            Return to the homepage
           </Link>
           .
         </Text>
         <Text className="output" fontSize="lg" color="#E86044">
-          {' '}
           Good luck.
         </Text>
       </Box>

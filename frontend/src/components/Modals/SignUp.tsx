@@ -1,3 +1,4 @@
+import React, { useRef, useState, useCallback } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -18,24 +19,32 @@ import {
   Center,
   Box,
   Divider,
+  FormErrorMessage,
 } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
-import { useCreateUserMutation } from '@store/services/auth';
 import { IoChevronForwardCircle } from 'react-icons/io5';
+import { useCreateUserMutation } from '@store/services/auth';
+
+// Regular expression for validating email format
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-// (data: any) => Promise<void> for the next developer,
-// trying to fix type annotation for this function:
-// I've tried: 0x0f (in hex)
-// pass the number of tries to the next developer
-  onSuccess?: any;
+  // (data: any) => Promise<void> for the next developer,
+  // trying to fix type annotation for this function:
+  // I've tried: 0x0f (in hex)
+  // pass the number of tries to the next developer
+  onSuccess?: (data: any) => Promise<void>;
   is_invited?: boolean;
 }
 
 // SignUp Modal to handle user registration.
-export default function SignUp({is_invited, isOpen, onClose, onSuccess }: ModalProps) {
+export default function SignUp({
+  is_invited,
+  isOpen,
+  onClose,
+  onSuccess,
+}: ModalProps) {
   const initialRef = useRef(null);
   const finalRef = useRef(null);
   const [username, setUsername] = useState('');
@@ -43,7 +52,10 @@ export default function SignUp({is_invited, isOpen, onClose, onSuccess }: ModalP
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [favoriteLanguages, setFavoriteLanguages] = useState<string[]>([]);
+  const [emailError, setEmailError] = useState('');
+  const [passwordMismatch, setPasswordMismatch] = useState(false);
   const [createUser] = useCreateUserMutation();
   const toast = useToast();
 
@@ -58,6 +70,15 @@ export default function SignUp({is_invited, isOpen, onClose, onSuccess }: ModalP
 
   // Handles the user creation process.
   const handleCreate = () => {
+    if (password !== confirmPassword) {
+      setPasswordMismatch(true);
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      setEmailError('Invalid email format.');
+      return;
+    }
+
     createUser({
       username,
       first_name: firstName,
@@ -83,20 +104,20 @@ export default function SignUp({is_invited, isOpen, onClose, onSuccess }: ModalP
       .then(async (data) => {
         if (onSuccess) {
           await onSuccess(data);
-          //handleClose();
+          handleClose();
         }
       })
       .catch((err) => {
         let errorMessage = 'Oops! Something went wrong.';
-
-        // custom error handling based on the response error message
-        if (err.data?.message.includes('Duplicate entry')) {
-          if (err.data.message.includes('IDX_')) {
+        console.log(err);
+        // Custom error handling based on the response error message
+        if (err.status === 409) {
+          if (err.data?.message.includes('User with email')) {
             errorMessage = 'Email already in use. Try a different one!';
-          } else if (err.data.message.includes('idx_username')) {
+          } else if (err.data.message.includes('User with username')) {
             errorMessage = 'Username taken. Pick another one!';
           }
-        } else if (err.data.message.includes('username is required')) {
+        } else if (err.data?.message.includes('username is required')) {
           errorMessage = 'Username shouldn’t have spaces. Choose a valid one!';
         }
 
@@ -117,8 +138,44 @@ export default function SignUp({is_invited, isOpen, onClose, onSuccess }: ModalP
     setLastName('');
     setEmail('');
     setPassword('');
+    setConfirmPassword('');
     setFavoriteLanguages([]);
+    setEmailError('');
+    setPasswordMismatch(false);
     onClose();
+  };
+
+  // Validate email and password fields on change
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (!emailRegex.test(value)) {
+      setEmailError('Invalid email format.');
+    } else {
+      setEmailError('');
+    }
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPassword(value);
+    if (value !== confirmPassword) {
+      setPasswordMismatch(true);
+    } else {
+      setPasswordMismatch(false);
+    }
+  };
+
+  const handleConfirmPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const value = e.target.value;
+    setConfirmPassword(value);
+    if (password !== value) {
+      setPasswordMismatch(true);
+    } else {
+      setPasswordMismatch(false);
+    }
   };
 
   return (
@@ -160,7 +217,70 @@ export default function SignUp({is_invited, isOpen, onClose, onSuccess }: ModalP
             justifyContent="center"
             alignItems="center"
           >
-            <FormControl w="95%">
+            <FormControl w="95%" isInvalid={!!emailError}>
+              <FormLabel
+                color="white"
+                opacity="0.7"
+                fontFamily="mono"
+                fontSize="sm"
+              >
+                Email
+              </FormLabel>
+              <Input
+                type="email"
+                color="white"
+                fontFamily="mono"
+                fontSize="sm"
+                placeholder="Enter your email"
+                value={email}
+                onChange={handleEmailChange}
+              />
+              {emailError && <FormErrorMessage>{emailError}</FormErrorMessage>}
+            </FormControl>
+
+            <FormControl mt={4} w="95%">
+              <FormLabel
+                color="white"
+                opacity="0.7"
+                fontFamily="mono"
+                fontSize="sm"
+              >
+                Password
+              </FormLabel>
+              <Input
+                type="password"
+                color="white"
+                fontFamily="mono"
+                fontSize="sm"
+                placeholder="Enter your password"
+                value={password}
+                onChange={handlePasswordChange}
+              />
+            </FormControl>
+
+            <FormControl mt={4} w="95%">
+              <FormLabel
+                color="white"
+                opacity="0.7"
+                fontFamily="mono"
+                fontSize="sm"
+              >
+                Confirm Password
+              </FormLabel>
+              <Input
+                type="password"
+                color="white"
+                fontFamily="mono"
+                fontSize="sm"
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChange={handleConfirmPasswordChange}
+              />
+              {passwordMismatch && (
+                <FormErrorMessage>Passwords do not match.</FormErrorMessage>
+              )}
+            </FormControl>
+            <FormControl mt={4} w="95%">
               <FormLabel
                 color="white"
                 opacity="0.7"
@@ -170,10 +290,10 @@ export default function SignUp({is_invited, isOpen, onClose, onSuccess }: ModalP
                 Username
               </FormLabel>
               <Input
+                type="text"
                 color="white"
                 fontFamily="mono"
                 fontSize="sm"
-                ref={initialRef}
                 placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -190,6 +310,7 @@ export default function SignUp({is_invited, isOpen, onClose, onSuccess }: ModalP
                 First Name
               </FormLabel>
               <Input
+                type="text"
                 color="white"
                 fontFamily="mono"
                 fontSize="sm"
@@ -209,52 +330,13 @@ export default function SignUp({is_invited, isOpen, onClose, onSuccess }: ModalP
                 Last Name
               </FormLabel>
               <Input
+                type="text"
                 color="white"
                 fontFamily="mono"
                 fontSize="sm"
                 placeholder="Enter your last name"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-              />
-            </FormControl>
-
-            <FormControl mt={4} w="95%">
-              <FormLabel
-                color="white"
-                opacity="0.7"
-                fontFamily="mono"
-                fontSize="sm"
-              >
-                Email
-              </FormLabel>
-              <Input
-                type="email"
-                color="white"
-                fontFamily="mono"
-                fontSize="sm"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </FormControl>
-
-            <FormControl mt={4} w="95%">
-              <FormLabel
-                color="white"
-                opacity="0.7"
-                fontFamily="mono"
-                fontSize="sm"
-              >
-                Password
-              </FormLabel>
-              <Input
-                type="password"
-                color="white"
-                fontFamily="mono"
-                fontSize="sm"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
               />
             </FormControl>
 
@@ -325,7 +407,14 @@ export default function SignUp({is_invited, isOpen, onClose, onSuccess }: ModalP
             colorScheme="orange"
             fontFamily="mono"
             isDisabled={
-              !username || !firstName || !lastName || !email || !password
+              !username ||
+              !firstName ||
+              !lastName ||
+              !email ||
+              !password ||
+              !confirmPassword ||
+              !!emailError ||
+              passwordMismatch
             }
             onClick={handleCreate}
             rightIcon={<IoChevronForwardCircle fontSize="22px" />}
