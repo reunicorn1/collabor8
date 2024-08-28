@@ -16,17 +16,22 @@ import {
   useDeleteProjectMutation,
   useUpdateProjectMutation,
 } from '@store/services/project';
+import { useToggleShareFavoriteMutation } from '@store/services/projectShare';
+import { useToggleFavoriteMutation } from '@store/services/project';
 import { RenamePopover } from './RenamePopover';
 
 // TODO: fix types later
 type DBMenuProps = {
   children: ReactNode;
   project: any;
+  type: string;
 };
 //project: Project | ProjectShares | ProjectSharesOutDto;
 
-export default function MenuProject({ children, project }: DBMenuProps) {
+export default function MenuProject({ children, project, type }: DBMenuProps) {
   const toast = useToast();
+  const [favoriteProject] = useToggleFavoriteMutation();
+  const [favoriteSharedProject] = useToggleShareFavoriteMutation();
   const [updateProject] = useUpdateProjectMutation();
   const [deleteProject] = useDeleteProjectMutation();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -60,16 +65,15 @@ export default function MenuProject({ children, project }: DBMenuProps) {
   const handleFavorites = async (e: React.MouseEvent) => {
     // This function sends a request to add a project to the user's favorites
     e.stopPropagation();
-    await updateProject({
-      id: project.project_id,
-      data: { description: 'hi hello 4' },
-    })
+    const id = type === 'personal' ? project.project_id : project.share_id;
+    // const favoriteToggle =
+    //   type === 'personal' ? favoriteProject : favoriteSharedProject;
+    await favoriteProject(id)
       .unwrap()
       .then((_) => {
-        // TODO: this method is buggy and favorite doesn't change!
-        console.log('Changed the value of favorite to', project.favorite);
+        console.log('Changed the value of favorite to', !project.favorite);
         toast({
-          title: 'A new favorite has been added ⭐️',
+          title: `A new favorite has been ${project.favorite ? 'removed' : 'added'} ⭐️`,
           status: 'success',
           variant: 'subtle',
           position: 'bottom-left',

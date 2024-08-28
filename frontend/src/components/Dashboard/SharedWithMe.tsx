@@ -146,7 +146,7 @@ export default function SharedWithMe() {
                     <Td>{project.member_count} Member(s)</Td>
                     <Td>{date.toDateString()}</Td>
                     <Td>
-                      <MenuProject project={project}>
+                      <MenuProject project={project} type={'shared'}>
                         <HiDotsHorizontal />
                       </MenuProject>
                     </Td>

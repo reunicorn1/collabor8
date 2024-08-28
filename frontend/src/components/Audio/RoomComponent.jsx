@@ -209,21 +209,20 @@ useEffect(() => {
 }, [autoJoin]);
 
 return (
-  <Flex direction="column" align="center" >
+  <Flex direction="column" align="center">
     <Flex
       id="join-wrapper"
-      direction="column"
       align="center"
       justify="center"
       display={joined ? 'none' : 'flex'}
-      p={4}
     >
       <Button
-        colorScheme="teal"
-        size="lg"
+        colorScheme="orange"
+        size="sm"
+        fontFamily="mono"
         onClick={joinRoom}
       >
-        Join
+        Join Voice Call
       </Button>
     </Flex>
     <Flex
@@ -233,6 +232,8 @@ return (
       align="center"
       justify="center"
       p={4}
+      pt={0}
+      pb={0}
       gap={4}
     >
       <IconButton
