@@ -7,19 +7,20 @@ import { useGetRoomTokenQuery } from '@store/services/projectShare';
 import apiConfig from '@config/apiConfig';
 
 const RoomComponent = ({ autoJoin = false }) => {
-  
-  const [client, setClient] = React.useState(null);
-  const [localUid, setLocalUid] = React.useState(null);
-  const [localAudioTrack, setLocalAudioTrack] = React.useState(null);
-  const [localAudioMuted, setLocalAudioMuted] = React.useState(false);
-  const [remoteTracks, setRemoteTracks] = React.useState({});
+
   const { projectId } = useParams();
-  const navigate = useNavigate();
-  const sessionid = projectId;
   // console.log('data', data);
   const { data, refetch, isFetching, isSuccess } = useGetRoomTokenQuery(projectId);
-
-
+  let localTracks = {
+    audioTrack: null,
+  }
+  let localTrackState = {
+    audioTrackMuted: false,
+  }
+  let localUid = null;
+  let remoteTracks = {};
+  let client = null;
+  let remoteUid = null;
   const getToken = async () => {
     if (!isSuccess || !data) {
       await refetch();
@@ -29,25 +30,47 @@ const RoomComponent = ({ autoJoin = false }) => {
 
   const joinRoom = async () => {
     const { token, uid, channel } = await getToken();
-    const agoraClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+    const config = {
+      appid: apiConfig.appID,
+      channel: channel,
+      token: token,
+      uid: uid
+    };
+    client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
 
-    agoraClient.on('user-published', handleUserJoined);
-    agoraClient.on('user-left', handleUserLeft);
-    agoraClient.on('volume-indicator', handleVolumeIndicator);
-    agoraClient.enableAudioVolumeIndicator();
-    
-    await agoraClient.join(apiConfig.appID, channel, token || null, uid || null);
-    const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+    client.on('user-published', handleUserJoined);
+    client.on('user-left', handleUserLeft);
+    // agoraClient.on('volume-indicator', handleVolumeIndicator);
+    client.enableAudioVolumeIndicator();
+    [config.uid, localTracks.audioTrack] = await Promise.all([
+      client.join(config.appid, config.channel, config.token || null, config.uid || null),
+      AgoraRTC.createMicrophoneAudioTrack()
+    ]).catch(err => {
+      console.error(err);
+    });
+    // agoraClient.on('user-published', async (user, mediaType) => {
+    //   try {
+    //     await handleUserJoined(user, mediaType);
+    //   } catch (error) {
+    //     console.error('Failed to subscribe to remote user:', error);
+    //   }
+    // });
+    localUid = config.uid;
+    try {
+      if (localTracks.audioTrack) {
+        await localTracks.audioTrack.setEnabled(true);
+        await localTracks.audioTrack.setMuted(localAudioMuted);
+        await agoraClient.publish([localTracks.audioTrack]);
+      }
+    } catch (error) {
+      console.error('Failed to publish local tracks:', error);
+    }
 
-    setClient(agoraClient);
-    setLocalUid(uid);
-    setLocalAudioTrack(audioTrack);
-
-    await audioTrack.setEnabled(true);
-    await audioTrack.setMuted(localAudioMuted);
+    // await audioTrack.setEnabled(true);
+    // await audioTrack.setMuted(localAudioMuted);
 
     // Publish audio track
-    await agoraClient.publish([audioTrack]);
+    await client.publish([localTracks.audioTrack]);
 
     // Show UI for audio controls
     // document.getElementById('join-wrapper').style.display = 'none';
@@ -55,88 +78,95 @@ const RoomComponent = ({ autoJoin = false }) => {
   };
 
   const handleMicClick = async () => {
-    if (localAudioTrack) {
-      if (!localAudioMuted) {
-        await localAudioTrack.setMuted(true);
-        setLocalAudioMuted(true);
-      } else {
-        await localAudioTrack.setMuted(false);
-        setLocalAudioMuted(false);
-      }
+    if (localTracks.audioTrack) {
+      const newMutedStatus = !localTrackState.audioTrackMuted;
+      await localTracks.audioTrack.setMuted(newMutedStatus);
+      localTrackState.audioTrackMuted = newMutedStatus;
+
     }
   };
 
   const handleLeaveButtonClick = async () => {
+    for (const trackName in localTracks) {
+      let track = localTracks[trackName];
+      if (track) {
+        track.stop();
+        track.close();
+        localTracks[trackName] = null;
+        track = null;
+      }
+    }
+
     if (client) {
       // Stop and close the audio track
-      if (localAudioTrack) {
-        localAudioTrack.stop();
-        localAudioTrack.close();
+      if (localTracks.audioTrack) {
+        localTracks.audioTrack.stop();
+        localTracks.audioTrack.close();
       }
-      
-      await client.leave();
-      setClient(null);
-      setLocalAudioTrack(null);
-      setLocalUid(null);
-      setRemoteTracks({});
+      if (client) {
+       await client.leave();
+      }
 
+      client = null
+      localTracks = {
+        audioTrack: null,
+      };
+      localTrackState = {
+        audioTrackMuted: false,
+      };
+      localUid = null;
+      remoteTracks = {};
+
+    } else {
+      console.warn('AgoraRTC client is not initialized');
     }
   };
 
   const handleUserJoined = async (user, mediaType) => {
     // Handle audio only
-     if (!client || mediaType !== 'audio') return;
-    if (mediaType === 'audio') {
-      await client.subscribe(user, mediaType);
-      if (user.audioTrack) {
-        user.audioTrack.setVolume(100);
-        user.audioTrack.play();
-      } else {
-        console.warn('No audio track found for the user');
-      };
-
-      // Update remote tracks
-      setRemoteTracks(prevTracks => ({
-        ...prevTracks,
-        [user.uid]: user
-      }));
+    console.error('user', user);
+    if ((!client) || mediaType !== 'audio') return;
+    if (client) {
+      await client.subscribe(user, mediaType)
     }
+    if (user.audioTrack) {
+      user.audioTrack.play();
+    } else {
+      console.warn('No audio track found for the user');
+    };
+
+    // Update remote tracks
+    remoteTracks[user.uid] = user;
   };
 
   const handleUserLeft = (user) => {
     // Remove user from remote tracks
-    setRemoteTracks(prevTracks => {
-      const newTracks = { ...prevTracks };
-      delete newTracks[user.uid];
-      return newTracks;
-    });
+    if (remoteTracks[user.uid]) {
+      const audioTrack = remoteTracks[user.uid].audioTrack;
+        if (audioTrack) {
+            audioTrack.stop();
+        }
 
+      const newRemoteTracks = { ...remoteTracks };
+      delete newRemoteTracks[user.uid];
+      remoteTracks = newRemoteTracks;
+    }
     // Unsubscribe from the user
-      if (client) {
+    if (client) {
       client.unsubscribe(user);
-      }
+    }
   };
 
-  const handleVolumeIndicator = (evt) => {
-    evt.forEach(indicator => {
-      const speaker = indicator.uid;
-      const volume = indicator.level;
-      // Update volume icon based on volume level
-      const element = document.getElementById(`volume-${speaker}`);
-      if (element) {
-        element.src = volume > 0 ? '/img/assets/volume-on.svg' : '/img/assets/volume-off.svg';
-      }
-    });
-  };
 
-    useEffect(() => {
+
+  useEffect(() => {
     if (autoJoin) {
       joinRoom();
     }
   }, [autoJoin]);
 
- return (
-   <Flex direction="column" align="center" p={4}>
+  return (
+     <Flex direction="column" align="center" p={4}>
       <Flex
         id="join-wrapper"
         direction="column"
@@ -167,7 +197,7 @@ const RoomComponent = ({ autoJoin = false }) => {
         gap={4}
       >
         <IconButton
-          icon={localAudioMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
+          icon={localTrackState.audioTrackMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
           aria-label="Toggle Mic"
           onClick={handleMicClick}
         />
@@ -192,6 +222,5 @@ const RoomComponent = ({ autoJoin = false }) => {
       </Flex>
     </Flex>  );
 };
-
 export default RoomComponent;
 

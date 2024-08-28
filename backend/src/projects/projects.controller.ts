@@ -147,8 +147,8 @@ export class ProjectsController {
 
   @Docs.findOne()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Projects> {
-    return await this.projectsService.findOne(id);
+  async findOne(@Param('id') id: string, @Request() req): Promise<Projects> {
+    return await this.projectsService.findMyProject(id, req.user.username);
   }
 
 

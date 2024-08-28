@@ -213,6 +213,30 @@ export class ProjectsService {
     return await this.wrapProject(project);
   }
 
+  async findMyProject(id:string, username: string): Promise<Projects> {
+    const IDS = await this.getIds(id);
+    if (!IDS.project_id) {
+      const project = await this.projectsRepository.findOneBy({ _id: id, username: username });
+      console.log('project 1', project);
+      if (!project) {
+        const projectShare = await this.projectSharesService.findOneByQuery({ _id: id, username: username });
+        console.log('projectShare', projectShare);
+        if (!projectShare) {
+          throw new NotFoundException('Project not found');
+        }
+      }
+      return await this.wrapProject(project);
+    }
+    const project = await this.projectsRepository.findOneBy({ project_id: id, username: username });
+    if (!project) {
+      const projectShare = await this.projectSharesService.findOneByQuery({ project_id: id, username: username });
+      if (!projectShare) {
+        throw new NotFoundException('Project not found');
+      }
+    }
+  }
+
+
   // Update a project
   async handleFavorite(username, favorite, project) {
     const user = await this.usersService.findOneBy({ username });
