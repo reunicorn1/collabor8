@@ -140,7 +140,7 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
 
   const handleInviteError = (error: any) => {
     console.log('Failed to send invitation to the user', error);
-    if (error.status === 500) {
+    if (error.status === 409) {
       setErrorMessage('This user is already a contributor to this project');
     } else if (error.status === 404) {
       setErrorMessage("This user doesn't exist");
