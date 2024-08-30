@@ -12,9 +12,9 @@ import {
 import { FiUser, FiLogOut } from 'react-icons/fi';
 import { ReactNode } from 'react';
 import { selectUserDetails } from '@store/selectors/userSelectors';
-import { useSelector, useDispatch } from 'react-redux';
-import { unsetCredentials } from '@store/slices/authSlice';
+import { unsetCredentials, performLogout } from '@store/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@hooks/useApp';
 
 type DBMenuProps = {
   children: ReactNode;
@@ -23,14 +23,15 @@ type DBMenuProps = {
 export default function DBMenu({ children }: DBMenuProps) {
   const navigate = useNavigate();
   const toast = useToast();
-  const userDetails: any = useSelector(selectUserDetails) || 'username';
-  const dispatch = useDispatch();
+  const userDetails: any = useAppSelector(selectUserDetails) || 'username';
+  const dispatch = useAppDispatch();
   // TODO: to logout you need to do two actions: logout using the API endpoint, and unset credentials
   // Unset credentials is done below, but this should be made from the service after removing the
   // access token from the database using the endpoint
 
   const handleLogout = () => {
     dispatch(unsetCredentials());
+    dispatch(performLogout());
     toast({
       title: 'See you later, coder! 👋',
       description: 'You’re now logged out. Until next time!',

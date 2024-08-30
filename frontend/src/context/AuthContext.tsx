@@ -1,7 +1,11 @@
 import React, { createContext, ReactNode } from 'react';
-import { useAppSelector, useAppDispatch } from '../hooks/useApp';
+import { useAppSelector, useAppDispatch } from '@hooks/useApp';
 import { selectIsAuthenticated } from '@store/selectors/authSelectors';
-import { setCredentials, unsetCredentials } from '@store/slices/authSlice';
+import {
+  setCredentials,
+  unsetCredentials,
+  performLogout,
+} from '@store/slices/authSlice';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -23,6 +27,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const logout = () => {
     dispatch(unsetCredentials());
+    dispatch(performLogout());
   };
 
   return (

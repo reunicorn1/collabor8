@@ -6,6 +6,8 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { authApi } from '@store/services/auth';
+import { clearUser } from './userSlice';
+import { AppDispatch } from '@store/store';
 
 // Define the authentication state interface
 interface AuthState {
@@ -28,6 +30,14 @@ const setAccessToken = (token: string | null) => {
   }
 };
 
+// Utility function to handle clearing cookies
+const clearCookies = () => {
+  document.cookie.split(';').forEach((cookie) => {
+    const [name] = cookie.split('=');
+    document.cookie = `${name.trim()}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+  });
+};
+
 // Create the authentication slice
 const authSlice = createSlice({
   name: 'auth',
@@ -44,6 +54,7 @@ const authSlice = createSlice({
     unsetCredentials(state) {
       state.accessToken = null;
       setAccessToken(null);
+      clearCookies();
     },
   },
   extraReducers: (builder) => {
@@ -79,4 +90,10 @@ const authSlice = createSlice({
 });
 
 export const { setCredentials, unsetCredentials } = authSlice.actions;
+
+export const performLogout = () => (dispatch: AppDispatch) => {
+  dispatch(unsetCredentials());
+  dispatch(clearUser());
+};
+
 export default authSlice.reducer;
