@@ -29,7 +29,12 @@ export default function DashboardBar() {
   const [notificationCount, setNotificationCount] = useState(0);
   const userDetails = useSelector(selectUserDetails);
   const userId = userDetails?.user_id || '';
-  const { data: userProjectShares } = useGetUserProjectSharesQuery(userId);
+  const { data: userProjectShares, refetch } = useGetUserProjectSharesQuery(
+    userId,
+    {
+      pollingInterval: 7000,
+    },
+  );
   const [updateShareStatus] = useUpdateStatusMutation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -38,17 +43,15 @@ export default function DashboardBar() {
   useEffect(() => {
     if (userProjectShares) {
       const pendingInvitations = userProjectShares.filter(
-        (share) => share.status === 'pending',
+        (share) =>
+          share.status === 'pending' && share.username !== userDetails.username,
       );
       setInvitations(pendingInvitations);
       setNotificationCount(pendingInvitations.length);
     }
-  }, [userProjectShares]);
-
-  console.log('Invetations:=========>', invitations);
+  }, [userProjectShares, userDetails.username]);
 
   const handleApproval = async (share_id) => {
-    console.log('ON APPROVE share_id: ', share_id);
     try {
       await updateShareStatus({ share_id, status: 'accepted' }).unwrap();
       setInvitations((prev) => prev.filter((inv) => inv.share_id !== share_id));
@@ -77,7 +80,6 @@ export default function DashboardBar() {
   };
 
   const handleDecline = async (share_id) => {
-    console.log('ON DECLINE share_id: ', share_id);
     try {
       await updateShareStatus({ share_id, status: 'rejected' }).unwrap();
       setInvitations((prev) => prev.filter((inv) => inv.share_id !== share_id));

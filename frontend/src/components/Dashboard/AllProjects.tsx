@@ -168,12 +168,22 @@ export default function AllProjects() {
       >
         {/* Control the opacity of the arrows based on the number of pages, if first page, 
         opacity of back is 0, if last page opacity of forward is 0 */}
-        <ArrowBackIcon opacity={0.2} onClick={handleBack} cursor="pointer" />
+        <ArrowBackIcon
+          opacity={allProjectsPagination.page > 1 ? 1 : 0.2}
+          onClick={handleBack}
+          cursor={allProjectsPagination.page > 1 ? 'pointer' : 'default'}
+        />
         <Box w="8px" h="8px" bg="white" borderRadius="50%" ml={1} mr={1} />
         <ArrowForwardIcon
-          opacity={1}
+          opacity={
+            allProjects.totalPages > allProjectsPagination.page ? 1 : 0.2
+          }
           onClick={handleForward}
-          cursor="pointer"
+          cursor={
+            allProjects.totalPages > allProjectsPagination.page
+              ? 'pointer'
+              : 'default'
+          }
         />
       </Box>
     </Box>

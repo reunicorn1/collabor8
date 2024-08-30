@@ -87,6 +87,7 @@ export interface ProjectSharesOutDto {
   share_id: string;
   project_id: string;
   user_id: string;
+  status?: string;
   favorite: boolean;
   access_level: 'read' | 'write';
   created_at: string;
@@ -98,7 +99,8 @@ export interface ProjectSharesOutDto {
   project_name: string;
   _id?: string;
 }
-export interface sharedProjects { // multiple mutated
+export interface sharedProjects {
+  // multiple mutated
   sharedProjects: Partial<projects[]>;
   page: number;
   limit: number;

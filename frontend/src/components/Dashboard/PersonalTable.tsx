@@ -168,12 +168,22 @@ export default function PersonalTable() {
       >
         {/* Control the opacity of the arrows based on the number of pages, if first page, 
         opacity of back is 0, if last page opacity of forward is 0 */}
-        <ArrowBackIcon opacity={0.2} onClick={handleBack} cursor="pointer" />
+        <ArrowBackIcon
+          opacity={userProjectsPagination.page > 1 ? 1 : 0.2}
+          onClick={handleBack}
+          cursor={userProjectsPagination.page > 1 ? 'pointer' : 'default'}
+        />
         <Box w="8px" h="8px" bg="white" borderRadius="50%" ml={1} mr={1} />
         <ArrowForwardIcon
-          opacity={1}
+          opacity={
+            userProjects.totalPages > userProjectsPagination.page ? 1 : 0.2
+          }
           onClick={handleForward}
-          cursor="pointer"
+          cursor={
+            userProjects.totalPages > userProjectsPagination.page
+              ? 'pointer'
+              : 'default'
+          }
         />
       </Box>
     </>

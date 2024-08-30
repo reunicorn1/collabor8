@@ -46,7 +46,6 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
    * 2- Display people who have access: if they are pending we display pending, if not we display their access mode
    * 3- Be able to toggle the menu button is enough to make a request to update the project share entity access level
    */
-
   const [createProjectShare] = useCreateProjectShareMutation();
   const [inviteUser, { isLoading }] = useInviteUserMutation();
   const [updateShares] = useUpdateProjectShareMutation();
@@ -64,6 +63,7 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
   const [accessPermission, setAccessPermission] = useState('read');
   const toast = useToast();
 
+  // Handlers
   const handleClose = () => {
     resetForm();
     onClose();
@@ -78,9 +78,9 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
 
   const handleInvite = async () => {
     if (inviteeType === 'email') {
-      handleEmailInvite();
+      await handleEmailInvite();
     } else {
-      handleUsernameInvite();
+      await handleUsernameInvite();
     }
   };
 
@@ -89,6 +89,14 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
       setErrorMessage('Please enter a valid email address.');
       return;
     }
+
+    if (inviteeValue === userDetails.email) {
+      toastRoasting(
+        'Trying to invite yourself? Come on, we all need a buddy, but not like this!',
+      );
+      return;
+    }
+
     setErrorMessage('');
 
     try {
@@ -106,6 +114,13 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
   };
 
   const handleUsernameInvite = async () => {
+    if (inviteeValue === userDetails.username) {
+      toastRoasting(
+        'Nice try inviting yourself! But how about inviting someone else?',
+      );
+      return;
+    }
+
     try {
       await createProjectShare({
         project_id: project.project_id,
@@ -157,21 +172,37 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
 
   const toastSuccess = (message: string) => {
     toast({
-      title: 'Project Invitation',
-      description: message,
-      variant: 'subtle',
+      title: '🎉 Invitation Sent!',
+      description: `Success! ${message}`,
       status: 'success',
+      duration: 7000,
+      isClosable: true,
       position: 'bottom-left',
+      variant: 'subtle',
     });
   };
 
   const toastError = (message: string) => {
     toast({
-      title: 'Project Invitation',
-      description: message,
-      variant: 'subtle',
+      title: '🚨 Error Encountered!',
+      description: `Oops! ${message}. Please check and try again.`,
       status: 'error',
+      duration: 7000,
+      isClosable: true,
       position: 'bottom-left',
+      variant: 'subtle',
+    });
+  };
+
+  const toastRoasting = (message: string) => {
+    toast({
+      title: '🙃 Nice Try!',
+      description: message,
+      status: 'warning',
+      duration: 7000,
+      isClosable: true,
+      position: 'bottom-left',
+      variant: 'subtle',
     });
   };
 
@@ -188,19 +219,10 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
           </Flex>
         </ModalHeader>
         <ModalBody>
-          <Select
-            placeholder="Share project by"
-            size="sm"
-            color="orange"
-            value={inviteeType}
+          <ShareTypeSelector
+            inviteeType={inviteeType}
             onChange={(e) => setInviteeType(e.target.value)}
-            mb="0.5rem"
-            className="!mb-2"
-            outline="white"
-          >
-            <option value="text">username</option>
-            <option value="email">email</option>
-          </Select>
+          />
           {inviteeType && (
             <InviteBy
               type={inviteeType}
@@ -233,6 +255,27 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
   );
 };
 
+// Component to select invitation method
+const ShareTypeSelector: React.FC<{
+  inviteeType: string;
+  onChange: React.ChangeEventHandler<HTMLSelectElement>;
+}> = ({ inviteeType, onChange }) => (
+  <Select
+    placeholder="Share project by"
+    size="sm"
+    color="orange"
+    value={inviteeType}
+    onChange={onChange}
+    mb="0.5rem"
+    className="!mb-2"
+    outline="white"
+  >
+    <option value="text">username</option>
+    <option value="email">email</option>
+  </Select>
+);
+
+// Component for invitation by username or email
 const InviteBy = ({
   type,
   value,
@@ -261,7 +304,7 @@ const InviteBy = ({
           color="orange"
         >
           <option value="write">can edit</option>
-          <option value="read"> can view</option>
+          <option value="read">can view</option>
         </Select>
       )}
       <Button
@@ -277,6 +320,7 @@ const InviteBy = ({
   </InputGroup>
 );
 
+// Component to list users with access
 const AccessList = ({ userDetails, shares, handlePermissionChange }) => (
   <>
     <Flex alignItems="center">

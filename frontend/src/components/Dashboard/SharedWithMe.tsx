@@ -11,6 +11,8 @@ import {
   Text,
   Spacer,
   Center,
+  Badge,
+  useToast,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import MenuSelection from './MenuSelection';
@@ -36,6 +38,7 @@ export default function SharedWithMe() {
   const dispatch = useDispatch();
   const userProjects = useSelector(selectSharedProjects);
   const userProjectsPagination = useSelector(selectSharedProjectsPagination);
+  const toast = useToast();
 
   const handleBack = () => {
     // This function handles requests of pagination to previous page
@@ -74,6 +77,7 @@ export default function SharedWithMe() {
   useEffect(() => {
     refetch();
   }, [userProjectsPagination]);
+
   if (userProjects.status === 'loading') {
     return <div>Loading...</div>;
   }
@@ -84,7 +88,20 @@ export default function SharedWithMe() {
   const handleGoToProject = (project: any) => {
     // This function handles the click of a project item in the table it recives the id of the project
     // And it navigates to the project page using the id
-    navigate(`/editor/${project._id}`, { state: project });
+    if (project.status === 'pending') {
+      toast({
+        title: '🚀 Pending Invitation',
+        description:
+          'You have an outstanding invitation! Check the bell icon to review and accept.',
+        status: 'info',
+        duration: 7000,
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'subtle',
+      });
+    } else if (project.status === 'accepted') {
+      navigate(`/editor/${project._id}`, { state: project });
+    }
   };
 
   return (
@@ -142,7 +159,14 @@ export default function SharedWithMe() {
                     key={index}
                     onClick={() => handleGoToProject(project)}
                   >
-                    <Td>{project.project_name}</Td>
+                    <Td>
+                      {project.project_name}
+                      {project.status === 'pending' && (
+                        <Badge ml={2} colorScheme="orange">
+                          Pending
+                        </Badge>
+                      )}
+                    </Td>
                     <Td>{project.member_count} Member(s)</Td>
                     <Td>{date.toDateString()}</Td>
                     <Td>
@@ -167,12 +191,22 @@ export default function SharedWithMe() {
       >
         {/* Control the opacity of the arrows based on the number of pages, if first page, 
         opacity of back is 0, if last page opacity of forward is 0 */}
-        <ArrowBackIcon opacity={0.2} onClick={handleBack} cursor="pointer" />
+        <ArrowBackIcon
+          opacity={userProjectsPagination.page > 1 ? 1 : 0.2}
+          onClick={handleBack}
+          cursor={userProjectsPagination.page > 1 ? 'pointer' : 'default'}
+        />
         <Box w="8px" h="8px" bg="white" borderRadius="50%" ml={1} mr={1} />
         <ArrowForwardIcon
-          opacity={1}
+          opacity={
+            userProjects.totalPages > userProjectsPagination.page ? 1 : 0.2
+          }
           onClick={handleForward}
-          cursor="pointer"
+          cursor={
+            userProjects.totalPages > userProjectsPagination.page
+              ? 'pointer'
+              : 'default'
+          }
         />
       </Box>
     </Box>
