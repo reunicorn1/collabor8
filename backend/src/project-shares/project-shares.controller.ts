@@ -57,13 +57,13 @@ export class ProjectSharesController {
     return await this.projectSharesService.findAll();
   }
 
-  @Patch('status/:id')
+  @Post('status/:share_id')
   async updateStatus(
-    @Param('id') id: string,
+    @Param('share_id') share_id: string,
     @Body() updateProjectShareDto: Partial<ProjectShares>,
   ): Promise<ProjectShares | { message: string }> {
     return await this.projectSharesService.updateStatus(
-      id,
+      share_id,
       updateProjectShareDto.status,
     );
   }
@@ -140,13 +140,15 @@ export class ProjectSharesController {
     return await this.projectSharesService.findByProject(project_id);
   }
 
-
   @Get('/me/:project_id')
   async findMyShare(
     @Param('project_id') project_id: string,
     @Request() req,
   ): Promise<ProjectShares> {
-    return await this.projectSharesService.findMyShare(req.user.username, project_id);
+    return await this.projectSharesService.findMyShare(
+      req.user.username,
+      project_id,
+    );
   }
 
   // Retrieve project shares by user ID

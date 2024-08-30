@@ -81,10 +81,13 @@ export const projectShareApi = api.injectEndpoints({
       }),
       invalidatesTags: ['ProjectShare'],
     }),
-    updateStatus: builder.mutation<ProjectShares | {message: string }, { id: string; status: string }>({
-      query: ({ id, status }) => ({
-        url: `/project-shares/status/${id}`,
-        method: 'PATCH',
+    updateStatus: builder.mutation<
+      ProjectShares | { message: string },
+      { share_id: string; status: string }
+    >({
+      query: ({ share_id, status }) => ({
+        url: `/project-shares/status/${share_id}`,
+        method: 'POST',
         body: { status },
       }),
       invalidatesTags: ['ProjectShare'],

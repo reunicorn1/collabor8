@@ -45,10 +45,13 @@ export default function DashboardBar() {
     }
   }, [userProjectShares]);
 
-  const handleApproval = async (id) => {
+  console.log('Invetations:=========>', invitations);
+
+  const handleApproval = async (share_id) => {
+    console.log('ON APPROVE share_id: ', share_id);
     try {
-      await updateShareStatus({ id, status: 'accepted' }).unwrap();
-      setInvitations((prev) => prev.filter((inv) => inv._id !== id));
+      await updateShareStatus({ share_id, status: 'accepted' }).unwrap();
+      setInvitations((prev) => prev.filter((inv) => inv.share_id !== share_id));
       setNotificationCount((prev) => prev - 1);
       toast({
         title: 'Approval Confirmed',
@@ -73,10 +76,11 @@ export default function DashboardBar() {
     }
   };
 
-  const handleDecline = async (id) => {
+  const handleDecline = async (share_id) => {
+    console.log('ON DECLINE share_id: ', share_id);
     try {
-      await updateShareStatus({ id, status: 'rejected' }).unwrap();
-      setInvitations((prev) => prev.filter((inv) => inv._id !== id));
+      await updateShareStatus({ share_id, status: 'rejected' }).unwrap();
+      setInvitations((prev) => prev.filter((inv) => inv.share_id !== share_id));
       setNotificationCount((prev) => prev - 1);
       toast({
         title: 'Invitation Declined',

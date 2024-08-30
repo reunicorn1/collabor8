@@ -21,10 +21,12 @@ type BellMenuProps = {
     last_name: string;
     username: string;
     project_name: string;
+    share_id: string;
+    project_id: string;
   }>;
   notificationCount: number;
-  onApprove: (id: string) => void;
-  onDecline: (id: string) => void;
+  onApprove: (share_id: string) => void;
+  onDecline: (share_id: string) => void;
 };
 
 // Provide this component with a list of shared items either pass it as a prop or make the call for it here
@@ -80,11 +82,11 @@ export default function BellMenu({
                     <Tag
                       colorScheme="green"
                       size="md"
-                      onClick={() => onApprove(inv._id)}
+                      onClick={() => onApprove(inv.share_id)}
                     >
                       Approve
                     </Tag>
-                    <Tag size="md" onClick={() => onDecline(inv._id)}>
+                    <Tag size="md" onClick={() => onDecline(inv.share_id)}>
                       Decline
                     </Tag>
                   </Flex>

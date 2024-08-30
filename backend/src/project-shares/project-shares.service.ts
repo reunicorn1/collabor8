@@ -34,7 +34,7 @@ export class ProjectSharesService {
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => RedisService))
     private readonly redisService: RedisService,
-  ) { }
+  ) {}
 
   async memberCount(project_id: string): Promise<number> {
     return await this.projectSharesRepository
@@ -43,18 +43,26 @@ export class ProjectSharesService {
       .getCount();
   }
 
-  async findMyShare(username: string, project_id: string): Promise<ProjectShares> {
+  async findMyShare(
+    username: string,
+    project_id: string,
+  ): Promise<ProjectShares> {
     const IDS = await this.projectsService.getIds(project_id);
     if (IDS.project_id) {
-      const projectShare = await this.projectSharesRepository.findOneBy({ project_id: IDS.project_id, username });
+      const projectShare = await this.projectSharesRepository.findOneBy({
+        project_id: IDS.project_id,
+        username,
+      });
       return projectShare;
     } else if (IDS._id) {
-      const projectShare = await this.projectSharesRepository.findOneBy({ _id: IDS._id, username });
+      const projectShare = await this.projectSharesRepository.findOneBy({
+        _id: IDS._id,
+        username,
+      });
       return projectShare;
     }
     throw new NotFoundException('Project not found');
   }
-
 
   async mapProjectShareData(
     projectShare: ProjectShares,
@@ -127,9 +135,14 @@ export class ProjectSharesService {
     const delta = 12 * 60 * 60 * 1000;
     const expire_time = new Date(start_time.getTime() + delta);
     const privilegeExpiredTs = Math.floor(expire_time.getTime() / 1000);
-    const token = RtcTokenBuilder.buildTokenWithAccount(appId,
-      appCertificate, channelName,
-      account, role, privilegeExpiredTs);
+    const token = RtcTokenBuilder.buildTokenWithAccount(
+      appId,
+      appCertificate,
+      channelName,
+      account,
+      role,
+      privilegeExpiredTs,
+    );
     await this.cacheToken(token, `${channelName}${user_id}`, delta);
 
     return { token, uid: user_id, channel: channelName };
@@ -352,14 +365,14 @@ export class ProjectSharesService {
       .orderBy(`project_shares.${sortField}`, sortDirection)
       .getMany();
 
-    console.log(projects);
+    console.log('Projects query:======>', projects);
 
     const mappedProjects = await Promise.all(
       projects.map(async (project) => {
         return this.mapProjectShareData(project);
       }),
     );
-    console.log(mappedProjects);
+    console.log('Projects Mapped, Return:=======>', mappedProjects);
 
     return { total, projects: mappedProjects };
   }
