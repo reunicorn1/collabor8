@@ -23,18 +23,23 @@ import {
   useGetUserProjectSharesQuery,
   useUpdateStatusMutation,
 } from '@store/services/projectShare';
+import { useAppDispatch, useAppSelector } from '@hooks/useApp';
+import { setInvitationCount } from '@store/slices/projectSharesSlice';
+import { selectInvitationCount } from '@store/selectors/projectShareSelectors';
 
 export default function DashboardBar() {
   const [invitations, setInvitations] = useState([]);
   const [notificationCount, setNotificationCount] = useState(0);
   const userDetails = useSelector(selectUserDetails);
   const userId = userDetails?.user_id || '';
+  const dispatch = useAppDispatch();
   const { data: userProjectShares, refetch } = useGetUserProjectSharesQuery(
     userId,
     {
       pollingInterval: 7000,
     },
   );
+  const prevInvitationCount = useAppSelector(selectInvitationCount);
   const [updateShareStatus] = useUpdateStatusMutation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -46,10 +51,33 @@ export default function DashboardBar() {
         (share) =>
           share.status === 'pending' && share.username !== userDetails.username,
       );
+
+      const newInvitationCount = pendingInvitations.length;
+
+      if (newInvitationCount > prevInvitationCount) {
+        toast({
+          title: 'New Invitation Received',
+          description: 'You have received a new project invitation!',
+          status: 'info',
+          duration: 5000,
+          isClosable: true,
+          position: 'top-right',
+          variant: 'subtle',
+        });
+      }
+
       setInvitations(pendingInvitations);
       setNotificationCount(pendingInvitations.length);
+
+      dispatch(setInvitationCount(newInvitationCount));
     }
-  }, [userProjectShares, userDetails.username]);
+  }, [
+    userProjectShares,
+    userDetails.username,
+    toast,
+    dispatch,
+    prevInvitationCount,
+  ]);
 
   const handleApproval = async (share_id) => {
     try {

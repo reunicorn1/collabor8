@@ -9,6 +9,7 @@ interface roomInterface {
 
 interface ROOM {
   room: roomInterface;
+  invitationCount: number;
 }
 
 const initialState: ROOM = {
@@ -18,6 +19,7 @@ const initialState: ROOM = {
     channel: '',
     project_id: '',
   },
+  invitationCount: 0,
 };
 
 const projectSharesSlice = createSlice({
@@ -33,8 +35,12 @@ const projectSharesSlice = createSlice({
     clearRoom(state) {
       state.room = initialState.room;
     },
+    setInvitationCount(state, action: PayloadAction<number>) {
+      state.invitationCount = action.payload;
+    },
   },
 });
 
-export const { setRoom, clearRoom } = projectSharesSlice.actions;
+export const { setRoom, clearRoom, setInvitationCount } =
+  projectSharesSlice.actions;
 export default projectSharesSlice.reducer;
