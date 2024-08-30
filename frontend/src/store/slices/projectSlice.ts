@@ -126,7 +126,6 @@ const initialState: ProjectsState = {
   },
 };
 
-
 const projectSlice = createSlice({
   name: 'projects',
   initialState,
@@ -134,7 +133,9 @@ const projectSlice = createSlice({
     setRecentProjects: (state, action: PayloadAction<recentProjects>) => {
       const payload: any = action.payload;
       state.recentProjects = {
-        recentProjects: projectUtils.setRecentProjectsFromAllProjects(payload.projects),
+        recentProjects: projectUtils.setRecentProjectsFromAllProjects(
+          payload.projects,
+        ),
         page: payload.page,
         limit: payload.limit,
         total: payload.total,
@@ -142,7 +143,10 @@ const projectSlice = createSlice({
         status: 'succeeded',
       };
     },
-    setRecentProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {
+    setRecentProjectsPagination: (
+      state,
+      action: PayloadAction<{ page: number; limit: number; sort: string }>,
+    ) => {
       state.pagination.recentProjects = action.payload;
     },
     setUserProjects: (state, action: PayloadAction<userProjects>) => {
@@ -158,12 +162,15 @@ const projectSlice = createSlice({
         status: 'succeeded',
       };
     },
-    setUserProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {
+    setUserProjectsPagination: (
+      state,
+      action: PayloadAction<{ page: number; limit: number; sort: string }>,
+    ) => {
       state.pagination.userProjects = action.payload;
     },
     setSharedProjects: (state, action: PayloadAction<any>) => {
       const payload = action.payload;
-      state.sharedProjects =  {
+      state.sharedProjects = {
         sharedProjects: payload.projects,
         page: payload.page,
         limit: payload.limit,
@@ -172,9 +179,11 @@ const projectSlice = createSlice({
         totalPages: payload.totalPages,
         status: 'succeeded',
       };
-
     },
-    setSharedProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {
+    setSharedProjectsPagination: (
+      state,
+      action: PayloadAction<{ page: number; limit: number; sort: string }>,
+    ) => {
       state.pagination.sharedProjects = action.payload;
     },
     setAllProjects: (state, action: PayloadAction<any>) => {
@@ -189,7 +198,10 @@ const projectSlice = createSlice({
         status: 'succeeded',
       };
     },
-    setAllProjectsPagination: (state, action: PayloadAction<{ page: number; limit: number; sort: string }>) => {
+    setAllProjectsPagination: (
+      state,
+      action: PayloadAction<{ page: number; limit: number; sort: string }>,
+    ) => {
       state.pagination.allProjects = action.payload;
     },
     clearRecentProjects: (state) => {
@@ -205,11 +217,20 @@ const projectSlice = createSlice({
       state.allProjects = initialState.allProjects;
     },
   },
-
 });
 
-export const { setRecentProjects, setUserProjects, setSharedProjects,
-  setAllProjects, setRecentProjectsPagination, setUserProjectsPagination,
-  setSharedProjectsPagination, setAllProjectsPagination, clearRecentProjects,
-  clearUserProjects, clearSharedProjects, clearAllProjects } = projectSlice.actions;
+export const {
+  setRecentProjects,
+  setUserProjects,
+  setSharedProjects,
+  setAllProjects,
+  setRecentProjectsPagination,
+  setUserProjectsPagination,
+  setSharedProjectsPagination,
+  setAllProjectsPagination,
+  clearRecentProjects,
+  clearUserProjects,
+  clearSharedProjects,
+  clearAllProjects,
+} = projectSlice.actions;
 export default projectSlice.reducer;

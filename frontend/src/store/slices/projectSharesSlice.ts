@@ -7,7 +7,6 @@ interface roomInterface {
   project_id: string;
 }
 
-
 interface ROOM {
   room: roomInterface;
 }
@@ -31,11 +30,11 @@ const projectSharesSlice = createSlice({
       state.room.channel = action.payload.channel;
       state.room.project_id = action.payload.project_id;
     },
+    clearRoom(state) {
+      state.room = initialState.room;
+    },
   },
 });
 
-
-
-export const { setRoom } = projectSharesSlice.actions;
+export const { setRoom, clearRoom } = projectSharesSlice.actions;
 export default projectSharesSlice.reducer;
-

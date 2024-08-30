@@ -7,6 +7,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { authApi } from '@store/services/auth';
 import { clearUser } from './userSlice';
+import { clearRoom } from './projectSharesSlice';
+import { clearAllProjects } from './projectSlice';
 import { AppDispatch } from '@store/store';
 
 // Define the authentication state interface
@@ -93,6 +95,8 @@ export const { setCredentials, unsetCredentials } = authSlice.actions;
 
 export const performLogout = () => (dispatch: AppDispatch) => {
   dispatch(unsetCredentials());
+  dispatch(clearRoom());
+  dispatch(clearAllProjects());
   dispatch(clearUser());
 };
 
