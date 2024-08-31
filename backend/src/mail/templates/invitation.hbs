@@ -30,9 +30,22 @@
             margin-bottom: 20px;
         }
         a {
-            color: #007acc;
             text-decoration: none;
             font-weight: bold;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007acc;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #005b99;
         }
         .footer {
             font-size: 0.875em;
@@ -63,11 +76,11 @@
             🥁 Exciting news! You've been invited to collaborate on a project by <strong>{{inviter_email}}</strong>.
         </p>
         <p>
-            🚀 Ready to dive in? Click the <a href="{{url}}">link</a> below to start your coding adventure with us:
+            🚀 Ready to dive in? Click the button below to start your coding adventure with us:
         </p>
-        <div class="code-block">
-            <code>{{url}}</code>
-        </div>
+        <p>
+            <a href="{{url}}" class="button">Join Project</a>
+        </p>
         <p>
             If this wasn’t you or you’re not ready to join the code quest, just ignore this email and keep coding the good code!
         </p>
@@ -78,4 +91,3 @@
     </div>
 </body>
 </html>
-
