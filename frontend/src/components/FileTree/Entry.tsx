@@ -51,6 +51,7 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
     typescript: 'typescript.png',
     markdown: 'markdown.png',
     html: 'html.png',
+    unknown: 'unknown.png',
   };
 
   const getFileExtension = (filename: string): string => {

@@ -15,6 +15,7 @@ export default function Tabs() {
     typescript: 'typescript.png',
     markdown: 'markdown.png',
     html: 'html.png',
+    unknown: 'unknown.png',
   };
 
   useEffect(() => {

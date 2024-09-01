@@ -28,7 +28,7 @@ export class FileMongoService {
     private directoryService: DirectoryMongoService,
     @Inject(forwardRef(() => ProjectsService))
     private projectService: ProjectsService,
-  ) { }
+  ) {}
 
   async create(createFileDto: CreateFileOutDto): Promise<FileMongo> {
     const parsedDto = parseCreateFileMongoDto(createFileDto);
@@ -86,14 +86,21 @@ export class FileMongoService {
     if (!file) {
       throw new NotFoundException('File not found');
     }
-    const conflict = await this.fileRepository.findOne({
-      where: {
-        name: parsedDto.name ? parsedDto.name : file.name,
-        parent_id: parsedDto.parent_id ? parsedDto.parent_id : file.parent_id
-      },
-    });
-    if (conflict) {
-      throw new ConflictException('File already exists');
+    // Check if the name or parent_id has changed
+    const isNameChanged = parsedDto.name && parsedDto.name !== file.name;
+    const isParentChanged =
+      parsedDto.parent_id && parsedDto.parent_id !== file.parent_id;
+    // Check if the new name and parent_id already exists
+    if (isNameChanged || isParentChanged) {
+      const conflict = await this.fileRepository.findOne({
+        where: {
+          name: parsedDto.name ? parsedDto.name : file.name,
+          parent_id: parsedDto.parent_id ? parsedDto.parent_id : file.parent_id,
+        },
+      });
+      if (conflict) {
+        throw new ConflictException('File already exists');
+      }
     }
     const newDate = new Date();
     if (parsedDto.name) file.name = parsedDto.name;

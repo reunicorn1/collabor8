@@ -28,6 +28,7 @@ const languageModes: Record<LanguageCode, string> = {
   typescript: 'javascript',
   markdown: 'markdown',
   html: 'xml',
+  unknown: 'javascript',
 };
 // Definition of interfaces and types
 

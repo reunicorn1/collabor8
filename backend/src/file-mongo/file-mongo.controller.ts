@@ -20,7 +20,7 @@ import FileDocs from './file-mongo.docs';
 @ApiTags('FileMongo')
 @Controller('files')
 export class FileMongoController {
-  constructor(private readonly fileService: FileMongoService) { }
+  constructor(private readonly fileService: FileMongoService) {}
 
   @FileDocs.create()
   @Post()
@@ -38,7 +38,10 @@ export class FileMongoController {
 
   @FileDocs.update()
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateFileDto: UpdateFileOutDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateFileDto: UpdateFileOutDto,
+  ) {
     return await this.fileService.update(id, updateFileDto);
   }
 

@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "node newserver.ts",
-    "dev": "NODE_ENV=development nodemon newserver.ts",
-    "pro": "NODE_ENV=production node newserver.ts"
+    "dev": "NODE_ENV=development nodemon HocuspocusServer.js",
+    "pro": "NODE_ENV=production node HocuspocusServer.js"
   }
 }

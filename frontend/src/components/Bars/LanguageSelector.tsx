@@ -9,6 +9,7 @@ const languageModes: Record<LanguageCode, string> = {
   typescript: 'javascript',
   markdown: 'markdown',
   html: 'xml',
+  unknown: 'javascript',
 };
 
 // animation variants

@@ -4,7 +4,8 @@ export type LanguageCode =
   | 'c'
   | 'typescript'
   | 'markdown'
-  | 'html';
+  | 'html'
+  | 'unknown';
 
 export const codeExamples: Record<LanguageCode, string> = {
   javascript: `// JavaScript Example: Function to Calculate Factorial
@@ -94,4 +95,5 @@ console.log('Hello World');
 </body>
 </html>
 `,
+  unknown: `// Unknown Language Example`,
 };

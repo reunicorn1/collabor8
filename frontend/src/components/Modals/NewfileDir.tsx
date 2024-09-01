@@ -35,6 +35,16 @@ interface ModalProps {
 }
 // Eslint was disabled for this method because it's used in an uncasual way
 
+const extensionToLanguageCode: Record<string, LanguageCode> = {
+  js: 'javascript',
+  ts: 'typescript',
+  py: 'python',
+  c: 'c',
+  md: 'markdown',
+  html: 'html',
+  unknown: 'unknown',
+};
+
 const NewfileDir: React.FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -116,7 +126,9 @@ const NewfileDir: React.FC<ModalProps> = ({
 
         set('filetree', data.filetree); // trigger to re-render the structure for all clients connected
         if (file instanceof Y.Text) {
-          const defaultLanguage: LanguageCode = 'javascript';
+          const fileExtension = newName.split('.').pop() || '';
+          const defaultLanguage: LanguageCode =
+            extensionToLanguageCode[fileExtension] || 'unknown';
           setFileSelected({
             name: newName,
             value: file,
