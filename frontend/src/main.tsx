@@ -20,11 +20,25 @@ const colors = {
   },
 };
 
+// Custom styles for alerts (used by toasts)
+const alertStyle = {
+  baseStyle: {
+    container: {
+      bg: 'brand.700',
+      color: 'brand.200',
+      fontFamily: 'mono',
+      borderRadius: 'md',
+      boxShadow: 'md',
+    },
+  },
+};
+
 // Extend the default Chakra UI theme with custom colors
 const theme = extendTheme({
   colors,
   components: {
     Menu: menuTheme,
+    Alert: alertStyle,
   },
 });
 
