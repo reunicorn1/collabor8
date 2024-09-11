@@ -134,19 +134,20 @@ export default function SignIn({
       >
         <ModalOverlay />
         <ModalContent background="linear-gradient(to bottom, #001845, #524175)">
-          {/* <ModalHeader color="white" fontFamily="mono" fontSize="sm">
-            Secure Login: Enter Your Credentials
-          </ModalHeader> */}
           <ModalCloseButton color="white" />
           <ModalBody pb={6}>
             <Flex alignItems="center" justifyContent="center">
               <Box mt={5} alignItems="center" justifyContent="center">
-                <Heading color="white" fontFamily="mono">
+                <Heading
+                  color="white"
+                  fontFamily="mono"
+                  fontSize={['lg', 'xl']}
+                >
                   Sign In
                 </Heading>
                 <Center>
                   <Heading
-                    fontSize="sm"
+                    fontSize={['sm', 'md']}
                     mt={2}
                     fontFamily="sans-serif"
                     color="white"
@@ -172,7 +173,7 @@ export default function SignIn({
                   color="white"
                   opacity="0.7"
                   fontFamily="mono"
-                  fontSize="sm"
+                  fontSize={['xs', 'sm']}
                 >
                   Username (a.k.a. your unique ID)
                 </FormLabel>
@@ -180,7 +181,7 @@ export default function SignIn({
                   w="95%"
                   color="white"
                   fontFamily="mono"
-                  fontSize="sm"
+                  fontSize={['sm', 'md']}
                   ref={initialRef}
                   placeholder="Enter your Username"
                   value={username}
@@ -193,7 +194,7 @@ export default function SignIn({
                   color="white"
                   opacity="0.7"
                   fontFamily="mono"
-                  fontSize="sm"
+                  fontSize={['xs', 'sm']}
                 >
                   Password (the secret sauce)
                 </FormLabel>
@@ -202,7 +203,7 @@ export default function SignIn({
                   type="password"
                   color="white"
                   fontFamily="mono"
-                  fontSize="sm"
+                  fontSize={['sm', 'md']}
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -217,7 +218,7 @@ export default function SignIn({
               onClick={handleLogin}
               rounded="full"
               w="60%"
-              size="md"
+              size={['sm', 'md']}
               colorScheme="orange"
               fontFamily="mono"
               rightIcon={<IoChevronForwardCircle fontSize="22px" />}
@@ -231,7 +232,7 @@ export default function SignIn({
               mt={4}
               fontFamily="sans-serif"
               opacity="0.7"
-              fontSize="sm"
+              fontSize={['xs', 'sm']}
               variant="link"
               onClick={handleResetPassword}
             >

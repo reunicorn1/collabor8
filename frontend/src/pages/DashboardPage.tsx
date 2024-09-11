@@ -56,21 +56,18 @@ export default function DashboardPage() {
 
   return (
     <>
-      {/* This is the nvaigation bar of the dashboard */}
       <DashboardBar />
-      <Flex h="100%">
+      <Flex h="100%" flexDirection={['column', 'row']}>
         <Box
           bg="brand.900"
-          w="270px"
+          w={['100%', '270px']}
           color="white"
-          borderRight="2px solid #524175"
+          borderRight={['none', '2px solid #524175']}
         >
           <InputGroup>
-            {/* navbar to the left */}
             <InputLeftElement mt={2} ml={2}>
               <SearchIcon color="gray.500" />
             </InputLeftElement>
-            {/* search bar */}
             <Input
               fontFamily="mono"
               variant="filled"
@@ -148,7 +145,6 @@ export default function DashboardPage() {
                     Starred
                   </Heading>
                   <Box pt={1}>
-                    {/* This part contains the favorite projects of the user */}
                     {userDetails?.favorite_projects?.map((project, index) => (
                       <Box
                         key={index}
@@ -171,7 +167,7 @@ export default function DashboardPage() {
             )}
           </>
         </Box>
-        <Box flex="1" bg="brand.900" h="100%" color="white" width="90%">
+        <Box flex="1" bg="brand.900" h="100%" color="white" width="100%">
           {clicked === 'Home' ? (
             <Home />
           ) : clicked === 'Project' ? (

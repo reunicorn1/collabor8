@@ -18,21 +18,42 @@ const About = () => {
     navigate('/');
   };
   return (
-    <Flex direction="column" align="center" bg="black" p={10} minH="100vh">
+    <Flex
+      direction="column"
+      align="center"
+      bg="black"
+      p={[4, 6, 10]}
+      minH="100vh"
+    >
       <Box
         maxW="800px"
-        w="full"
+        w={['100%', '90%', '80%']}
         bg="brand.900"
         color="white"
         borderRadius="md"
         boxShadow="md"
-        p={6}
+        p={[4, 6]}
       >
-        <Heading as="h1" size="xl" fontFamily="mono" mb={4} color="#E86044">
+        {/* Heading */}
+        <Heading
+          as="h1"
+          size="xl"
+          fontFamily="mono"
+          mb={4}
+          color="#E86044"
+          fontSize={['2xl', '3xl', '4xl']}
+          textAlign={['center', 'left']}
+        >
           Collabor8
         </Heading>
 
-        <Text fontSize="lg" fontFamily="mono" mb={4}>
+        {/* Introduction Text */}
+        <Text
+          fontSize={['md', 'lg']}
+          fontFamily="mono"
+          mb={4}
+          textAlign={['justify', 'left']}
+        >
           Collabor8 is your ultimate web-based coding playground where real-time
           code editing meets seamless collaboration. With a focus on providing
           developers and teams an ideal space to code together, this platform
@@ -42,11 +63,19 @@ const About = () => {
 
         <Divider mb={4} borderColor="brand.800" />
 
-        <Heading as="h2" size="lg" fontFamily="mono" mb={2} color="#E86044">
+        {/* Project Overview */}
+        <Heading
+          as="h2"
+          size="lg"
+          fontFamily="mono"
+          mb={2}
+          color="#E86044"
+          fontSize={['xl', '2xl']}
+        >
           Project Overview
         </Heading>
 
-        <Text fontSize="md" fontFamily="mono" mb={4}>
+        <Text fontSize={['sm', 'md']} fontFamily="mono" mb={4}>
           Collabor8 is all about creating a sophisticated environment where
           users can code together in real-time. Leveraging WebSocket
           communication, Collabor8 ensures that all participants see changes
@@ -56,11 +85,19 @@ const About = () => {
 
         <Divider mb={4} borderColor="brand.800" />
 
-        <Heading as="h2" size="lg" fontFamily="mono" mb={2} color="#E86044">
+        {/* Objectives */}
+        <Heading
+          as="h2"
+          size="lg"
+          fontFamily="mono"
+          mb={2}
+          color="#E86044"
+          fontSize={['xl', '2xl']}
+        >
           Objectives
         </Heading>
 
-        <List spacing={3} fontFamily="mono" fontSize="md">
+        <List spacing={3} fontFamily="mono" fontSize={['sm', 'md']}>
           <ListItem>
             <ListIcon as={CheckCircleIcon} color="#E86044" />
             Build a real-time collaborative code editor.
@@ -90,6 +127,7 @@ const About = () => {
             fontFamily="mono"
             colorScheme="orange"
             variant="solid"
+            size={['sm', 'md']}
           >
             Back to Home
           </Button>

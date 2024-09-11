@@ -38,7 +38,7 @@ import { v4 as uuidv4 } from 'uuid';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @docs.ApiSignIn()
   @Public()
@@ -51,9 +51,10 @@ export class AuthController {
     @Body('is_invited') is_invited: boolean,
   ) {
     //Logger.log('--------------->', { user: req.user });
-    const { accessToken, refreshToken, user } = await this.authService.signIn(
-      { ...req.user, is_invited },
-    );
+    const { accessToken, refreshToken, user } = await this.authService.signIn({
+      ...req.user,
+      is_invited,
+    });
 
     res
       .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
@@ -83,7 +84,10 @@ export class AuthController {
       if (createUserDto.is_invited) {
         // edge case for invited guest
         // will be verified directly after signup
-        console.log('===================================>', { is_invited: createUserDto.is_invited, payload });
+        console.log('===================================>', {
+          is_invited: createUserDto.is_invited,
+          payload,
+        });
         const { accessToken, refreshToken } =
           await this.authService.generateTokens(payload);
         return res
@@ -151,7 +155,8 @@ export class AuthController {
   @Public()
   @Get('verify')
   async verifyEmail(@Request() req, @Response() res) {
-    const { refreshToken, accessToken, user } = await this.authService.verifyUser(req.query.token);
+    const { refreshToken, accessToken, user } =
+      await this.authService.verifyUser(req.query.token);
     res
       .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
       .cookie('accessToken', accessToken)
@@ -160,9 +165,7 @@ export class AuthController {
 
   // @Docs.resetPassword()
   @Patch('me/change-password')
-  async changePassword(
-    @Request() req,
-  ): Promise<{ message: string }> {
+  async changePassword(@Request() req): Promise<{ message: string }> {
     console.log('req.user', req.body);
     return await this.authService.resetPassword(
       req.user.username,
@@ -187,9 +190,10 @@ export class AuthController {
   // user is redirected to login page
   @Public()
   @Post('validate-reset-token')
-  async validateResetToken(
-    @Request() req,
-  ): Promise<{ message: string }> {
-    return await this.authService.validateToken(req.query.token, req.body.password);
+  async validateResetToken(@Request() req): Promise<{ message: string }> {
+    return await this.authService.validateToken(
+      req.query.token,
+      req.body.password,
+    );
   }
 }

@@ -90,9 +90,8 @@ export default function MenuProject({ children, project, type }: DBMenuProps) {
       <MenuButton onClick={(e) => e.stopPropagation()}>{children}</MenuButton>
       <MenuList bg="gray">
         <MenuItem
-          fontSize="xs"
+          fontSize={['xx-small', 'xs']}
           icon={<MdOutlineEdit fontSize="12px" />}
-          // show popover to rename project
           onClick={(e) => {
             e.stopPropagation();
             onOpen();
@@ -107,14 +106,14 @@ export default function MenuProject({ children, project, type }: DBMenuProps) {
           onSave={onSave}
         />
         <MenuItem
-          fontSize="xs"
+          fontSize={['xx-small', 'xs']}
           icon={<MdDeleteOutline fontSize="12px" />}
           onClick={handleDelete}
         >
           Delete
         </MenuItem>
         <MenuItem
-          fontSize="xs"
+          fontSize={['xx-small', 'xs']}
           icon={<MdOutlineStarHalf fontSize="12px" />}
           onClick={handleFavorites}
         >

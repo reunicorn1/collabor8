@@ -106,9 +106,9 @@ export default function SharedWithMe() {
 
   return (
     <Box h="100vh">
-      <Flex alignItems="center" ml={20} mt={10}>
+      <Flex alignItems="center" ml={[4, 8, 20]} mt={[4, 8, 10]}>
         <Box w="10px" h="10px" bg="purple.300" borderRadius="50%" />
-        <Text fontFamily="mono" fontSize="xs" ml={2}>
+        <Text fontFamily="mono" fontSize={['xs', 'sm', 'md']} ml={2}>
           Shared with me
         </Text>
         <Spacer />
@@ -119,18 +119,17 @@ export default function SharedWithMe() {
       </Flex>
       <TableContainer
         mt="25px"
-        ml={20}
-        mr={20}
+        ml={[4, 8, 20]}
+        mr={[4, 8, 20]}
         mb={5}
         overflowY="scroll"
         minH="300px"
         maxH="550px"
-        // gradient from gray to blue
         bgGradient="linear(to-t, brand.800, brand.900)"
       >
         {!userProjects.sharedProjects?.length ? (
           <Center mt={20}>
-            <Text fontFamily="mono" fontSize="sm">
+            <Text fontFamily="mono" fontSize={['xs', 'sm', 'md']}>
               No Projects created yet...
             </Text>
           </Center>
@@ -187,10 +186,8 @@ export default function SharedWithMe() {
         alignItems="center"
         justifyContent="center"
         mb={5}
-        mr={20}
+        mr={[4, 8, 20]}
       >
-        {/* Control the opacity of the arrows based on the number of pages, if first page, 
-        opacity of back is 0, if last page opacity of forward is 0 */}
         <ArrowBackIcon
           opacity={userProjectsPagination.page > 1 ? 1 : 0.2}
           onClick={handleBack}

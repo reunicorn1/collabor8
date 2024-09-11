@@ -54,24 +54,24 @@ export default function DBMenu({ children }: DBMenuProps) {
           <MenuItem onClick={handleProfile}>
             <Avatar
               src={userDetails?.profile_picture}
-              boxSize="23px"
+              boxSize={['20px', '23px']}
               bg="purple.400"
               mr={2}
             />
-            <Text fontSize="sm">{`@${userDetails?.username}`}</Text>
+            <Text fontSize={['xs', 'sm']}>{`@${userDetails?.username}`}</Text>
           </MenuItem>
         </MenuGroup>
         <MenuDivider />
         <MenuGroup>
           <MenuItem
             onClick={handleProfile}
-            fontSize="xs"
+            fontSize={['xx-small', 'xs']}
             icon={<FiUser fontSize="13px" />}
           >
             Profile
           </MenuItem>
           <MenuItem
-            fontSize="xs"
+            fontSize={['xx-small', 'xs']}
             icon={<FiLogOut fontSize="13px" />}
             _hover={{ bg: 'red.500', color: 'white' }}
             onClick={handleLogout}

@@ -81,19 +81,19 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
       >
         <ModalOverlay />
         <ModalContent bg="brand.900">
-          <ModalHeader color="white" fontFamily="mono" fontSize="sm">
+          <ModalHeader color="white" fontFamily="mono" fontSize={['sm', 'md']}>
             Create your project
           </ModalHeader>
           <ModalCloseButton color="white" />
           <ModalBody pb={6}>
             <FormControl>
-              <FormLabel color="grey" fontFamily="mono" fontSize="xs">
+              <FormLabel color="grey" fontFamily="mono" fontSize={['xs', 'sm']}>
                 Title
               </FormLabel>
               <Input
                 color="white"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['sm', 'md']}
                 ref={initialRef}
                 placeholder="Name your project"
                 value={name}
@@ -102,13 +102,18 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
             </FormControl>
 
             <FormControl>
-              <FormLabel color="grey" fontFamily="mono" fontSize="xs" mt={4}>
+              <FormLabel
+                color="grey"
+                fontFamily="mono"
+                fontSize={['xs', 'sm']}
+                mt={4}
+              >
                 Description
               </FormLabel>
               <Textarea
                 color="white"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['sm', 'md']}
                 placeholder="Tell us about your project"
                 value={description}
                 onChange={handleChangeDescription}
@@ -120,14 +125,14 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
             <Button
               colorScheme="orange"
               mr={3}
-              size="sm"
+              size={['sm', 'md']}
               isDisabled={!name || !description}
               onClick={handleCreate}
               ref={finalRef}
             >
               Create Project
             </Button>
-            <Button size="sm" onClick={handleClose}>
+            <Button size={['sm', 'md']} onClick={handleClose}>
               Cancel
             </Button>
           </ModalFooter>
