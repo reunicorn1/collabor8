@@ -154,6 +154,8 @@ class HocuspocusServer {
 }
 
 const instance = new HocuspocusServer();
+
+// mark insance as read only
 Object.freeze(instance);
 
 instance.start();

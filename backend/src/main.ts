@@ -18,7 +18,7 @@ async function bootstrap() {
   const options = new DocumentBuilder()
     .addBearerAuth()
     .setTitle('Collabor8')
-    .setDescription('Your API description')
+    .setDescription('Collabor8 API, the padlock means endpoint requires authentication')
     .setVersion('1.0')
     .addServer('http://localhost:3000/api/v1', 'Local environment')
     .addServer('https://staging.yourapi.com/api/v1', 'Staging')
