@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Flex, Heading, Text, Center, Image } from '@chakra-ui/react';
+import { Box, Flex, Heading, Text, Center, Image, Grid, SimpleGrid } from '@chakra-ui/react';
 import NavigationBar from '@components/Bars/NavigationBar';
 import SignUp from '@components/Modals/SignUp';
 import ResetPasswordModal from '@components/Modals/ResetPassword';
@@ -9,7 +9,8 @@ import { HiUsers } from 'react-icons/hi2';
 import { PiCursorClickFill } from 'react-icons/pi';
 import { ImDatabase } from 'react-icons/im';
 import { TbLayoutDashboardFilled } from 'react-icons/tb';
-import InviteGuest from '@components/Invite';
+
+const TEXT = '  Collabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.';
 
 const Home = () => {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -32,17 +33,13 @@ const Home = () => {
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
-  const typedText = useTypingEffect(
-    '  Collabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.',
-    50,
-    animationStarted,
-  );
+  const typedText = useTypingEffect(TEXT, 50, animationStarted);
 
   return (
     <>
       <NavigationBar />
       <Flex bg="black" justifyContent="center">
-        {/*        <InviteGuest />*/}
+        {/* SLOGAN */}
         <Box
           bgGradient="radial-gradient(circle at 20% 600%, #ff7e5f, #6699CC, #76449A, transparent)"
           w="100%"
@@ -102,11 +99,15 @@ const Home = () => {
           </Box>
         </Box>
       </Flex>
+
+      {/* TYPING */}
       <Box bg="white" h="200px" display="flex" justifyContent="center" pt={20}>
         <Text fontSize="2xl" color="black" fontFamily="mono" w="900px">
           {typedText}
         </Text>
       </Box>
+
+      {/* FEATURES */}
       <Box justifyContent="center" bg="black" w="100%">
         <Center mb={10} bg="black" pt={20}>
           <Text
@@ -116,8 +117,9 @@ const Home = () => {
             textAlign="center"
             color="white"
           >
-            Why Collabor8 is the <span className="ultimate">Ultimate</span>
-            &nbsp; Tool for Team Collaboration
+            Why Collabor8 is the &nbsp;
+            <span className="ultimate">Ultimate</span>
+            &nbsp;Tool for Team Collaboration
           </Text>
         </Center>
         <Box
@@ -246,7 +248,7 @@ const Home = () => {
           </Flex>
         </Box>
       </Box>
-      <Flex bg="#F6D277" justifyContent="center" alignItems="center" pt={20}>
+      {/*<Flex bg="#F6D277" justifyContent="center" alignItems="center" pt={20}>
         <Box
           alignItems="center"
           textAlign="center"
@@ -273,79 +275,75 @@ const Home = () => {
             </Text>
           </Center>
         </Box>
-      </Flex>
-      <Flex
-        justifyContent="center"
-        alignItems="center"
-        bg="white"
+      </Flex>*/}
+
+      {/* ABOUT US */}
+      <div
         id="about-us"
+        className="container mx-auto bg-red-200"
       >
-        <Box p={10} pb={10}>
-          <Center>
-            <Heading mb={20} size="2xl" fontFamily="mono">
-              Our Team
+        <h1 className='bg-black'>
+          Our Team
+        </h1>
+        <SimpleGrid minChildWidth='250px' spacing='40px'>
+          <Box
+            justifyContent="center"
+            alignItems="center"
+            textAlign="center"
+            borderBottom="10px solid #52A0D8"
+            p={2}
+            m={4}
+          >
+            <Center>
+              <Image src="/aa.png" h="250px" />
+            </Center>
+            <Heading fontSize="25px" fontFamily="mono">
+              Abdallah Abdelrahman
             </Heading>
-          </Center>
-          <Flex>
-            <Box
-              justifyContent="center"
-              alignItems="center"
-              textAlign="center"
-              borderBottom="10px solid #52A0D8"
-              p={2}
-              m={4}
-            >
-              <Center>
-                <Image src="/aa.png" h="250px" />
-              </Center>
-              <Heading fontSize="25px" fontFamily="mono">
-                Abdallah Abdelrahman
-              </Heading>
-            </Box>
-            <Box
-              justifyContent="center"
-              alignItems="center"
-              textAlign="center"
-              borderBottom="10px solid #F16145"
-              p={2}
-              m={4}
-            >
-              <Center>
-                <Image src="/mea.png" h="250px" />
-              </Center>
-              <Heading fontSize="25px" fontFamily="mono">
-                Mohamed Elfadil Abdalla
-              </Heading>
-            </Box>
-            <Box
-              justifyContent="center"
-              alignItems="center"
-              textAlign="center"
-              borderBottom="10px solid #76449A"
-              p={2}
-              m={4}
-            >
-              <Image src="/mab.png" h="250px" />
-              <Heading fontSize="25px" fontFamily="mono">
-                Mohannad Babiker
-              </Heading>
-            </Box>
-            <Box
-              justifyContent="center"
-              alignItems="center"
-              textAlign="center"
-              borderBottom="10px solid #F6D277"
-              p={2}
-              m={4}
-            >
-              <Image src="/ro.png" h="250px" />
-              <Heading fontSize="25px" fontFamily="mono">
-                Reem Osama
-              </Heading>
-            </Box>
-          </Flex>
-        </Box>
-      </Flex>
+          </Box>
+          <Box
+            justifyContent="center"
+            alignItems="center"
+            textAlign="center"
+            borderBottom="10px solid #F16145"
+            p={2}
+            m={4}
+          >
+            <Center>
+              <Image src="/mea.png" h="250px" />
+            </Center>
+            <Heading fontSize="25px" fontFamily="mono">
+              Mohamed Elfadil Abdalla
+            </Heading>
+          </Box>
+          <Box
+            justifyContent="center"
+            alignItems="center"
+            textAlign="center"
+            borderBottom="10px solid #76449A"
+            p={2}
+            m={4}
+          >
+            <Image src="/mab.png" h="250px" />
+            <Heading fontSize="25px" fontFamily="mono">
+              Mohannad Babiker
+            </Heading>
+          </Box>
+          <Box
+            justifyContent="center"
+            alignItems="center"
+            textAlign="center"
+            borderBottom="10px solid #F6D277"
+            p={2}
+            m={4}
+          >
+            <Image src="/ro.png" h="250px" />
+            <Heading fontSize="25px" fontFamily="mono">
+              Reem Osama
+            </Heading>
+          </Box>
+        </SimpleGrid>
+      </div>
       <Image src="banner3.png" />
 
       {/* Footer Section */}
