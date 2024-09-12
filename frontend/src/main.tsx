@@ -15,8 +15,65 @@ const colors = {
     800: '#524175',
     700: '#333333',
     600: '#E6E85C',
+    500: '#F3F3F3',
+    400: '#FFD700',
+    300: '#FF4C4C',
     200: '#6BE3E1',
+    150: '#D1D1D1',
     100: '#524175',
+  },
+};
+
+// Custom styles for alerts (used by toasts)
+const alertStyle = {
+  baseStyle: {
+    container: {
+      fontFamily: 'mono',
+      borderRadius: 'md',
+      boxShadow: 'md',
+      padding: '1rem',
+      border: '1px solid',
+    },
+  },
+  variants: {
+    subtle: (props: any) => ({
+      container: {
+        bg: 'brand.150',
+        color: 'brand.900',
+        borderColor: 'brand.200',
+      },
+    }),
+    success: {
+      container: {
+        bg: 'brand.200',
+        color: 'brand.700',
+        borderColor: 'brand.600',
+      },
+    },
+    error: {
+      container: {
+        bg: 'brand.300',
+        color: 'brand.150',
+        borderColor: 'brand.400',
+      },
+    },
+    warning: {
+      container: {
+        bg: 'brand.400',
+        color: 'brand.700',
+        borderColor: 'brand.300',
+      },
+    },
+    info: {
+      container: {
+        bg: 'brand.600',
+        color: 'brand.900',
+        borderColor: 'brand.800',
+      },
+    },
+  },
+  defaultProps: {
+    variant: 'subtle',
   },
 };
 
@@ -25,6 +82,7 @@ const theme = extendTheme({
   colors,
   components: {
     Menu: menuTheme,
+    Alert: alertStyle,
   },
 });
 

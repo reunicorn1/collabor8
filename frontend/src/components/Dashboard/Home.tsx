@@ -124,33 +124,39 @@ export default function Home() {
   // When this happens userDetails disappear, but accessToken is still there
 
   return (
-    <Flex justifyContent="center" h="100vh" flex={1}>
-      <Box>
+    <Flex justifyContent="center" h="100vh" flex={1} p={[4, 8, 12]}>
+      <Box maxW="container.lg" w="100%">
         <Image src="/banner3.png" maxW="100%" />
         <Center>
-          <Text color="white" fontFamily="mono" fontSize="2xl" m={5}>
+          <Text
+            color="white"
+            fontFamily="mono"
+            fontSize={['lg', 'xl', '2xl']}
+            m={5}
+            textAlign="center"
+          >
             {`Good ${getTimeOfDay()}, ${userDetails?.first_name} ${userDetails?.last_name}`}
           </Text>
         </Center>
         {recentProjects.recentProjects?.length !== 0 && (
           <>
-            <Flex alignItems="center" ml={20} mt={10}>
+            <Flex alignItems="center" ml={[4, 8, 20]} mt={[4, 8, 10]}>
               <Box w="10px" h="10px" bg="yellow.200" borderRadius="50%" />
-              <Text fontFamily="mono" fontSize="xs" ml={2}>
+              <Text fontFamily="mono" fontSize={['xs', 'sm', 'md']} ml={2}>
                 Recent Projects
               </Text>
             </Flex>
 
             <Box
-              ml={20}
-              mr={20}
+              ml={[4, 8, 20]}
+              mr={[4, 8, 20]}
               mt="15px"
               display="flex"
-              overflowX="scroll"
-              maxW="1020"
+              overflowX="auto"
+              maxW="100%"
               whiteSpace="nowrap"
+              p={2}
             >
-              {/* top 3 recent projects will be shown here */}
               {recentProjects.recentProjects?.map((project, index) => {
                 const color = getRandomColor(project.project_name);
                 return (
@@ -159,7 +165,7 @@ export default function Home() {
                     display="flex"
                     border="0.5px solid white"
                     borderBottom={`6px solid ${color}`}
-                    w="320px"
+                    w={['280px', '300px', '320px']}
                     h="90px"
                     p={6}
                     pt={5}
@@ -172,29 +178,27 @@ export default function Home() {
                     <Icon as={FaFolder} fontSize="45px" color={color} />
                     <Box ml={5}>
                       <Text
-                        fontSize="sm"
+                        fontSize={['xs', 'sm', 'md']}
                         fontFamily="mono"
                         textOverflow="ellipsis"
                         whiteSpace="nowrap"
                         overflow="hidden"
-                        maxW="150px"
+                        maxW={['120px', '140px', '150px']}
                       >
                         {project.project_name}
                       </Text>
-                      <Text fontSize="xs" fontFamily="mono">
+                      <Text fontSize={['xx-small', 'xs']} fontFamily="mono">
                         {project.lastEdited}
                       </Text>
                     </Box>
                     <Spacer />
-                    {/* The avatar of the owner */}
-                    <Avatar boxSize="23px" bg="gray.500" />
+                    <Avatar boxSize={['20px', '23px']} bg="gray.500" />
                   </Box>
                 );
               })}
             </Box>
           </>
         )}
-        {/* projects table */}
         <PersonalTable />
       </Box>
     </Flex>

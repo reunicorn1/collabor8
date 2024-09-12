@@ -140,13 +140,14 @@ export default function DashboardBar() {
       bg="brand.900"
       alignItems="center"
       borderBottom="2px solid #524175"
-      p={3}
+      p={[2, 3, 4]}
       w="100%"
+      flexDirection={'row'}
     >
       <Image
         src="/logo-bb.png"
-        h="23px"
-        ml={3}
+        h={['20px', '23px']}
+        ml={[2, 3]}
         cursor="pointer"
         onClick={() => navigate('/dashboard')}
       />
@@ -174,13 +175,13 @@ export default function DashboardBar() {
         onDecline={handleDecline}
       />
 
-      <Box display="flex" alignItems="center">
+      <Box display="flex" alignItems="center" mt={[2, 0]}>
         <DBMenu>
           <Avatar
             src={userDetails?.profile_picture}
-            boxSize="22px"
+            boxSize={['20px', '22px']}
             bg="purple.400"
-            ml={4}
+            ml={[2, 4]}
             mr={2}
           />
           <Icon color="white" as={ChevronDownIcon} />
