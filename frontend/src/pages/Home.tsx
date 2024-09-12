@@ -1,16 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Box, Flex, Heading, Text, Center, Image, Grid, SimpleGrid } from '@chakra-ui/react';
-import NavigationBar from '@components/Bars/NavigationBar';
+import { Box, Heading, Text, Center, Image, SimpleGrid } from '@chakra-ui/react';
 import SignUp from '@components/Modals/SignUp';
 import ResetPasswordModal from '@components/Modals/ResetPassword';
 import useTypingEffect from '../hooks/useTypingEffect';
 import { useLocation } from 'react-router-dom';
-import { HiUsers } from 'react-icons/hi2';
-import { PiCursorClickFill } from 'react-icons/pi';
-import { ImDatabase } from 'react-icons/im';
-import { TbLayoutDashboardFilled } from 'react-icons/tb';
+import Slogan from '@components/Slogan';
+import { TEXT, AVATARS, FEATURES } from '../constants.ts';
 
-const TEXT = '  Collabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.';
 
 const Home = () => {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -37,314 +33,111 @@ const Home = () => {
 
   return (
     <>
-      <NavigationBar />
-      <Flex bg="black" justifyContent="center">
-        {/* SLOGAN */}
-        <Box
-          bgGradient="radial-gradient(circle at 20% 600%, #ff7e5f, #6699CC, #76449A, transparent)"
-          w="100%"
-          display="flex"
-          justifyContent="center"
-          p={5}
-          className="fade"
-          id="home"
-        >
-          <Box>
-            <Flex justifyContent="flex-start" alignItems="center" mb="-30px">
-              <Text color="#F16145" fontFamily="mono" fontSize="110px">
-                {'==>'}
-              </Text>
-              <Text color="white" fontFamily="mono" fontSize="110px">
-                code
-              </Text>
-            </Flex>
-            <Flex justifyContent="flex-start" alignItems="center" mb="-30px">
-              <Text color="white" fontFamily="mono" fontSize="110px">
-                together
-              </Text>
-              <Text color="#76449A" fontFamily="mono" fontSize="110px">
-                {'}'}
-              </Text>
-              <Text color="#F6D277" fontFamily="mono" fontSize="110px">
-                ..
-              </Text>
-            </Flex>
-            <Flex alignItems="center" mb="-30px">
-              <Text
-                color="white"
-                w="200px"
-                fontSize="16px"
-                textAlign="left"
-                fontFamily="mono"
-              >
-                Collaborative coding made simple. Join developers worldwide and
-                create together.
-              </Text>
-              <Text color="white" fontFamily="mono" fontSize="110px">
-                innovate
-              </Text>
-            </Flex>
-            <Flex alignItems="center">
-              <Box bg="#F16145" w="225px" h="60px" mr={30}></Box>
-              <Text color="white" fontFamily="mono" fontSize="110px">
-                faster
-              </Text>
-              <Text fontFamily="mono" fontSize="110px" color="#52A0D8">
-                ^
-              </Text>
-              <Text fontFamily="mono" fontSize="100px" color="#B4B4B4">
-                *
-              </Text>
-            </Flex>
-          </Box>
-        </Box>
-      </Flex>
+      {/* <NavigationBar /> */}
+      {/* SLOGAN */}
+      <Slogan />
 
       {/* TYPING */}
-      <Box bg="white" h="200px" display="flex" justifyContent="center" pt={20}>
-        <Text fontSize="2xl" color="black" fontFamily="mono" w="900px">
+      <Box bg="white" px={4} className='py-10 lg:py-20'>
+        <p className='lg:max-w-[50%] mx-auto font-mono !leading-loose lg:text-4xl'>
           {typedText}
-        </Text>
+        </p>
       </Box>
 
       {/* FEATURES */}
-      <Box justifyContent="center" bg="black" w="100%">
-        <Center mb={10} bg="black" pt={20}>
-          <Text
-            fontFamily="mono"
-            fontSize="35px"
-            w="50%"
-            textAlign="center"
-            color="white"
-          >
-            Why Collabor8 is the &nbsp;
-            <span className="ultimate">Ultimate</span>
-            &nbsp;Tool for Team Collaboration
-          </Text>
-        </Center>
+      <Box
+        bg='black'
+        backgroundImage={`url('/loop.png')`}
+        backgroundSize="cover"
+        backgroundPosition="center"
+        py={10}
+      >
+        <Text
+          fontFamily="mono"
+          fontSize="35px"
+
+          color="white"
+          className="w-[min(90%,700px)] mx-auto text-center"
+        >
+          Why Collabor8 is the Ultimate Tool for Team Collaboration
+        </Text>
         <Box
-          alignItems="center"
-          backgroundImage={`url('/loop.png')`}
-          backgroundSize="cover"
-          backgroundPosition="center"
-          w="100%"
-          pb={20}
+          className={`container mx-auto py-10 px-4 grid grid-cols-1 md:grid-cols-9 justify-center gap-8 lg:px-24`}
           id="features"
         >
-          <Flex justifyContent="center" alignItems="center">
+          {FEATURES.map((f, idx) => (
             <Box
-              className="glass"
-              p={10}
-              textAlign="center"
-              w="400px"
-              background={'rgba(179, 74, 18, 0.25)'}
-              border="5px solid #F16145"
-              m={6}
+              key={idx}
+              className={`flex flex-col gap-3 justify-start glass p-4 bg-[rgba(179,74,18,0.25)] border-4 
+              ${(idx) % 2 === 0 ? 'md:col-start-1 md:col-end-5' : 'md:col-start-6 md:col-end-10'}`}
+              borderColor={f.borderColor}
             >
-              <Center mb={4}>
-                <HiUsers fontSize="90px" color="#F16145" />
-              </Center>
+              <f.Icon fontSize='90px' color={f.borderColor} />
               <Heading
-                textAlign="center"
                 fontFamily="mono"
                 size="lg"
                 color="white"
                 mb={2}
               >
-                Instant Updates
+                {f.title}
               </Heading>
-              <Text textAlign="left" color="white" opacity="0.9">
-                Experience the power of real-time editing where every team
-                member can see changes as they happen. No need to refresh or
-                wait for updates—your document evolves instantly as your team
-                works together.
+              <Text className='text-white text-lg'>
+                {f.description}
               </Text>
             </Box>
-            <Box
-              className="glass"
-              p={10}
-              textAlign="center"
-              w="400px"
-              border="5px solid #52A0D8"
-              m={6}
-              background={'rgba(96, 163, 250, 0.1)'}
-            >
-              <Center mb={4}>
-                <PiCursorClickFill fontSize="90px" color="#52A0D8" />
-              </Center>
-              <Heading
-                textAlign="center"
-                fontFamily="mono"
-                size="lg"
-                color="white"
-                mb={2}
-              >
-                Live Cursor Tracking
-              </Heading>
-              <Text textAlign="left" color="white" opacity="0.9">
-                Keep track of who’s working on what with live cursors,
-                highlighting, and color-coded indicators for each collaborator.
-                You’ll always know where your teammates are making edits.
-              </Text>
-            </Box>
-          </Flex>
-          <Flex justifyContent="center" alignItems="center">
-            <Box
-              className="glass"
-              p={10}
-              textAlign="center"
-              w="400px"
-              background={'rgba(240, 215, 94, 0.1)'}
-              border="5px solid #F6D277"
-              m={6}
-            >
-              <Center mb={4}>
-                <ImDatabase fontSize="90px" color="#F6D277" />
-              </Center>
-              <Heading
-                textAlign="center"
-                fontFamily="mono"
-                size="lg"
-                color="white"
-                mb={2}
-              >
-                Secure Data Storage
-              </Heading>
-              <Text textAlign="left" color="white" opacity="0.9">
-                All your documents are stored securely on our servers with
-                robust security measures in place to protect against data
-                breaches and unauthorized access. Your work is not only
-                accessible when you need it but also protected from threats.
-              </Text>
-            </Box>
-            <Box
-              className="glass"
-              p={10}
-              textAlign="center"
-              w="400px"
-              background={'rgba(131, 12, 236, 0.1)'}
-              border="5px solid #76449A"
-              m={6}
-            >
-              <Center mb={4}>
-                <TbLayoutDashboardFilled fontSize="90px" color="#76449A" />
-              </Center>
-              <Heading
-                textAlign="center"
-                fontFamily="mono"
-                size="lg"
-                color="white"
-                mb={2}
-              >
-                Clean and Simple Design
-              </Heading>
-              <Text textAlign="left" color="white" opacity="0.7" pb={6}>
-                Our user-friendly interface is designed to keep you focused on
-                your work. Whether you’re tech-savvy or a novice, Collabor8’s
-                intuitive design ensures that anyone can start collaborating
-                immediately.
-              </Text>
-            </Box>
-          </Flex>
+          ))
+          }
         </Box>
       </Box>
-      {/*<Flex bg="#F6D277" justifyContent="center" alignItems="center" pt={20}>
-        <Box
-          alignItems="center"
-          textAlign="center"
-          position="relative"
-          w="1000px"
-          h="100%"
-          p={20}
-        >
-          <Heading fontFamily="mono" fontSize="83px" zIndex="1">
+
+      {/* LOOOPING MOUSE */}
+      <Box className='relative py-10 bg-[#F6D277] lg:py-24'>
+        <Box className='mx-auto max-w-[700px] items-center flex flex-col gap-4 px-4 overflow-hidden'>
+          <Heading className='text-center !font-mono font-bold lg:!text-7xl'>
             Meet a Text Editor that makes an impact
           </Heading>
           <Image
             src="giphy.gif"
-            position="absolute"
-            top="0"
-            left="50%"
-            transform="translateX(-50%)"
-            zIndex="2"
+            className='h-full absolute top-0 left-1/2 -translate-x-1/2 lg:w-[30%]'
           />
-          <Center>
-            <Text fontSize="30px" w="700px" mb={10} mt={10}>
-              Accelerate your workflow and shorten your cycle with all-in one
-              platform for efficent code reviews
-            </Text>
-          </Center>
+          <Text className='text-xl leading-8 font-mono lg:mt-4 lg:text-3xl'>
+            Accelerate your workflow and shorten your cycle with all-in one
+            platform for efficent code reviews
+          </Text>
         </Box>
-      </Flex>*/}
+      </Box>
 
       {/* ABOUT US */}
-      <div
+      <Box
         id="about-us"
-        className="container mx-auto bg-red-200"
+        className="container mx-auto my-8"
       >
-        <h1 className='bg-black'>
+        <h1 className='py-4 text-center font-mono text-5xl font-bold'>
           Our Team
         </h1>
-        <SimpleGrid minChildWidth='250px' spacing='40px'>
-          <Box
-            justifyContent="center"
-            alignItems="center"
-            textAlign="center"
-            borderBottom="10px solid #52A0D8"
-            p={2}
-            m={4}
-          >
-            <Center>
-              <Image src="/aa.png" h="250px" />
-            </Center>
-            <Heading fontSize="25px" fontFamily="mono">
-              Abdallah Abdelrahman
-            </Heading>
-          </Box>
-          <Box
-            justifyContent="center"
-            alignItems="center"
-            textAlign="center"
-            borderBottom="10px solid #F16145"
-            p={2}
-            m={4}
-          >
-            <Center>
-              <Image src="/mea.png" h="250px" />
-            </Center>
-            <Heading fontSize="25px" fontFamily="mono">
-              Mohamed Elfadil Abdalla
-            </Heading>
-          </Box>
-          <Box
-            justifyContent="center"
-            alignItems="center"
-            textAlign="center"
-            borderBottom="10px solid #76449A"
-            p={2}
-            m={4}
-          >
-            <Image src="/mab.png" h="250px" />
-            <Heading fontSize="25px" fontFamily="mono">
-              Mohannad Babiker
-            </Heading>
-          </Box>
-          <Box
-            justifyContent="center"
-            alignItems="center"
-            textAlign="center"
-            borderBottom="10px solid #F6D277"
-            p={2}
-            m={4}
-          >
-            <Image src="/ro.png" h="250px" />
-            <Heading fontSize="25px" fontFamily="mono">
-              Reem Osama
-            </Heading>
-          </Box>
+        <SimpleGrid px={{ base: '20px', md: '0' }} minChildWidth='250px' spacing='40px'>
+          {AVATARS.map(avatar => (
+            <Box
+              key={avatar.name}
+              justifyContent="center"
+              alignItems="center"
+              textAlign="center"
+              borderBottom={`10px solid ${avatar.borderColor}`}
+              p={2}
+              m={4}
+            >
+              <Center>
+                <Image src={avatar.img} h="250px" />
+              </Center>
+              <Heading fontSize="25px" fontFamily="mono">
+                {avatar.name}
+              </Heading>
+            </Box>
+          ))}
         </SimpleGrid>
-      </div>
-      <Image src="banner3.png" />
+      </Box>
+
+      <Image className='h-8 w-full' src="banner3.png" />
 
       {/* Footer Section */}
       <Box bg="brand.800" p={5} color="white" textAlign="center" pt={10}>
