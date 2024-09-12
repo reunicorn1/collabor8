@@ -124,8 +124,8 @@ export default function Home() {
   // When this happens userDetails disappear, but accessToken is still there
 
   return (
-    <Flex justifyContent="center" h="100vh" flex={1}>
-      <Box>
+    <Flex justifyContent="center" h="100vh" flex={1} p={[4, 8, 12]}>
+      <Box maxW="container.lg" w="100%">
         <Image src="/banner3.png" maxW="100%" />
         <Center>
           <Text
@@ -133,6 +133,7 @@ export default function Home() {
             fontFamily="mono"
             fontSize={['lg', 'xl', '2xl']}
             m={5}
+            textAlign="center"
           >
             {`Good ${getTimeOfDay()}, ${userDetails?.first_name} ${userDetails?.last_name}`}
           </Text>
@@ -151,9 +152,10 @@ export default function Home() {
               mr={[4, 8, 20]}
               mt="15px"
               display="flex"
-              overflowX="scroll"
+              overflowX="auto"
               maxW="100%"
               whiteSpace="nowrap"
+              p={2}
             >
               {recentProjects.recentProjects?.map((project, index) => {
                 const color = getRandomColor(project.project_name);
