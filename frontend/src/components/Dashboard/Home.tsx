@@ -124,7 +124,7 @@ export default function Home() {
   // When this happens userDetails disappear, but accessToken is still there
 
   return (
-    <Flex justifyContent="center" h="100vh" flex={1} flexDirection="column">
+    <Flex justifyContent="center" h="100vh" flex={1}>
       <Box>
         <Image src="/banner3.png" maxW="100%" />
         <Center>
