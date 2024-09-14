@@ -3,7 +3,7 @@ import { PiCursorClickFill } from 'react-icons/pi';
 import { ImDatabase } from 'react-icons/im';
 import { TbLayoutDashboardFilled } from 'react-icons/tb';
 
-const TEXT = '  Collabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.';
+const TEXT = 'Collabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.';
 const AVATARS = [
   { name: 'Abdallah Abdelrahman', img: '/aa.png', borderColor: '#52A0D8' },
   { name: 'Mohamed Elfadil Abdalla', img: '/mea.png', borderColor: '#F16145' },
