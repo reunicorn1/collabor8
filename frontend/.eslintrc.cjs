@@ -7,7 +7,7 @@ import tsParser from '@typescript-eslint/parser';
 import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 
-export default [
+module.exports = [
   {
     files: ['**/*.{ts,tsx}'],
     ignores: ['dist'],
@@ -31,6 +31,8 @@ export default [
         { allowConstantExport: true },
       ],
       'prettier/prettier': 'error',
+      "quotes": ["warn", "double"],
+      "semi": ["warn", "always"]
     },
   },
   js.configs.recommended,

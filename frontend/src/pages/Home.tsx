@@ -6,6 +6,7 @@ import useTypingEffect from '../hooks/useTypingEffect';
 import { useLocation } from 'react-router-dom';
 import Slogan from '@components/Slogan';
 import { TEXT, AVATARS, FEATURES } from '../constants.ts';
+import NavigationBar from '@components/Bars/NavigationBar.tsx';
 
 
 const Home = () => {
@@ -33,12 +34,12 @@ const Home = () => {
 
   return (
     <>
-      {/* <NavigationBar /> */}
+      <NavigationBar />
       {/* SLOGAN */}
       <Slogan />
 
       {/* TYPING */}
-      <Box bg="white" px={4} className='py-10 lg:py-20'>
+      <Box bg='white' px={4} className='py-10 lg:py-20'>
         <p className='lg:max-w-[50%] mx-auto font-mono !leading-loose lg:text-4xl'>
           {typedText}
         </p>
