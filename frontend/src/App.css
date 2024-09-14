@@ -1,9 +1,9 @@
 #root {
-  @apply max-w-screen-lg mx-auto p-8 text-left;
+  /*@apply max-w-screen-lg mx-auto p-8 text-left;*/
 }
 
 .logo {
-  @apply h-24 p-6 transition-filter duration-300;
+  @apply h-24 p-6 duration-300;
 }
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);

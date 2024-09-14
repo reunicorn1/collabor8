@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import dotenv from 'dotenv';
+import tailwindcss from "tailwindcss";
 
 dotenv.config();
 
@@ -10,6 +11,11 @@ const __dirname = path.resolve();
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 export default defineConfig({
+  css: {
+    postcss: {
+      plugins: [tailwindcss()],
+    },
+  },
   plugins: [react()],
   server: {
     host: 'localhost',
