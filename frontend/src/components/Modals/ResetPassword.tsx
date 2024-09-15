@@ -152,7 +152,7 @@ const ResetPasswordModal = () => {
             mr={3}
             size="sm"
             fontFamily="mono"
-            isDisabled={!newPassword || !confirmPassword}
+            isDisabled={!newPassword || !confirmPassword || isLoading}
             onClick={handleResetPassword}
             ref={finalRef}
             isLoading={isLoading}

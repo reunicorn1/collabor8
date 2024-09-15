@@ -40,6 +40,7 @@ export default function SignIn({
   const [password, setPassword] = useState('');
   const [login] = useLoginUserMutation();
   const [isResetPasswordOpen, setResetPasswordOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
   // Handles the login process
@@ -56,6 +57,8 @@ export default function SignIn({
       });
       return;
     }
+
+    setIsLoading(true);
 
     login({ username, password, is_invited })
       .unwrap()
@@ -104,6 +107,9 @@ export default function SignIn({
           position: 'bottom-left',
           isClosable: true,
         });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -214,7 +220,8 @@ export default function SignIn({
           <Box display="flex" justifyContent="center" mt={6}>
             <Button
               ref={finalRef}
-              isDisabled={!username || !password}
+              isDisabled={!username || !password || isLoading}
+              isLoading={isLoading}
               onClick={handleLogin}
               rounded="full"
               w="60%"

@@ -57,6 +57,7 @@ export default function SignUp({
   const [emailError, setEmailError] = useState('');
   const [passwordMismatch, setPasswordMismatch] = useState(false);
   const [createUser] = useCreateUserMutation();
+  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
   // Handles checkbox state changes
@@ -78,6 +79,8 @@ export default function SignUp({
       setEmailError('Invalid email format.');
       return;
     }
+
+    setIsLoading(true);
 
     createUser({
       username,
@@ -128,7 +131,8 @@ export default function SignUp({
           position: 'bottom-left',
           isClosable: true,
         });
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   // Resets the input fields
@@ -414,8 +418,10 @@ export default function SignUp({
               !password ||
               !confirmPassword ||
               !!emailError ||
-              passwordMismatch
+              passwordMismatch ||
+              isLoading
             }
+            isLoading={isLoading}
             onClick={handleCreate}
             rightIcon={<IoChevronForwardCircle fontSize="22px" />}
           >

@@ -28,6 +28,7 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
   const finalRef = useRef(null);
   const [email, setEmail] = useState('');
   const [resetPassword] = useResetPasswordMutation();
+  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
   const handleResetPassword = () => {
@@ -43,33 +44,34 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
       return;
     }
 
-    resetPassword({ email })
-      .unwrap()
-      .then(() => {
-        toast({
-          title: 'Password reset email sent',
-          description: 'Please check your email to reset your password.',
-          status: 'success',
-          variant: 'subtle',
-          position: 'bottom-left',
-          isClosable: true,
-        });
-        handleClose();
-        if (onSuccess) {
-          onSuccess();
-        }
-      })
-      .catch(() => {
-        toast({
-          title: 'Error',
-          description:
-            'An error occurred while sending the password reset email.',
-          status: 'error',
-          variant: 'subtle',
-          position: 'bottom-left',
-          isClosable: true,
-        });
+    try {
+      setIsLoading(true);
+      resetPassword({ email }).unwrap();
+      toast({
+        title: 'Password reset email sent',
+        description: 'Please check your email to reset your password.',
+        status: 'success',
+        variant: 'subtle',
+        position: 'bottom-left',
+        isClosable: true,
       });
+      handleClose();
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description:
+          'An error occurred while sending the password reset email.',
+        status: 'error',
+        variant: 'subtle',
+        position: 'bottom-left',
+        isClosable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleClose = () => {
@@ -117,9 +119,10 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
             mr={3}
             size="sm"
             fontFamily="mono"
-            isDisabled={!email}
+            isDisabled={!email || isLoading}
             onClick={handleResetPassword}
             ref={finalRef}
+            isLoading={isLoading}
             rounded="full"
             w="60%"
           >
