@@ -20,6 +20,8 @@ import {
   Box,
   Divider,
   FormErrorMessage,
+  Wrap,
+  WrapItem,
 } from '@chakra-ui/react';
 import { IoChevronForwardCircle } from 'react-icons/io5';
 import { useCreateUserMutation } from '@store/services/auth';
@@ -362,22 +364,23 @@ export default function SignUp({
               >
                 Select your toolkit
               </FormLabel>
-              <HStack spacing={3}>
+              <Wrap spacing={4} justify="center">
                 {['JavaScript', 'Python', 'TypeScript', 'Swift'].map((lang) => (
-                  <Checkbox
-                    key={lang}
-                    colorScheme="orange"
-                    color="white"
-                    opacity="0.7"
-                    fontFamily="mono"
-                    size={['sm', 'md']}
-                    onChange={() => handleCheckboxChange(lang)}
-                    isChecked={favoriteLanguages.includes(lang)}
-                  >
-                    {lang}
-                  </Checkbox>
+                  <WrapItem key={lang}>
+                    <Checkbox
+                      colorScheme="orange"
+                      color="white"
+                      opacity="0.7"
+                      fontFamily="mono"
+                      size={['sm', 'md']}
+                      onChange={() => handleCheckboxChange(lang)}
+                      isChecked={favoriteLanguages.includes(lang)}
+                    >
+                      {lang}
+                    </Checkbox>
+                  </WrapItem>
                 ))}
-              </HStack>
+              </Wrap>
             </FormControl>
           </Box>
         </ModalBody>
