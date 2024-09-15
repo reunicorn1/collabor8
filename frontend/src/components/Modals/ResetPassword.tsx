@@ -98,11 +98,18 @@ const ResetPasswordModal = () => {
       onClose={handleClose}
     >
       <ModalOverlay />
-      <ModalContent background="linear-gradient(to bottom, #001845, #524175)">
-        <ModalHeader color="white" fontFamily="mono" fontSize="lg">
+      <ModalContent
+        background="linear-gradient(to bottom, #001845, #524175)"
+        maxW={{ base: '90%', sm: '400px', md: '500px' }}
+      >
+        <ModalHeader
+          color="white"
+          fontFamily="mono"
+          fontSize={{ base: 'md', md: 'lg' }}
+        >
           Reset Your Password
         </ModalHeader>
-        <ModalCloseButton color="white" onClick={handleClose} />{' '}
+        <ModalCloseButton color="white" onClick={handleClose} />
         <ModalBody pb={6}>
           <Box>
             <FormControl>
@@ -110,7 +117,7 @@ const ResetPasswordModal = () => {
                 color="white"
                 opacity="0.7"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={{ base: 'xs', md: 'sm' }}
               >
                 New Password
               </FormLabel>
@@ -118,7 +125,7 @@ const ResetPasswordModal = () => {
                 type="password"
                 color="white"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={{ base: 'xs', md: 'sm' }}
                 placeholder="Enter your new password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
@@ -130,7 +137,7 @@ const ResetPasswordModal = () => {
                 color="white"
                 opacity="0.7"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={{ base: 'xs', md: 'sm' }}
               >
                 Confirm New Password
               </FormLabel>
@@ -138,7 +145,7 @@ const ResetPasswordModal = () => {
                 type="password"
                 color="white"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={{ base: 'xs', md: 'sm' }}
                 placeholder="Confirm your new password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -157,7 +164,7 @@ const ResetPasswordModal = () => {
             ref={finalRef}
             isLoading={isLoading}
             rounded="full"
-            w="60%"
+            w={{ base: '80%', md: '60%' }}
           >
             Reset Password
           </Button>

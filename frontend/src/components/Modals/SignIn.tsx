@@ -139,7 +139,10 @@ export default function SignIn({
         onClose={handleClose}
       >
         <ModalOverlay />
-        <ModalContent background="linear-gradient(to bottom, #001845, #524175)">
+        <ModalContent
+          background="linear-gradient(to bottom, #001845, #524175)"
+          w={['95%', '80%', '60%', '50%', '40%']}
+        >
           <ModalCloseButton color="white" />
           <ModalBody pb={6}>
             <Flex alignItems="center" justifyContent="center">
@@ -148,6 +151,7 @@ export default function SignIn({
                   color="white"
                   fontFamily="mono"
                   fontSize={['lg', 'xl']}
+                  textAlign="center"
                 >
                   Sign In
                 </Heading>
@@ -156,6 +160,7 @@ export default function SignIn({
                     fontSize={['sm', 'md']}
                     mt={2}
                     fontFamily="sans-serif"
+                    textAlign="center"
                     color="white"
                     opacity="0.7"
                   >

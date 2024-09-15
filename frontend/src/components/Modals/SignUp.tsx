@@ -190,18 +190,26 @@ export default function SignUp({
       onClose={handleClose}
     >
       <ModalOverlay />
-      <ModalContent background="linear-gradient(to bottom, #001845, #524175)">
+      <ModalContent
+        background="linear-gradient(to bottom, #001845, #524175)"
+        w={['95%', '80%', '60%', '50%', '40%']}
+      >
         <ModalCloseButton color="white" />
         <ModalBody pb={6}>
           <Flex alignItems="center" justifyContent="center">
             <Box mt={5} alignItems="center" justifyContent="center">
-              <Heading color="white" fontFamily="mono" textAlign="center">
+              <Heading
+                color="white"
+                fontFamily="mono"
+                textAlign="center"
+                fontSize={['lg', 'xl', '2xl']}
+              >
                 Sign Up
               </Heading>
               <Center>
                 <Heading
                   textAlign="center"
-                  fontSize="sm"
+                  fontSize={['xs', 'sm', 'md']}
                   mt={2}
                   fontFamily="sans-serif"
                   color="white"
@@ -226,7 +234,7 @@ export default function SignUp({
                 color="white"
                 opacity="0.7"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['xs', 'sm']}
               >
                 Email
               </FormLabel>
@@ -234,7 +242,7 @@ export default function SignUp({
                 type="email"
                 color="white"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['sm', 'md']}
                 placeholder="Enter your email"
                 value={email}
                 onChange={handleEmailChange}
@@ -247,7 +255,7 @@ export default function SignUp({
                 color="white"
                 opacity="0.7"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['xs', 'sm']}
               >
                 Password
               </FormLabel>
@@ -255,7 +263,7 @@ export default function SignUp({
                 type="password"
                 color="white"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['sm', 'md']}
                 placeholder="Enter your password"
                 value={password}
                 onChange={handlePasswordChange}
@@ -267,7 +275,7 @@ export default function SignUp({
                 color="white"
                 opacity="0.7"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['xs', 'sm']}
               >
                 Confirm Password
               </FormLabel>
@@ -275,7 +283,7 @@ export default function SignUp({
                 type="password"
                 color="white"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['sm', 'md']}
                 placeholder="Confirm your password"
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
@@ -284,12 +292,13 @@ export default function SignUp({
                 <FormErrorMessage>Passwords do not match.</FormErrorMessage>
               )}
             </FormControl>
+
             <FormControl mt={4} w="95%">
               <FormLabel
                 color="white"
                 opacity="0.7"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['xs', 'sm']}
               >
                 Username
               </FormLabel>
@@ -297,7 +306,7 @@ export default function SignUp({
                 type="text"
                 color="white"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['sm', 'md']}
                 placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -309,7 +318,7 @@ export default function SignUp({
                 color="white"
                 opacity="0.7"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['xs', 'sm']}
               >
                 First Name
               </FormLabel>
@@ -317,7 +326,7 @@ export default function SignUp({
                 type="text"
                 color="white"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['sm', 'md']}
                 placeholder="Enter your first name"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
@@ -329,7 +338,7 @@ export default function SignUp({
                 color="white"
                 opacity="0.7"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['xs', 'sm']}
               >
                 Last Name
               </FormLabel>
@@ -337,7 +346,7 @@ export default function SignUp({
                 type="text"
                 color="white"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['sm', 'md']}
                 placeholder="Enter your last name"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
@@ -349,65 +358,36 @@ export default function SignUp({
                 color="white"
                 opacity="0.7"
                 fontFamily="mono"
-                fontSize="sm"
+                fontSize={['xs', 'sm']}
               >
                 Select your toolkit
               </FormLabel>
               <HStack spacing={3}>
-                <Checkbox
-                  colorScheme="orange"
-                  color="white"
-                  opacity="0.7"
-                  fontFamily="mono"
-                  size="sm"
-                  onChange={() => handleCheckboxChange('JavaScript')}
-                  isChecked={favoriteLanguages.includes('JavaScript')}
-                >
-                  JavaScript
-                </Checkbox>
-                <Checkbox
-                  colorScheme="orange"
-                  color="white"
-                  opacity="0.7"
-                  fontFamily="mono"
-                  size="sm"
-                  onChange={() => handleCheckboxChange('Python')}
-                  isChecked={favoriteLanguages.includes('Python')}
-                >
-                  Python
-                </Checkbox>
-                <Checkbox
-                  colorScheme="orange"
-                  color="white"
-                  opacity="0.7"
-                  fontFamily="mono"
-                  size="sm"
-                  onChange={() => handleCheckboxChange('TypeScript')}
-                  isChecked={favoriteLanguages.includes('TypeScript')}
-                >
-                  TypeScript
-                </Checkbox>
-                <Checkbox
-                  colorScheme="orange"
-                  color="white"
-                  opacity="0.7"
-                  fontFamily="mono"
-                  size="sm"
-                  onChange={() => handleCheckboxChange('Swift')}
-                  isChecked={favoriteLanguages.includes('Swift')}
-                >
-                  Swift
-                </Checkbox>
+                {['JavaScript', 'Python', 'TypeScript', 'Swift'].map((lang) => (
+                  <Checkbox
+                    key={lang}
+                    colorScheme="orange"
+                    color="white"
+                    opacity="0.7"
+                    fontFamily="mono"
+                    size={['sm', 'md']}
+                    onChange={() => handleCheckboxChange(lang)}
+                    isChecked={favoriteLanguages.includes(lang)}
+                  >
+                    {lang}
+                  </Checkbox>
+                ))}
               </HStack>
             </FormControl>
           </Box>
         </ModalBody>
+
         <Box display="flex" justifyContent="center" mt={3}>
           <Button
             ref={finalRef}
             rounded="full"
-            w="70%"
-            size="md"
+            w={['80%', '70%']}
+            size={['sm', 'md']}
             colorScheme="orange"
             fontFamily="mono"
             isDisabled={
@@ -428,6 +408,7 @@ export default function SignUp({
             Join the Code Quest
           </Button>
         </Box>
+
         <ModalFooter mb={4}></ModalFooter>
       </ModalContent>
     </Modal>

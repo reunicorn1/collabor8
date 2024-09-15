@@ -87,18 +87,25 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
       onClose={handleClose}
     >
       <ModalOverlay />
-      <ModalContent background="linear-gradient(to bottom, #001845, #524175)">
-        <ModalHeader color="white" fontFamily="mono" fontSize="lg">
+      <ModalContent
+        background="linear-gradient(to bottom, #001845, #524175)"
+        maxW={{ base: '90%', sm: '400px', md: '500px' }}
+      >
+        <ModalHeader
+          color="white"
+          fontFamily="mono"
+          fontSize={{ base: 'md', md: 'lg' }}
+        >
           Reset Password
         </ModalHeader>
-        <ModalCloseButton color="white" onClick={handleClose} />{' '}
+        <ModalCloseButton color="white" onClick={handleClose} />
         <ModalBody pb={6}>
           <FormControl>
             <FormLabel
               color="white"
               opacity="0.7"
               fontFamily="mono"
-              fontSize="sm"
+              fontSize={{ base: 'xs', md: 'sm' }}
             >
               Email
             </FormLabel>
@@ -106,7 +113,7 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
               type="email"
               color="white"
               fontFamily="mono"
-              fontSize="sm"
+              fontSize={{ base: 'xs', md: 'sm' }}
               placeholder="Enter your email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -124,7 +131,7 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
             ref={finalRef}
             isLoading={isLoading}
             rounded="full"
-            w="60%"
+            w={{ base: '80%', md: '60%' }}
           >
             Send Reset Link
           </Button>
