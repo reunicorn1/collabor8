@@ -43,7 +43,7 @@ export default function Editor() {
     // This is a placeholder function where we'd integrate actual execution logic
     // For now, it just simulates code execution
     setTimeout(() => {
-      setOutput('Hello World!\nExecution finished successfully.'); // Simulated output
+      setOutput('Your result appears here!'); // Simulated output
     }, 1000);
   };
 
@@ -148,7 +148,7 @@ export default function Editor() {
                       style={{ backgroundColor: 'grey', height: '2px' }}
                     />
                     {panelVisiblity && (
-                      <Panel className='!max-h-[300px] !overflow-hidden'>
+                      <Panel>
                         <Console
                           output={output}
                           setOutput={setOutput}

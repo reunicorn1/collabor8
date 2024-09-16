@@ -37,6 +37,7 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
       bg="#1e1e1e"
       color="green.400"
       fontFamily="monospace"
+      overflowY="auto"
       height="450px"
       maxHeight="800px"
     >
@@ -66,8 +67,8 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
       </Flex>
 
       {/* Terminal content */}
-      <Box p={4} minHeight="100%" overflowY="scroll">
-        <Text whiteSpace="pre-wrap" overflowY='auto'>{output}</Text>
+      <Box p={4} height="100%" overflowY="auto">
+        <Text whiteSpace="pre-wrap">{output}</Text>
       </Box>
     </Box>
   );
