@@ -37,8 +37,8 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
       bg="#1e1e1e"
       color="green.400"
       fontFamily="monospace"
-      height="450px"
-      maxHeight="800px"
+      className='!overflow-hidden !bottom-0'
+       style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
     >
       {/* Terminal header bar */}
       <Flex
@@ -48,11 +48,12 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
         p={2}
         justify="flex-start"
         borderTopRadius="md"
+        px={4}
       >
-        <Flex gap={2}>
           <Button
             disabled={isLoading}
             isLoading={isLoading}
+            ms='auto'
             rightIcon={<MdBuild />}
             variant='solid'
             colorScheme='teal'
@@ -62,12 +63,13 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
             run
           </Button>
 
-        </Flex>
       </Flex>
-
       {/* Terminal content */}
-      <Box p={4} minHeight="100%" overflowY="scroll">
-        <Text whiteSpace="pre-wrap" overflowY='auto'>{output}</Text>
+      <Box p={4} 
+      style={{ flexGrow: 1, overflowY: 'auto' }}
+      >
+        <Text whiteSpace="pre-wrap"
+        >{output}</Text>
       </Box>
     </Box>
   );

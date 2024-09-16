@@ -132,6 +132,7 @@ export default function Editor() {
                 <Panel defaultSize={20} minSize={20} maxSize={50}>
                   <Tree ydoc={ydoc} name={project.project_name} />
                 </Panel>
+
                 <PanelResizeHandle
                   style={{
                     backgroundColor: 'grey',
@@ -139,23 +140,30 @@ export default function Editor() {
                     opacity: '1',
                   }}
                 />
-                <Panel>
-                  <PanelGroup minHeight='100%' direction="vertical">
-                    <Panel minSize={20}>
+                <Panel > 
+                  <PanelGroup direction="vertical" >
+                    <Panel >
                       <CodeEditor project={project} ydoc={ydoc} />
                     </Panel>
-                    <PanelResizeHandle
-                      style={{ backgroundColor: 'grey', height: '2px' }}
-                    />
                     {panelVisiblity && (
-                      <Panel className='!max-h-[300px] !overflow-hidden'>
+                    <>
+                    <PanelResizeHandle
+                      style={{ backgroundColor: 'grey', height: '2px',
+                      opacity: '1', cursor: 'row-resize', bottom: '0'
+                      }}
+                    />
+                      <Panel className='!overflow-hidden !bottom-0'
+                      style={{ minHeight: '100px', maxHeight: '50vh'}}
+                      >
                         <Console
                           output={output}
                           setOutput={setOutput}
                           onClose={() => setShowConsole(false)}
                         />
                       </Panel>
+                      </>
                     )}
+
                   </PanelGroup>
                 </Panel>
               </PanelGroup>
