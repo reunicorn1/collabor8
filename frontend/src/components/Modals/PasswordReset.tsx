@@ -28,7 +28,13 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
   const finalRef = useRef(null);
   const [email, setEmail] = useState('');
   const [resetPassword] = useResetPasswordMutation();
+  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
+
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleResetPassword = () => {
     if (!email.trim()) {
@@ -43,33 +49,46 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
       return;
     }
 
-    resetPassword({ email })
-      .unwrap()
-      .then(() => {
-        toast({
-          title: 'Password reset email sent',
-          description: 'Please check your email to reset your password.',
-          status: 'success',
-          variant: 'subtle',
-          position: 'bottom-left',
-          isClosable: true,
-        });
-        handleClose();
-        if (onSuccess) {
-          onSuccess();
-        }
-      })
-      .catch(() => {
-        toast({
-          title: 'Error',
-          description:
-            'An error occurred while sending the password reset email.',
-          status: 'error',
-          variant: 'subtle',
-          position: 'bottom-left',
-          isClosable: true,
-        });
+    if (!isValidEmail(email)) {
+      toast({
+        title: 'Invalid Email',
+        description: 'Please enter a valid email address.',
+        status: 'error',
+        variant: 'subtle',
+        position: 'bottom-left',
+        isClosable: true,
       });
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      resetPassword({ email }).unwrap();
+      toast({
+        title: 'Password reset email sent',
+        description: 'Please check your email to reset your password.',
+        status: 'success',
+        variant: 'subtle',
+        position: 'bottom-left',
+        isClosable: true,
+      });
+      handleClose();
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description:
+          'An error occurred while sending the password reset email.',
+        status: 'error',
+        variant: 'subtle',
+        position: 'bottom-left',
+        isClosable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleClose = () => {
@@ -85,18 +104,25 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
       onClose={handleClose}
     >
       <ModalOverlay />
-      <ModalContent background="linear-gradient(to bottom, #001845, #524175)">
-        <ModalHeader color="white" fontFamily="mono" fontSize="lg">
+      <ModalContent
+        background="linear-gradient(to bottom, #001845, #524175)"
+        w={['95%', '80%', '60%', '50%', '40%']}
+      >
+        <ModalHeader
+          color="white"
+          fontFamily="mono"
+          fontSize={{ base: 'md', md: 'lg' }}
+        >
           Reset Password
         </ModalHeader>
-        <ModalCloseButton color="white" onClick={handleClose} />{' '}
+        <ModalCloseButton color="white" onClick={handleClose} />
         <ModalBody pb={6}>
           <FormControl>
             <FormLabel
               color="white"
               opacity="0.7"
               fontFamily="mono"
-              fontSize="sm"
+              fontSize={{ base: 'xs', md: 'sm' }}
             >
               Email
             </FormLabel>
@@ -104,10 +130,15 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
               type="email"
               color="white"
               fontFamily="mono"
-              fontSize="sm"
+              fontSize={{ base: 'xs', md: 'sm' }}
               placeholder="Enter your email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && email && !isLoading) {
+                  handleResetPassword();
+                }
+              }}
             />
           </FormControl>
         </ModalBody>
@@ -117,11 +148,12 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
             mr={3}
             size="sm"
             fontFamily="mono"
-            isDisabled={!email}
+            isDisabled={!email || isLoading}
             onClick={handleResetPassword}
             ref={finalRef}
+            isLoading={isLoading}
             rounded="full"
-            w="60%"
+            w={{ base: '80%', md: '60%' }}
           >
             Send Reset Link
           </Button>
