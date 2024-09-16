@@ -1,8 +1,10 @@
-import { Box, Text, Image, Spacer, CloseButton } from '@chakra-ui/react';
+import { Box, Text, Image, Spacer, CloseButton, IconButton } from '@chakra-ui/react';
+import { CheckIcon } from '@chakra-ui/icons';
 import React, { useEffect, useState } from 'react';
 import { LanguageCode } from '../../utils/codeExamples';
 import { useSettings, useFile } from '../../context/EditorContext';
 import { FileType } from '../../context/EditorContext';
+
 
 export default function Tabs() {
   const [tabslist, setTabsList] = useState<FileType[]>([]);
@@ -28,6 +30,9 @@ export default function Tabs() {
     }
   }, [fileSelected, setFileSelected, tabslist]);
 
+  const handleExecute = (file: FileType) => {
+    console.log('Execute', file);
+  }
   const handleClick = (file: FileType) => {
     console.log(tabslist);
     setFileSelected(file);
@@ -85,6 +90,17 @@ export default function Tabs() {
               {file.name}
             </Text>
             <Spacer />
+            <IconButton
+            isRound={true}
+            variant='solid'
+              colorScheme='teal'
+              aria-label='Done'
+              icon={<CheckIcon />}
+              size='xs'
+              onClick={() => handleExecute(file)}
+            >
+            </IconButton>
+            
             <CloseButton
               color="white"
               size="sm"

@@ -45,6 +45,12 @@ export class FileMongoController {
     return await this.fileService.update(id, updateFileDto);
   }
 
+  // @FileDocs.execute()
+  @Post('execute/:id')
+  async execute(@Param('id') id: string, @Request() req) {
+    return await this.fileService.execute(id, req);
+  }
+
   @FileDocs.remove()
   @Delete(':id')
   async remove(@Param('id') id: string) {

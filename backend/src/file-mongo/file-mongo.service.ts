@@ -18,6 +18,8 @@ import {
 } from './dto/create-file-mongo.dto';
 import { DirectoryMongoService } from '@directory-mongo/directory-mongo.service';
 import { ProjectsService } from '@projects/projects.service';
+import { DockerService } from '@docker/docker.service';
+import * as Y from 'yjs';
 
 @Injectable()
 export class FileMongoService {
@@ -28,7 +30,9 @@ export class FileMongoService {
     private directoryService: DirectoryMongoService,
     @Inject(forwardRef(() => ProjectsService))
     private projectService: ProjectsService,
-  ) {}
+    @Inject(forwardRef(() => DockerService))
+    private dockerService: DockerService,
+  ) { }
 
   async create(createFileDto: CreateFileOutDto): Promise<FileMongo> {
     const parsedDto = parseCreateFileMongoDto(createFileDto);
@@ -129,5 +133,15 @@ export class FileMongoService {
     } catch (err) {
       Logger.error(err);
     }
+  }
+
+  async execute(id: string, req: any): Promise<{ output: string }> {
+  const file = await this.findOne(id);
+    if (!file) {
+      throw new NotFoundException('File not found');
+    }
+    const code = file.file_content.map(op => op.insert).join('');
+    const logs = await this.dockerService.executeLanguageCode(code, file.name, req.body?.language);
+    return { output: logs };
   }
 }

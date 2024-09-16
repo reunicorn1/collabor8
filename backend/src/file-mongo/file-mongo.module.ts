@@ -5,12 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FileMongo } from './file-mongo.entity';
 import { ProjectsModule } from '@projects/projects.module';
 import { DirectoryMongoModule } from '@directory-mongo/directory-mongo.module';
+import { DockerModule } from '@docker/docker.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([FileMongo], 'mongoConnection'),
     forwardRef(() => DirectoryMongoModule),
     forwardRef(() => ProjectsModule),
+    forwardRef(() => DockerModule),
   ],
   providers: [FileMongoService],
   controllers: [FileMongoController],

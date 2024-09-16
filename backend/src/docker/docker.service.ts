@@ -1,9 +1,8 @@
-import { Injectable, Logger, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import * as Docker from 'dockerode';
 
 @Injectable()
 export class DockerService {
-  private readonly logger = new Logger(DockerService.name);
   private docker: Docker;
 
   constructor() {
@@ -56,7 +55,7 @@ export class DockerService {
     }
   }
 
-  async executeLanguageCode(code: string, language?: string, filename?:string): Promise<string> {
+  async executeLanguageCode(code: string, filename?:string, language?: string): Promise<string> {
     let image: string;
     let command: string[];
     if (!language && !filename) {
@@ -80,54 +79,8 @@ export class DockerService {
     const container = await this.createStartContainer(image, command);
     const logs = await this.getContainerLogs(container);
     await this.removeContainer(container);
+    Logger.log(logs);
     return logs;
   }
-
-
-
-//   async executePythonCode(code: string): Promise<string> {
-//     try {
-//       const container = await this.docker.createContainer({
-//         Image: 'python-leetcode',
-//         Cmd: ['python3', '-c', code],
-//         Tty: false, // Disable pseudo-TTY
-//         AttachStdout: true,
-//         AttachStderr: true,
-//       });
-
-//       await container.start();
-//       const containerInfo = await container.inspect();
-//       console.log(containerInfo.State);
-
-//       const waitResult = await container.wait();
-//       const exitCode = waitResult.StatusCode;
-
-//       if (exitCode !== 0) {
-//         throw new Error(`Container exited with non-zero status code ${exitCode}`);
-//       }
-
-//       const logsStream = await container.logs({
-//         stdout: true,
-//         stderr: true,
-//         follow: true,
-//       });      // Wait for the container to finish
-
-//       let logs = '';
-//       logsStream.on('data', (chunk) => {
-//         logs += chunk.toString();
-//       });
-
-//       // Ensure all logs are collected
-//       await new Promise((resolve) => logsStream.on('end', resolve));
-
-//       // Remove the container
-//       await container.remove();
-
-//       return logs;
-//     } catch (error) {
-//       this.logger.error('Error executing code in Docker container', error.stack);
-//       throw new InternalServerErrorException('Error executing code in Docker container');
-//     }
-//   }
 }
 
