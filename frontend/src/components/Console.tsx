@@ -6,6 +6,7 @@ import { selectFile } from '@store/selectors/fileSelectors';
 import { useExecuteFileMutation } from '@store/services/file';
 interface ConsoleProps {
   output: string;
+  setOutput: any;
   onClose: () => void;
 }
 
