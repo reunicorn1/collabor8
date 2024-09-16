@@ -49,5 +49,11 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# Install docker dependencies
+if ! [ -x "$(command -v docker)" ]; then
+  echo -e "${BLUE}Installing docker dependencies...${NC}"
+  ./docker/install.sh
+fi
+
 echo -e "${GREEN}Deployment completed successfully.${NC}"
 

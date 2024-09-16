@@ -22,11 +22,10 @@ echo \
 if ! [ -x "$(command -v docker)" ]; then
   echo 'Error: docker is not installed.' >&2
   installDocker
+  ./javascript_container/install.sh
+  ./python_container/install.sh
 else
   echo 'docker is installed.'
 fi
-
-./javascript_container/install.sh
-./python_container/install.sh
 
 

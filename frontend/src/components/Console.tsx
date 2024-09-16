@@ -7,6 +7,7 @@ import { useExecuteFileMutation } from '@store/services/file';
 import { MdBuild } from 'react-icons/md';
 interface ConsoleProps {
   output: string;
+  setOutput: any;
   onClose: () => void;
 }
 
