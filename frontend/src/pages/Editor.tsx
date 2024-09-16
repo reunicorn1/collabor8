@@ -140,7 +140,7 @@ export default function Editor() {
                   }}
                 />
                 <Panel>
-                  <PanelGroup minHeight='100%' direction="vertical">
+                  <PanelGroup direction="vertical">
                     <Panel minSize={20}>
                       <CodeEditor project={project} ydoc={ydoc} />
                     </Panel>
