@@ -164,6 +164,11 @@ const NewfileDir: React.FC<ModalProps> = ({
                 fontSize={['sm', 'md']}
                 value={newName}
                 onChange={handleChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newName && !isLoading) {
+                    handleSave();
+                  }
+                }}
                 placeholder={`Choose your ${filedir} name`}
               />
             </FormControl>

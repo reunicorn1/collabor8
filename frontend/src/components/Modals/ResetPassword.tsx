@@ -100,7 +100,7 @@ const ResetPasswordModal = () => {
       <ModalOverlay />
       <ModalContent
         background="linear-gradient(to bottom, #001845, #524175)"
-        maxW={{ base: '90%', sm: '400px', md: '500px' }}
+        w={['95%', '80%', '60%', '50%', '40%']}
       >
         <ModalHeader
           color="white"
@@ -129,6 +129,11 @@ const ResetPasswordModal = () => {
                 placeholder="Enter your new password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newPassword && confirmPassword) {
+                    handleResetPassword();
+                  }
+                }}
               />
             </FormControl>
 
@@ -149,6 +154,11 @@ const ResetPasswordModal = () => {
                 placeholder="Confirm your new password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newPassword && confirmPassword) {
+                    handleResetPassword();
+                  }
+                }}
               />
             </FormControl>
           </Box>

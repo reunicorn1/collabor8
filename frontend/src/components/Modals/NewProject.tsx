@@ -101,6 +101,11 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
                 placeholder="Name your project"
                 value={name}
                 onChange={handleChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && name && description) {
+                    handleCreate();
+                  }
+                }}
               />
             </FormControl>
 

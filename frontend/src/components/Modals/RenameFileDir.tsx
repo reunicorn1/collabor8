@@ -102,6 +102,11 @@ export default function RenameFileDir({
                 placeholder={`Enter new ${filedir} name`}
                 value={input}
                 onChange={handleChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && input && !isLoading) {
+                    handleRename();
+                  }
+                }}
               />
               {errmsg && (
                 <Text color="red.300" fontSize={['xs', 'sm']} mt={2}>

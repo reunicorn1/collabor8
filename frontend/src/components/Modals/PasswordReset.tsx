@@ -31,10 +31,27 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleResetPassword = () => {
     if (!email.trim()) {
       toast({
         title: 'Email is required',
+        description: 'Please enter a valid email address.',
+        status: 'error',
+        variant: 'subtle',
+        position: 'bottom-left',
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      toast({
+        title: 'Invalid Email',
         description: 'Please enter a valid email address.',
         status: 'error',
         variant: 'subtle',
@@ -89,7 +106,7 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
       <ModalOverlay />
       <ModalContent
         background="linear-gradient(to bottom, #001845, #524175)"
-        maxW={{ base: '90%', sm: '400px', md: '500px' }}
+        w={['95%', '80%', '60%', '50%', '40%']}
       >
         <ModalHeader
           color="white"
@@ -117,6 +134,11 @@ const PasswordReset = ({ isOpen, onClose, onSuccess }: ModalProps) => {
               placeholder="Enter your email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && email && !isLoading) {
+                  handleResetPassword();
+                }
+              }}
             />
           </FormControl>
         </ModalBody>
