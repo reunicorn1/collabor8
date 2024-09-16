@@ -3,6 +3,7 @@ import authReducer from './slices/authSlice';
 import userReducer from './slices/userSlice';
 import projectReducer from './slices/projectSlice';
 import projectSharesReducer from './slices/projectSharesSlice';
+import fileReducer from './slices/fileSlice';
 import loggerMiddleware from './middleware/loggerMiddleware';
 import { api } from './services/api';
 
@@ -23,6 +24,7 @@ const store = configureStore({
     user: userReducer,
     project: projectReducer,
     sharedProjects: projectSharesReducer,
+    file: fileReducer,
     [api.reducerPath]: api.reducer,
   },
   middleware: (getDefaultMiddleware) =>

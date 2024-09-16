@@ -150,6 +150,7 @@ export default function Editor() {
                       {showConsole && (
                         <Console
                           output={output}
+                          setOutput={setOutput}
                           onClose={() => setShowConsole(false)}
                         />
                       )}

@@ -23,6 +23,14 @@ export const fileApi = api.injectEndpoints({
         body: data,
       }),
     }),
+    // Execute a file by its ID
+    executeFile: builder.mutation<File, { id: string, language: string }>({
+      query: ({ id, language }) => ({
+        url: `/files/execute/${id}`,
+        method: 'POST',
+        body: { language },
+      }),
+    }),
     // Delete a file by its ID
     deleteFile: builder.mutation<void, string>({
       query: (id) => ({
@@ -39,4 +47,5 @@ export const {
   useCreateFileMutation,
   useUpdateFileMutation,
   useDeleteFileMutation,
+  useExecuteFileMutation,
 } = fileApi;

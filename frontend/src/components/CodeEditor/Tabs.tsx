@@ -4,12 +4,15 @@ import React, { useEffect, useState } from 'react';
 import { LanguageCode } from '../../utils/codeExamples';
 import { useSettings, useFile } from '../../context/EditorContext';
 import { FileType } from '../../context/EditorContext';
+import { setFile, clearFile } from '@store/slices/fileSlice';
+import { useDispatch } from 'react-redux';
 
 
 export default function Tabs() {
   const [tabslist, setTabsList] = useState<FileType[]>([]);
   const { language } = useSettings()!;
   const { fileSelected, setFileSelected } = useFile()!;
+  const dispatch = useDispatch();
   const languageModes: Record<LanguageCode, string> = {
     javascript: 'javascript.png',
     python: 'python.png',
@@ -27,15 +30,21 @@ export default function Tabs() {
       setTabsList([...tabslist, fileSelected]);
     } else {
       setFileSelected(foundTab);
+      dispatch(setFile({ file_id: foundTab.id, language: foundTab.language }));
     }
   }, [fileSelected, setFileSelected, tabslist]);
 
-  const handleExecute = (file: FileType) => {
-    console.log('Execute', file);
-  }
+
   const handleClick = (file: FileType) => {
     console.log(tabslist);
     setFileSelected(file);
+    dispatch(setFile({ file_id: file.id, language: file.language }));
+    // TODO: create a state for the selected file that includes language
+    // TODO: Create service to execute code
+    // {
+    //   fileId filex
+      // language
+    // }
   };
 
   const handleClose = (file: FileType, e: React.MouseEvent) => {
@@ -43,9 +52,12 @@ export default function Tabs() {
     const updatedFile = tabslist.filter((tab) => tab.id !== file.id);
     setTabsList(updatedFile);
     if (updatedFile.length > 0) {
-      setFileSelected(updatedFile[updatedFile.length - 1]);
+      const file = updatedFile[updatedFile.length - 1];
+      setFileSelected(file);
+      dispatch(setFile({ file_id: file.id, language: file.language }));
     } else {
       setFileSelected(null); // type error -_-
+      dispatch(clearFile());
     }
   };
 
@@ -90,17 +102,7 @@ export default function Tabs() {
               {file.name}
             </Text>
             <Spacer />
-            <IconButton
-            isRound={true}
-            variant='solid'
-              colorScheme='teal'
-              aria-label='Done'
-              icon={<CheckIcon />}
-              size='xs'
-              onClick={() => handleExecute(file)}
-            >
-            </IconButton>
-            
+
             <CloseButton
               color="white"
               size="sm"

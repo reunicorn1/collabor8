@@ -1,13 +1,32 @@
 import { Box, Flex, Text, IconButton } from '@chakra-ui/react';
-import { CloseIcon } from '@chakra-ui/icons';
+import { CloseIcon, CheckIcon } from '@chakra-ui/icons';
 import React from 'react';
-
+import { useSelector } from 'react-redux';
+import { selectFile } from '@store/selectors/fileSelectors';
+import { useExecuteFileMutation } from '@store/services/file';
 interface ConsoleProps {
   output: string;
   onClose: () => void;
 }
 
-const Console: React.FC<ConsoleProps> = ({ output, onClose }) => {
+interface FileType {
+  file_id: string;
+  language: string;
+}
+
+const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
+  const fileSelector = useSelector(selectFile);
+  const [executeFile] = useExecuteFileMutation();
+
+  const handleExecute = async () => {
+    let file = fileSelector;
+    console.log('Execute', file);
+    if (file) {
+      const res = await executeFile({ id: file.file_id, language: file.language }).unwrap();
+      console.log(res?.output);
+      setOutput(res?.output || '');
+    }
+  }
   return (
     <Box
       borderRadius="md"
@@ -29,6 +48,17 @@ const Console: React.FC<ConsoleProps> = ({ output, onClose }) => {
         borderTopRadius="md"
       >
         <Flex gap={2}>
+        <IconButton
+        isRound={true}
+        variant='solid'
+          colorScheme='teal'
+          aria-label='Done'
+          icon={<CheckIcon />}
+        size='xs'
+          onClick={() => handleExecute()}
+        >
+          </IconButton>
+
           <IconButton
             aria-label="close"
             size="xs"
