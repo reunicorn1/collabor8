@@ -37,7 +37,8 @@
 		"@events/*": ["src/events/*"],
 		"@mail/*": ["src/mail/*"],
 		"@redis/*": ["src/redis/*"],
-		"@logging/*": ["src/logging/*"]
+		"@logging/*": ["src/logging/*"],
+		"@docker/*": ["src/docker/*"]
 	}
   }
 }

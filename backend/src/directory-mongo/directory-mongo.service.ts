@@ -119,6 +119,8 @@ export class DirectoryMongoService {
     if (!directory) {
       throw new Error('Directory not found');
     }
+    // TODO: fix condtion for checking if directory already exists
+    // should check if parsedDto.name or parsedDto.parent_id is not null
     const query: { name?: string; parent_id?: string } = {};
     if (parsedDto.name) query.name = parsedDto.name;
     if (parsedDto.parent_id) {

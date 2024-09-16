@@ -32,6 +32,7 @@ import { RedisModule } from '@redis/redis.module';
 import { LoggingModule } from '@logging/logging.module';
 import { BullModule } from '@nestjs/bullmq';
 import { MYSQL_CONN, MONGO_CONN } from '@constants';
+import { DockerModule } from './docker/docker.module';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { MYSQL_CONN, MONGO_CONN } from '@constants';
     MailModule,
     RedisModule,
     LoggingModule,
+    DockerModule,
   ],
   controllers: [AppController],
   providers: [
