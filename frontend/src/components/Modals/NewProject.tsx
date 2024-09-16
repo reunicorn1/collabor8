@@ -80,19 +80,22 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
         onClose={handleClose}
       >
         <ModalOverlay />
-        <ModalContent bg="brand.900">
-          <ModalHeader color="white" fontFamily="mono" fontSize={['sm', 'md']}>
+        <ModalContent
+          bg="brand.900"
+          w={['95%', '80%', '60%', '50%', '40%']}
+          fontFamily="mono"
+        >
+          <ModalHeader color="white" fontSize={['sm', 'md']}>
             Create your project
           </ModalHeader>
           <ModalCloseButton color="white" />
           <ModalBody pb={6}>
             <FormControl>
-              <FormLabel color="grey" fontFamily="mono" fontSize={['xs', 'sm']}>
+              <FormLabel color="grey" fontSize={['xs', 'sm']}>
                 Title
               </FormLabel>
               <Input
                 color="white"
-                fontFamily="mono"
                 fontSize={['sm', 'md']}
                 ref={initialRef}
                 placeholder="Name your project"
@@ -102,17 +105,11 @@ export default function NewProject({ isOpen, onClose }: ModalProps) {
             </FormControl>
 
             <FormControl>
-              <FormLabel
-                color="grey"
-                fontFamily="mono"
-                fontSize={['xs', 'sm']}
-                mt={4}
-              >
+              <FormLabel color="grey" fontSize={['xs', 'sm']} mt={4}>
                 Description
               </FormLabel>
               <Textarea
                 color="white"
-                fontFamily="mono"
                 fontSize={['sm', 'md']}
                 placeholder="Tell us about your project"
                 value={description}

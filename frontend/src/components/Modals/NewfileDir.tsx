@@ -56,6 +56,7 @@ const NewfileDir: React.FC<ModalProps> = ({
   const { setFileSelected } = useFile()!;
   const initialRef = React.useRef(null);
   const [newName, setNewName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const root = ydoc.getMap(project_id);
   // const root = ydoc.getMap('root'); // This gets the value of the root if created before
   const [createFile] = useCreateFileMutation();
@@ -71,71 +72,64 @@ const NewfileDir: React.FC<ModalProps> = ({
     let id = null;
     console.log('=================>', { parent });
     if (newName) {
+      setIsLoading(true);
       // create a new fi
       console.log('xxxxxxxxxxxCreating File: ', { newName });
       console.log('xxxxxxxxxxxFor parent: ', {
         parent_id: parent === '0' ? project_id : parent,
       });
       console.log('xxxxxxxxxxxParent is project: ', parent);
-      if (filedir === 'file') {
-        await createFile({
-          project_id,
-          name: newName,
-          parent_id: parent === '0' ? project_id : parent,
-          file_content: '',
-        })
-          .unwrap()
-          .then((res) => {
-            const { _id } = res;
-            id = _id;
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-      } else {
-        await createDir({
-          project_id,
-          name: newName,
-          parent_id: parent === '0' ? project_id : parent,
-        })
-          .unwrap()
-          .then((res) => {
-            const { _id } = res;
-            id = _id;
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-      }
-      console.log('this is the id created =================>', { id });
-      if (id) {
-        // Since creating a file in the Y.map depend on the path in the filetree, creation of the leaf has to be made first
-        const leaf = createLeaf(filedir, id, newName, parent);
-        addLeaf(data.filetree, leaf, parent); // also hopeless type error
-
-        // file tree here will be updated with the new leaf so the file path will be found
-        // const path = getPathFromId(data.filetree, id); //type error
-        // console.log(path);
-        const file = createDocuments({
-          parent,
-          root,
-          _id: id,
-          filedir,
-          newName,
-        }); //type error. This function creates the new ytext/ymap
-
-        set('filetree', data.filetree); // trigger to re-render the structure for all clients connected
-        if (file instanceof Y.Text) {
-          const fileExtension = newName.split('.').pop() || '';
-          const defaultLanguage: LanguageCode =
-            extensionToLanguageCode[fileExtension] || 'unknown';
-          setFileSelected({
+      try {
+        if (filedir === 'file') {
+          const res = await createFile({
+            project_id,
             name: newName,
-            value: file,
-            id,
-            language: defaultLanguage,
-          });
+            parent_id: parent === '0' ? project_id : parent,
+            file_content: '',
+          }).unwrap();
+          id = res._id;
+        } else {
+          const res = await createDir({
+            project_id,
+            name: newName,
+            parent_id: parent === '0' ? project_id : parent,
+          }).unwrap();
+          id = res._id;
         }
+        console.log('this is the id created =================>', { id });
+        if (id) {
+          // Since creating a file in the Y.map depend on the path in the filetree, creation of the leaf has to be made first
+          const leaf = createLeaf(filedir, id, newName, parent);
+          addLeaf(data.filetree, leaf, parent); // also hopeless type error
+
+          // file tree here will be updated with the new leaf so the file path will be found
+          // const path = getPathFromId(data.filetree, id); //type error
+          // console.log(path);
+          const file = createDocuments({
+            parent,
+            root,
+            _id: id,
+            filedir,
+            newName,
+          }); //type error. This function creates the new ytext/ymap
+
+          set('filetree', data.filetree); // trigger to re-render the structure for all clients connected
+          if (file instanceof Y.Text) {
+            const fileExtension = newName.split('.').pop() || '';
+            const defaultLanguage: LanguageCode =
+              extensionToLanguageCode[fileExtension] || 'unknown';
+            setFileSelected({
+              name: newName,
+              value: file,
+              id,
+              language: defaultLanguage,
+            });
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
       }
     }
     handleClose();
@@ -150,41 +144,42 @@ const NewfileDir: React.FC<ModalProps> = ({
     <>
       <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
-        <ModalContent bg="brand.900">
-          <ModalHeader>
-            <Text
-              fontSize="sm"
-              fontFamily="mono"
-              color="white"
-            >{`Create new ${filedir}`}</Text>
-          </ModalHeader>
+        <ModalContent
+          bg="brand.900"
+          w={['95%', '80%', '60%', '50%', '40%']}
+          fontFamily="mono"
+        >
           <ModalCloseButton color="white" />
-          <ModalBody pb={4}>
+          <ModalHeader>
+            <Text fontSize={['sm', 'md']} color="white" textAlign="center">
+              {`Create new ${filedir}`}
+            </Text>
+          </ModalHeader>
+          <ModalBody pb={6}>
             <FormControl>
-              <Divider mb={7} />
+              <Divider mb={5} />
               <Input
                 ref={initialRef}
-                fontFamily="mono"
                 color="white"
-                fontSize="sm"
+                fontSize={['sm', 'md']}
                 value={newName}
                 onChange={handleChange}
                 placeholder={`Choose your ${filedir} name`}
               />
             </FormControl>
           </ModalBody>
-
-          <ModalFooter mb={4}>
+          <ModalFooter>
             <Button
               colorScheme="orange"
               mr={3}
-              size="sm"
+              size={['sm', 'md']}
               onClick={handleSave}
-              isDisabled={!newName}
+              isDisabled={!newName || isLoading}
+              isLoading={isLoading}
             >
               Done
             </Button>
-            <Button onClick={handleClose} size="sm">
+            <Button onClick={handleClose} size={['sm', 'md']}>
               Cancel
             </Button>
           </ModalFooter>
