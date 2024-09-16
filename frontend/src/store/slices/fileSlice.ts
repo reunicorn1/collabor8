@@ -5,15 +5,17 @@ interface fileInterface {
   language: string;
 }
 
-interface fileSlice {
+interface IFileSlice {
   file: fileInterface;
+  panelVisiblity: boolean;
 }
 
-const initialState: fileSlice = {
+const initialState: IFileSlice = {
   file: {
     file_id: '',
     language: '',
   },
+  panelVisiblity: false,
 };
 
 const fileSlice = createSlice({
@@ -27,8 +29,11 @@ const fileSlice = createSlice({
     clearFile(state) {
       state.file = initialState.file;
     },
+    setPanelVisibility(state) {
+      state.panelVisiblity = !state.panelVisiblity;
+    },
   },
 });
 
-export const { setFile, clearFile } = fileSlice.actions;
+export const { setFile, clearFile, setPanelVisibility } = fileSlice.actions;
 export default fileSlice.reducer;

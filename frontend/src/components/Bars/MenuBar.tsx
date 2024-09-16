@@ -5,6 +5,7 @@ import {
   Text,
   Box,
   useDisclosure,
+  Button,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { PiGithubLogo } from 'react-icons/pi';
@@ -14,9 +15,13 @@ import { LanguageSelector, ThemeSelector } from '../CodeEditor';
 import { useSettings } from '../../context/EditorContext';
 import ComingSoon from '@components/CodeEditor/ComingSoon';
 import VoiceDrawer from '@components/CodeEditor/VoiceDrawer';
+import { useAppDispatch, useAppSelector } from '@hooks/useApp';
+import { setPanelVisibility } from '@store/slices/fileSlice';
+import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
 
 export default function MenuBar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const dispatch = useAppDispatch();
   const {
     isOpen: isOpenV,
     onOpen: onOpenV,
@@ -24,6 +29,7 @@ export default function MenuBar() {
   } = useDisclosure();
   const navigate = useNavigate();
   const { mode } = useSettings()!;
+  const panelVisiblity = useAppSelector(selectPanelVisiblity);
 
   const goHome = () => {
     navigate('/dashboard');
@@ -58,15 +64,15 @@ export default function MenuBar() {
         <Text color="white" fontSize="xs" ml={2}>
           {mode ? `Read Mode` : `Write Mode`}
         </Text>
-        {/* <Button
-          leftIcon={<MdBuild />}
-          size="xs"
-          colorScheme="yellow"
-          variant="solid"
-          ml={8}
+        <Button
+          className="!text-sm !text-slate-200 !bg-transparent"
+          onClick={() => dispatch(setPanelVisibility())}
         >
-          Run
-        </Button> */}
+          toggle panel
+          <span className='text-lg ms-2'>
+            {panelVisiblity ? '-' : '+'}
+          </span>
+        </Button>
         <IconButton
           isRound={true}
           color="white"

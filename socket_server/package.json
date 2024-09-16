@@ -2,7 +2,7 @@
   "name": "collabor8",
   "version": "1.0.0",
   "type": "module",
-  "main": "newserver.js",
+  "main": "HocuspocusServer.js",
   "dependencies": {
     "@hocuspocus/extension-logger": "^1.0.0",
     "@hocuspocus/server": "^1.0.0",
@@ -14,7 +14,7 @@
     "yjs": "^13.6.18"
   },
   "scripts": {
-    "start": "node newserver.ts",
+    "start": "node HocuspocusServer.js",
     "dev": "NODE_ENV=development nodemon HocuspocusServer.js",
     "pro": "NODE_ENV=production node HocuspocusServer.js"
   }

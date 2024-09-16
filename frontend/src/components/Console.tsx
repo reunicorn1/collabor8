@@ -1,10 +1,10 @@
 import { Box, Flex, Text, IconButton, Button } from '@chakra-ui/react';
-import { CloseIcon, CheckIcon } from '@chakra-ui/icons';
+import { CloseIcon } from '@chakra-ui/icons';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { selectFile } from '@store/selectors/fileSelectors';
 import { useExecuteFileMutation } from '@store/services/file';
 import { MdBuild } from 'react-icons/md';
+import { useAppSelector } from '@hooks/useApp';
 interface ConsoleProps {
   output: string;
   setOutput: any;
@@ -17,7 +17,7 @@ interface FileType {
 }
 
 const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
-  const fileSelector = useSelector(selectFile);
+  const fileSelector = useAppSelector(selectFile);
   const [executeFile, { isLoading }] = useExecuteFileMutation();
 
   const handleExecute = async () => {
@@ -29,6 +29,7 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
       setOutput(res?.output || '');
     }
   }
+
   return (
     <Box
       borderRadius="md"
@@ -36,7 +37,6 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
       bg="#1e1e1e"
       color="green.400"
       fontFamily="monospace"
-      overflowY="auto"
       height="450px"
       maxHeight="800px"
     >
@@ -57,26 +57,17 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
             variant='solid'
             colorScheme='teal'
             onClick={() => handleExecute()}
-            className="!text-sm "
+            className='font-mono !bg-transparent border !border-white'
           >
             run
           </Button>
 
-          <IconButton
-            aria-label="close"
-            size="xs"
-            bg="red.500"
-            borderRadius="full"
-            icon={<CloseIcon />}
-            _hover={{ bg: 'red.400' }}
-            onClick={onClose}
-          />
         </Flex>
       </Flex>
 
       {/* Terminal content */}
-      <Box p={4} height="100%" overflowY="auto">
-        <Text whiteSpace="pre-wrap">{output}</Text>
+      <Box p={4} minHeight="100%" overflowY="scroll">
+        <Text whiteSpace="pre-wrap" overflowY='auto'>{output}</Text>
       </Box>
     </Box>
   );

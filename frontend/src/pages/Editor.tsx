@@ -16,6 +16,8 @@ import React from 'react';
 import { Mapped } from '../components/Audio/Modal';
 import NotFoundPage from './404_page';
 import ThemedLoader from '../utils/Spinner';
+import { useAppSelector } from '@hooks/useApp';
+import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
 // retrieve project name from state of navigate eg.
 //  navigate(`/editor/${id}`, { state: { project_name } });
 //
@@ -34,6 +36,7 @@ export default function Editor() {
   const [output, setOutput] = useState<string>('');
   const [showConsole, setShowConsole] = useState(true);
   const toast = useToast();
+  const panelVisiblity = useAppSelector(selectPanelVisiblity);
 
   // handle code execution
   const executeCode = async (code: string) => {
@@ -137,24 +140,22 @@ export default function Editor() {
                   }}
                 />
                 <Panel>
-                  <PanelGroup direction="vertical">
+                  <PanelGroup minHeight='100%' direction="vertical">
                     <Panel minSize={20}>
                       <CodeEditor project={project} ydoc={ydoc} />
                     </Panel>
                     <PanelResizeHandle
                       style={{ backgroundColor: 'grey', height: '2px' }}
                     />
-
-                    {/* Console */}
-                    <Panel minSize={20}>
-                      {showConsole && (
+                    {panelVisiblity && (
+                      <Panel className='!max-h-[300px] !overflow-hidden'>
                         <Console
                           output={output}
                           setOutput={setOutput}
                           onClose={() => setShowConsole(false)}
                         />
-                      )}
-                    </Panel>
+                      </Panel>
+                    )}
                   </PanelGroup>
                 </Panel>
               </PanelGroup>

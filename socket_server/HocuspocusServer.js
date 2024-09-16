@@ -72,6 +72,7 @@ class HocuspocusServer {
       console.info(
         chalk.green(`Document loaded successfully for project ID ${projectId}`),
       );
+      console.log({ username, env: process.env.NODE_ENV });
       await handleLoadDocument(context, { token, username });
       return context.document;
     } catch (error) {
