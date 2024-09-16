@@ -22,7 +22,7 @@ Collabor8 is a web-based collaborative code editor that empowers multiple users 
 
 ## About Collabor8
 
-Collabor8 is designed to simplify the collaborative coding process by providing a platform where multiple developers can work together in real-time. The application ensures smooth interaction and communication between the frontend and backend through Socket.io, delivering an efficient and interactive coding environment. 
+[Collabor8](https://co11abor8.netlify.app/) is designed to simplify the collaborative coding process by providing a platform where multiple developers can work together in real-time. The application ensures smooth interaction and communication between the frontend and backend through Socket.io, delivering an efficient and interactive coding environment. 
 
 ## Technologies Used
 
