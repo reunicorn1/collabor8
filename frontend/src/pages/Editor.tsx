@@ -140,9 +140,10 @@ export default function Editor() {
                     opacity: '1',
                   }}
                 />
-                <Panel > 
-                  <PanelGroup direction="vertical" >
-                    <Panel >
+
+                <Panel>
+                  <PanelGroup direction="vertical">
+                    <Panel>
                       <CodeEditor project={project} ydoc={ydoc} />
                     </Panel>
                     {panelVisiblity && (
