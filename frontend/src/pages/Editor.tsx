@@ -9,6 +9,7 @@ import CodeEditor from '../components/CodeEditor/CodeEditor';
 import Shares from '../components/Bars/Shares';
 import MenuBar from '../components/Bars/MenuBar';
 import Tree from '../components/FileTree/Tree';
+import Console from '../components/Console';
 import * as Y from 'yjs';
 import { useGetProjectByIdQuery } from '@store/services/project';
 import React from 'react';
@@ -30,7 +31,24 @@ export default function Editor() {
   const [project, setProject] = useState<any>(null); // State to hold project data
   const projectRef = useRef<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [output, setOutput] = useState<string>('');
+  const [showConsole, setShowConsole] = useState(true);
   const toast = useToast();
+
+  // handle code execution
+  const executeCode = async (code: string) => {
+    // This is a placeholder function where we'd integrate actual execution logic
+    // For now, it just simulates code execution
+    setTimeout(() => {
+      setOutput('Hello World!\nExecution finished successfully.'); // Simulated output
+    }, 1000);
+  };
+
+  useEffect(() => {
+    if (project) {
+      executeCode('Sample Code'); // Simulate code execution on project load
+    }
+  }, [project]);
 
   // Fetch the project data based on the ID
   const {
@@ -108,14 +126,7 @@ export default function Editor() {
             {/* Content */}
             <GridItem bg="gray.100">
               <PanelGroup direction="horizontal">
-                {/* Top Panel Group with horizontal panels */}
-                <Panel
-                  defaultSize={20}
-                  minSize={20}
-                  maxSize={50}
-                  style={{ overflow: 'scroll' }}
-                >
-                  {/* <FileTree /> */}
+                <Panel defaultSize={20} minSize={20} maxSize={50}>
                   <Tree ydoc={ydoc} name={project.project_name} />
                 </Panel>
                 <PanelResizeHandle
@@ -126,26 +137,25 @@ export default function Editor() {
                   }}
                 />
                 <Panel>
-                  <PanelGroup
-                    direction="vertical"
-                    style={{
-                      minHeight: '100%',
-                      maxHeight: '100%',
-                      minWidth: '100%',
-                      maxWidth: '650px',
-                      overflow: 'hidden',
-                    }}
-                  >
+                  <PanelGroup direction="vertical">
                     <Panel minSize={20}>
                       <CodeEditor project={project} ydoc={ydoc} />
                     </Panel>
                     <PanelResizeHandle
                       style={{ backgroundColor: 'grey', height: '2px' }}
                     />
+
+                    {/* Console */}
+                    <Panel minSize={20}>
+                      {showConsole && (
+                        <Console
+                          output={output}
+                          onClose={() => setShowConsole(false)}
+                        />
+                      )}
+                    </Panel>
                   </PanelGroup>
                 </Panel>
-
-                {/* Bottom Panel */}
               </PanelGroup>
             </GridItem>
           </Grid>
