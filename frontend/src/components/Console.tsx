@@ -1,9 +1,10 @@
-import { Box, Flex, Text, IconButton } from '@chakra-ui/react';
+import { Box, Flex, Text, IconButton, Button } from '@chakra-ui/react';
 import { CloseIcon, CheckIcon } from '@chakra-ui/icons';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { selectFile } from '@store/selectors/fileSelectors';
 import { useExecuteFileMutation } from '@store/services/file';
+import { MdBuild } from 'react-icons/md';
 interface ConsoleProps {
   output: string;
   onClose: () => void;
@@ -16,7 +17,7 @@ interface FileType {
 
 const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
   const fileSelector = useSelector(selectFile);
-  const [executeFile] = useExecuteFileMutation();
+  const [executeFile, { isLoading }] = useExecuteFileMutation();
 
   const handleExecute = async () => {
     let file = fileSelector;
@@ -48,16 +49,17 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
         borderTopRadius="md"
       >
         <Flex gap={2}>
-        <IconButton
-        isRound={true}
-        variant='solid'
-          colorScheme='teal'
-          aria-label='Done'
-          icon={<CheckIcon />}
-        size='xs'
-          onClick={() => handleExecute()}
-        >
-          </IconButton>
+          <Button
+            disabled={isLoading}
+            isLoading={isLoading}
+            rightIcon={<MdBuild />}
+            variant='solid'
+            colorScheme='teal'
+            onClick={() => handleExecute()}
+            className="!text-sm "
+          >
+            run
+          </Button>
 
           <IconButton
             aria-label="close"
