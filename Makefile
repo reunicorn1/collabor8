@@ -123,6 +123,9 @@ test: ## Run all tests
 	$(MAKE) test_frontend
 	$(MAKE) test_backend
 
+front-build: ## Build frontend app
+	@$(NPM) --prefix frontend run build
+
 # Docker targets
 docker-build: ## Build Docker images for frontend and backend
 	@docker build -t my-frontend-image frontend/
