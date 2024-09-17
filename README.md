@@ -2,7 +2,6 @@
 
 **Collabor8** is an innovative, web-based collaborative code editor designed for developers to work together seamlessly in real-time. Built on modern, scalable technologies like **React**, **NestJS**, **Socket.io**, and **Yjs**, Collabor8 redefines collaborative coding by offering a powerful environment for real-time code sharing, editing, and communication. Whether you’re coding solo or in a team, Collabor8 brings synchronized coding experiences directly to your browser, fueling creativity and enhancing productivity.
 
-
 ![Collabor8 Interface](https://i.ibb.co/7NfrJXS/Screenshot-2024-09-16-131545.png)
 
 ## 🚀 Key Features
@@ -47,6 +46,7 @@ At its core, **Collabor8** is about transforming how developers collaborate. Whe
 We leverage the best technologies to ensure scalability, performance, and a top-tier developer experience:
 
 - **Frontend:**
+
   - [ReactJS](https://reactjs.org/) - A highly efficient, declarative UI library for building the interactive components.
   - [Vite](https://vitejs.dev/) - Lightning-fast development server with optimized build processes.
   - [CodeMirror](https://codemirror.net/) - An adaptable code editor that supports multiple languages and custom configurations.
@@ -54,6 +54,7 @@ We leverage the best technologies to ensure scalability, performance, and a top-
   - [Redux + RTK](https://redux-toolkit.js.org/) - State management for complex application flows.
 
 - **Backend:**
+
   - [NestJS](https://nestjs.com/) - A powerful framework for building efficient, reliable, and scalable server-side applications.
   - [MySQL](https://www.mysql.com/) - For handling relational data, ensuring fast, structured queries.
   - [MongoDB](https://www.mongodb.com/) - NoSQL database to store project files and real-time data.
@@ -61,6 +62,7 @@ We leverage the best technologies to ensure scalability, performance, and a top-
   - [JWT & Passport](https://jwt.io/) - Secure user authentication and authorization.
 
 - **Real-time Communication:**
+
   - [Socket.io](https://socket.io/) - Provides the backbone for real-time communication between users.
   - [Yjs](https://yjs.dev/) - Ensures conflict-free, real-time collaborative editing.
   - [Agora](https://www.agora.io/) - Facilitates voice communication for smooth, in-app discussions.
@@ -75,9 +77,9 @@ We leverage the best technologies to ensure scalability, performance, and a top-
 
 ## 🌍 Live Application & API Documentation
 
-Explore **Collabor8** in action and experience real-time collaboration at its finest. 
+Explore **Collabor8** in action and experience real-time collaboration at its finest.
 
-- **App Link:** [Collabor8 Web App](https://co11abor8.netlify.app)  
+- **App Link:** [Collabor8 Web App](https://co11abor8.netlify.app)
 - **API Documentation:** [Collabor8 API Docs](https://collabor8.eduresource.tech/api-docs)
 
 ---
@@ -142,7 +144,6 @@ We’re always excited to collaborate with developers passionate about creating 
 2. Create a new branch for your feature or fix.
 3. Write clean, modular, and tested code.
 4. Submit a PR with a detailed explanation of your changes.
-
 
 ---
 
