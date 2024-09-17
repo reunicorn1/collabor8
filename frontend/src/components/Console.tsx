@@ -1,34 +1,30 @@
-import { Box, Flex, Text, IconButton, Button } from '@chakra-ui/react';
-import { CloseIcon } from '@chakra-ui/icons';
-import React from 'react';
+import { Box, Flex, Text, Button } from '@chakra-ui/react';
+import React, { useState } from 'react';
 import { selectFile } from '@store/selectors/fileSelectors';
 import { useExecuteFileMutation } from '@store/services/file';
 import { MdBuild } from 'react-icons/md';
 import { useAppSelector } from '@hooks/useApp';
-interface ConsoleProps {
-  output: string;
-  setOutput: any;
-  onClose: () => void;
-}
 
-interface FileType {
-  file_id: string;
-  language: string;
-}
 
-const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
+const EXECUTION_PANEL_FILLER_TEXT = 'Your result appears here!';
+
+const Console: React.FC = () => {
   const fileSelector = useAppSelector(selectFile);
   const [executeFile, { isLoading }] = useExecuteFileMutation();
+  const [output, setOutput] = useState<string>(EXECUTION_PANEL_FILLER_TEXT);
 
   const handleExecute = async () => {
     let file = fileSelector;
     console.log('Execute', file);
     if (file) {
-      const res = await executeFile({ id: file.file_id, language: file.language }).unwrap();
+      const res = await executeFile({
+        id: file.file_id,
+        language: file.language,
+      }).unwrap();
       console.log(res?.output);
       setOutput(res?.output || '');
     }
-  }
+  };
 
   return (
     <Box

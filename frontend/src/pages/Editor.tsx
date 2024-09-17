@@ -12,46 +12,22 @@ import Tree from '../components/FileTree/Tree';
 import Console from '../components/Console';
 import * as Y from 'yjs';
 import { useGetProjectByIdQuery } from '@store/services/project';
-import React from 'react';
-import { Mapped } from '../components/Audio/Modal';
 import NotFoundPage from './404_page';
 import ThemedLoader from '../utils/Spinner';
 import { useAppSelector } from '@hooks/useApp';
 import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
-// retrieve project name from state of navigate eg.
-//  navigate(`/editor/${id}`, { state: { project_name } });
-//
 
 const ydoc = new Y.Doc();
 
 export default function Editor() {
-  // The only thing to fix my issues is to avoid using context and use direct passing instead
-
   const location = useLocation();
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
   const [project, setProject] = useState<any>(null); // State to hold project data
   const projectRef = useRef<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [output, setOutput] = useState<string>('');
-  const [showConsole, setShowConsole] = useState(true);
   const toast = useToast();
   const panelVisiblity = useAppSelector(selectPanelVisiblity);
-
-  // handle code execution
-  const executeCode = async (code: string) => {
-    // This is a placeholder function where we'd integrate actual execution logic
-    // For now, it just simulates code execution
-    setTimeout(() => {
-      setOutput('Your result appears here!'); // Simulated output
-    }, 1000);
-  };
-
-  useEffect(() => {
-    if (project) {
-      executeCode('Sample Code'); // Simulate code execution on project load
-    }
-  }, [project]);
 
   // Fetch the project data based on the ID
   const {
@@ -157,11 +133,7 @@ export default function Editor() {
                         <Panel className='!overflow-hidden !bottom-0'
                           style={{ minHeight: '100px', maxHeight: '50vh' }}
                         >
-                          <Console
-                            output={output}
-                            setOutput={setOutput}
-                            onClose={() => setShowConsole(false)}
-                          />
+                          <Console/>
                         </Panel>
                       </>
                     )}
