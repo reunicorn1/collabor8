@@ -23,15 +23,16 @@
 
 1. [About Collabor8](#about-collabor8)
 2. [Technologies Used](#technologies-used)
-3. [Getting Started](#getting-started)
+3. [Live Application & API Documentation](#-live-application--api-documentation)
+4. [Getting Started](#getting-started)
    - [Prerequisites](#prerequisites)
    - [Installation](#installation)
    - [Running the Project](#running-the-project)
-4. [Project Architecture](#project-architecture)
-5. [Contributing](#contributing)
-6. [License](#license)
-7. [Contact Us](#contact-us)
-8. [Team](#team)
+5. [Project Architecture](#project-architecture)
+6. [Contributing](#contributing)
+7. [License](#license)
+8. [Contact Us](#contact-us)
+9. [Team](#team)
 
 ---
 
