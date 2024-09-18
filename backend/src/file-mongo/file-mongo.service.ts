@@ -135,7 +135,7 @@ export class FileMongoService {
     }
   }
 
-  async execute(id: string, req: any): Promise<{ output: string }> {
+  async execute(id: string, req: any): Promise<{ output: { stdout: string, stderr: string } }> {
   const file = await this.findOne(id);
     if (!file) {
       throw new NotFoundException('File not found');

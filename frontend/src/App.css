@@ -39,10 +39,14 @@ body {
 }
 
 .react-codemirror2 {
+  padding: 0.5rem;
   overflow: hidden;
+  min-width: 100%;
 }
 .CodeMirror {
   min-height: 765px;
+  min-width: 100%;
+  max-width: 500px;
 }
 .CodeMirror-sizer {
   margin-top: 1rem;
@@ -106,3 +110,50 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+
+.line-numbered-text {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid #ddd;
+  background-color: #1e1e1e;
+  overflow: hidden;
+}
+
+.line-numbers {
+  background-color: #333;
+  color: #ccc;
+  min-width: 50px;
+  padding: 10px;
+  font-family: monospace;
+  text-align: right;
+  user-select: none;
+  border-right: 1px solid #ddd;
+  display: flex;
+  margin-right: 8px;
+}
+
+.line-number {
+  white-space: pre-wrap;
+  font-family: monospace;
+  user-select: none;
+  color: #ccc;
+}
+.text-content {
+  padding: 10px;
+  white-space: pre-wrap;
+  font-family: monospace;
+  overflow-y: auto;
+  word-break: break-word;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.line-content {
+  margin-bottom: 5px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+

@@ -8,7 +8,7 @@ export class DockerController {
 
   @Public()
   @Post('execute')
-  async executeCode(@Request() req): Promise<string> {
+  async executeCode(@Request() req): Promise<{ stdout: string, stderr: string }> {
     return this.dockerService.executeLanguageCode(req.body.code, req.body?.filename, req.body?.language);
   }
 }

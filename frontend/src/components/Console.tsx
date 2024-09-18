@@ -1,12 +1,13 @@
-import { Box, Flex, Text, IconButton, Button } from '@chakra-ui/react';
+import { Box, Flex, Text, IconButton, Button, Spacer } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
 import React from 'react';
 import { selectFile } from '@store/selectors/fileSelectors';
 import { useExecuteFileMutation } from '@store/services/file';
 import { MdBuild } from 'react-icons/md';
 import { useAppSelector } from '@hooks/useApp';
+import LineNumberedText from '@components/CodeEditor/LineNumber';
 interface ConsoleProps {
-  output: string;
+  output: { stdout: string; stderr: string };
   setOutput: any;
   onClose: () => void;
 }
@@ -26,7 +27,7 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
     if (file) {
       const res = await executeFile({ id: file.file_id, language: file.language }).unwrap();
       console.log(res?.output);
-      setOutput(res?.output || '');
+      setOutput(res?.output || {});
     }
   }
 
@@ -37,8 +38,10 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
       bg="#1e1e1e"
       color="green.400"
       fontFamily="monospace"
-      className='!overflow-hidden !bottom-0'
-      style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+      className='!overflow-hidden'
+      style={{ display: 'flex', flexDirection: 'column', height: '100%',
+      minWidth: '100%', maxWidth: '500px',
+      maxHeight: '100%' }}
     >
       {/* Terminal header bar */}
       <Flex
@@ -54,6 +57,7 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
           disabled={isLoading}
           isLoading={isLoading}
           ms='auto'
+          size='xs'
           rightIcon={<MdBuild />}
           variant='solid'
           colorScheme='teal'
@@ -67,8 +71,24 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
       <Box p={4}
         style={{ flexGrow: 1, overflowY: 'auto' }}
       >
-        <Text whiteSpace="pre-wrap"
-        >{output}</Text>
+
+           <>
+      {output.stdout && (
+        <div>
+          <Text color="green.400" mb={4}>Standard Output:</Text>
+          <LineNumberedText color="green.400" text={output.stdout} />
+        </div>
+      )}
+      <Spacer 
+        style={{height: '20px'}}
+      />
+      {output.stderr && (
+        <div>
+          <Text color="red.400" mb={4}>Standard Error:</Text>
+          <LineNumberedText color="red.400" text={output.stderr} />
+        </div>
+      )}
+    </>
       </Box>
     </Box>
   );

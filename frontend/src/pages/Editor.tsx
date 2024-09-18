@@ -33,7 +33,10 @@ export default function Editor() {
   const [project, setProject] = useState<any>(null); // State to hold project data
   const projectRef = useRef<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [output, setOutput] = useState<string>('');
+  const [output, setOutput] = useState<{ stdout: string; stderr: string }>({
+    stdout: '',
+    stderr: '',
+  });
   const [showConsole, setShowConsole] = useState(true);
   const toast = useToast();
   const panelVisiblity = useAppSelector(selectPanelVisiblity);
@@ -43,7 +46,7 @@ export default function Editor() {
     // This is a placeholder function where we'd integrate actual execution logic
     // For now, it just simulates code execution
     setTimeout(() => {
-      setOutput('Your result appears here!'); // Simulated output
+      setOutput({stdout: 'Your result appears here!', stderr: ''}); // Simulated output
     }, 1000);
   };
 
@@ -104,7 +107,7 @@ export default function Editor() {
 
   return (
     <EditorProvider>
-      <Grid templateColumns="1fr 20fr" h="100vh">
+      <Grid templateColumns="1fr 20fr" h="100vh" w="100vw" overflow="hidden">
         {/* First Section */}
         <GridItem
           background="linear-gradient(to bottom, #001845, #524175)"
