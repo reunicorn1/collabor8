@@ -1,30 +1,37 @@
+import React from 'react';
 import { Box, Flex, Text, Button } from '@chakra-ui/react';
-import React, { useState } from 'react';
+//import { CloseIcon } from '@chakra-ui/icons';
 import { selectFile } from '@store/selectors/fileSelectors';
 import { useExecuteFileMutation } from '@store/services/file';
 import { MdBuild } from 'react-icons/md';
 import { useAppSelector } from '@hooks/useApp';
 import { EXECUTION_PANEL_FILLER_TEXT } from '../constants';
+import LineNumberedText from '@components/CodeEditor/LineNumber';
+
+const intialOutput = {
+  output: {
+    stdout: EXECUTION_PANEL_FILLER_TEXT,
+    stderr: '',
+  },
+};
 
 const Console: React.FC = () => {
   const fileSelector = useAppSelector(selectFile);
-  const [executeFile, { isLoading }] = useExecuteFileMutation();
-  const [output, setOutput] = useState<string>(EXECUTION_PANEL_FILLER_TEXT);
+  const [executeFile, { data = intialOutput, isLoading }] = useExecuteFileMutation();
+  const { output } = data;
 
   const handleExecute = async () => {
     let file = fileSelector;
     //console.log('Execute', file);
     if (file) {
       try {
-        const res = await executeFile({
+        await executeFile({
           id: file.file_id,
           language: file.language,
         }).unwrap();
         //console.log(res?.output);
-        setOutput(res?.output || '');
       } catch (err) {
         //console.log({err})
-        setOutput(err.data.message);
       }
     }
   };
@@ -51,6 +58,7 @@ const Console: React.FC = () => {
           disabled={isLoading}
           isLoading={isLoading}
           ms='auto'
+          size='xs'
           rightIcon={<MdBuild />}
           variant='solid'
           colorScheme='teal'
@@ -61,10 +69,19 @@ const Console: React.FC = () => {
         </Button>
       </Flex>
       {/* Terminal content */}
-      <Box className='flex-grow overflow-y-auto p-4'>
-        <Text whiteSpace="pre-wrap">
-          {output}
-        </Text>
+      <Box className='flex-grow overflow-auto p-4'>
+        {output.stdout && (
+          <div className='space-y-4'>
+            <Text>Standard Output:</Text>
+            <LineNumberedText color="green.400" text={output.stdout} />
+          </div>
+        )}
+        {output.stderr && (
+          <div className='space-y-4'>
+            <Text>Standard Error:</Text>
+            <LineNumberedText color="red.400" text={output.stderr} />
+          </div>
+        )}
       </Box>
     </Box>
   );

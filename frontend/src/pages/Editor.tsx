@@ -21,12 +21,11 @@ import { Singleton } from '../constants';
 //const ydoc = new Y.Doc();
 
 export default function Editor() {
-  const location = useLocation();
+  //const location = useLocation();
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
-  const [project, setProject] = useState<any>(null); // State to hold project data
-  const projectRef = useRef<any>(null);
-  const [error, setError] = useState<string | null>(null);
+  //const [project, setProject] = useState<any>(null); // State to hold project data
+  //const projectRef = useRef<any>(null);
   const toast = useToast();
   const panelVisiblity = useAppSelector(selectPanelVisiblity);
 
@@ -36,17 +35,15 @@ export default function Editor() {
     isUninitialized,
     isLoading,
     isSuccess,
-    refetch,
-    error: fetchError,
+    //refetch,
+    error,
   } = useGetProjectByIdQuery(
     projectId! && typeof projectId == 'string' ? projectId : '',
     { refetchOnReconnect: true },
   );
 
-  console.log('@@@@@@@@@@@@@@', { data })
   useEffect(() => {
-    if (fetchError && 'status' in fetchError && fetchError.status === 404) {
-      setError('Project not found');
+    if (error && 'status' in error && error.status === 404) {
       toast({
         title: 'Project Not Found',
         description:
@@ -58,24 +55,24 @@ export default function Editor() {
       });
       setTimeout(() => navigate('/dashboard'), 5000);
     }
-  }, [fetchError, navigate, toast]);
+  }, [error, navigate, toast]);
 
-  useEffect(() => {
-    console.log('-----Location State---->: ', location.state);
-    if (location.state) {
-      setProject(location.state);
-    } else if (projectId) {
-      refetch();
-    }
-  }, [location.state, projectId, refetch]);
+  //useEffect(() => {
+  //  console.log('-----Location State---->: ', location.state);
+  //  if (location.state) {
+  //    setProject(location.state);
+  //  } else if (projectId) {
+  //    refetch();
+  //  }
+  //}, [location.state, projectId, refetch]);
 
-  useEffect(() => {
-    console.log('-----Data---->: ', data);
-    if (data) {
-      setProject(data);
-      projectRef.current = data;
-    }
-  }, [data]);
+  //useEffect(() => {
+  //  console.log('-----Data---->: ', data);
+  //  if (data) {
+  //    setProject(data);
+  //    projectRef.current = data;
+  //  }
+  //}, [data]);
 
   if (error) {
     return <NotFoundPage />;
@@ -95,12 +92,12 @@ export default function Editor() {
         <MenuBar
           isSuccess={isSuccess}
           isLoading={isLoading}
-          project={project}
+          project={data}
         />
-        <CodeEditor project={project} ydoc={Singleton.getYdoc()} />
+        <CodeEditor project={data} ydoc={Singleton.getYdoc()} />
       </Box>
       <Box className='absolute w-full bottom-0'>
-        {panelVisiblity && (<Console />)}
+        {panelVisiblity && <Console />}
       </Box>
     </EditorProvider>
   );

@@ -9,18 +9,15 @@ import { WebsocketProvider } from 'y-websocket';
 import { LanguageCode } from '../../utils/codeExamples';
 import { Editor } from 'codemirror';
 import { useFile, useSettings } from '../../context/EditorContext';
-// import DocumentManager from './TabsList';
 import { Awareness } from 'y-protocols/awareness.js';
 import { getRandomUsername } from './names';
 import { YMapValueType } from '../../context/EditorContext';
-import createfiletree from '../../utils/filetreeinit';
 import Tabs from './Tabs';
 import { useAppSelector } from '../../hooks/useApp';
 import { selectAccessToken, selectUserDetails } from '@store/selectors';
 import { useFindMyShareQuery } from '@store/services/projectShare';
 import { Project, ProjectShares } from '@types';
 import { useSelector } from 'react-redux';
-import { Singleton } from '../../constants';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',

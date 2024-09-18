@@ -1,43 +1,49 @@
-import {
-  Drawer,
-  DrawerBody,
-  DrawerOverlay,
-  DrawerContent,
-  Flex,
-  DrawerCloseButton,
-  Box,
-  Center,
-  Text,
-  Heading,
-  Button,
-  IconButton,
-} from '@chakra-ui/react';
-import LanguageSelector from '@components/Bars/LanguageSelector';
-import ThemeSelector from '@components/Bars/ThemeSelector';
+import { Box, Heading, IconButton } from '@chakra-ui/react';
 import Tree from '@components/FileTree/Tree';
-import { Singleton } from '../../constants';
-import { FaGithub } from 'react-icons/fa';
-import { Doc } from 'yjs';
 import { CloseIcon } from '@chakra-ui/icons';
+import { useEffect, useRef } from 'react';
 
 interface ModalProps {
-  project?: any;
+  project?: Record<string, any>;
   isOpen: boolean;
   onClose: () => void;
-  //ydoc?: Doc;
 }
 
-export default function ComingSoon({
-  isOpen,
-  onClose,
-  project,
-}: ModalProps) {
+function ComingSoon({ isOpen, onClose, project }: ModalProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  // effect to close slide menu when clicked outside
+  useEffect(() => {
+    const handleClose = (e: MouseEvent) => {
+      const isMenuBtn =
+        (e.target as HTMLButtonElement).getAttribute('aria-label') === 'slide menu button';
+
+      if (
+        ref.current &&
+        !isMenuBtn &&
+        !ref.current.contains(e.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    window.document.addEventListener('click', handleClose);
+
+    // cleanup
+    return () => {
+      window.document.removeEventListener('click', handleClose);
+    };
+  });
+
   return (
-    <Box className={`transition
+    <Box
+      ref={ref}
+      className={`
+    transition
     fixed top-0 bottom-0 z-10 w-3/4 flex flex-col gap-4 bg-[#001845]
-    ${isOpen ? 'translate-x-0 shadow-xl shadow-[#524175]' : '-translate-x-full '}
-    
-    `}>
+    ${isOpen ? 'translate-x-0 shadow-xl shadow-[#524175]' : '-translate-x-full'}
+    `}
+    >
       <IconButton
         aria-label='close menu'
         onClick={onClose}
@@ -53,3 +59,5 @@ export default function ComingSoon({
     </Box>
   );
 }
+
+export default ComingSoon;

@@ -1,17 +1,15 @@
 import {
   Flex,
-  Spacer,
   IconButton,
   Text,
-  Box,
   useDisclosure,
   Button,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import { PiGithubLogo } from 'react-icons/pi';
+//import { PiGithubLogo } from 'react-icons/pi';
 import { MdOutlineKeyboardVoice } from 'react-icons/md';
 import { GoHome } from 'react-icons/go';
-import { LanguageSelector, ThemeSelector } from '../CodeEditor';
+//import { LanguageSelector, ThemeSelector } from '../CodeEditor';
 import { useSettings } from '../../context/EditorContext';
 import ComingSoon from '@components/CodeEditor/ComingSoon';
 import VoiceDrawer from '@components/CodeEditor/VoiceDrawer';
@@ -19,7 +17,8 @@ import { useAppDispatch, useAppSelector } from '@hooks/useApp';
 import { setPanelVisibility } from '@store/slices/fileSlice';
 import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
 import { HamburgerIcon } from '@chakra-ui/icons';
-import { Doc } from 'yjs';
+import { useRef, useState } from 'react';
+//import { Doc } from 'yjs';
 
 type MenuBarProps = {
   project: any;
@@ -28,8 +27,8 @@ type MenuBarProps = {
   //ydoc: Doc;
 }
 
-export default function MenuBar({project }: MenuBarProps) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+export default function MenuBar({ project }: MenuBarProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
   const {
     isOpen: isOpenV,
@@ -103,18 +102,22 @@ export default function MenuBar({project }: MenuBarProps) {
           color="white"
           _hover={{ bg: 'white', color: 'black' }}
           variant="ghost"
-          aria-label="Done"
+          aria-label="slide menu button"
           fontSize="18px"
           size="xs"
           ml={1}
           mr={2}
-          onClick={onOpen}
-          icon={<HamburgerIcon />}
+          onClick={(e) => {
+            e.bubbles = true;
+            setIsOpen(true)
+          }}
+          icon={<HamburgerIcon className='pointer-events-none' />}
         />
       </Flex>
       <ComingSoon
         project={project}
-        isOpen={isOpen} onClose={onClose}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
       />
       <VoiceDrawer isOpen={isOpenV} onClose={onCloseV} />
     </div>

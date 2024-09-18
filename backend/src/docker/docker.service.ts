@@ -1,5 +1,6 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import * as Docker from 'dockerode';
+import { PassThrough } from 'stream';
 
 @Injectable()
 export class DockerService {
@@ -9,37 +10,45 @@ export class DockerService {
     this.docker = new Docker();
   }
 
-  async createStartContainer(image: string, command: string[]): Promise<Docker.Container> {
-  const container = await this.docker.createContainer({
-      Image: image,
-      Cmd: command,
-      Tty: true,
-      AttachStdout: true,
-      AttachStderr: true,
-    });
-    await container.start();
-    return container;
-  }
 
-  async removeContainer(container: Docker.Container): Promise<void> {
-    await container.remove();
-  }
-
-  async getContainerLogs(container: Docker.Container): Promise<string> {
+  async runDockerContainer(image: string, command: string[]): Promise<{ stdout: string, stderr: string }> {
     return new Promise((resolve, reject) => {
-      container.logs({ follow: true, stdout: true, stderr: true }, (err, stream) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        let logs = '';
-        stream.on('data', (chunk) => {
-          logs += chunk.toString();
-        });
-        stream.on('end', () => {
-          resolve(logs);
-        });
-      });
+      // Create streams to capture stdout and stderr separately
+      const stdoutStream = new PassThrough();
+      const stderrStream = new PassThrough();
+
+
+      let logs = { stdout: '', stderr: '' };
+      this.docker.run(image, command, [stdoutStream, stderrStream], { Tty: false })
+        .then(() => {
+
+          stdoutStream.on('data', (data) => {
+            logs.stdout += data.toString();
+          });
+
+          stderrStream.on('data', (data) => {
+            logs.stderr += data.toString();
+          });
+
+          stdoutStream.on('error', (error) => {
+            reject(`Error reading stdout stream: ${error.message}`);
+          });
+
+          stderrStream.on('error', (error) => {
+            reject(`Error reading stderr stream: ${error.message}`);
+          });
+          stdoutStream.on('end', () => {
+            stderrStream.on('end', () => {
+              resolve({
+                stdout: logs.stdout,
+                stderr: logs.stderr
+              });
+            });
+          });
+        })
+        .catch((err) => {
+          reject(`Error running container: ${err.message}`);
+        })
     });
   }
 
@@ -55,7 +64,7 @@ export class DockerService {
     }
   }
 
-  async executeLanguageCode(code: string, filename?:string, language?: string): Promise<string> {
+  async executeLanguageCode(code: string, filename?: string, language?: string): Promise<{ stdout: string, stderr: string }> {
     let image: string;
     let command: string[];
     if (!language && !filename) {
@@ -76,10 +85,7 @@ export class DockerService {
       default:
         throw new Error(`Unsupported language ${language}`);
     }
-    const container = await this.createStartContainer(image, command);
-    const logs = await this.getContainerLogs(container);
-    await this.removeContainer(container);
-    Logger.log(logs);
+    const logs = await this.runDockerContainer(image, command);
     return logs;
   }
 }
