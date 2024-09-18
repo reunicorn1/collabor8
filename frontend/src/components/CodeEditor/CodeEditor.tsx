@@ -189,7 +189,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ydoc, project }) => {
   }, [language, fileSelected]);
 
   return (
-    <Box h="100%" >
+    <Box h="100%" bg="brand.900">
       <Tabs />
       <Box opacity={fileSelected ? '1' : '0'}>
         <CodeMirror
