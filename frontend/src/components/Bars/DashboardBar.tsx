@@ -141,7 +141,7 @@ export default function DashboardBar() {
       alignItems="center"
       borderBottom="2px solid #524175"
       p={[2, 3, 4]}
-      w="100%"
+      w="auto"
       flexDirection={'row'}
     >
       <Image
