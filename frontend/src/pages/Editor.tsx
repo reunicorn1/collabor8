@@ -3,21 +3,22 @@ import { Grid, GridItem, Box, Text, Divider, useToast } from '@chakra-ui/react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
-// import FileTree from '../components/FileTree/FileTree';
+//import FileTree from '../components/FileTree/FileTree';
 import { EditorProvider } from '../context/EditorContext';
 import CodeEditor from '../components/CodeEditor/CodeEditor';
-import Shares from '../components/Bars/Shares';
+//import Shares from '../components/Bars/Shares';
 import MenuBar from '../components/Bars/MenuBar';
-import Tree from '../components/FileTree/Tree';
+//import Tree from '../components/FileTree/Tree';
 import Console from '../components/Console';
-import * as Y from 'yjs';
+//import * as Y from 'yjs';
 import { useGetProjectByIdQuery } from '@store/services/project';
 import NotFoundPage from './404_page';
 import ThemedLoader from '../utils/Spinner';
 import { useAppSelector } from '@hooks/useApp';
 import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
+import { Singleton } from '../constants';
 
-const ydoc = new Y.Doc();
+//const ydoc = new Y.Doc();
 
 export default function Editor() {
   const location = useLocation();
@@ -32,6 +33,7 @@ export default function Editor() {
   // Fetch the project data based on the ID
   const {
     data,
+    isUninitialized,
     isLoading,
     isSuccess,
     refetch,
@@ -41,6 +43,7 @@ export default function Editor() {
     { refetchOnReconnect: true },
   );
 
+  console.log('@@@@@@@@@@@@@@', { data })
   useEffect(() => {
     if (fetchError && 'status' in fetchError && fetchError.status === 404) {
       setError('Project not found');
@@ -58,6 +61,7 @@ export default function Editor() {
   }, [fetchError, navigate, toast]);
 
   useEffect(() => {
+    console.log('-----Location State---->: ', location.state);
     if (location.state) {
       setProject(location.state);
     } else if (projectId) {
@@ -66,6 +70,7 @@ export default function Editor() {
   }, [location.state, projectId, refetch]);
 
   useEffect(() => {
+    console.log('-----Data---->: ', data);
     if (data) {
       setProject(data);
       projectRef.current = data;
@@ -76,7 +81,7 @@ export default function Editor() {
     return <NotFoundPage />;
   }
 
-  if (!project) {
+  if (isLoading || isUninitialized) {
     return <ThemedLoader />;
   }
 
@@ -88,12 +93,11 @@ export default function Editor() {
         className="relative"
       >
         <MenuBar
-          ydoc={ydoc}
           isSuccess={isSuccess}
           isLoading={isLoading}
           project={project}
         />
-        <CodeEditor project={project} ydoc={ydoc} />
+        <CodeEditor project={project} ydoc={Singleton.getYdoc()} />
       </Box>
       <Box className='absolute w-full bottom-0'>
         {panelVisiblity && (<Console />)}

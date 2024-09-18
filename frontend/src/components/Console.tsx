@@ -15,12 +15,17 @@ const Console: React.FC = () => {
     let file = fileSelector;
     //console.log('Execute', file);
     if (file) {
-      const res = await executeFile({
-        id: file.file_id,
-        language: file.language,
-      }).unwrap();
-      //console.log(res?.output);
-      setOutput(res?.output || '');
+      try {
+        const res = await executeFile({
+          id: file.file_id,
+          language: file.language,
+        }).unwrap();
+        //console.log(res?.output);
+        setOutput(res?.output || '');
+      } catch (err) {
+        //console.log({err})
+        setOutput(err.data.message);
+      }
     }
   };
 

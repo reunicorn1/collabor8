@@ -25,10 +25,10 @@ type MenuBarProps = {
   project: any;
   isLoading: boolean;
   isSuccess: boolean
-  ydoc: Doc;
+  //ydoc: Doc;
 }
 
-export default function MenuBar({ ydoc, project }: MenuBarProps) {
+export default function MenuBar({project }: MenuBarProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useAppDispatch();
   const {
@@ -113,7 +113,6 @@ export default function MenuBar({ ydoc, project }: MenuBarProps) {
         />
       </Flex>
       <ComingSoon
-        ydoc={ydoc}
         project={project}
         isOpen={isOpen} onClose={onClose}
       />

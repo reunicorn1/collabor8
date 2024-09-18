@@ -26,11 +26,12 @@ import { useCreateFileMutation } from '@store/services/file';
 import { useCreateDirectoryMutation } from '@store/services/directory';
 import { createDocuments } from '@utils/createfiledir';
 import { LanguageCode } from '@utils/codeExamples';
+import { Singleton } from '../../constants';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   filedir: string;
-  ydoc: Y.Doc;
+  //ydoc: Y.Doc;
   parent: string;
 }
 // Eslint was disabled for this method because it's used in an uncasual way
@@ -49,7 +50,6 @@ const NewfileDir: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   filedir,
-  ydoc,
   parent,
 }) => {
   const { projectId: project_id = '' } = useParams();
@@ -57,7 +57,7 @@ const NewfileDir: React.FC<ModalProps> = ({
   const initialRef = React.useRef(null);
   const [newName, setNewName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const root = ydoc.getMap(project_id);
+  const root = Singleton.getYdoc().getMap(project_id);
   // const root = ydoc.getMap('root'); // This gets the value of the root if created before
   const [createFile] = useCreateFileMutation();
   const [createDir] = useCreateDirectoryMutation();

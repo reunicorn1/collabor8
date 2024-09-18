@@ -7,18 +7,20 @@ import { createDocuments } from '@utils/createfiledir';
 import { useFile } from '../../context/EditorContext';
 import { Text } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
+import { Singleton } from '../../constants';
 
 interface FileTreeViewProps {
   data: any;
-  ydoc: Y.Doc;
+  //ydoc: Y.Doc;
 }
 
-const FileTreeView: React.FC<FileTreeViewProps> = ({ data, ydoc }) => {
+const FileTreeView: React.FC<FileTreeViewProps> = ({ data }) => {
   const { setFileSelected, fileSelected } = useFile()!;
   const { projectId = '' } = useParams();
 
-  const root = ydoc.getMap(projectId); // This gets the value of the root if created before
-  const filetree = useMemo(() => data.filetree?.children, [data.filetree]);
+  const ydoc = Singleton.getYdoc();
+  const root = ydoc.getMap(projectId ?? data._id); // This gets the value of the root if created before
+  const filetree = data.filetree?.children;
   console.log('Root:-------->', root);
   console.log('FileTree:----->', filetree);
 
@@ -98,7 +100,7 @@ const FileTreeView: React.FC<FileTreeViewProps> = ({ data, ydoc }) => {
       {filetree && filetree?.length > 0 ? (
         filetree.map((node, index) => (
           <Entry
-            key={index}
+            key={`${index}-${node.id}`}
             entry={node}
             depth={1}
             onFileClick={onFileClick}

@@ -1,32 +1,32 @@
 import {
   Flex,
   Text,
-  Spacer,
   IconButton,
   useDisclosure,
   Box,
 } from '@chakra-ui/react';
 import { VscNewFile, VscNewFolder } from 'react-icons/vsc';
 import React, { useState } from 'react';
-import * as Y from 'yjs';
+//import * as Y from 'yjs';
 import NewfileDir from '../Modals/NewfileDir';
 import { useYMap } from 'zustand-yjs';
-import { YMapValueType } from '../../context/EditorContext';
+//import { YMapValueType } from '../../context/EditorContext';
 import FileTreeView from '../FileTree/FileTreeView';
 import { useParams } from 'react-router-dom';
+import { Singleton } from '../../constants';
 
 interface TreeProps {
-  ydoc: Y.Doc;
+  //ydoc: Y.Doc;
   name: string;
 }
 
-const Tree: React.FC<TreeProps> = ({ ydoc, name }) => {
+const Tree: React.FC<TreeProps> = ({ name }) => {
   // The buttons of this component creates new files and direcoties in y.map (root) of the project
   // When a new file is created it becomes selected by default
   const { projectId = '' } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [filedir, setFileDir] = useState('');
-  const root = ydoc.getMap(projectId); // This gets the value of the root if created before
+  const root = Singleton.getYdoc().getMap(projectId); // This gets the value of the root if created before
 
   const { data } = useYMap<any, any>(root);
 
@@ -87,11 +87,10 @@ const Tree: React.FC<TreeProps> = ({ ydoc, name }) => {
         isOpen={isOpen}
         onClose={onClose}
         filedir={filedir}
-        ydoc={ydoc}
         parent={projectId}
       />
       <Box bg="brand.900" h="100%" overflow="hidden">
-        <FileTreeView data={data} ydoc={ydoc} />
+        <FileTreeView data={data} />
       </Box>
     </Box>
   );

@@ -24,11 +24,10 @@ interface ModalProps {
   project?: any;
   isOpen: boolean;
   onClose: () => void;
-  ydoc?: Doc;
+  //ydoc?: Doc;
 }
 
 export default function ComingSoon({
-  ydoc,
   isOpen,
   onClose,
   project,
@@ -50,7 +49,7 @@ export default function ComingSoon({
       <Heading color='brand.100' className='px-4 text-white !font-mono capitalize'>
         file tree
       </Heading>
-      <Tree ydoc={ydoc} name={project?.project_name} />
+      <Tree name={project?.project_name} />
     </Box>
   );
 }
