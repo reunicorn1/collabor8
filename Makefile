@@ -39,36 +39,28 @@ define kill_session
 	fi
 endef
 
-# Check environment
-check-environment:
-	@if [ -z "$(TMUX)" ]; then \
-		echo "Error: tmux is not installed. Please install tmux.";
-		exit 1; \
-	fi
-	@if [ -z "$(NPM)" ]; then \
-		echo "Error: npm is not installed. Please install npm."; \
-		exit 1; \
-	fi
 
 # Target to set up the project
 setup: ## Setup project and install core tools and dependencies
-	# @$(MAKE) -s check-environment
 	@$(MAKE) -s check-dependencies || exit 1
 
 # Check and install dependencies
 check-dependencies:
-	@if [ -z "$(TMUX)" ]; then \
-		echo "Installing tmux..."; \
-		sudo apt-get update && sudo apt-get install -y tmux; \
-	fi
-	@if [ -z "$(NPM)" ]; then \
-		echo "Installing npm..."; \
-		sudo apt-get update && sudo apt-get install -y npm; \
-		echo "Installing project dependencies..."; \
-		$(NPM) --prefix frontend install; \
-		$(NPM) --prefix backend install; \
-		$(NPM) --prefix socket_server install; \
-	fi
+ifndef TMUX
+	@echo "-------Installing tmux...---------"
+	sudo apt-get update
+	sudo apt-get install -y tmux
+endif
+
+ifndef NPM
+	@echo "---------Installing npm...----------"
+	sudo apt-get update
+	sudo apt-get install -y npm
+	@echo "---------Installing project dependencies...---------"
+	npm --prefix frontend install
+	npm --prefix backend install
+	npm --prefix socket_server install
+endif
 
 # Clean project dependencies
 clean: ## Clean project dependencies
@@ -130,6 +122,9 @@ test_backend: ## Run backend tests
 test: ## Run all tests
 	$(MAKE) test_frontend
 	$(MAKE) test_backend
+
+front-build: ## Build frontend app
+	@$(NPM) --prefix frontend run build
 
 # Docker targets
 docker-build: ## Build Docker images for frontend and backend

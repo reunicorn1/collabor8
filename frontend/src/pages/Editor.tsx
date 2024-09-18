@@ -43,7 +43,7 @@ export default function Editor() {
     // This is a placeholder function where we'd integrate actual execution logic
     // For now, it just simulates code execution
     setTimeout(() => {
-      setOutput('Hello World!\nExecution finished successfully.'); // Simulated output
+      setOutput('Your result appears here!'); // Simulated output
     }, 1000);
   };
 
@@ -147,21 +147,22 @@ export default function Editor() {
                       <CodeEditor project={project} ydoc={ydoc} />
                     </Panel>
                     {panelVisiblity && (
-                    <>
-                    <PanelResizeHandle
-                      style={{ backgroundColor: 'grey', height: '2px',
-                      opacity: '1', cursor: 'row-resize', bottom: '0'
-                      }}
-                    />
-                      <Panel className='!overflow-hidden !bottom-0'
-                      style={{ minHeight: '100px', maxHeight: '50vh'}}
-                      >
-                        <Console
-                          output={output}
-                          setOutput={setOutput}
-                          onClose={() => setShowConsole(false)}
+                      <>
+                        <PanelResizeHandle
+                          style={{
+                            backgroundColor: 'grey', height: '2px',
+                            opacity: '1', cursor: 'row-resize', bottom: '0'
+                          }}
                         />
-                      </Panel>
+                        <Panel className='!overflow-hidden !bottom-0'
+                          style={{ minHeight: '100px', maxHeight: '50vh' }}
+                        >
+                          <Console
+                            output={output}
+                            setOutput={setOutput}
+                            onClose={() => setShowConsole(false)}
+                          />
+                        </Panel>
                       </>
                     )}
 

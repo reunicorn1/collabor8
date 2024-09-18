@@ -44,6 +44,9 @@ body {
 .CodeMirror {
   min-height: 765px;
 }
+.CodeMirror-sizer {
+  margin-top: 1rem;
+}
 
 
 .selectors {

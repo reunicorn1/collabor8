@@ -38,7 +38,7 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
       color="green.400"
       fontFamily="monospace"
       className='!overflow-hidden !bottom-0'
-       style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+      style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
     >
       {/* Terminal header bar */}
       <Flex
@@ -50,23 +50,22 @@ const Console: React.FC<ConsoleProps> = ({ output, setOutput, onClose }) => {
         borderTopRadius="md"
         px={4}
       >
-          <Button
-            disabled={isLoading}
-            isLoading={isLoading}
-            ms='auto'
-            rightIcon={<MdBuild />}
-            variant='solid'
-            colorScheme='teal'
-            onClick={() => handleExecute()}
-            className='font-mono !bg-transparent border !border-white'
-          >
-            run
-          </Button>
-
+        <Button
+          disabled={isLoading}
+          isLoading={isLoading}
+          ms='auto'
+          rightIcon={<MdBuild />}
+          variant='solid'
+          colorScheme='teal'
+          onClick={() => handleExecute()}
+          className='font-mono !bg-transparent border !border-white'
+        >
+          run
+        </Button>
       </Flex>
       {/* Terminal content */}
-      <Box p={4} 
-      style={{ flexGrow: 1, overflowY: 'auto' }}
+      <Box p={4}
+        style={{ flexGrow: 1, overflowY: 'auto' }}
       >
         <Text whiteSpace="pre-wrap"
         >{output}</Text>
