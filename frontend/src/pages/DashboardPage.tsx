@@ -60,7 +60,7 @@ export default function DashboardPage() {
       <Flex h="100%" flexDirection={['column', 'row']}>
         <Box
           bg="brand.900"
-          w={['100%', '270px']}
+          w={['100%', '230px']}
           color="white"
           borderRight={['none', '2px solid #524175']}
         >

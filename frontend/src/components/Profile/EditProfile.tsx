@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { useRef, useState, useEffect, ChangeEvent } from 'react';
 import { FiEdit3 } from 'react-icons/fi';
+import { FaPen } from 'react-icons/fa';
 import { MdOutlineCancel } from 'react-icons/md';
 import {
   useGetCurrentUserProfileQuery,
@@ -39,10 +40,11 @@ export default function EditProfile() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const toast = useToast();
+  const isMed = useBreakpointValue({ base: false, md: true });
   const leftPosition = useBreakpointValue({
     base: '120px',
     sm: '350px',
-    md: '390px',
+    md: '350px',
   });
 
   useEffect(() => {
@@ -141,6 +143,19 @@ export default function EditProfile() {
   };
   // TODO: Create another function to create an update request specifically for bio
 
+  function Avatar_C() {
+    return (
+      <Avatar
+        size={{ base: 'xl', sm: '2xl' }}
+        position={{ md: 'absolute' }}
+        top={{ md: '150px'}}
+        src={data?.profile_picture}
+        left={{ md: leftPosition }}
+        borderColor="white"
+      />
+    );
+  }
+
   return (
     <>
       {isLoading ? (
@@ -159,35 +174,59 @@ export default function EditProfile() {
             h="100px"
             borderTopRadius="2xl"
           />
-          <Avatar
-            size="2xl"
-            position="absolute"
-            top="120px"
-            src={data?.profile_picture}
-            left={leftPosition}
-            borderColor="white"
-          />
-          <Box p={20} pt={10} display="flex" justifyContent="flex-end">
+          {isMed && (
+            <Flex p={20} pt={10} pb={0}>
+              <Avatar_C />
+            </Flex>
+          )}
+          <Box
+            p={{ base: 10, md: 20 }}
+            pt={10}
+            pb={10}
+            display="flex"
+            justifyContent={{ base: 'space-between', md: 'flex-end' }}
+            alignItems="center"
+          >
+            {!isMed && <Avatar_C />}
             <input
               type="file"
               ref={inputRef}
               style={{ display: 'none' }}
               onChange={handleFileChange}
             />
-
-            <Button
-              colorScheme="white"
-              variant="outline"
-              w="180px"
-              size="sm"
-              fontFamily="mono"
-              onClick={handleButtonClick}
-              isLoading={loading}
-            >
-              Upload new photo
-            </Button>
+            {!isMed ? (
+              <Button
+                leftIcon={<FiEdit3 />}
+                variant="solid"
+                size="xs"
+                bg="white"
+                fontFamily="mono"
+                onClick={handleButtonClick}
+                isLoading={loading}
+              >
+                Edit
+              </Button>
+            ) : (
+              <Button
+                colorScheme="white"
+                variant="outline"
+                size="sm"
+                fontFamily="mono"
+                onClick={handleButtonClick}
+                isLoading={loading}
+              >
+                Upload new photo
+              </Button>
+            )}
           </Box>
-          <Box p={5} m={20} mt={0} border="1px" borderRadius="2xl">
+          <Box
+            p={5}
+            ml={{ base: 10, md: 20 }}
+            mr={{ base: 10, md: 20 }}
+            mb={10}
+            border="1px"
+            borderRadius="2xl"
+          >
             <Flex alignItems="center">
               <Heading fontFamily="mono" fontSize="md">
                 Personal Info
@@ -286,7 +325,13 @@ export default function EditProfile() {
               </Box>
             </Flex>
           </Box>
-          <Box p={5} m={20} mt={0} border="1px" borderRadius="2xl">
+          <Box
+            p={5}
+            m={{ base: 10, md: 20 }}
+            mt={0}
+            border="1px"
+            borderRadius="2xl"
+          >
             <Flex alignItems="center">
               <Heading fontFamily="mono" fontSize="md">
                 Bio

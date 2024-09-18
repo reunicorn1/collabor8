@@ -65,7 +65,13 @@ export default function Password() {
 
   return (
     <Box pt={20}>
-      <Box p={5} m={20} mt={0} border="1px" borderRadius="2xl">
+      <Box
+        p={5}
+        m={{ base: 10, md: 20 }}
+        mt={0}
+        border="1px"
+        borderRadius="2xl"
+      >
         <Flex alignItems="center">
           <Heading fontFamily="mono" fontSize="md">
             Password
@@ -79,7 +85,7 @@ export default function Password() {
             fontFamily="mono"
             onClick={() => setPassmode(!passmode)}
           >
-            {passmode ? `Hide` : `Change Password`}
+            {passmode ? `Hide` : `Modify`}
           </Button>
         </Flex>
         {!passmode ? (
