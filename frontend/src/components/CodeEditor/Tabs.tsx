@@ -1,6 +1,6 @@
 import { Box, Text, Image, Spacer, CloseButton, IconButton } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { LanguageCode } from '../../utils/codeExamples';
 import { useSettings, useFile } from '../../context/EditorContext';
 import { FileType } from '../../context/EditorContext';
@@ -9,7 +9,9 @@ import { useDispatch } from 'react-redux';
 
 
 export default function Tabs() {
+  const tabRef = useRef<HTMLDivElement>(null);
   const [tabslist, setTabsList] = useState<FileType[]>([]);
+  const [tabBarHeight, setTabBarHeight] = useState<null | number>(null);
   const { language } = useSettings()!;
   const { fileSelected, setFileSelected } = useFile()!;
   const dispatch = useDispatch();
@@ -34,7 +36,6 @@ export default function Tabs() {
     }
   }, [fileSelected, setFileSelected, tabslist]);
 
-
   const handleClick = (file: FileType) => {
     console.log(tabslist);
     setFileSelected(file);
@@ -43,7 +44,7 @@ export default function Tabs() {
     // TODO: Create service to execute code
     // {
     //   fileId filex
-      // language
+    // language
     // }
   };
 
@@ -61,23 +62,41 @@ export default function Tabs() {
     }
   };
 
+  // effects to insert css rules for the editor height
+  // on each render of the component
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    document.head.appendChild(styleElement);
+    const styleSheet = styleElement.sheet;
+
+    // If there is a tab, set the height of the editor to the height of the window minus
+    // the height of the menubar and the height of the tab bar
+    if (tabRef.current) {
+      styleSheet.insertRule(
+        `.CodeMirror { min-height: calc(100vh - var(--menubar-height) - ${tabRef.current.clientHeight}px - 6px); }`,
+        styleSheet.cssRules.length,
+      );
+    } else {
+      styleSheet.insertRule(
+        `.CodeMirror { min-height: calc(100vh - var(--menubar-height) - 3px); }`,
+        styleSheet.cssRules.length,
+      );
+    }
+  });
+
   return (
     <>
       <Box
-        display="flex"
-        h="40px"
         bg="brand.900"
         borderBottom="2px solid #524175"
-        // overflowX="scroll"
-        // whiteSpace="nowrap"
+        className='flex overflow-x-auto'
       >
         {tabslist.map((file) => (
           <Box
+            ref={tabRef}
             key={file.id}
-            w="20%"
-            display="flex"
             bg="brand.900"
-            cursor="pointer"
+            className='py-2 flex cursor-pointer shrink-0'
             onClick={() => handleClick(file)}
             borderTop={
               fileSelected && fileSelected.id === file.id

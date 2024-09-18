@@ -4,9 +4,7 @@ import { selectFile } from '@store/selectors/fileSelectors';
 import { useExecuteFileMutation } from '@store/services/file';
 import { MdBuild } from 'react-icons/md';
 import { useAppSelector } from '@hooks/useApp';
-
-
-const EXECUTION_PANEL_FILLER_TEXT = 'Your result appears here!';
+import { EXECUTION_PANEL_FILLER_TEXT } from '../constants';
 
 const Console: React.FC = () => {
   const fileSelector = useAppSelector(selectFile);
@@ -15,13 +13,13 @@ const Console: React.FC = () => {
 
   const handleExecute = async () => {
     let file = fileSelector;
-    console.log('Execute', file);
+    //console.log('Execute', file);
     if (file) {
       const res = await executeFile({
         id: file.file_id,
         language: file.language,
       }).unwrap();
-      console.log(res?.output);
+      //console.log(res?.output);
       setOutput(res?.output || '');
     }
   };
@@ -33,8 +31,7 @@ const Console: React.FC = () => {
       bg="#1e1e1e"
       color="green.400"
       fontFamily="monospace"
-      className='!overflow-hidden !bottom-0'
-      style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+      className='flex h-full flex-col max-h-[300px]'
     >
       {/* Terminal header bar */}
       <Flex
@@ -42,7 +39,6 @@ const Console: React.FC = () => {
         borderBottom="1px solid #333"
         align="center"
         p={2}
-        justify="flex-start"
         borderTopRadius="md"
         px={4}
       >
@@ -60,11 +56,10 @@ const Console: React.FC = () => {
         </Button>
       </Flex>
       {/* Terminal content */}
-      <Box p={4}
-        style={{ flexGrow: 1, overflowY: 'auto' }}
-      >
-        <Text whiteSpace="pre-wrap"
-        >{output}</Text>
+      <Box className='flex-grow overflow-y-auto p-4'>
+        <Text whiteSpace="pre-wrap">
+          {output}
+        </Text>
       </Box>
     </Box>
   );

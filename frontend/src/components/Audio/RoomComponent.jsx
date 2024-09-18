@@ -37,7 +37,8 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
   };
 
   const joinRoom = async () => {
-    const { token, uid, channel } = await getToken();
+    const data = await getToken();
+    const { token, uid, channel } = data;
     const config = {
       appid: apiConfig.appID,
       channel: channel,
@@ -132,122 +133,122 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
 
 
 
-  if (rtc.client) {
-    console.log('Leaving the room');
-    await rtc.client.leave();
-    console.log('Successfully left the room');
-  } else {
-    console.warn('client is null');
-  }
-
-  for (const uid in rtc.remoteTracks) {
-    const user = rtc.remoteTracks[uid];
-    if (user.audioTrack) {
-      user.audioTrack.stop();
-    }
-  }
-
-  rtc.client = null;
-  rtc.audioTrackMuted = false;
-  rtc.remoteTracks = {};
-  rtc.localUid = null;
-  rtc.remoteUid = null;
-
-  onClose();
-  forceUpdate();
-
-};
-
-const handleUserJoined = async (user, mediaType) => {
-  // Handle audio only
-  if ((!rtc.client) || mediaType !== 'audio') return;
-  if (rtc.client) {
-    await rtc.client.subscribe(user, mediaType)
-  }
-  if (user.audioTrack) {
-    user.audioTrack.play();
-  } else {
-    console.warn('No audio track found for the user');
-  };
-
-  // Update remote tracks
-  rtc.remoteTracks[user.uid] = user;
-};
-
-const handleUserLeft = (user) => {
-  // Remove user from remote tracks
-  if (rtc.remoteTracks[user.uid]) {
-    const audioTrack = rtc.remoteTracks[user.uid].audioTrack;
-    if (audioTrack) {
-      audioTrack.stop();
-    }
-
-    delete rtc.remoteTracks[user.uid];
-  }
-  // Unsubscribe from the user
-  if (rtc.client) {
-    rtc.client.unsubscribe(user);
-  }
-};
-
-
-
-useEffect(() => {
-  if (autoJoin) {
-    joinRoom();
-  }
-  return () => {
-    // Cleanup function to leave the room and stop tracks
     if (rtc.client) {
-      rtc.client.leave().catch(error => console.error('Error leaving room:', error));
+      console.log('Leaving the room');
+      await rtc.client.leave();
+      console.log('Successfully left the room');
+    } else {
+      console.warn('client is null');
     }
-    if (rtc.audioTrack) {
-      rtc.audioTrack.stop();
-      rtc.audioTrack.close();
+
+    for (const uid in rtc.remoteTracks) {
+      const user = rtc.remoteTracks[uid];
+      if (user.audioTrack) {
+        user.audioTrack.stop();
+      }
+    }
+
+    rtc.client = null;
+    rtc.audioTrackMuted = false;
+    rtc.remoteTracks = {};
+    rtc.localUid = null;
+    rtc.remoteUid = null;
+
+    onClose();
+    forceUpdate();
+
+  };
+
+  const handleUserJoined = async (user, mediaType) => {
+    // Handle audio only
+    if ((!rtc.client) || mediaType !== 'audio') return;
+    if (rtc.client) {
+      await rtc.client.subscribe(user, mediaType)
+    }
+    if (user.audioTrack) {
+      user.audioTrack.play();
+    } else {
+      console.warn('No audio track found for the user');
+    };
+
+    // Update remote tracks
+    rtc.remoteTracks[user.uid] = user;
+  };
+
+  const handleUserLeft = (user) => {
+    // Remove user from remote tracks
+    if (rtc.remoteTracks[user.uid]) {
+      const audioTrack = rtc.remoteTracks[user.uid].audioTrack;
+      if (audioTrack) {
+        audioTrack.stop();
+      }
+
+      delete rtc.remoteTracks[user.uid];
+    }
+    // Unsubscribe from the user
+    if (rtc.client) {
+      rtc.client.unsubscribe(user);
     }
   };
-}, [autoJoin]);
 
-return (
-  <Flex direction="column" align="center">
-    <Flex
-      id="join-wrapper"
-      align="center"
-      justify="center"
-      display={joined ? 'none' : 'flex'}
-    >
-      <Button
-        colorScheme="orange"
-        size="sm"
-        fontFamily="mono"
-        onClick={joinRoom}
+
+
+  useEffect(() => {
+    if (autoJoin) {
+      joinRoom();
+    }
+    return () => {
+      // Cleanup function to leave the room and stop tracks
+      if (rtc.client) {
+        rtc.client.leave().catch(error => console.error('Error leaving room:', error));
+      }
+      if (rtc.audioTrack) {
+        rtc.audioTrack.stop();
+        rtc.audioTrack.close();
+      }
+    };
+  }, [autoJoin]);
+
+  return (
+    <Flex direction="column" align="center">
+      <Flex
+        id="join-wrapper"
+        align="center"
+        justify="center"
+        display={joined ? 'none' : 'flex'}
       >
-        Join Voice Call
-      </Button>
-    </Flex>
-    <Flex
-      id="foot"
-      display={joined ? 'flex' : 'none'}
-      direction="row"
-      align="center"
-      justify="center"
-      p={4}
-      pt={0}
-      pb={0}
-      gap={4}
-    >
-      <IconButton
-        icon={rtc.audioTrackMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
-        aria-label="Toggle Mic"
-        onClick={handleMicClick}
-      />
-      <IconButton
-        icon={<FaSignOutAlt />}
-        aria-label="Leave Room"
-        onClick={handleLeaveButtonClick}
-      />
-    </Flex>
-  </Flex>);
+        <Button
+          colorScheme="orange"
+          size="sm"
+          fontFamily="mono"
+          onClick={joinRoom}
+        >
+          Join Voice Call
+        </Button>
+      </Flex>
+      <Flex
+        id="foot"
+        display={joined ? 'flex' : 'none'}
+        direction="row"
+        align="center"
+        justify="center"
+        p={4}
+        pt={0}
+        pb={0}
+        gap={4}
+      >
+        <IconButton
+          icon={rtc.audioTrackMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
+          aria-label="Toggle Mic"
+          onClick={handleMicClick}
+        />
+        <IconButton
+          icon={<FaSignOutAlt />}
+          aria-label="Leave Room"
+          onClick={handleLeaveButtonClick}
+        />
+      </Flex>
+    </Flex>);
 };
 export default RoomComponent;
 

@@ -18,8 +18,17 @@ import VoiceDrawer from '@components/CodeEditor/VoiceDrawer';
 import { useAppDispatch, useAppSelector } from '@hooks/useApp';
 import { setPanelVisibility } from '@store/slices/fileSlice';
 import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
+import { HamburgerIcon } from '@chakra-ui/icons';
+import { Doc } from 'yjs';
 
-export default function MenuBar() {
+type MenuBarProps = {
+  project: any;
+  isLoading: boolean;
+  isSuccess: boolean
+  ydoc: Doc;
+}
+
+export default function MenuBar({ ydoc, project }: MenuBarProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useAppDispatch();
   const {
@@ -37,39 +46,43 @@ export default function MenuBar() {
 
   return (
     <div>
-      <Flex justifyContent="space-between" alignItems="center">
-        <Flex>
-          <IconButton
-            isRound={true}
-            color="white"
-            _hover={{ bg: 'white', color: 'black' }}
-            variant="ghost"
-            aria-label="Done"
-            fontSize="20px"
-            size="xs"
-            icon={<GoHome />}
-            onClick={goHome}
-            ml={2}
-          />
-          <ThemeSelector />
-          <LanguageSelector />
-        </Flex>
-        <Spacer />
-        <Box
-          width="8px"
-          height="8px"
-          bg={mode ? `red.500` : `green.500`}
-          borderRadius="50%"
+      <Flex
+        justifyContent="space-between"
+        alignItems="center"
+        p='4'
+      >
+        <IconButton
+          isRound={true}
+          color="white"
+          _hover={{ bg: 'white', color: 'black' }}
+          variant="ghost"
+          aria-label="Done"
+          fontSize="20px"
+          size="xs"
+          icon={<GoHome />}
+          onClick={goHome}
+          ml={2}
         />
-        <Text color="white" fontSize="xs" ml={2}>
+        {/*<ThemeSelector />
+          <LanguageSelector />
+        <Spacer />*/}
+        <Text
+          color="white"
+          fontSize="xs" ml={2}
+          className={`before:inline-block before:size-2 before:rounded-full
+            ${!mode ? 'before:bg-green-500' : 'before:bg-red-500'} before:me-2`}
+        >
           {mode ? `Read Mode` : `Write Mode`}
         </Text>
         <Button
-          className="!text-sm !text-slate-200 !bg-transparent"
+          className="!text-sm !text-slate-200 !bg-transparent capitalize"
+          p='0'
+          h='max-content'
           onClick={() => dispatch(setPanelVisibility())}
+          fontWeight='normal'
         >
           toggle panel
-          <span className='text-lg ms-2'>
+          <span className='block w-3 text-lg ms-2'>
             {panelVisiblity ? '-' : '+'}
           </span>
         </Button>
@@ -96,10 +109,14 @@ export default function MenuBar() {
           ml={1}
           mr={2}
           onClick={onOpen}
-          icon={<PiGithubLogo />}
+          icon={<HamburgerIcon />}
         />
       </Flex>
-      <ComingSoon isOpen={isOpen} onClose={onClose} />
+      <ComingSoon
+        ydoc={ydoc}
+        project={project}
+        isOpen={isOpen} onClose={onClose}
+      />
       <VoiceDrawer isOpen={isOpenV} onClose={onCloseV} />
     </div>
   );

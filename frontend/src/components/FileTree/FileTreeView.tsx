@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Entry from './Entry';
 import * as Y from 'yjs';
 import { YMapValueType } from '../../context/EditorContext';
@@ -18,7 +18,7 @@ const FileTreeView: React.FC<FileTreeViewProps> = ({ data, ydoc }) => {
   const { projectId = '' } = useParams();
 
   const root = ydoc.getMap(projectId); // This gets the value of the root if created before
-  const filetree = data.filetree?.children;
+  const filetree = useMemo(() => data.filetree?.children, [data.filetree]);
   console.log('Root:-------->', root);
   console.log('FileTree:----->', filetree);
 

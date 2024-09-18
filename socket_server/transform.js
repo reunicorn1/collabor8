@@ -1,5 +1,3 @@
-import { project } from "./testData.js";
-
 function transformData(input) {
   // transform each node
   function transformNode(node, type) {

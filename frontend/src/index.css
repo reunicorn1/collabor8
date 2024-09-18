@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body, div#root {
+    width: 100%;
+    min-height: 100%;
+}
 
 .remote-caret {
   position: absolute;

@@ -20,6 +20,7 @@ import { selectAccessToken, selectUserDetails } from '@store/selectors';
 import { useFindMyShareQuery } from '@store/services/projectShare';
 import { Project, ProjectShares } from '@types';
 import { useSelector } from 'react-redux';
+import { Singleton } from '../../constants';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -37,7 +38,7 @@ interface CodeEditorProps {
   ydoc: Y.Doc;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({ydoc, project }) => {
   const userDetails = useSelector(selectUserDetails);
   const { data } = useFindMyShareQuery(project._id);
   console.log(data);
@@ -188,7 +189,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ project, ydoc }) => {
   }, [language, fileSelected]);
 
   return (
-    <Box h="100%" bg="brand.900">
+    <Box h="100%" >
       <Tabs />
       <Box opacity={fileSelected ? '1' : '0'}>
         <CodeMirror

@@ -31,28 +31,28 @@ interface EntryProps {
   ydoc: Y.Doc;
 }
 
+const extensionToLanguageCode: Record<string, LanguageCode> = {
+  js: 'javascript',
+  ts: 'typescript',
+  py: 'python',
+  c: 'c',
+  md: 'markdown',
+  html: 'html',
+};
+
+const languageIcons: Record<LanguageCode, string> = {
+  javascript: 'javascript.png',
+  python: 'python.png',
+  c: 'c.png',
+  typescript: 'typescript.png',
+  markdown: 'markdown.png',
+  html: 'html.png',
+  unknown: 'unknown.png',
+};
+
 const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
   const { fileSelected } = useFile()!;
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-
-  const extensionToLanguageCode: Record<string, LanguageCode> = {
-    js: 'javascript',
-    ts: 'typescript',
-    py: 'python',
-    c: 'c',
-    md: 'markdown',
-    html: 'html',
-  };
-
-  const languageIcons: Record<LanguageCode, string> = {
-    javascript: 'javascript.png',
-    python: 'python.png',
-    c: 'c.png',
-    typescript: 'typescript.png',
-    markdown: 'markdown.png',
-    html: 'html.png',
-    unknown: 'unknown.png',
-  };
 
   const getFileExtension = (filename: string): string => {
     const parts = filename.split('.');
@@ -119,17 +119,15 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
         />
       </Box>
       {entry.type === 'directory' && isExpanded && (
-        <>
-          {entry.children?.map((child) => (
-            <Entry
-              key={child.id}
-              entry={child}
-              depth={depth + 1}
-              onFileClick={onFileClick}
-              ydoc={ydoc}
-            />
-          ))}
-        </>
+        entry.children?.map((child) => (
+          <Entry
+            key={child.id}
+            entry={child}
+            depth={depth + 1}
+            onFileClick={onFileClick}
+            ydoc={ydoc}
+          />
+        ))
       )}
     </>
   );

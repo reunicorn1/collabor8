@@ -72,8 +72,8 @@ clean: ## Clean project dependencies
 
 # Run sessions
 run: ## Run frontend and backend in tmux sessions
-	$(call run_session,$(REACT_SESSION),$(FRONTEND_SCRIPT))
 	$(call run_session,$(NEST_SESSION),$(BACKEND_SCRIPT))
+	$(call run_session,$(REACT_SESSION),$(FRONTEND_SCRIPT))
 	$(call run_session,$(SOCKET_SESSION),$(SOCKET_SCRIPT))
 
 run_react: ## Run React app in a tmux session

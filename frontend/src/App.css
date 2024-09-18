@@ -1,4 +1,6 @@
 #root {
+    --menubar-height: 60px;
+    --tabbar-height: 40px;
   /*@apply max-w-screen-lg mx-auto p-8 text-left;*/
 }
 
@@ -41,9 +43,7 @@ body {
 .react-codemirror2 {
   overflow: hidden;
 }
-.CodeMirror {
-  min-height: 765px;
-}
+
 .CodeMirror-sizer {
   margin-top: 1rem;
 }

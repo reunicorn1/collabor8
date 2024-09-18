@@ -39,9 +39,8 @@ const Tree: React.FC<TreeProps> = ({ ydoc, name }) => {
     onOpen();
   };
 
-  console.log('------------------_>', { root });
   return (
-    <>
+    <Box>
       <Flex
         h="40px"
         display="flex"
@@ -51,11 +50,10 @@ const Tree: React.FC<TreeProps> = ({ ydoc, name }) => {
         justifyItems="center"
         borderBottom="2px solid #524175"
       >
-        <Text fontSize="xs" ml={4} fontFamily="mono">
+        <Text me='auto' fontSize="xs" ml={4} fontFamily="mono">
           {/* Project name is retriened from an api request of from a context */}
           {name}
         </Text>
-        <Spacer />
         <IconButton
           m={1}
           mr={0}
@@ -95,7 +93,7 @@ const Tree: React.FC<TreeProps> = ({ ydoc, name }) => {
       <Box bg="brand.900" h="100%" overflow="hidden">
         <FileTreeView data={data} ydoc={ydoc} />
       </Box>
-    </>
+    </Box>
   );
 };
 

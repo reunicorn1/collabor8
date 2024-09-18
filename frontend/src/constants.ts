@@ -2,6 +2,7 @@ import { HiUsers } from 'react-icons/hi2';
 import { PiCursorClickFill } from 'react-icons/pi';
 import { ImDatabase } from 'react-icons/im';
 import { TbLayoutDashboardFilled } from 'react-icons/tb';
+import * as Y from 'yjs';
 
 const TEXT = '\r\r\rCollabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.';
 const AVATARS = [
@@ -48,4 +49,32 @@ const FEATURES = [
   },
 ];
 
-export { TEXT, AVATARS, FEATURES };
+const EXECUTION_PANEL_FILLER_TEXT = 'Your result appears here!';
+
+/**
+ * @class Singleton
+ * @description Singleton class to create a single instance of Y.Doc
+ * @returns {Y.Doc} ydoc
+ * @example
+ * const ydoc = Singleton.getYdoc();
+ */
+class Singleton {
+  static instance: Singleton = null;
+  ydoc: Y.Doc;
+
+  constructor() {
+    if (Singleton.instance) {
+      return Singleton.instance;
+    }
+    Singleton.instance = this;
+    this.ydoc = new Y.Doc();
+
+    return this;
+  }
+
+  static getYdoc(): Y.Doc {
+    return new Singleton().ydoc;
+  }
+}
+
+export { TEXT, AVATARS, FEATURES, EXECUTION_PANEL_FILLER_TEXT, Singleton };
