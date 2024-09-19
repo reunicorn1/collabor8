@@ -76,6 +76,7 @@ export default function Editor() {
               flex flex-col h-full max-h-96 overflow-auto
               md:max-h-none md:row-span-full md:border-r md:border-purple-900
               `}
+              style={{ backgroundImage: 'linear-gradient(rgb(0, 24, 69), rgb(82, 65, 117))' }}
               project={data}
             />
             <Tree
