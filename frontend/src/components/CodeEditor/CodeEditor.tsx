@@ -18,6 +18,7 @@ import { selectAccessToken, selectUserDetails } from '@store/selectors';
 import { useFindMyShareQuery } from '@store/services/projectShare';
 import { Project, ProjectShares } from '@types';
 import { useSelector } from 'react-redux';
+import { Singleton } from '../../constants';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -32,10 +33,10 @@ const languageModes: Record<LanguageCode, string> = {
 
 interface CodeEditorProps {
   project: Project | ProjectShares;
-  ydoc: Y.Doc;
+  className?: string;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ydoc, project }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({ className = '', project }) => {
   const userDetails = useSelector(selectUserDetails);
   const { data } = useFindMyShareQuery(project._id);
   console.log(data);
@@ -46,7 +47,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ydoc, project }) => {
   const editorRef = useRef<Editor | null>(null);
   const projectRoot = useRef<Y.Map<YMapValueType> | null>(null);
   const binding = useRef<CodemirrorBinding | null>(null);
-  const ydoc_ = useRef(ydoc);
+  const ydoc_ = useRef(Singleton.getYdoc());
   const awareness = useRef<Awareness | null>(null);
 
   projectRoot.current = ydoc_.current.getMap(project._id);
@@ -186,7 +187,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ydoc, project }) => {
   }, [language, fileSelected]);
 
   return (
-    <Box h="100%" bg="brand.900">
+    <Box bg="brand.900" className={className}>
       <Tabs />
       <Box opacity={fileSelected ? '1' : '0'}>
         <CodeMirror

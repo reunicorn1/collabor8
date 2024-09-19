@@ -72,13 +72,13 @@ const Console: React.FC = () => {
       <Box className='flex-grow overflow-auto p-4'>
         {output.stdout && (
           <div className='space-y-4'>
-            <Text>Standard Output:</Text>
+            <Text className='text-green-400'>Standard Output:</Text>
             <LineNumberedText color="green.400" text={output.stdout} />
           </div>
         )}
         {output.stderr && (
           <div className='space-y-4'>
-            <Text>Standard Error:</Text>
+            <Text className='text-red-400'>Standard Error:</Text>
             <LineNumberedText color="red.400" text={output.stderr} />
           </div>
         )}

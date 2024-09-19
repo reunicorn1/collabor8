@@ -4,6 +4,9 @@ import {
   Text,
   useDisclosure,
   Button,
+  useMediaQuery,
+  Box,
+  HStack,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 //import { PiGithubLogo } from 'react-icons/pi';
@@ -17,18 +20,19 @@ import { useAppDispatch, useAppSelector } from '@hooks/useApp';
 import { setPanelVisibility } from '@store/slices/fileSlice';
 import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
 import { HamburgerIcon } from '@chakra-ui/icons';
-import { useRef, useState } from 'react';
-//import { Doc } from 'yjs';
+import { useState } from 'react';
+import ThemeSelector from './ThemeSelector';
+import LanguageSelector from './LanguageSelector';
+import { Project } from '@types';
 
 type MenuBarProps = {
-  project: any;
-  isLoading: boolean;
-  isSuccess: boolean
-  //ydoc: Doc;
-}
+  project: Project;
+  className?: string;
+} & { [k: string]: any };
 
-export default function MenuBar({ project }: MenuBarProps) {
+export default function MenuBar({ className = '', project, ...rest }: MenuBarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLessThan640] = useMediaQuery('(max-width: 640px)');
   const dispatch = useAppDispatch();
   const {
     isOpen: isOpenV,
@@ -44,27 +48,33 @@ export default function MenuBar({ project }: MenuBarProps) {
   };
 
   return (
-    <div>
+    <Box className={className} {...rest}>
       <Flex
-        justifyContent="space-between"
         alignItems="center"
+        justifyContent="space-between"
+        gap='4'
         p='4'
       >
-        <IconButton
-          isRound={true}
-          color="white"
-          _hover={{ bg: 'white', color: 'black' }}
-          variant="ghost"
-          aria-label="Done"
-          fontSize="20px"
-          size="xs"
-          icon={<GoHome />}
-          onClick={goHome}
-          ml={2}
-        />
-        {/*<ThemeSelector />
-          <LanguageSelector />
-        <Spacer />*/}
+        <HStack me={`${!isLessThan640 ? 'auto' : ''}`}>
+          <IconButton
+            isRound={true}
+            color="white"
+            _hover={{ bg: 'white', color: 'black' }}
+            variant="ghost"
+            aria-label="Done"
+            fontSize="20px"
+            size="xs"
+            icon={<GoHome />}
+            onClick={goHome}
+            ml={2}
+          />
+          {!isLessThan640 && (
+            <>
+              <ThemeSelector />
+              <LanguageSelector />
+            </>
+          )}
+        </HStack>
         <Text
           color="white"
           fontSize="xs" ml={2}
@@ -97,29 +107,34 @@ export default function MenuBar({ project }: MenuBarProps) {
           onClick={onOpenV}
           ml={2}
         />
-        <IconButton
-          isRound={true}
-          color="white"
-          _hover={{ bg: 'white', color: 'black' }}
-          variant="ghost"
-          aria-label="slide menu button"
-          fontSize="18px"
-          size="xs"
-          ml={1}
-          mr={2}
-          onClick={(e) => {
-            e.bubbles = true;
-            setIsOpen(true)
-          }}
-          icon={<HamburgerIcon className='pointer-events-none' />}
-        />
+        {isLessThan640 && (
+          <IconButton
+            isRound={true}
+            color="white"
+            _hover={{ bg: 'white', color: 'black' }}
+            variant="ghost"
+            aria-label="slide menu button"
+            fontSize="18px"
+            size="xs"
+            ml={1}
+            mr={2}
+            onClick={() => {
+              setIsOpen(true);
+            }}
+            icon={<HamburgerIcon className='pointer-events-none' />}
+          />
+        )}
       </Flex>
-      <ComingSoon
-        project={project}
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-      />
+
+      {/* DRAWERS */}
+      {isLessThan640 && (
+        <ComingSoon
+          project={project}
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+        />
+      )}
       <VoiceDrawer isOpen={isOpenV} onClose={onCloseV} />
-    </div>
+    </Box>
   );
 }

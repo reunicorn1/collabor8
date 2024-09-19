@@ -4,6 +4,8 @@ import {
   IconButton,
   useDisclosure,
   Box,
+  Image,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import { VscNewFile, VscNewFolder } from 'react-icons/vsc';
 import React, { useState } from 'react';
@@ -18,11 +20,14 @@ import { Singleton } from '../../constants';
 interface TreeProps {
   //ydoc: Y.Doc;
   name: string;
+  className: string;
+  [k: string]: any
 }
 
-const Tree: React.FC<TreeProps> = ({ name }) => {
+const Tree: React.FC<TreeProps> = ({ className = '', name }) => {
   // The buttons of this component creates new files and direcoties in y.map (root) of the project
   // When a new file is created it becomes selected by default
+  const [isLessThan640] = useMediaQuery('(max-width: 640px)');
   const { projectId = '' } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [filedir, setFileDir] = useState('');
@@ -40,7 +45,7 @@ const Tree: React.FC<TreeProps> = ({ name }) => {
   };
 
   return (
-    <Box>
+    <Box className={className}>
       <Flex
         h="40px"
         display="flex"
@@ -51,7 +56,6 @@ const Tree: React.FC<TreeProps> = ({ name }) => {
         borderBottom="2px solid #524175"
       >
         <Text me='auto' fontSize="xs" ml={4} fontFamily="mono">
-          {/* Project name is retriened from an api request of from a context */}
           {name}
         </Text>
         <IconButton
@@ -89,9 +93,12 @@ const Tree: React.FC<TreeProps> = ({ name }) => {
         filedir={filedir}
         parent={projectId}
       />
-      <Box bg="brand.900" h="100%" overflow="hidden">
-        <FileTreeView data={data} />
-      </Box>
+      <FileTreeView data={data} />
+      {!isLessThan640 && (
+        <Box className='mt-auto p-4 opacity-50'>
+          <Image src="/logo-bb.png" w='100%' />
+        </Box>
+      )}
     </Box>
   );
 };

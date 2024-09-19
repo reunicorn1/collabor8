@@ -1,5 +1,5 @@
 //import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import { Box, useToast } from '@chakra-ui/react';
+import { Box, useMediaQuery, useToast } from '@chakra-ui/react';
 //import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -16,13 +16,13 @@ import ThemedLoader from '../utils/Spinner';
 import { useAppSelector } from '@hooks/useApp';
 import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
 import { Singleton } from '../constants';
+import Shares from '@components/Bars/Shares';
+import Tree from '@components/FileTree/Tree';
 
 export default function Editor() {
-  //const location = useLocation();
+  const [isLessThan640] = useMediaQuery('(max-width: 640px)');
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
-  //const [project, setProject] = useState<any>(null); // State to hold project data
-  //const projectRef = useRef<any>(null);
   const toast = useToast();
   const panelVisiblity = useAppSelector(selectPanelVisiblity);
 
@@ -67,17 +67,30 @@ export default function Editor() {
       <Box
         bg="brand.900"
         borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
-        className="relative"
+        className="relative  h-full md:grid md:grid-cols-[auto_20%_1fr] md:grid-rows-[auto_1fr] pb-[500px]"
       >
+        {!isLessThan640 && (
+          <>
+            <Shares
+              className={`
+              flex flex-col h-full max-h-96 overflow-auto
+              md:max-h-none md:row-span-full md:border-r md:border-purple-900
+              `}
+              project={data}
+            />
+            <Tree
+              className='flex flex-col row-span-full border-r border-purple-900'
+              name={data.project_name}
+            />
+          </>
+        )}
         <MenuBar
-          isSuccess={isSuccess}
-          isLoading={isLoading}
           project={data}
         />
-        <CodeEditor project={data} ydoc={Singleton.getYdoc()} />
-      </Box>
-      <Box className='absolute w-full bottom-0'>
-        {panelVisiblity && <Console />}
+        <CodeEditor project={data} />
+        <Box className='absolute w-full bottom-0 col-start-3 col-end-4'>
+          {panelVisiblity && <Console />}
+        </Box>
       </Box>
     </EditorProvider>
   );
