@@ -159,7 +159,6 @@ export default function OptionsMenu({
           isOpen={isOpen}
           onClose={onClose}
           filedir={filedir}
-          ydoc={ydoc}
           parent={id}
         />
         <RenameFileDir

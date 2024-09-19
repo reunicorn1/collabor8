@@ -20,7 +20,7 @@ import { Singleton } from '../../constants';
 interface TreeProps {
   //ydoc: Y.Doc;
   name: string;
-  className: string;
+  className?: string;
   [k: string]: any
 }
 

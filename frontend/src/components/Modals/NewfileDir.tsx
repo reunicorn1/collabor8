@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -17,9 +17,9 @@ import { useState } from 'react';
 import { useYMap } from 'zustand-yjs';
 import { useFile } from '../../context/EditorContext';
 import { createLeaf, addLeaf } from '../../utils/addleaf';
-import { YMapValueType } from '../../context/EditorContext';
-import { getPathFromId, createFileDir } from '../../utils/followtree';
-import { v4 as uuidv4 } from 'uuid';
+//import { YMapValueType } from '../../context/EditorContext';
+//import { getPathFromId, createFileDir } from '../../utils/followtree';
+//import { v4 as uuidv4 } from 'uuid';
 import * as Y from 'yjs';
 import { useParams } from 'react-router-dom';
 import { useCreateFileMutation } from '@store/services/file';
