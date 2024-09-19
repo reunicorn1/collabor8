@@ -32,10 +32,12 @@ function ComingSoon({ isOpen, onClose, project }: ModalProps) {
     };
 
     window.document.addEventListener('click', handleClose);
+    window.document.addEventListener('touchstart', handleClose);
 
     // cleanup
     return () => {
       window.document.removeEventListener('click', handleClose);
+    window.document.removeEventListener('touchstart', handleClose);
     };
   });
 
