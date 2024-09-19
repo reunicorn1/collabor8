@@ -67,7 +67,7 @@ function ComingSoon({ isOpen, onClose, project }: ModalProps) {
           color='brand.100'
           className='flex items-center px-4 text-white !font-mono capitalize'
         >
-          collaborators
+          <span className='me-2'>collaborators</span>
           <span className='flex justify-center items-center ms-auto size-6 border rounded-full text-sm text-yellow-700 bg-yellow-50 bg-opacity-80'>
             {awareness?.length}
           </span>
