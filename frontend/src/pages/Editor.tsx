@@ -67,7 +67,7 @@ export default function Editor() {
       <Box
         bg="brand.900"
         borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
-        className="relative  h-full md:grid md:grid-cols-[auto_20%_1fr] md:grid-rows-[auto_1fr] pb-[500px]"
+        className="relative  h-full md:grid md:grid-cols-[auto_20%_1fr] md:grid-rows-[auto_1fr]"
       >
         {!isLessThan640 && (
           <>

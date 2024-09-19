@@ -69,7 +69,7 @@ const Console: React.FC = () => {
         </Button>
       </Flex>
       {/* Terminal content */}
-      <Box className='flex-grow overflow-auto p-4'>
+      <Box className='flex-grow overflow-auto space-y-4 p-4'>
         {output.stdout && (
           <div className='space-y-4'>
             <Text className='text-green-400'>Standard Output:</Text>
