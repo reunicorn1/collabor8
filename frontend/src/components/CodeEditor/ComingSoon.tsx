@@ -57,7 +57,7 @@ function ComingSoon({ isOpen, onClose, project }: ModalProps) {
         className='absolute top-2 right-2 self-end'
       />
       <Stack>
-        <Heading color='brand.100' className='px-4 text-white !font-mono capitalize'>
+        <Heading color='brand.100' className='px-4 !text-2xl !font-mono capitalize'>
           file tree
         </Heading>
         <Tree name={project?.project_name} />
@@ -67,7 +67,7 @@ function ComingSoon({ isOpen, onClose, project }: ModalProps) {
           color='brand.100'
           className='flex items-center px-4 text-white !font-mono capitalize'
         >
-          <span className='me-2'>collaborators</span>
+          <span className='text-2xl'>collaborators</span>
           <span className='flex justify-center items-center ms-auto size-6 border rounded-full text-sm text-yellow-700 bg-yellow-50 bg-opacity-80'>
             {awareness?.length}
           </span>

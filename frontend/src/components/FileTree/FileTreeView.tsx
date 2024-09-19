@@ -1,13 +1,15 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import Entry from './Entry';
-import * as Y from 'yjs';
-import { YMapValueType } from '../../context/EditorContext';
-import { getPathFromId, createFileDir } from '../../utils/followtree';
+//import * as Y from 'yjs';
+//import { YMapValueType } from '../../context/EditorContext';
+//import { getPathFromId, createFileDir } from '../../utils/followtree';
 import { createDocuments } from '@utils/createfiledir';
 import { useFile } from '../../context/EditorContext';
 import { Text } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 import { Singleton } from '../../constants';
+import { useAppDispatch } from '@hooks/useApp';
+import { displayPanel } from '@store/slices/fileSlice';
 
 interface FileTreeViewProps {
   data: any;
@@ -17,7 +19,7 @@ interface FileTreeViewProps {
 const FileTreeView: React.FC<FileTreeViewProps> = ({ data }) => {
   const { setFileSelected, fileSelected } = useFile()!;
   const { projectId = '' } = useParams();
-
+  const dispatch = useAppDispatch();
   const ydoc = Singleton.getYdoc();
   const root = ydoc.getMap(projectId ?? data._id); // This gets the value of the root if created before
   const filetree = data.filetree?.children;
@@ -59,30 +61,10 @@ const FileTreeView: React.FC<FileTreeViewProps> = ({ data }) => {
         id: id,
         language: fileLanguage,
       });
+      dispatch(displayPanel());
     } else {
       console.log('An Error occured during creation of this file');
     }
-
-    // const path = getPathFromId(data.filetree, id); // hopeless type error, I didn't assign types correcty at the beginning bc I did a lot of changes on how it was defined
-    // if (path) {
-    //   // extact parent base on fileId
-
-    //   const file = createFileDir({
-    //     fullPath: path,
-    //     root,
-    //     id_: id,
-    //     filedir: 'file',
-    //     parent,
-    //     newName: name,
-    //   }); // No new leafs are required since this file is already a part of the filetree model
-    //   if (file) {
-    //     setFileSelected({ name: name, value: file, id: id });
-    //   } else {
-    //     console.log('An Error occured during creation of this file');
-    //   }
-    // } else {
-    //   console.log('An Error occured during the retrival of this file');
-    // }
   };
 
   return (

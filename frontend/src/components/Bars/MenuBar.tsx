@@ -17,7 +17,7 @@ import { useSettings } from '../../context/EditorContext';
 import ComingSoon from '@components/CodeEditor/ComingSoon';
 import VoiceDrawer from '@components/CodeEditor/VoiceDrawer';
 import { useAppDispatch, useAppSelector } from '@hooks/useApp';
-import { setPanelVisibility } from '@store/slices/fileSlice';
+import { togglePanelVisibility } from '@store/slices/fileSlice';
 import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
 import { HamburgerIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
@@ -87,7 +87,7 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
           className="!text-sm !text-slate-200 !bg-transparent capitalize"
           p='0'
           h='max-content'
-          onClick={() => dispatch(setPanelVisibility())}
+          onClick={() => dispatch(togglePanelVisibility())}
           fontWeight='normal'
         >
           toggle panel

@@ -67,13 +67,13 @@ export default function Editor() {
       <Box
         bg="brand.900"
         borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
-        className="relative  h-full md:grid md:grid-cols-[auto_20%_1fr] md:grid-rows-[auto_1fr]"
+        className="relative md:grid md:grid-cols-[auto_20%_1fr] md:grid-rows-[auto_1fr] overflow-hidden"
       >
         {!isLessThan640 && (
           <>
             <Shares
               className={`
-              flex flex-col h-full max-h-96 overflow-auto
+              flex flex-col max-h-96 overflow-auto
               md:max-h-none md:row-span-full md:border-r md:border-purple-900
               `}
               style={{ backgroundImage: 'linear-gradient(rgb(0, 24, 69), rgb(82, 65, 117))' }}

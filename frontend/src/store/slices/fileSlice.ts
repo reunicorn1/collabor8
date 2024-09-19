@@ -29,11 +29,23 @@ const fileSlice = createSlice({
     clearFile(state) {
       state.file = initialState.file;
     },
-    setPanelVisibility(state) {
+    togglePanelVisibility(state) {
       state.panelVisiblity = !state.panelVisiblity;
+    },
+    displayPanel(state) {
+      state.panelVisiblity = true;
+    },
+    removePanel(state) {
+      state.panelVisiblity = false;
     },
   },
 });
 
-export const { setFile, clearFile, setPanelVisibility } = fileSlice.actions;
+export const {
+  setFile,
+  clearFile,
+  togglePanelVisibility,
+  displayPanel,
+  removePanel,
+} = fileSlice.actions;
 export default fileSlice.reducer;

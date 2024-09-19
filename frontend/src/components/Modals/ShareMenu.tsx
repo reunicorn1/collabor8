@@ -261,7 +261,7 @@ const ShareTypeSelector: React.FC<{
   onChange: React.ChangeEventHandler<HTMLSelectElement>;
 }> = ({ inviteeType, onChange }) => (
   <Select
-    placeholder="Share project by"
+    placeholder="Invite friend by"
     size="sm"
     color="orange"
     value={inviteeType}
