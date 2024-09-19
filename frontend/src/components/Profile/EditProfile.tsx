@@ -328,7 +328,7 @@ export default function EditProfile() {
                     isTruncated
                     maxWidth="100%"
                   >
-                    reem.girl1999@gmail.com
+                    {data?.email}
                   </Heading>
                 ) : (
                   <Input
