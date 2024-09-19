@@ -21,18 +21,8 @@ const FileTreeView: React.FC<FileTreeViewProps> = ({ data }) => {
   const ydoc = Singleton.getYdoc();
   const root = ydoc.getMap(projectId ?? data._id); // This gets the value of the root if created before
   const filetree = data.filetree?.children;
-  console.log('Root:-------->', root);
-  console.log('FileTree:----->', filetree);
-
-  // const getParentID = (tree: Record<string, any>, id, parentId = null) => {
-  //   if (!tree) return null;
-  //   return Object.entries(tree).find(([k, v]) => {
-  //     if (v.type === 'file' && v.id === id) {
-  //       return parentId;
-  //     }
-  //     return getParentID(v.children, id, k);
-  //   });
-  // };
+  //console.log('Root:-------->', root);
+  //console.log('FileTree:----->', filetree);
 
   const onFileClick = (id: string, name: string, parent: string) => {
     // const parent = getParentID(filetree, id);

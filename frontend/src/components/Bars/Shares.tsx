@@ -24,17 +24,10 @@ export default function Shares({ className = '', project, ...rest }: SharesProps
     <Box
       className={className}
       {...rest}
-    //display="flex"
-    //flexDirection="column"
-    //alignItems="center"
-    //minHeight="100vh"
-    //p={3}
     >
       <Box
         className="flex flex-wrap items-center gap-2 p-2 md:flex-col"
         key={crypto.randomUUID()}
-      //flexDirection="column"
-      //alignItems="center"
       >
         {Array.from(awareness)?.map(([_, value], index) => (
           <Tooltip key={index} label={value['user'].name} placement="bottom">
