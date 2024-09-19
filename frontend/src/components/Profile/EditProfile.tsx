@@ -41,11 +41,6 @@ export default function EditProfile() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const toast = useToast();
   const isMed = useBreakpointValue({ base: false, md: true });
-  const leftPosition = useBreakpointValue({
-    base: '120px',
-    sm: '350px',
-    md: '350px',
-  });
 
   useEffect(() => {
     const uploading = async () => {
@@ -148,9 +143,8 @@ export default function EditProfile() {
       <Avatar
         size={{ base: 'xl', sm: '2xl' }}
         position={{ md: 'absolute' }}
-        top={{ md: '150px'}}
+        top={{ md: '150px' }}
         src={data?.profile_picture}
-        left={{ md: leftPosition }}
         borderColor="white"
       />
     );
@@ -268,13 +262,24 @@ export default function EditProfile() {
                 </ButtonGroup>
               )}
             </Flex>
-            <Flex pt={5} justifyContent="space-between">
-              <Box>
+            <Box
+              display={{ base: 'block', md: 'flex' }}
+              pt={5}
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Box m={2} mb={{ base: 2, md: 0 }} mt={0}>
                 <Heading fontFamily="mono" fontSize="sm" opacity="0.7">
                   First Name
                 </Heading>
                 {editInfo ? (
-                  <Heading fontFamily="mono" fontSize="md" mt={2}>
+                  <Heading
+                    fontFamily="mono"
+                    fontSize="md"
+                    mt={2}
+                    isTruncated
+                    maxWidth="100%"
+                  >
                     {data?.first_name}
                   </Heading>
                 ) : (
@@ -287,12 +292,18 @@ export default function EditProfile() {
                   />
                 )}
               </Box>
-              <Box>
+              <Box m={2} mb={{ base: 2, md: 0 }} mt={0}>
                 <Heading fontFamily="mono" fontSize="sm" opacity="0.7">
                   Last Name
                 </Heading>
                 {editInfo ? (
-                  <Heading fontFamily="mono" fontSize="md" mt={2}>
+                  <Heading
+                    fontFamily="mono"
+                    fontSize="md"
+                    mt={2}
+                    isTruncated
+                    maxWidth="100%"
+                  >
                     {data?.last_name}
                   </Heading>
                 ) : (
@@ -305,13 +316,19 @@ export default function EditProfile() {
                   />
                 )}
               </Box>
-              <Box>
+              <Box m={2} mb={0} mt={0}>
                 <Heading fontFamily="mono" fontSize="sm" opacity="0.7">
                   Email
                 </Heading>
                 {editInfo ? (
-                  <Heading fontFamily="mono" fontSize="md" mt={2}>
-                    {data?.email}
+                  <Heading
+                    fontFamily="mono"
+                    fontSize="md"
+                    mt={2}
+                    isTruncated
+                    maxWidth="100%"
+                  >
+                    reem.girl1999@gmail.com
                   </Heading>
                 ) : (
                   <Input
@@ -323,7 +340,7 @@ export default function EditProfile() {
                   />
                 )}
               </Box>
-            </Flex>
+            </Box>
           </Box>
           <Box
             p={5}
