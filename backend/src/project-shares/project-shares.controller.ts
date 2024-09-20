@@ -109,12 +109,6 @@ export class ProjectSharesController {
     @Param('project_id') project_id: string,
     @Response() res,
   ): Promise<any> {
-    console.log('-------------------->', {
-      invitee_email,
-      access_level,
-      project_id,
-      has_account,
-    });
     //const user = await this.projectSharesService.inviteeHasAccount(invitee_email)
     //let has_account = false;
     if (has_account) {
@@ -159,6 +153,7 @@ export class ProjectSharesController {
   })
   @Get('/user/')
   async findByUser(@Request() req): Promise<ProjectSharesOutDto[]> {
+    console.log(req.user);
     return await this.projectSharesService.findByUser({
       username: req.user.username,
     });

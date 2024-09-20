@@ -69,6 +69,16 @@ const authSlice = createSlice({
           setAccessToken(accessToken);
         },
       )
+      .addMatcher(authApi.endpoints.loginGuest.matchFulfilled, (state, action) => {
+        const { accessToken } = action.payload;
+        state.accessToken = accessToken;
+        setAccessToken(accessToken);
+      })
+      .addMatcher(authApi.endpoints.loginGuest.matchRejected, (state) => {
+        state.accessToken = null;
+        setAccessToken(null);
+      })
+
       .addMatcher(authApi.endpoints.loginUser.matchRejected, (state) => {
         state.accessToken = null;
         setAccessToken(null);

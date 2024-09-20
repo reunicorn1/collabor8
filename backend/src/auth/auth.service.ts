@@ -83,6 +83,54 @@ export class AuthService {
     };
   }
 
+  async guestSignIn(): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    user: Partial<Users>;
+  }> {
+    let user: Partial<Users>;
+    try {
+      user = await this.usersService.findOneBy({ username: 'guest' });
+    } catch (err) {
+      const createGuestDto: CreateUserDto = {
+        username: 'guest',
+        email: 'guest.co11abor8@gmail.com',
+        first_name: 'Guest',
+        last_name: 'User',
+        password: 'guest',
+        favorite_languages: [],
+      }
+      user = await this.signUp(createGuestDto);
+      console.log('=====================>', user);
+      if (!user) {
+        throw new InternalServerErrorException('Guest user not created');
+      }
+    }
+    const payload = {
+      username: user.username,
+      sub: user.user_id,
+      roles: user.roles,
+      timestamp: new Date().getTime(),
+      jti: uuidv4(),
+    };
+    const { accessToken, refreshToken } = await this.generateTokens(payload);
+    const {
+      user_id,
+      roles,
+      email,
+      environment_id,
+      created_at,
+      updated_at,
+      is_verified,
+      ...userinfo
+    } = user;
+    return {
+      accessToken,
+      refreshToken,
+      user: userinfo,
+    };
+  }
+
   async generateTokens(payload: Payload): Promise<{ accessToken: string, refreshToken: string }> {
     return {
       accessToken: await this.jwtService.signAsync(payload),
@@ -96,6 +144,7 @@ export class AuthService {
   }
 
   async refreshToken(refreshToken: string): Promise<{
+    user: Partial<Users>;
     accessToken: string;
   }> {
     try {
@@ -104,7 +153,18 @@ export class AuthService {
       payload.timestamp = new Date().getTime();
       payload.jti = uuidv4();
       const accessToken = await this.jwtService.signAsync(payload);
+      const {
+        user_id,
+        roles,
+        email,
+        environment_id,
+        created_at,
+        updated_at,
+        is_verified,
+        ...userinfo
+      } = await this.usersService.findOneBy({ username: payload.username });
       return {
+        user: userinfo,
         accessToken: accessToken,
       };
     } catch (err) {
@@ -153,18 +213,29 @@ export class AuthService {
   }
 
   async signUp(createUserDto: CreateUserDto & { is_invited?: boolean }) {
+    const role = [];
     if (adminEmails.includes(createUserDto.email)) {
-      createUserDto['roles'] = ['admin'];
+      role.push(Role.Admin);
       createUserDto['is_verified'] = true;
+    } else if (createUserDto['email'] === 'guest.co11abor8@gmail.com') {
+      console.log('=====================> guest user');
+      role.push(Role.Guest);
+      createUserDto['is_verified'] = true;
+      console.log('=====================>', createUserDto);
     }
+
     if (!createUserDto['favorite_languages']) {
       createUserDto['favorite_languages'] = [];
     }
     if (createUserDto.is_invited) {
       // user recieved invitation
-      return await this.create({ ...createUserDto, is_verified: true })
+      const user = await this.create({ ...createUserDto, is_verified: true })
+      user.roles = role;
+      return await this.usersService.save(user);
     }
-    return await this.create(createUserDto);
+    const user = await this.create(createUserDto);
+    user.roles = role;
+    return await this.usersService.save(user);
   }
 
   async create(user: Partial<Users>): Promise<Users> {

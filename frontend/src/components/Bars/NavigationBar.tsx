@@ -24,11 +24,16 @@ import {
   DrawerContent,
   DrawerCloseButton,
 } from '@chakra-ui/react'
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import { useLoginGuestMutation } from '@store/services/auth';
+import { useCreateProjectMutation } from '@store/services/project';
 
 export default function NavigationBar() {
   const navigate = useNavigate();
   const [isLessThan640] = useMediaQuery('(max-width: 640px)');
+  const [id, setId] = useState('');
+  const [loginGuest] = useLoginGuestMutation();
+  const [createProject] = useCreateProjectMutation();
   const {
     isOpen: isSignUpOpen,
     onOpen: openSignUp,
@@ -118,6 +123,23 @@ export default function NavigationBar() {
                     Mission
                   </Heading>
                 </Link>
+                
+                <Link
+                  onClick={() => {
+                    loginGuest().then(async (res) => {
+                      const project = await createProject({ project_name: 'Untitled', description: '' }).unwrap();
+                      setId(project._id);
+                    }
+                    );
+                  }}
+                  to={`/editor/${id}`}
+                >
+
+                  <Heading color="white" fontFamily="mono" ml={5} size="xs">
+                    Try it out
+                  </Heading>
+                </Link>
+
               </Box>
               <Spacer />
               <Button

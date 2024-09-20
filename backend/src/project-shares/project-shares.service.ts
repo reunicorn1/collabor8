@@ -107,7 +107,6 @@ export class ProjectSharesService {
     channel: string;
   }> {
     const project = await this.projectsService.getMongoProject(project_id);
-    console.log(project);
     if (!project) {
       throw new NotFoundException('Project not found');
     }
@@ -217,7 +216,6 @@ export class ProjectSharesService {
 
     const newProjectShare = this.projectSharesRepository.create(parsedDto);
     await this.projectSharesRepository.save(newProjectShare);
-    console.log(newProjectShare);
     return await this.mapProjectShareData(newProjectShare);
   }
 
@@ -323,7 +321,6 @@ export class ProjectSharesService {
       .createQueryBuilder('project_shares')
       .where('project_shares.project_id = :project_id', { project_id })
       .getMany();
-    console.log(shared_projects.length);
     return await this.mapProjectUsers(shared_projects);
   }
   // Retrieve project shares by user ID
@@ -365,14 +362,12 @@ export class ProjectSharesService {
       .orderBy(`project_shares.${sortField}`, sortDirection)
       .getMany();
 
-    console.log('Projects query:======>', projects);
 
     const mappedProjects = await Promise.all(
       projects.map(async (project) => {
         return this.mapProjectShareData(project);
       }),
     );
-    console.log('Projects Mapped, Return:=======>', mappedProjects);
 
     return { total, projects: mappedProjects };
   }

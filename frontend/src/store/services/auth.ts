@@ -26,7 +26,23 @@ export const authApi = api.injectEndpoints({
         }
       },
     }),
-    refreshToken: builder.mutation<{ accessToken: string }, void>({
+    loginGuest: builder.mutation<{ accessToken: string; user: Partial<User> }, void>({
+      query: () => ({
+        url: '/auth/guest',
+        method: 'POST',
+        credentials: 'include',
+      }),
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(setCredentials({ accessToken: data.accessToken }));
+          dispatch(setUserDetails(data.user));
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    }),
+    refreshToken: builder.mutation<{ user: Partial<User>, accessToken: string }, void>({
       query: () => ({
         url: '/auth/refresh',
         method: 'POST',
@@ -95,6 +111,7 @@ export const authApi = api.injectEndpoints({
 
 export const {
   useLoginUserMutation,
+  useLoginGuestMutation,
   useGetProfileQuery,
   useCreateUserMutation,
   useRefreshTokenMutation,
