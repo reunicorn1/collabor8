@@ -123,9 +123,17 @@ export class ProjectsService {
       const project = await this.projectsRepository.findOneBy({
         project_id: id,
       });
+      if (!project) {
+        throw new NotFoundException('Project not found');
+      }
       id = project._id.toString();
     } else {
       IDS._id = id;
+      const project = await this.projectsRepository.findOneBy({ _id: id });
+      if (!project) {
+        throw new NotFoundException('Project not found');
+      }
+      IDS.project_id = project.project_id;
     }
     return IDS;
   }

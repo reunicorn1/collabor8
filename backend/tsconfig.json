@@ -22,6 +22,8 @@
 		"@admin/*": ["src/admin/*"],
 		"@auth/*": ["src/auth/*"],
 		"@users/*": ["src/users/*"],
+		"@guest/*": ["src/guest/*"],
+		"@project-manager/*": ["src/project-manager/*"],
 		"@projects/*": ["src/projects/*"],
 		"@project-shares/*": ["src/project-shares/*"],
 		"@environment-mongo/*": ["src/environment-mongo/*"],

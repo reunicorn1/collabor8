@@ -388,6 +388,7 @@ export class ProjectSharesService {
     }
     await this.projectSharesRepository.delete(id);
   }
+
   async remove_project(id: string): Promise<void> {
     try {
       if (!(await this.projectsService.findOne(id))) {
