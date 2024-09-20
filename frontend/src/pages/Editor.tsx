@@ -88,7 +88,7 @@ export default function Editor() {
         <MenuBar
           project={data}
         />
-        <CodeEditor project={data} />
+        <CodeEditor className='overflow-auto' project={data} />
         <Box className='absolute w-full bottom-0 col-start-3 col-end-4'>
           {panelVisiblity && <Console />}
         </Box>
