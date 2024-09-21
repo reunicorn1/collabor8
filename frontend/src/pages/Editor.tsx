@@ -15,12 +15,12 @@ import NotFoundPage from './404_page';
 import ThemedLoader from '../utils/Spinner';
 import { useAppSelector } from '@hooks/useApp';
 import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
-import { Singleton } from '../constants';
+//import { Singleton } from '../constants';
 import Shares from '@components/Bars/Shares';
 import Tree from '@components/FileTree/Tree';
 
 export default function Editor() {
-  const [isLessThan640] = useMediaQuery('(max-width: 640px)');
+  const [isLessThan768] = useMediaQuery('(max-width: 768px)');
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
   const toast = useToast();
@@ -31,8 +31,6 @@ export default function Editor() {
     data,
     isUninitialized,
     isLoading,
-    isSuccess,
-    //refetch,
     error,
   } = useGetProjectByIdQuery(
     projectId! && typeof projectId == 'string' ? projectId : '',
@@ -69,14 +67,13 @@ export default function Editor() {
         borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
         className="relative md:grid md:grid-cols-[auto_20%_1fr] md:grid-rows-[auto_1fr] overflow-hidden"
       >
-        {!isLessThan640 && (
+        {!isLessThan768 && (
           <>
             <Shares
               className={`
-              flex flex-col max-h-96 overflow-auto
+              flex flex-col max-h-96 overflow-auto bg-brand
               md:max-h-none md:row-span-full md:border-r md:border-purple-900
               `}
-              style={{ backgroundImage: 'linear-gradient(rgb(0, 24, 69), rgb(82, 65, 117))' }}
               project={data}
             />
             <Tree

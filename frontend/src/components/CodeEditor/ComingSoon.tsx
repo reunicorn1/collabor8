@@ -45,7 +45,7 @@ function ComingSoon({ isOpen, onClose, project }: ModalProps) {
     <Box
       ref={ref}
       className={`
-    transition bg-collabor8
+    transition bg-brand
     fixed top-0 bottom-0 z-10 w-3/4 flex flex-col gap-8 bg-[#001845]
     ${isOpen ? 'translate-x-0 shadow-xl shadow-[#524175]' : '-translate-x-full'}
     `}

@@ -32,7 +32,7 @@ type MenuBarProps = {
 
 export default function MenuBar({ className = '', project, ...rest }: MenuBarProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLessThan640] = useMediaQuery('(max-width: 640px)');
+  const [isLessThan768] = useMediaQuery('(max-width: 768px)');
   const dispatch = useAppDispatch();
   const {
     isOpen: isOpenV,
@@ -55,7 +55,7 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
         gap='4'
         p='4'
       >
-        <HStack me={`${!isLessThan640 ? 'auto' : ''}`}>
+        <HStack me={`${!isLessThan768 ? 'auto' : ''}`}>
           <IconButton
             isRound={true}
             color="white"
@@ -68,7 +68,7 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
             onClick={goHome}
             ml={2}
           />
-          {!isLessThan640 && (
+          {!isLessThan768 && (
             <>
               <ThemeSelector />
               <LanguageSelector />
@@ -107,7 +107,7 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
           onClick={onOpenV}
           ml={2}
         />
-        {isLessThan640 && (
+        {isLessThan768 && (
           <IconButton
             isRound={true}
             color="white"
@@ -127,7 +127,7 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
       </Flex>
 
       {/* DRAWERS */}
-      {isLessThan640 && (
+      {isLessThan768 && (
         <ComingSoon
           project={project}
           isOpen={isOpen}

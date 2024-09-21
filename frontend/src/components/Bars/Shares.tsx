@@ -16,7 +16,7 @@ interface SharesProps {
 export default function Shares({ className = '', project, ...rest }: SharesProps) {
   const { awareness } = useFile()!; // why so excited?
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isLessThan640] = useMediaQuery('(max-width: 640px)');
+  const [isLessThan768] = useMediaQuery('(max-width: 768px)');
   const userDetails = useSelector(selectUserDetails);
 
   // TODO: The plus icon is displayed only for the project owner
@@ -34,19 +34,17 @@ export default function Shares({ className = '', project, ...rest }: SharesProps
             <Avatar name={value['user'].name} />
           </Tooltip>
         ))}
-        {isLessThan640 && (
+        {isLessThan768 && (
           <IconButton
             isRound={true}
             colorScheme="yellow"
             aria-label="add collabroator"
-            //fontSize="20px"
-            //size="lg"
             onClick={onOpen}
             icon={<AddIcon className='pointer-events-none' />}
           />
         )}
       </Box>
-      {!isLessThan640 && project.username === userDetails.username
+      {!isLessThan768 && project.username === userDetails.username
         ? (
           <IconButton
             mt={4}

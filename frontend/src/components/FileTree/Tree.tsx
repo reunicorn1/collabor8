@@ -27,7 +27,7 @@ interface TreeProps {
 const Tree: React.FC<TreeProps> = ({ className = '', name }) => {
   // The buttons of this component creates new files and direcoties in y.map (root) of the project
   // When a new file is created it becomes selected by default
-  const [isLessThan640] = useMediaQuery('(max-width: 640px)');
+  const [isLessThan768] = useMediaQuery('(max-width: 768px)');
   const { projectId = '' } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [filedir, setFileDir] = useState('');
@@ -94,7 +94,7 @@ const Tree: React.FC<TreeProps> = ({ className = '', name }) => {
         parent={projectId}
       />
       <FileTreeView data={data} />
-      {!isLessThan640 && (
+      {!isLessThan768 && (
         <Box className='mt-auto p-4 opacity-50'>
           <Image src="/logo-bb.png" w='100%' />
         </Box>
