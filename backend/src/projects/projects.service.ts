@@ -123,9 +123,17 @@ export class ProjectsService {
       const project = await this.projectsRepository.findOneBy({
         project_id: id,
       });
+      if (!project) {
+        throw new NotFoundException('Project not found');
+      }
       id = project._id.toString();
     } else {
       IDS._id = id;
+      const project = await this.projectsRepository.findOneBy({ _id: id });
+      if (!project) {
+        throw new NotFoundException('Project not found');
+      }
+      IDS.project_id = project.project_id;
     }
     return IDS;
   }
@@ -207,11 +215,9 @@ export class ProjectsService {
     const IDS = await this.getIds(id);
     if (!IDS.project_id) {
       const project = await this.projectsRepository.findOneBy({ _id: id });
-      console.log('project 1', project);
       return await this.wrapProject(project);
     }
     const project = await this.projectsRepository.findOneBy({ project_id: id });
-    console.log('project 2', project);
     return await this.wrapProject(project);
   }
 
@@ -219,10 +225,8 @@ export class ProjectsService {
     const IDS = await this.getIds(id);
     if (!IDS.project_id) {
       const project = await this.projectsRepository.findOneBy({ _id: IDS._id, username: username });
-      console.log('project 1', project);
       if (!project) {
         const projectShare = await this.projectSharesService.findOneByQuery({ _id: id, username: username });
-        console.log('projectShare', projectShare);
         if (!projectShare) {
           throw new NotFoundException('Project not found');
         }

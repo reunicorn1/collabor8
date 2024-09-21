@@ -62,6 +62,16 @@ export class AuthController {
       .send({ accessToken, user });
   }
 
+  @Public()
+  @Post('guest')
+  async guestSignIn(@Response() res) {
+    const { user, accessToken, refreshToken } = await this.authService.guestSignIn();
+    res
+      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
+      .cookie('accessToken', accessToken)
+      .send({ accessToken, user });
+  }
+
   @docs.ApiSignUp()
   //@UseGuards(LocalAuthGuard)
   @Public()
@@ -147,8 +157,11 @@ export class AuthController {
     if (!refreshToken) {
       return res.status(401).send({ message: 'Unauthorized' });
     }
-    const { accessToken } = await this.authService.refreshToken(refreshToken);
-    res.send({ accessToken });
+    const { user, accessToken } = await this.authService.refreshToken(refreshToken);
+    res
+      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
+      .cookie('accessToken', accessToken)
+      .send({ accessToken, user });
   }
 
   // @docs.ApiVerifyEmail()

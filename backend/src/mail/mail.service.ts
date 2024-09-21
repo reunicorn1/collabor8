@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 
@@ -19,7 +19,6 @@ export class MailService extends WorkerHost {
       signinProd: 'https://collabor8.netlify.app/auth/signin',
       */
     };
-    //console.log('------job queue--------->', env[process.env.NODE_ENV]);
     const url = `${env[process.env.NODE_ENV]}/verify?token=${job.data.user_id}`;
     switch (job.name) {
       case 'verification': {
@@ -47,7 +46,6 @@ export class MailService extends WorkerHost {
         });
       }
       case 'invitation': {
-        //console.log('====================>', { data: job.data })
         // { invitee_email, project_id }
         return await this.mailerService.sendMail({
           to: job.data.invitee_email,
@@ -63,7 +61,7 @@ export class MailService extends WorkerHost {
         });
       }
       default: {
-        console.log('-------Unregister job-------->');
+        Logger.warn('-------Unregister job-------->');
       }
     }
   }

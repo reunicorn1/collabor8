@@ -113,7 +113,6 @@ export class DirectoryMongoService {
     id: string,
     updateDirectoryDto: UpdateDirectoryOutDto,
   ): Promise<DirectoryMongo> {
-    console.log('this is id of dir', id);
     const parsedDto = parseUpdateDirectoryMongoDto(updateDirectoryDto);
     const directory = await this.findOne(id);
     if (!directory) {
@@ -145,8 +144,6 @@ export class DirectoryMongoService {
       }
     }
     directory.updated_at = new Date();
-    console.log('dir object', directory);
-    console.log('parent + project', directory.parent_id, directory.project_id);
     if (directory.parent_id === directory.project_id) {
       await this.projectService.update(directory.parent_id, {
         updated_at: new Date(),

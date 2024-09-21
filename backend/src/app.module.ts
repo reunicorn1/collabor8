@@ -33,6 +33,8 @@ import { LoggingModule } from '@logging/logging.module';
 import { BullModule } from '@nestjs/bullmq';
 import { MYSQL_CONN, MONGO_CONN } from '@constants';
 import { DockerModule } from './docker/docker.module';
+import { GuestModule } from './guest/guest.module';
+import { ProjectManagerModule } from './project-manager/project-manager.module';
 
 @Module({
   imports: [
@@ -42,6 +44,9 @@ import { DockerModule } from './docker/docker.module';
         host: 'localhost',
         port: 6379,
       },
+    }),
+    BullModule.registerQueue({
+      name: 'project-manager',
     }),
     TypeOrmModule.forRoot({
       name: MYSQL_CONN,
@@ -80,6 +85,8 @@ import { DockerModule } from './docker/docker.module';
     RedisModule,
     LoggingModule,
     DockerModule,
+    GuestModule,
+    ProjectManagerModule,
   ],
   controllers: [AppController],
   providers: [

@@ -49,6 +49,15 @@ body {
   margin-top: 1rem;
 }
 
+.CodeMirror {
+  /*
+   * please don't touch this - otherwise the editor will break
+   */
+  min-width: 100%;
+  max-width: 1px;
+  padding-right: 0.5rem;
+}
+
 
 .selectors {
   flex: 0 0 12rem;
