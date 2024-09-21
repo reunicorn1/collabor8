@@ -30,8 +30,8 @@ export default function DBMenu({ children }: DBMenuProps) {
   // access token from the database using the endpoint
 
   const handleLogout = () => {
-    dispatch(unsetCredentials());
     dispatch(performLogout());
+    // dispatch(unsetCredentials());
     toast({
       title: 'See you later, coder! 👋',
       description: 'You’re now logged out. Until next time!',

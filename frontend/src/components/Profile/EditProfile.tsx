@@ -74,6 +74,8 @@ export default function EditProfile() {
 
   // The main useEffect to retrieve data and set component properly
   useEffect(() => {
+    // TODO: Data doesnt update between users so i added a refetch to update the data
+    refetch();
     if (data) setInput(data);
   }, [data]);
 
@@ -146,9 +148,9 @@ export default function EditProfile() {
   function Avatar_C() {
     return (
       <Avatar
-        size={{ base: 'xl', sm: '2xl' }}
+        size={{ base: 'xl', sm: 'xl', md: '2xl' }}
         position={{ md: 'absolute' }}
-        top={{ md: '150px'}}
+        top={{ md: '150px' }}
         src={data?.profile_picture}
         left={{ md: leftPosition }}
         borderColor="white"
@@ -156,240 +158,455 @@ export default function EditProfile() {
     );
   }
 
+  /**
+   *   return (
+      <>
+        {isLoading ? (
+          <Box
+            h="100vh"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Box className="loader"></Box>
+          </Box>
+        ) : (
+          <>
+            <Box
+              bgGradient="linear(to-r, #F6D277, #F16145, #76449A)"
+              h="100px"
+              borderTopRadius="2xl"
+            />
+            {isMed && (
+              <Flex p={20} pt={10} pb={0}>
+                <Avatar_C />
+              </Flex>
+            )}
+            <Box
+              p={{ base: 10, md: 20 }}
+              pt={10}
+              pb={10}
+              display="flex"
+              justifyContent={{ base: 'space-between', md: 'flex-end' }}
+              alignItems="center"
+            >
+              {!isMed && <Avatar_C />}
+              <input
+                type="file"
+                ref={inputRef}
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
+              {!isMed ? (
+                <Button
+                  leftIcon={<FiEdit3 />}
+                  variant="solid"
+                  size="xs"
+                  bg="white"
+                  fontFamily="mono"
+                  onClick={handleButtonClick}
+                  isLoading={loading}
+                >
+                  Edit
+                </Button>
+              ) : (
+                <Button
+                  colorScheme="white"
+                  variant="outline"
+                  size="sm"
+                  fontFamily="mono"
+                  onClick={handleButtonClick}
+                  isLoading={loading}
+                >
+                  Upload new photo
+                </Button>
+              )}
+            </Box>
+            <Box
+              p={5}
+              ml={{ base: 10, md: 20 }}
+              mr={{ base: 10, md: 20 }}
+              mb={10}
+              border="1px"
+              borderRadius="2xl"
+            >
+              <Flex alignItems="center">
+                <Heading fontFamily="mono" fontSize="md">
+                  Personal Info
+                </Heading>
+                <Spacer />
+                {editInfo ? (
+                  <Button
+                    leftIcon={<FiEdit3 />}
+                    variant="solid"
+                    size="xs"
+                    bg="white"
+                    fontFamily="mono"
+                    onClick={() => setEditInfo(false)}
+                  >
+                    Edit
+                  </Button>
+                ) : (
+                  <ButtonGroup
+                    size="xs"
+                    bg="white"
+                    borderRadius="lg"
+                    variant="solid"
+                    isAttached
+                    fontFamily="mono"
+                    _hover={{ bg: 'gray.600' }}
+                  >
+                    {/* Save Button sends input data using api to update data, exit resets input to the 
+                    original data and change the editInfo state 
+                    <Button onClick={handleUpdateProfile}>Save</Button>
+                    <IconButton
+                      borderLeft="1px, black"
+                      bg="gray.200"
+                      fontSize="15px"
+                      aria-label="Cancel"
+                      color="red.300"
+                      icon={<MdOutlineCancel />}
+                      onClick={() => handleCancel('info')}
+                    />
+                  </ButtonGroup>
+                )}
+              </Flex>
+              <Flex className="flex flex-col md:flex-row justify-between pt-5"
+              >
+                <Box>
+                  <Heading 
+                  fontFamily="mono"
+                  className="text-sm md:text-base lg:text-lg opacity-70"
+                  >
+                    First Name
+                  </Heading>
+                  {editInfo ? (
+                    <Heading
+                    fontFamily="mono"
+                    className="text-md md:text-lg lg:text-xl mt-2"
+                    >
+                      {data?.first_name}
+                    </Heading>
+                  ) : (
+                    <Input
+                      mt={2}
+                      value={input?.first_name}
+                      name="first_name"
+                      fontFamily="mono"
+                      onChange={handleInputChange}
+                    />
+                  )}
+                </Box>
+                <Box>
+                  <Heading
+                  fontFamily="mono"
+                  className="text-sm md:text-base lg:text-lg opacity-70"
+                  >
+                    Last Name
+                  </Heading>
+                  {editInfo ? (
+                    <Heading 
+                    fontFamily="mono"
+                    className="text-md md:text-lg lg:text-xl mt-2"
+                    >
+                      {data?.last_name}
+                    </Heading>
+                  ) : (
+                    <Input
+                      mt={2}
+                      value={input?.last_name}
+                      name="last_name"
+                      fontFamily="mono"
+                      onChange={handleInputChange}
+                    />
+                  )}
+                </Box>
+                <Box>
+                  <Heading 
+                  fontFamily="mono"
+                  className="text-sm md:text-base lg:text-lg opacity-70"
+                  >
+                    Email
+                  </Heading>
+                  {editInfo ? (
+                    <Heading
+                    fontFamily="mono"
+                    className="text-md md:text-lg lg:text-xl mt-2"
+                    >
+                      {data?.email}
+                    </Heading>
+                  ) : (
+                    <Input
+                      mt={2}
+                      value={input?.email}
+                      name="email"
+                      fontFamily="mono"
+                      onChange={handleInputChange}
+                    />
+                  )}
+                </Box>
+              </Flex>
+            </Box>
+            <Box
+              p={5}
+              m={{ base: 10, md: 20 }}
+              mt={0}
+              border="1px"
+              borderRadius="2xl"
+            >
+              <Flex alignItems="center">
+                <Heading
+                fontFamily="mono" fontSize="md">
+                  Bio
+                </Heading>
+                <Spacer />
+                {editBio ? (
+                  <Button
+                    leftIcon={<FiEdit3 />}
+                    variant="solid"
+                    size="xs"
+                    bg="white"
+                    fontFamily="mono"
+                    onClick={() => setEditBio(false)}
+                  >
+                    Edit
+                  </Button>
+                ) : (
+                  <ButtonGroup
+                    size="xs"
+                    bg="white"
+                    borderRadius="lg"
+                    variant="solid"
+                    isAttached
+                    fontFamily="mono"
+                    _hover={{ bg: 'gray.600' }}
+                  >
+                    {/* Save Button sends input data using api to update data, exit resets input to the 
+                    original data and change the editInfo state 
+                    <Button onClick={handleUpdateBio}>Save</Button>
+                    <IconButton
+                      borderLeft="1px, black"
+                      bg="gray.200"
+                      fontSize="15px"
+                      aria-label="Cancel"
+                      color="red.300"
+                      icon={<MdOutlineCancel />}
+                      onClick={() => handleCancel('bio')}
+                    />
+                  </ButtonGroup>
+                )}
+              </Flex>
+              {editBio ? (
+                <Box pt={5} fontFamily="mono" fontSize="sm">
+                  {data?.bio}
+                </Box>
+              ) : (
+                <Textarea
+                  mt={7}
+                  name="bio"
+                  fontFamily="mono"
+                  fontSize="sm"
+                  size="lg"
+                  h="100%"
+                  value={input?.bio}
+                  onChange={handleInputChange}
+                ></Textarea>
+              )}
+            </Box>
+          </>
+        )}
+      </>
+    )
+   
+   */
+
+
+  const fileSection = (
+    <div className="p-10 md:p-20 flex justify-between md:justify-end items-center">
+      <div className="flex items-start s-12">
+        <Avatar_C />
+      </div>
+      <input
+        type="file"
+        ref={inputRef}
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
+      <button
+        className="flex items-center font-bold whitespace-normal w-auto break-words border text-white rounded-lg text-xs font-mono px-4 py-2 md:text-red-500"
+        onClick={handleButtonClick}
+        disabled={loading}
+      >
+        Upload new photo
+      </button>
+    </div>
+  );
+
+  const personalInfoSection = (
+
+    <div className="p-5 mx-10 md:mx-20 border rounded-2xl mb-10">
+      <div className="flex items-center">
+        <h2 className="font-mono text-md">Personal Info</h2>
+        <div className="ml-auto">
+          {editInfo ? (
+            <Button
+              size="xs"
+              className="flex items-center bg-white text-xs font-mono px-4 py-2"
+              onClick={() => setEditInfo(false)}
+            >
+              <FiEdit3 className="mr-2" />
+              Edit
+            </Button>
+          ) : (
+            <div className="flex space-x-1">
+              {/* Save Button sends input data using api to update data, exit resets input to the 
+                  original data and change the editInfo state */}
+              <Button
+                size="xs"
+                className="bg-white font-mono text-xs px-4 py-2 rounded-l-lg"
+                onClick={handleUpdateProfile}
+              >
+                Save
+              </Button>
+              <Button
+                size="xs"
+                className="bg-gray-200 font-mono text-xs px-4 py-2 rounded-r-lg text-red-300"
+                onClick={() => handleCancel('info')}
+              >
+                <MdOutlineCancel />
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Form Fields */}
+      <div className="flex flex-col md:flex-row justify-between pt-5">
+        <div>
+          <h3 className="font-mono text-sm md:text-base lg:text-lg opacity-70">
+            First Name
+          </h3>
+          {editInfo ? (
+            <h3 className="font-mono text-md md:text-lg lg:text-xl mt-2">
+              {data?.first_name}
+            </h3>
+          ) : (
+            <input
+              className="mt-2 text-black"
+              value={input?.first_name}
+              name="first_name"
+              onChange={handleInputChange}
+            />
+          )}
+        </div>
+        <div>
+          <h3 className="font-mono text-sm md:text-base lg:text-lg opacity-70">
+            Last Name
+          </h3>
+          {editInfo ? (
+            <h3 className="font-mono text-md md:text-lg lg:text-xl mt-2">
+              {data?.last_name}
+            </h3>
+          ) : (
+            <input
+              className="mt-2 text-black"
+              value={input?.last_name}
+              name="last_name"
+              onChange={handleInputChange}
+            />
+          )}
+        </div>
+        <div>
+          <h3 className="font-mono text-sm md:text-base lg:text-lg opacity-70">
+            Email
+          </h3>
+          {editInfo ? (
+            <h3 className="font-mono text-md md:text-lg lg:text-xl mt-2">
+              {data?.email}
+            </h3>
+          ) : (
+            <input
+              className="mt-2 text-black"
+              value={input?.email}
+              name="email"
+              onChange={handleInputChange}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const bioSection = (
+    <div className="p-5 mx-10 md:mx-20 mt-0 border rounded-2xl">
+      <div className="flex items-center">
+        <h2 className="font-mono text-md">Bio</h2>
+        <div className="ml-auto">
+          {editBio ? (
+            <Button
+              size="xs"
+              className="flex items-center bg-white text-xs font-mono px-4 py-2"
+              onClick={() => setEditBio(false)}
+            >
+              <FiEdit3 className="mr-2" />
+              Edit
+            </Button>
+          ) : (
+            <div className="flex space-x-1">
+              {/* Save Button sends input data using api to update data, exit resets input to the 
+                    original data and change the editInfo state */}
+              <Button
+                size="xs"
+                className="bg-white font-mono text-xs px-4 py-2 rounded-l-lg"
+                onClick={handleUpdateBio}
+              >
+                Save
+              </Button>
+              <Button
+                size="xs"
+                className="bg-gray-200 font-mono text-xs px-4 py-2 rounded-r-lg text-red-300"
+                onClick={() => handleCancel('bio')}
+              >
+                <MdOutlineCancel />
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {editBio ? (
+        <p className="pt-5 font-mono text-sm">{data?.bio}</p>
+      ) : (
+        <textarea
+          className="mt-7 font-mono text-sm w-full h-24 resize-none text-black"
+          name="bio"
+          value={input?.bio}
+          onChange={handleInputChange}
+        />
+      )}
+    </div>
+
+  );
   return (
     <>
       {isLoading ? (
-        <Box
-          h="100vh"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Box className="loader"></Box>
-        </Box>
+        <div className="h-screen flex justify-center items-center">
+          <div className="loader"></div>
+        </div>
       ) : (
         <>
-          <Box
-            bgGradient="linear(to-r, #F6D277, #F16145, #76449A)"
-            h="100px"
-            borderTopRadius="2xl"
-          />
-          {isMed && (
-            <Flex p={20} pt={10} pb={0}>
-              <Avatar_C />
-            </Flex>
-          )}
-          <Box
-            p={{ base: 10, md: 20 }}
-            pt={10}
-            pb={10}
-            display="flex"
-            justifyContent={{ base: 'space-between', md: 'flex-end' }}
-            alignItems="center"
-          >
-            {!isMed && <Avatar_C />}
-            <input
-              type="file"
-              ref={inputRef}
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-            />
-            {!isMed ? (
-              <Button
-                leftIcon={<FiEdit3 />}
-                variant="solid"
-                size="xs"
-                bg="white"
-                fontFamily="mono"
-                onClick={handleButtonClick}
-                isLoading={loading}
-              >
-                Edit
-              </Button>
-            ) : (
-              <Button
-                colorScheme="white"
-                variant="outline"
-                size="sm"
-                fontFamily="mono"
-                onClick={handleButtonClick}
-                isLoading={loading}
-              >
-                Upload new photo
-              </Button>
-            )}
-          </Box>
-          <Box
-            p={5}
-            ml={{ base: 10, md: 20 }}
-            mr={{ base: 10, md: 20 }}
-            mb={10}
-            border="1px"
-            borderRadius="2xl"
-          >
-            <Flex alignItems="center">
-              <Heading fontFamily="mono" fontSize="md">
-                Personal Info
-              </Heading>
-              <Spacer />
-              {editInfo ? (
-                <Button
-                  leftIcon={<FiEdit3 />}
-                  variant="solid"
-                  size="xs"
-                  bg="white"
-                  fontFamily="mono"
-                  onClick={() => setEditInfo(false)}
-                >
-                  Edit
-                </Button>
-              ) : (
-                <ButtonGroup
-                  size="xs"
-                  bg="white"
-                  borderRadius="lg"
-                  variant="solid"
-                  isAttached
-                  fontFamily="mono"
-                  _hover={{ bg: 'gray.600' }}
-                >
-                  {/* Save Button sends input data using api to update data, exit resets input to the 
-                  original data and change the editInfo state */}
-                  <Button onClick={handleUpdateProfile}>Save</Button>
-                  <IconButton
-                    borderLeft="1px, black"
-                    bg="gray.200"
-                    fontSize="15px"
-                    aria-label="Cancel"
-                    color="red.300"
-                    icon={<MdOutlineCancel />}
-                    onClick={() => handleCancel('info')}
-                  />
-                </ButtonGroup>
-              )}
-            </Flex>
-            <Flex pt={5} justifyContent="space-between">
-              <Box>
-                <Heading fontFamily="mono" fontSize="sm" opacity="0.7">
-                  First Name
-                </Heading>
-                {editInfo ? (
-                  <Heading fontFamily="mono" fontSize="md" mt={2}>
-                    {data?.first_name}
-                  </Heading>
-                ) : (
-                  <Input
-                    mt={2}
-                    value={input?.first_name}
-                    name="first_name"
-                    fontFamily="mono"
-                    onChange={handleInputChange}
-                  />
-                )}
-              </Box>
-              <Box>
-                <Heading fontFamily="mono" fontSize="sm" opacity="0.7">
-                  Last Name
-                </Heading>
-                {editInfo ? (
-                  <Heading fontFamily="mono" fontSize="md" mt={2}>
-                    {data?.last_name}
-                  </Heading>
-                ) : (
-                  <Input
-                    mt={2}
-                    value={input?.last_name}
-                    name="last_name"
-                    fontFamily="mono"
-                    onChange={handleInputChange}
-                  />
-                )}
-              </Box>
-              <Box>
-                <Heading fontFamily="mono" fontSize="sm" opacity="0.7">
-                  Email
-                </Heading>
-                {editInfo ? (
-                  <Heading fontFamily="mono" fontSize="md" mt={2}>
-                    {data?.email}
-                  </Heading>
-                ) : (
-                  <Input
-                    mt={2}
-                    value={input?.email}
-                    name="email"
-                    fontFamily="mono"
-                    onChange={handleInputChange}
-                  />
-                )}
-              </Box>
-            </Flex>
-          </Box>
-          <Box
-            p={5}
-            m={{ base: 10, md: 20 }}
-            mt={0}
-            border="1px"
-            borderRadius="2xl"
-          >
-            <Flex alignItems="center">
-              <Heading fontFamily="mono" fontSize="md">
-                Bio
-              </Heading>
-              <Spacer />
-              {editBio ? (
-                <Button
-                  leftIcon={<FiEdit3 />}
-                  variant="solid"
-                  size="xs"
-                  bg="white"
-                  fontFamily="mono"
-                  onClick={() => setEditBio(false)}
-                >
-                  Edit
-                </Button>
-              ) : (
-                <ButtonGroup
-                  size="xs"
-                  bg="white"
-                  borderRadius="lg"
-                  variant="solid"
-                  isAttached
-                  fontFamily="mono"
-                  _hover={{ bg: 'gray.600' }}
-                >
-                  {/* Save Button sends input data using api to update data, exit resets input to the 
-                  original data and change the editInfo state */}
-                  <Button onClick={handleUpdateBio}>Save</Button>
-                  <IconButton
-                    borderLeft="1px, black"
-                    bg="gray.200"
-                    fontSize="15px"
-                    aria-label="Cancel"
-                    color="red.300"
-                    icon={<MdOutlineCancel />}
-                    onClick={() => handleCancel('bio')}
-                  />
-                </ButtonGroup>
-              )}
-            </Flex>
-            {editBio ? (
-              <Box pt={5} fontFamily="mono" fontSize="sm">
-                {data?.bio}
-              </Box>
-            ) : (
-              <Textarea
-                mt={7}
-                name="bio"
-                fontFamily="mono"
-                fontSize="sm"
-                size="lg"
-                h="100%"
-                value={input?.bio}
-                onChange={handleInputChange}
-              ></Textarea>
-            )}
-          </Box>
+          {/* Top Gradient Bar */}
+          <div className="h-16 md:h-24 bg-gradient-to-r from-[#F6D277] via-[#F16145] to-[#76449A] rounded-t-2xl" />
+
+          {/* Avatar Section */}
+
+          {/* File Input & Avatar Section */}
+          {fileSection}
+          {/* Personal Info Section */}
+          {personalInfoSection}
+          {/* Bio Section */}
+          {bioSection}
         </>
       )}
     </>

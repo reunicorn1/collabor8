@@ -26,8 +26,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const logout = () => {
-    dispatch(unsetCredentials());
     dispatch(performLogout());
+    // dispatch(unsetCredentials());
   };
 
   return (

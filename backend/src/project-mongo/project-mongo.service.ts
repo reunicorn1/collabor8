@@ -158,10 +158,6 @@ export class ProjectMongoService {
     return await this.projectMongoRepository.findOne({ where: { [field]: value } });
   }
 
-  async findOne(_id: string): Promise<ProjectMongo | null> {
-    return await this.projectMongoRepository.findOneBy({ project_id: _id });
-  }
-
   async update(
     id: string,
     updateProjectDto: UpdateProjectMongoDto,
@@ -180,22 +176,13 @@ export class ProjectMongoService {
   }
 
   async remove(id: string): Promise<void> {
-    const project = await this.findOne(id);
+    const project = await this.findOneBy('_id', id);
     if (!project) {
       throw new Error('Project not found');
     }
     const directories = await this.directoryService.findDirectoriesByParent(id);
     const files = await this.fileService.findFilesByParent(id);
-    await Promise.all(
-      directories.map(async (dir) => {
-        try {
-        await this.directoryService.remove(dir._id.toString());
-        } catch (e) {
-          Logger.error(e);
-          throw new NotFoundException('Directory not found');
-        }
-      }),
-    );
+
     await Promise.all(
       files.map(async (file) => {
         try {
@@ -206,8 +193,23 @@ export class ProjectMongoService {
         }
       }),
     );
+    await Promise.all(
+      directories.map(async (dir) => {
+        try {
+        await this.directoryService.remove(dir._id.toString());
+        } catch (e) {
+          Logger.error(e);
+          throw new NotFoundException('Directory not found');
+        }
+      }),
+    );
+
     try {
-      await this.projectMongoRepository.delete({ project_id: id });
+      await this.projectMongoRepository.delete({ _id: new ObjectId(id) });
+      const project = await this.findOneBy('_id', id);
+      if (project) {
+        throw new Error('Project not deleted');
+      }
     } catch (e) {
       Logger.error(e);
       throw new NotFoundException('Project not found');

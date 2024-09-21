@@ -85,8 +85,8 @@ export class AuthService {
 
   async guestSignIn(): Promise<{
     accessToken: string;
-    refreshToken: string;
     user: Partial<Users>;
+    userData: Partial<Users>;
   }> {
     let user: Partial<Users>;
     try {
@@ -113,7 +113,7 @@ export class AuthService {
       timestamp: new Date().getTime(),
       jti: uuidv4(),
     };
-    const { accessToken, refreshToken } = await this.generateTokens(payload);
+    const accessToken = await this.jwtService.signAsync(payload, { expiresIn: '1d' });
     const {
       user_id,
       roles,
@@ -124,10 +124,16 @@ export class AuthService {
       is_verified,
       ...userinfo
     } = user;
+    const userData = {
+      userId: user_id,
+      username: 'guest',
+      roles: roles,
+      jti: payload.jti,
+    }
     return {
       accessToken,
-      refreshToken,
       user: userinfo,
+      userData,
     };
   }
 

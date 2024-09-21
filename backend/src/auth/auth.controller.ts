@@ -27,7 +27,6 @@ import {
 import { Users } from '@users/user.entity';
 import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
-import { RefreshAuthGuard } from './guards/refresh-jwt-auth.guard';
 import docs from './auth-docs.decorator';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -55,7 +54,7 @@ export class AuthController {
       ...req.user,
       is_invited,
     });
-
+    console.log('user', req.user);
     res
       .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
       .cookie('accessToken', accessToken)
@@ -64,10 +63,10 @@ export class AuthController {
 
   @Public()
   @Post('guest')
-  async guestSignIn(@Response() res) {
-    const { user, accessToken, refreshToken } = await this.authService.guestSignIn();
+  async guestSignIn(@Response() res, @Request() req){
+    const { user, accessToken, userData } = await this.authService.guestSignIn();
+    req.user = userData;
     res
-      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
       .cookie('accessToken', accessToken)
       .send({ accessToken, user });
   }

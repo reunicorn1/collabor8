@@ -78,6 +78,7 @@ export class UsersController {
   @Docs.remove()
   @Delete(':id')
   async remove(@Param('id') user_id: string): Promise<{ message: string }> {
+
     return this.usersService.remove(user_id);
   }
 }
