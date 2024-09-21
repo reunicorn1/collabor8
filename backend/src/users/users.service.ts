@@ -122,6 +122,11 @@ export class UsersService {
   }
 
   async removeByUsername(username: string): Promise<{ message: string }> {
+    try {
+      await this.environmentService.remove(username);
+    } catch (err) {
+      throw new NotFoundException(`User with id ${username} not found`);
+    }
     const result = await this.usersRepository.delete({ username });
 
     if (result.affected === 0) {
@@ -132,6 +137,13 @@ export class UsersService {
   }
 
   async remove(user_id: string): Promise<{ message: string }> {
+    const user = await this.findOneBy({ user_id });
+
+    try {
+      await this.environmentService.remove(user.username);
+    } catch (err) {
+      throw new NotFoundException(`User with id ${user_id} not found`);
+    }
     const result = await this.usersRepository.delete(user_id);
 
     if (result.affected === 0) {

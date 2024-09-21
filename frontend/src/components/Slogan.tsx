@@ -1,4 +1,5 @@
 import { Box } from '@chakra-ui/react';
+import  CallToAction from '@components/Buttons/CallToAction';
 
 export default function Slogan() {
   return (
@@ -18,13 +19,17 @@ export default function Slogan() {
             together
           </p>
         </Box>
-        <Box>
-          <p className='grid grid-cols-[auto_1fr] text-white after:font-bold md:after:content-["innovate"]'>
+        
+        <Box className={'items-center grid grid-cols-[auto_1fr] gap-4 md:grid-cols-1  md:align-middle  md:gap-6 '}>
+        <p className='grid grid-cols-[auto_1fr] text-white after:font-bold md:after:content-["innovate"]'>
             <span className="self-center max-w-[200px] text-sm">
               Collaborative coding made simple. Join developers worldwide and
               create together.
             </span>
           </p>
+          <Box className="flex justify-center md:justify-center">
+          <CallToAction />
+          </Box>
         </Box>
         <Box className="flex items-center gap-2  before:w-[30%] before:h-6 md:before:h-14 before:bg-[#F16145]">
           <p className="text-white font-bold">faster</p>

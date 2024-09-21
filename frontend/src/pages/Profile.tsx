@@ -82,7 +82,6 @@ export default function Profile() {
               Password
             </Text>
           </Box>
-
           <Divider pb={5} />
 
           <Box
@@ -103,8 +102,11 @@ export default function Profile() {
           </Box>
         </Box>
 
+        {/* End of Sidebar content */}
+
         {/* Main Content */}
-        <Box flex="1" bg="brand.100" p={10} pb={0} w="100%" minHeight="100vh">
+        <div className={'p-5 md:p-10 pb-5 flex flex-col w-full min-h-screen bg-brand-100'}
+        >
           <Box
             bg="brand.900"
             color="white"
@@ -113,7 +115,7 @@ export default function Profile() {
           >
             {clicked === 'Edit' ? <EditProfile /> : <Password />}
           </Box>
-        </Box>
+        </div>
 
         {/* Delete Account Modal */}
         <DeleteAccount isOpen={isOpen} onClose={onClose} />

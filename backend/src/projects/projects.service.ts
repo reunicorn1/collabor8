@@ -126,7 +126,7 @@ export class ProjectsService {
       if (!project) {
         throw new NotFoundException('Project not found');
       }
-      id = project._id.toString();
+      IDS._id = project._id.toString();
     } else {
       IDS._id = id;
       const project = await this.projectsRepository.findOneBy({ _id: id });
@@ -343,20 +343,28 @@ export class ProjectsService {
 
   // Delete a project
   async remove(id: string): Promise<void> {
+    Logger.log("deleting Project Stack");
     try {
       const IDS = await this.getIds(id);
+      console.log('IDS', IDS);
+      Logger.log("deleting ProjectShares");
+      const projectShares = await this.projectSharesService.findByProject(IDS.project_id);
+      if (projectShares.length > 0) {
+        await this.projectSharesService
+        .removeMany(IDS.project_id);
+      }
 
-      await this.projectSharesService
-        .remove_project(IDS.project_id)
-        .catch((error) => {
-          Logger.error(error);
-        });
-      await this.projectMongoService.remove(IDS._id).catch((error) => {
-        Logger.error(error);
-      });
-      await this.projectsRepository.delete(IDS.project_id).catch((error) => {
-        Logger.error(error);
-      });
+      Logger.log("deleting ProjectMongo");
+      const projectMongo = await this.projectMongoService.findOneBy('_id', IDS._id);
+      if (projectMongo) {
+        await this.projectMongoService.remove(IDS._id);
+        console.log('projectMongo deleted');
+      }
+      else {
+        throw new NotFoundException('Project Mongo not found!!!!!');
+      }
+      Logger.log("deleting Project");
+      await this.projectsRepository.delete(IDS.project_id);
     } catch (error) {
       throw new BadRequestException(error.message);
     }

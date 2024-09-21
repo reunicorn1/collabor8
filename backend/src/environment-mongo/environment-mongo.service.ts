@@ -3,6 +3,7 @@ import {
   NotFoundException,
   Inject,
   forwardRef,
+  Logger,
 } from '@nestjs/common';
 import { Repository, FindOptionsWhere, FindOperator, In } from 'typeorm';
 import { ObjectId } from 'mongodb';
@@ -47,8 +48,26 @@ export class EnvironmentMongoService {
 
   // TODO: TODAY create method to remove environment projects using projectService
 
-  async remove(username: string): Promise<EnvironmentMongo> {
+  async reset(username: string): Promise<EnvironmentMongo> {
+    // remove all projects for the user
+    try {
+      this.remove(username);
+    } catch (err) {
+      throw new NotFoundException(`Environment for user ${username} not found`);
+    }
+    // create a new environment for the user
+    const newEnv = await this.create({ username });
+    const user = await this.usersService.findOneBy({ username });
+    user.environment_id = newEnv._id.toString();
+    await this.usersService.save(user);
+    await this.environRepository.save(newEnv);
+    return newEnv;
+
+  }
+
+  async remove(username: string): Promise<{ message: string }> {
     const env = await this.findOneBy({ username });
+    Logger.log(`Environment ${env._id} for user ${username} found`);
     if (!env) {
       throw new NotFoundException(`Environment for user ${username} not found`);
     }
@@ -60,13 +79,7 @@ export class EnvironmentMongoService {
 
     // remove the environment
     await this.environRepository.remove(env);
-    // create a new environment for the user
-    const newEnv = await this.create({ username });
-    const user = await this.usersService.findOneBy({ username });
-    user.environment_id = newEnv._id.toString();
-    await this.usersService.save(user);
-    await this.environRepository.save(newEnv);
-    return newEnv;
+    return { message: `Environment for user ${username} removed` };
   }
 
   async findOneBy(query: Query): Promise<EnvironmentMongo> {

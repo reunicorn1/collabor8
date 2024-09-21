@@ -403,6 +403,10 @@ export class ProjectSharesService {
     }
   }
 
+  async removeMany(project_id: string): Promise<void> {
+    await this.projectSharesRepository.delete({ project_id });
+  }
+
   async inviteeHasAccount(email: string): Promise<Partial<Users | null>> {
     return await this.usersService.findByEmail({ email });
   }
