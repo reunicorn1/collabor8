@@ -11,6 +11,7 @@ import { clearRoom } from './projectSharesSlice';
 import { clearAllProjects } from './projectSlice';
 import { AppDispatch } from '@store/store';
 
+
 // Define the authentication state interface
 interface AuthState {
   accessToken: string | null;
@@ -103,11 +104,26 @@ const authSlice = createSlice({
 
 export const { setCredentials, unsetCredentials } = authSlice.actions;
 
-export const performLogout = () => (dispatch: AppDispatch) => {
-  dispatch(unsetCredentials());
-  dispatch(clearRoom());
-  dispatch(clearAllProjects());
-  dispatch(clearUser());
+export const performLogout = () => async (dispatch: AppDispatch) => {
+ try {
+    // Trigger the signout query to perform the server-side logout
+    await dispatch(authApi.endpoints.signout.initiate()).unwrap();
+
+    // If signout is successful, clear local credentials and other related state
+    dispatch(unsetCredentials());
+    dispatch(clearRoom());
+    dispatch(clearAllProjects());
+    dispatch(clearUser());
+  } catch (error) {
+    console.error('Logout failed:', error);
+    // Even if logout fails, clear the local credentials and state
+    dispatch(unsetCredentials());
+    dispatch(clearRoom());
+    dispatch(clearAllProjects());
+    dispatch(clearUser());
+  }
+
+
 };
 
 export default authSlice.reducer;

@@ -138,6 +138,26 @@ export class ProjectsService {
     return IDS;
   }
 
+
+
+  async findProject(id: string, project_type: string, username: string): Promise<Projects | ProjectSharesOutDto> {
+    const project_id = uuidValidate(id) ? id : null;
+    const _id = uuidValidate(id) ? null : id;
+    const project = project_type === 'share'
+      ? await this.projectSharesService.findOneByQuery({ project_id, _id: _id, username })
+      : await this.projectsRepository.findOneBy({ project_id, _id: _id, username });
+    console.log('project', project);
+    if (!project) {
+      const projectShare = await this.projectSharesService.findOneByQuery({ project_id, _id: _id, username });
+      if (!projectShare) {
+        throw new NotFoundException('Project not found');
+      }
+      return projectShare;
+    }
+
+    return project;
+
+  }
   async findAllByUsernameDepth(
     username: string,
     depth: number,
@@ -214,33 +234,35 @@ export class ProjectsService {
   async findOne(id: string): Promise<Projects> {
     const IDS = await this.getIds(id);
     if (!IDS.project_id) {
-      const project = await this.projectsRepository.findOneBy({ _id: id });
+      const project = await this.projectsRepository.findOneBy({ _id: IDS._id });
       return await this.wrapProject(project);
     }
-    const project = await this.projectsRepository.findOneBy({ project_id: id });
+    const project = await this.projectsRepository.findOneBy({ project_id: IDS.project_id });
     return await this.wrapProject(project);
   }
 
-  async findMyProject(id:string, username: string): Promise<Projects | ProjectSharesOutDto> {
-    const IDS = await this.getIds(id);
-    if (!IDS.project_id) {
-      const project = await this.projectsRepository.findOneBy({ _id: IDS._id, username: username });
-      if (!project) {
-        const projectShare = await this.projectSharesService.findOneByQuery({ _id: id, username: username });
-        if (!projectShare) {
-          throw new NotFoundException('Project not found');
-        }
-        return projectShare;
-      }
-      return await this.wrapProject(project);
-    }
-    const project = await this.projectsRepository.findOneBy({ project_id: id, username: username });
-    if (!project) {
-      const projectShare = await this.projectSharesService.findOneByQuery({ project_id: id, username: username });
-      if (!projectShare) {
-        throw new NotFoundException('Project not found');
-      }
-    }
+  async findMyProject(id: string, username: string): Promise<Projects | ProjectSharesOutDto> {
+    return await this.findProject(id, 'project', username);
+    // const IDS = await this.getIds(id);
+    // if (!IDS.project_id) {
+    //   const project = await this.projectsRepository.findOneBy({ _id: IDS._id, username: username });
+    //   if (!project) {
+    //     const projectShare = await this.projectSharesService.findOneByQuery({ _id: IDS._id, username: username });
+    //     if (!projectShare) {
+    //       throw new NotFoundException('Project not found');
+    //     }
+    //     return projectShare;
+    //   }
+    //   return await this.wrapProject(project);
+    // }
+    // const project = await this.projectsRepository.findOneBy({ project_id: IDS.project_id, username: username });
+
+    // if (!project) {
+    //   const projectShare = await this.projectSharesService.findOneByQuery({ project_id: IDS.project_id, username: username });
+    //   if (!projectShare) {
+    //     throw new NotFoundException('Project not found');
+    //   }
+    // }
   }
 
 
