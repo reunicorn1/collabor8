@@ -1,31 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import AgoraRTC from "agora-rtc-sdk-ng";
 import { useParams } from 'react-router-dom';
-import { Button, Heading, Text, Flex, IconButton } from '@chakra-ui/react';
+import { Button, Flex, IconButton } from '@chakra-ui/react';
 import { FaMicrophone, FaMicrophoneSlash, FaSignOutAlt } from 'react-icons/fa';
 import { useGetRoomTokenQuery } from '@store/services/projectShare';
 import apiConfig from '@config/apiConfig';
 
 const RoomComponent = ({ autoJoin = false, onClose }) => {
-
   const { projectId } = useParams();
   // console.log('data', data);
-  const { data, refetch, isFetching, isSuccess } = useGetRoomTokenQuery(projectId);
+  const { data, refetch, isFetching, isSuccess } =
+    useGetRoomTokenQuery(projectId);
   const [joined, setJoined] = React.useState(autoJoin);
+  const [rtc, setRtc] = useState(null);
+  const [rtcInitialized, setRtcInitialized] = useState(false);
   const [_, setToggle] = useState(false);
 
   const forceUpdate = () => {
-    setToggle(prev => !prev); // Toggle state to trigger re-render
-  };
-  let rtc = {
-    client: null,
-    audioTrack: null,
-    audioTrackMuted: false,
-    remoteUsers: {},
-    remoteAudioTracks: {},
-    localUid: null,
-    remoteUid: null,
-    remoteTracks: {}
+    setToggle((prev) => !prev); // Toggle state to trigger re-render
   };
 
   const getToken = async () => {
@@ -36,55 +27,55 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
     return data;
   };
 
+  const initializeRtc = async () => {
+    const AgoraRTC = (await import('agora-rtc-sdk-ng')).default; // Dynamically import Agora SDK
+    return {
+      client: AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' }),
+      audioTrack: null,
+      audioTrackMuted: false,
+      remoteUsers: {},
+      remoteAudioTracks: {},
+      localUid: null,
+      remoteUid: null,
+      remoteTracks: {},
+    };
+  };
+
   const joinRoom = async () => {
     const data = await getToken();
     const { token, uid, channel } = data;
+    if (!rtcInitialized) {
+      const rtcInstance = await initializeRtc();
+      setRtc(rtcInstance);
+      setRtcInitialized(true);
+    }
+
     const config = {
       appid: apiConfig.appID,
       channel: channel,
       token: token,
-      uid: uid
+      uid: uid,
     };
-    rtc.client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
 
-    rtc.client.on('user-published', handleUserPublished);
-    rtc.client.on('user-joined', handleUserJoined);
-    rtc.client.on('user-left', handleUserLeft);
-    rtc.client.on('user-unpublished', handleUserUnpublished);
-    // agoraClient.on('volume-indicator', handleVolumeIndicator);
-    rtc.client.enableAudioVolumeIndicator();
+    const agoraClient = rtc.client;
+    agoraClient.on('user-published', handleUserPublished);
+    agoraClient.on('user-joined', handleUserJoined);
+    agoraClient.on('user-left', handleUserLeft);
+    agoraClient.on('user-unpublished', handleUserUnpublished);
+    agoraClient.enableAudioVolumeIndicator();
+
     [config.uid, rtc.audioTrack] = await Promise.all([
-      rtc.client.join(config.appid, config.channel, config.token || null, config.uid || null),
-      AgoraRTC.createMicrophoneAudioTrack()
-    ]).catch(err => {
+      agoraClient.join(
+        config.appid,
+        config.channel,
+        config.token || null,
+        config.uid || null,
+      ),
+      (rtc.audioTrack = AgoraRTC.createMicrophoneAudioTrack()),
+    ]).catch((err) => {
       console.error(err);
     });
-    // agoraClient.on('user-published', async (user, mediaType) => {
-    //   try {
-    //     await handleUserJoined(user, mediaType);
-    //   } catch (error) {
-    //     console.error('Failed to subscribe to remote user:', error);
-    //   }
-    // });
-    rtc.localUid = config.uid;
-    try {
-      if (rtc.audioTrack) {
-        await rtc.audioTrack.setEnabled(true);
-        await rtc.audioTrack.setMuted(rtc.audioTrackMuted);
-        await rtc.client.publish([rtc.audioTrack]);
-      }
-    } catch (error) {
-      console.error('Failed to publish local tracks:', error);
-    }
 
-    // await audioTrack.setEnabled(true);
-    // await audioTrack.setMuted(localAudioMuted);
-
-    // Publish audio track
-    // await client.publish([localTracks.audioTrack]);
-
-    // Show UI for audio controls
-    // document.getElementById('join-wrapper').style.display = 'none';
     setJoined(true);
     document.getElementById('foot').style.display = 'flex';
   };
@@ -94,7 +85,6 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       const newMutedStatus = !rtc.audioTrackMuted;
       await rtc.audioTrack.setMuted(newMutedStatus);
       rtc.audioTrackMuted = newMutedStatus;
-
     }
   };
 
@@ -107,10 +97,10 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       delete rtc.remoteTracks[user.uid];
     }
     rtc.client.publish([rtc.audioTrack]);
-  }
+  };
 
   const handleUserPublished = async (user, mediaType) => {
-    if ((!rtc.client) || mediaType !== 'audio') return;
+    if (!rtc.client || mediaType !== 'audio') return;
     await rtc.client.subscribe(user, mediaType);
     if (user.audioTrack) {
       user.audioTrack.play();
@@ -118,11 +108,9 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       console.warn('No audio track found for the user');
     }
     rtc.remoteTracks[user.uid] = user;
-  }
-
+  };
 
   const handleLeaveButtonClick = async () => {
-
     setJoined(false);
     document.getElementById('foot').style.display = 'none';
     if (rtc.audioTrack) {
@@ -130,8 +118,6 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       rtc.audioTrack.close();
       rtc.audioTrack = null;
     }
-
-
 
     if (rtc.client) {
       console.log('Leaving the room');
@@ -156,20 +142,19 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
 
     onClose();
     forceUpdate();
-
   };
 
   const handleUserJoined = async (user, mediaType) => {
     // Handle audio only
-    if ((!rtc.client) || mediaType !== 'audio') return;
+    if (!rtc.client || mediaType !== 'audio') return;
     if (rtc.client) {
-      await rtc.client.subscribe(user, mediaType)
+      await rtc.client.subscribe(user, mediaType);
     }
     if (user.audioTrack) {
       user.audioTrack.play();
     } else {
       console.warn('No audio track found for the user');
-    };
+    }
 
     // Update remote tracks
     rtc.remoteTracks[user.uid] = user;
@@ -191,23 +176,23 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
     }
   };
 
-
-
   useEffect(() => {
     if (autoJoin) {
       joinRoom();
     }
     return () => {
       // Cleanup function to leave the room and stop tracks
-      if (rtc.client) {
-        rtc.client.leave().catch(error => console.error('Error leaving room:', error));
+      if (rtc && rtc.client) {
+        rtc.client
+          .leave()
+          .catch((error) => console.error('Error leaving room:', error));
       }
-      if (rtc.audioTrack) {
+      if (rtc && rtc.audioTrack) {
         rtc.audioTrack.stop();
         rtc.audioTrack.close();
       }
     };
-  }, [autoJoin]);
+  }, [autoJoin, rtc, rtcInitialized]);
 
   return (
     <Flex direction="column" align="center">
@@ -238,7 +223,7 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
         gap={4}
       >
         <IconButton
-          icon={rtc.audioTrackMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
+          icon={rtc?.audioTrackMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
           aria-label="Toggle Mic"
           onClick={handleMicClick}
         />
@@ -248,7 +233,7 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
           onClick={handleLeaveButtonClick}
         />
       </Flex>
-    </Flex>);
+    </Flex>
+  );
 };
 export default RoomComponent;
-
