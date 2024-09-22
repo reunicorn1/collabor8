@@ -153,6 +153,8 @@ export default function DashboardBar() {
         status: 'warning',
         duration: 5000,
         isClosable: true,
+        position: 'bottom-left',
+        variant: 'subtle',
       });
     } else {
       onOpen();

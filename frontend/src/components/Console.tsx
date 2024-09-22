@@ -36,6 +36,8 @@ const Console: React.FC = () => {
         status: 'warning',
         duration: 5000,
         isClosable: true,
+        position: 'bottom-left',
+        variant: 'subtle',
       });
       return;
     }

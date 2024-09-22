@@ -69,6 +69,8 @@ export default function MenuBar({
         status: 'warning',
         duration: 3000,
         isClosable: true,
+        position: 'bottom-left',
+        variant: 'subtle',
       });
     } else {
       onOpenV();
