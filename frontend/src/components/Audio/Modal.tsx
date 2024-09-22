@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import {
   Button,
   Modal,
@@ -40,8 +40,7 @@ export function Mapped() {
           <ModalCloseButton />
           <ModalBody style={{ height: '800px', padding: 0 }}>
             <div style={{ height: '100%', width: '100%' }}>
-            <RoomComponent style={{ height: '100%', width: '100%' }}
-/>
+              <RoomComponent style={{ height: '100%', width: '100%' }} />
             </div>
           </ModalBody>
           <ModalFooter>
