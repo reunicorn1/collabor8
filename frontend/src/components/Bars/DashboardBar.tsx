@@ -33,17 +33,27 @@ export default function DashboardBar() {
   const userDetails = useSelector(selectUserDetails);
   const userId = userDetails?.user_id || '';
   const dispatch = useAppDispatch();
-  const { data: userProjectShares, refetch } = useGetUserProjectSharesQuery(
-    userId,
-    {
-      pollingInterval: 7000,
-    },
-  );
-  const prevInvitationCount = useAppSelector(selectInvitationCount);
-  const [updateShareStatus] = useUpdateStatusMutation();
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  // Check if the user is a guest
+  const isGuest =
+    userDetails?.username === 'guest' &&
+    userDetails?.first_name === 'Guest' &&
+    userDetails?.last_name === 'User';
+
+  // Fetch user project shares only if the user is not a guest
+  const { data: userProjectShares, refetch } = useGetUserProjectSharesQuery(
+    isGuest ? null : userId,
+    {
+      pollingInterval: 7000,
+      skip: isGuest,
+    },
+  );
+
+  const prevInvitationCount = useAppSelector(selectInvitationCount);
+  const [updateShareStatus] = useUpdateStatusMutation();
 
   useEffect(() => {
     if (userProjectShares) {
@@ -135,6 +145,22 @@ export default function DashboardBar() {
     }
   };
 
+  const handleNewProjectOpen = () => {
+    if (isGuest) {
+      toast({
+        title: '🛑 Guest Pass Detected!',
+        description: 'Oops! Guests are not allowed to spin up new projects. 🔧',
+        status: 'warning',
+        duration: 5000,
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'subtle',
+      });
+    } else {
+      onOpen();
+    }
+  };
+
   return (
     <Flex
       bg="brand.900"
@@ -152,7 +178,12 @@ export default function DashboardBar() {
         onClick={() => navigate('/dashboard')}
       />
       <Spacer />
-      <ButtonGroup size="xs" isAttached variant="outline" onClick={onOpen}>
+      <ButtonGroup
+        size="xs"
+        isAttached
+        variant="outline"
+        onClick={handleNewProjectOpen}
+      >
         <Button
           fontFamily="mono"
           color="white"

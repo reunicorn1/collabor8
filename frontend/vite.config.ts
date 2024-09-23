@@ -1,16 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import dotenv from 'dotenv';
 import tailwindcss from 'tailwindcss';
 import terser from '@rollup/plugin-terser';
 
-dotenv.config();
-
 const __dirname = path.resolve();
-const NODE_ENV = process.env.NODE_ENV || 'development';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   css: {
     postcss: {
       plugins: [tailwindcss()],
@@ -20,9 +16,6 @@ export default defineConfig({
   server: {
     host: 'localhost',
     port: 3001,
-  },
-  define: {
-    'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
   },
   resolve: {
     alias: {
@@ -36,15 +29,26 @@ export default defineConfig({
     },
   },
   build: {
-    sourcemap: true,
+    assetsInlineLimit: 4096,
+    sourcemap: mode !== 'production',
     rollupOptions: {
-      plugins: [
-        terser({
-          compress: {
-            drop_console: NODE_ENV === 'production',
-          },
-        }),
-      ],
+      plugins:
+        mode === 'production'
+          ? [
+              terser({
+                compress: {
+                  drop_console: true,
+                  drop_debugger: true,
+                },
+                output: {
+                  comments: false,
+                },
+                mangle: {
+                  toplevel: true,
+                },
+              }),
+            ]
+          : [],
     },
   },
-});
+}));
