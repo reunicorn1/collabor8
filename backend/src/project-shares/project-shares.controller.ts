@@ -86,7 +86,7 @@ export class ProjectSharesController {
       await this.projectSharesService.inviteeHasAccount(invitee_email);
     if (user) {
       has_account = user.username;
-      this.projectSharesService.create({
+      await this.projectSharesService.create({
         project_id,
         username: user.username,
         access_level,

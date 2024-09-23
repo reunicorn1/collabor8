@@ -9,14 +9,16 @@ import {
   Query,
   BadRequestException,
   Patch,
+  Response,
 } from '@nestjs/common';
 import { GuestService } from '@guest/guest.service';
+import { Public } from '@auth/decorators/isPublic.decorator';
 
 @Controller('guest')
 export class GuestController {
   constructor(
     private readonly guestService: GuestService,
-  ) {}
+  ) { }
   /**
    * triggered when user clicks on generate invite link button
    * for guest, we only allow to generate invite link (no username or email)
@@ -51,14 +53,23 @@ export class GuestController {
    * creates a guest user if it doesnt exist
    * returns the guest user and the accessToken
    */
+  @Public()
   @Get('tryout')
   async tryout(
     @Request() req: any,
+    @Response() res: any,
   ): Promise<any> {
     // if guest user doesnt exist, create a guest user
     // if guest user exists, return the guest user and the accessToken
     // create a project with the name project-${new Date().getTime()}
-    // return this.guestService.tryout(req.user);
-  }
+    const { user, accessToken, userData } = await this.guestService.tryout();
+    req.user = userData; // set user on the request to satisfy the local strategy
+    const project = await this.guestService.createOrGetProject(user.user_id);
+    user['project'] = project;
 
+    res
+      .cookie('accessToken', accessToken, { httpOnly: true, secure: true })
+      .status(200)
+      .send({ accessToken, user });
+  }
 }
