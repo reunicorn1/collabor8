@@ -29,6 +29,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    assetsInlineLimit: 4096,
     sourcemap: mode !== 'production',
     rollupOptions: {
       plugins:
