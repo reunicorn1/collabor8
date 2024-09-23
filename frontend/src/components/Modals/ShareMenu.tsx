@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useToast } from '@chakra-ui/react';
 import {
   Modal,
@@ -21,7 +21,7 @@ import {
   Select,
   Divider,
 } from '@chakra-ui/react';
-import { FaLink } from 'react-icons/fa6';
+//import { FaLink } from 'react-icons/fa6';
 import {
   useCreateProjectShareMutation,
   useGetProjectSharesByProjectIdQuery,
@@ -46,7 +46,7 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
    * 2- Display people who have access: if they are pending we display pending, if not we display their access mode
    * 3- Be able to toggle the menu button is enough to make a request to update the project share entity access level
    */
-  const [createProjectShare] = useCreateProjectShareMutation();
+  const [createProjectShare, { isLoading: projectShareLoading }] = useCreateProjectShareMutation();
   const [inviteUser, { isLoading }] = useInviteUserMutation();
   const [updateShares] = useUpdateProjectShareMutation();
   const { data: shares, refetch } = useGetProjectSharesByProjectIdQuery(
@@ -56,13 +56,13 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
   const { projectId } = useParams();
 
   const finalRef = useRef(null);
-  const [isClicked, setClicked] = useState(false);
-  const [inviteeType, setInviteeType] = useState('');
+  const [inviteeType, setInviteeType] = useState<'' | 'email' | 'username'>('');
   const [inviteeValue, setInviteeValue] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [accessPermission, setAccessPermission] = useState('read');
+  const [accessPermission, setAccessPermission] = useState<'read' | 'write'>('read');
   const toast = useToast();
 
+  //console.log({ project })
   // Handlers
   const handleClose = () => {
     resetForm();
@@ -71,9 +71,8 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
 
   const resetForm = () => {
     setErrorMessage('');
-    setClicked(false);
     setInviteeType('');
-    setAccessPermission('');
+    setAccessPermission('read');
   };
 
   const handleInvite = async () => {
@@ -101,9 +100,10 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
 
     try {
       await inviteUser({
+        _id: project._id,
         invitee_email: inviteeValue,
         access_level: accessPermission,
-        project_id: projectId,
+        project_id: project.project_id,
         inviter_email: userDetails.email ?? userDetails.username,
       }).unwrap();
 
@@ -124,7 +124,7 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
     try {
       await createProjectShare({
         project_id: project.project_id,
-        access_level: accessPermission === 'can read' ? 'read' : 'write',
+        access_level: accessPermission,
         username: inviteeValue,
         project_name: project.project_name,
       }).unwrap();
@@ -145,10 +145,6 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
     } else if (error.status === 404) {
       setErrorMessage("This user doesn't exist");
     }
-  };
-
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setAccessPermission(event.target.value);
   };
 
   const handlePermissionChange = async (
@@ -231,6 +227,7 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
               handlePermission={setAccessPermission}
               handleInputChange={(e) => setInviteeValue(e.target.value)}
               handleInvitation={handleInvite}
+              isLoading={isLoading || projectShareLoading}
             />
           )}
           {errorMessage && (
@@ -270,7 +267,7 @@ const ShareTypeSelector: React.FC<{
     className="flex items-center !mb-2"
     outline="white"
   >
-    <option value="text">username</option>
+    <option value="username">username</option>
     <option value="email">email</option>
   </Select>
 );
@@ -283,11 +280,12 @@ const InviteBy = ({
   handlePermission,
   handleInputChange,
   handleInvitation,
+  isLoading,
 }) => (
   <InputGroup size="sm">
     <Input
       pr="4.5rem"
-      placeholder={`Invite others by ${type === 'text' ? 'username' : 'email'}`}
+      placeholder={`Invite others by ${type !== 'email' ? 'username' : 'email'}`}
       fontFamily="mono"
       value={value}
       color="white"
@@ -308,6 +306,7 @@ const InviteBy = ({
         </Select>
       )}
       <Button
+        isLoading={isLoading}
         h="1.5rem"
         size="sm"
         onClick={handleInvitation}
