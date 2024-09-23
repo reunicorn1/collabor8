@@ -92,6 +92,7 @@ export class AuthService {
     try {
       user = await this.usersService.findOneBy({ username: 'guest' });
     } catch (err) {
+      // If guest doesn't exist create one and only one guest
       const createGuestDto: CreateUserDto = {
         username: 'guest',
         email: 'guest.co11abor8@gmail.com',
@@ -229,13 +230,17 @@ export class AuthService {
       createUserDto['is_verified'] = true;
       console.log('=====================>', createUserDto);
     }
+    else {
+      role.push(Role.User);
+    }
 
     if (!createUserDto['favorite_languages']) {
       createUserDto['favorite_languages'] = [];
     }
     if (createUserDto.is_invited) {
+      createUserDto['is_verified'] = true;
       // user recieved invitation
-      const user = await this.create({ ...createUserDto, is_verified: true })
+      const user = await this.create(createUserDto)
       user.roles = role;
       return await this.usersService.save(user);
     }

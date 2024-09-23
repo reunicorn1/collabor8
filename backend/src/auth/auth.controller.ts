@@ -111,6 +111,7 @@ export class AuthController {
         res.send(user);
       }
     } catch (error) {
+      console.log('------------SIGNUP---------------->', error);
       throw error;
     }
   }

@@ -65,9 +65,7 @@ export class ProjectsService {
         parsedDto as any,
       );
       parsedDto['_id'] = newProjectMongo._id.toString();
-      const newProject = this.projectsRepository.create({
-        ...parsedDto,
-      });
+      const newProject = this.projectsRepository.create(parsedDto);
       await this.projectsRepository.save(newProject);
       newProjectMongo.project_id = newProject.project_id;
       await this.projectMongoService.save(newProjectMongo);
@@ -142,7 +140,7 @@ export class ProjectsService {
 
   async findProject(id: string, project_type: string, username: string): Promise<Projects | ProjectSharesOutDto> {
     const project_id = uuidValidate(id) ? id : null;
-    const _id = uuidValidate(id) ? null : id;
+    const _id = project_id ? null : id;
     const project = project_type === 'share'
       ? await this.projectSharesService.findOneByQuery({ project_id, _id: _id, username })
       : await this.projectsRepository.findOneBy({ project_id, _id: _id, username });
@@ -243,26 +241,6 @@ export class ProjectsService {
 
   async findMyProject(id: string, username: string): Promise<Projects | ProjectSharesOutDto> {
     return await this.findProject(id, 'project', username);
-    // const IDS = await this.getIds(id);
-    // if (!IDS.project_id) {
-    //   const project = await this.projectsRepository.findOneBy({ _id: IDS._id, username: username });
-    //   if (!project) {
-    //     const projectShare = await this.projectSharesService.findOneByQuery({ _id: IDS._id, username: username });
-    //     if (!projectShare) {
-    //       throw new NotFoundException('Project not found');
-    //     }
-    //     return projectShare;
-    //   }
-    //   return await this.wrapProject(project);
-    // }
-    // const project = await this.projectsRepository.findOneBy({ project_id: IDS.project_id, username: username });
-
-    // if (!project) {
-    //   const projectShare = await this.projectSharesService.findOneByQuery({ project_id: IDS.project_id, username: username });
-    //   if (!projectShare) {
-    //     throw new NotFoundException('Project not found');
-    //   }
-    // }
   }
 
 
