@@ -49,6 +49,19 @@ export default defineConfig(({ mode }) => ({
               }),
             ]
           : [],
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('agora-rtc-sdk')) {
+              return 'agoraRTC';
+            }
+            if (id.includes('react')) {
+              return 'vendor-react';
+            }
+            return 'vendor';
+          }
+        },
+      },
     },
   },
 }));
