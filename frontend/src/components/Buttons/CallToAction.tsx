@@ -27,6 +27,7 @@ export default function CallToAction() {
 
     loginGuest().then(async (res) => {
       const { redirect } = await getProject({ IP: data?.ip }).unwrap();
+      localStorage.setItem('project_id', redirect);
       //console.log('Project created for guest:', project);
       navigate(`/editor/${redirect}`);
     });

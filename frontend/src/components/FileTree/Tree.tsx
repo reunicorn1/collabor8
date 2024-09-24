@@ -49,15 +49,23 @@ const Tree: React.FC<TreeProps> = ({ className = '', name }) => {
       <Flex
         h="40px"
         display="flex"
-        background="brand.900"
         color="white"
         alignItems="center"
         justifyItems="center"
         borderBottom="2px solid #524175"
+        py='20px'
       >
-        <Text me='auto' fontSize="xs" ml={4} fontFamily="mono">
-          {name}
-        </Text>
+        <Tooltip text={name} className='me-auto'>
+          <Text
+            me='auto'
+            fontSize="xs"
+            ml={4}
+            fontFamily="mono"
+            className="md:max-w-24 md:overflow-hidden md:whitespace-nowrap md:text-ellipsis lg:max-w-none"
+          >
+            {name}
+          </Text>
+        </Tooltip>
         <IconButton
           m={1}
           mr={0}
@@ -103,4 +111,14 @@ const Tree: React.FC<TreeProps> = ({ className = '', name }) => {
   );
 };
 
+const Tooltip: React.FC<{ text: string, children: ReactNode }> = ({ className = '', text, children }) => {
+  return (
+    <Box className={`relative group ${className}`}>
+      <Box className="hidden group-hover:block group-focus:block absolute z-10 bg-black text-white p-1 rounded-md">
+        {text}
+      </Box>
+      {children}
+    </Box>
+  );
+};
 export default Tree;

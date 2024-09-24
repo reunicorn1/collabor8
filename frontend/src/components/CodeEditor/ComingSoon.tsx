@@ -62,7 +62,7 @@ function ComingSoon({ isOpen, onClose, project }: ModalProps) {
         <Heading color='brand.100' className='px-4 !text-2xl !font-mono capitalize'>
           file tree
         </Heading>
-        <Tree name={project?.project_name} />
+        <Tree className='max-h-[500px] overflow-auto' name={project?.project_name} />
       </Stack>
       <Stack>
         <Heading

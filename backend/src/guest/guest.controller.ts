@@ -46,11 +46,12 @@ export class GuestController {
     @Request() req: any,
     @Response() res: any,
   ): Promise<any> {
-    //const { _id } = await this.guestService.createOrGetProject(IP);
     const { user, userData, accessToken } = await this.guestService.login();
     req.user = userData; // set user on the request to satisfy the local strategy
 
-    res.cookie('accessToken', accessToken).status(200).send({ user, accessToken });
+    res
+      .cookie('accessToken', accessToken)
+      .status(200).send({ user, accessToken });
   }
 
   @Public()

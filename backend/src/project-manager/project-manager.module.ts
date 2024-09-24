@@ -14,6 +14,7 @@ import { ProjectSharesModule } from '@project-shares/project-shares.module';
       name: 'project-manager',
     }),
   ],
+  exports: [ProjectManagerService],
   providers: [ProjectManagerService]
 })
 export class ProjectManagerModule {}

@@ -9,6 +9,7 @@ import { CreateUserDto } from '@users/dto/create-user.dto';
 import { Users } from '@users/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
+import { ProjectManagerService } from '@project-manager/project-manager.service';
 
 @Injectable()
 export class GuestService {
@@ -18,7 +19,8 @@ export class GuestService {
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
-  ) { }
+    private readonly projectManagerService: ProjectManagerService,
+  ) {}
 
   /**
    * create a guest user if it doesn't exist
@@ -111,6 +113,7 @@ export class GuestService {
       username: GUEST_USER,
       description: 'Guest project',
     });
+    this.projectManagerService.scheduleProjectDeletion(project.project_id, 1/60);
 
     console.log('0x01=========not cached yet============>');
     // persist project on redis for 24h

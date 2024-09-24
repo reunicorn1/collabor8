@@ -49,7 +49,9 @@ export default function Editor() {
         isClosable: true,
         position: 'top-right',
       });
-      setTimeout(() => navigate('/dashboard'), 5000);
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 5000);
     }
   }, [error, navigate, toast]);
 
@@ -66,7 +68,7 @@ export default function Editor() {
       <Box
         bg="brand.900"
         borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
-        className="relative md:grid md:grid-cols-[auto_20%_1fr] md:grid-rows-[auto_1fr] overflow-hidden"
+        className="relative md:grid md:grid-cols-[auto_30%_1fr] lg:grid-cols-[auto_25%_1fr] md:grid-rows-[auto_auto_1fr] overflow-hidden"
       >
         {!isLessThan768 && (
           <>
@@ -78,12 +80,13 @@ export default function Editor() {
               project={data}
             />
             <Tree
-              className='flex flex-col row-span-full border-r border-purple-900'
+              className='flex flex-col row-span-full border-r border-t border-purple-900 md:row-start-2'
               name={data.project_name}
             />
           </>
         )}
         <MenuBar
+          className='md:col-start-2 md:-col-end-1 md:row-start-1 md:row-end-2'
           project={data}
         />
         <CodeEditor className='overflow-auto' project={data} />

@@ -6,6 +6,7 @@ import { RedisModule } from '@redis/redis.module';
 import { AuthModule } from '@auth/auth.module';
 import { UsersModule } from '@users/users.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ProjectManagerModule } from '@project-manager/project-manager.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { JwtModule } from '@nestjs/jwt';
     AuthModule,
     UsersModule,
     JwtModule,
+    ProjectManagerModule,
   ],
   exports: [GuestService],
   providers: [GuestService],

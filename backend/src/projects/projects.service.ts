@@ -152,12 +152,12 @@ export class ProjectsService {
       : await this.projectsRepository.findOneBy(query);
 
     if (!project) {
-      throw new NotFoundException(`${isShare ? 'Project shared': 'Project'} not found`);
-      //const projectShare = await this.projectSharesService.findOneByQuery(query);
-      //if (!projectShare) {
-      //  throw new NotFoundException('Project not found');
-      //}
-      //return projectShare;
+      //throw new NotFoundException(`${isShare ? 'Project shared': 'Project'} not found`);
+      const projectShare = await this.projectSharesService.findOneByQuery(query);
+      if (!projectShare) {
+        throw new NotFoundException('Project not found');
+      }
+      return projectShare;
     }
 
     return project;
