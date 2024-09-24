@@ -21,14 +21,15 @@ export default function CallToAction() {
 
   const handleTryItOut = async () => {
     console.log('Trying it out');
+    const { redirect } = await tryout({ IP: data?.ip }).unwrap();
+    navigate(`/editor/${redirect}`);
 
-    loginGuest().then(async (res) => {
-      const { redirect } = await tryout({ IP: data?.ip }).unwrap();
-      //console.log('Project created for guest:', project);
-      navigate(`/editor/${redirect}`);
-    }
-    );
-  }
+    //loginGuest().then(async (res) => {
+    //  const { redirect } = await tryout({ IP: data?.ip }).unwrap();
+    //  //console.log('Project created for guest:', project);
+    //  navigate(`/editor/${redirect}`);
+    //});
+  };
 
 
   return (

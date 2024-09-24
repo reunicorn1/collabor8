@@ -43,8 +43,8 @@ import { GuestService } from '@guest/guest.service';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    @Inject(forwardRef(() => GuestService))
-    private readonly guestService: GuestService,
+    //@Inject(forwardRef(() => GuestService))
+    //private readonly guestService: GuestService,
   ) { }
 
   @docs.ApiSignIn()
@@ -73,7 +73,7 @@ export class AuthController {
    * triggered when guest clicks on try it out button
    * creates a guest user if it doesnt exist
    * returns the guest user and the accessToken
-   */
+   
   @Public()
   @Post('tryout')
   async tryout(
@@ -88,7 +88,7 @@ export class AuthController {
       //.cookie('accessToken', accessToken)
       .status(200)
       .send({ redirect: _id });
-  }
+  }*/
 
   @Public()
   @Post('guest')
@@ -102,7 +102,6 @@ export class AuthController {
   }
 
   @docs.ApiSignUp()
-  //@UseGuards(LocalAuthGuard)
   @Public()
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')

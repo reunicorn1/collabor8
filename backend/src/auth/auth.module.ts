@@ -22,7 +22,7 @@ import { GuestModule } from '@guest/guest.module';
     EnvironmentMongoModule,
     MailModule,
     RedisModule,
-    GuestModule,
+    //GuestModule,
     PassportModule.register({ session: true }),
     JwtModule.register({
       secret: jwtConstants.secret,

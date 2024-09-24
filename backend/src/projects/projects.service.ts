@@ -39,7 +39,7 @@ export class ProjectsService {
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => ProjectSharesService))
     private readonly projectSharesService: ProjectSharesService,
-  ) {}
+  ) { }
 
   // Create a new project
   // TODO: TODAY modify env to be obtained from user object
@@ -139,18 +139,25 @@ export class ProjectsService {
 
 
   async findProject(id: string, project_type: string, username: string): Promise<Projects | ProjectSharesOutDto> {
-    const project_id = uuidValidate(id) ? id : null;
-    const _id = project_id ? null : id;
-    const project = project_type === 'share'
-      ? await this.projectSharesService.findOneByQuery({ project_id, _id: _id, username })
-      : await this.projectsRepository.findOneBy({ project_id, _id: _id, username });
-    console.log('project', project);
+    if (!id) throw new BadRequestException('Project ID is required');
+
+    const isShare = project_type === 'share';
+    const query = { username };
+
+    if (uuidValidate(id)) { query['project_id'] = id; }
+    else { query['_id'] = id; }
+
+    const project = isShare
+      ? await this.projectSharesService.findOneByQuery(query)
+      : await this.projectsRepository.findOneBy(query);
+
     if (!project) {
-      const projectShare = await this.projectSharesService.findOneByQuery({ project_id, _id: _id, username });
-      if (!projectShare) {
-        throw new NotFoundException('Project not found');
-      }
-      return projectShare;
+      throw new NotFoundException(`${isShare ? 'Project shared': 'Project'} not found`);
+      //const projectShare = await this.projectSharesService.findOneByQuery(query);
+      //if (!projectShare) {
+      //  throw new NotFoundException('Project not found');
+      //}
+      //return projectShare;
     }
 
     return project;
@@ -329,7 +336,7 @@ export class ProjectsService {
       const projectShares = await this.projectSharesService.findByProject(IDS.project_id);
       if (projectShares.length > 0) {
         await this.projectSharesService
-        .removeMany(IDS.project_id);
+          .removeMany(IDS.project_id);
       }
 
       Logger.log("deleting ProjectMongo");

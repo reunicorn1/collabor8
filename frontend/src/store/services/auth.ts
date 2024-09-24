@@ -43,10 +43,10 @@ export const authApi = api.injectEndpoints({
       },
     }),
     tryout: builder.mutation<{ redirect: string }, { IP: string }>({
-      query: ({ IP }) => ({
-        url: 'auth/tryout',
+      query: (body) => ({
+        url: 'guest/tryout',
         method: 'POST',
-        params: { IP },
+        body,
         credentials: 'include',
       }),
     }),
@@ -84,7 +84,7 @@ export const authApi = api.injectEndpoints({
       query: () => ({
         url: '/auth/signout',
         method: 'DELETE',
-      })
+      }),
     }),
 
     // Validate reset token and update password

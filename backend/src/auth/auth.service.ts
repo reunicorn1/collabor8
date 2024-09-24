@@ -40,7 +40,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private jwtService: JwtService,
     private redisService: RedisService,
-    private guestService: GuestService,
+    //private guestService: GuestService,
     @InjectQueue('mailer') private mailerQueue: Queue,
   ) { }
 
@@ -340,13 +340,6 @@ export class AuthService {
     await this.redisService.del(token);
     return { message: 'Password reset successfully' };
   }
-  // async attachEnvironment(user: Users): Promise<Users> {
-  //   const userEnvironment = this.environmentService.create({
-  //     username: user.username,
-  //   });
-  //   user.environment_id = userEnvironment._id.toString();
-  //   return user;
-  // }
 
   // utils
   encryptPwd(password: string): string {
@@ -381,7 +374,7 @@ export class AuthService {
    * create a guest user if it doesn't exist
    * @returns accessToken valid for 24h(no refresh) and guest user details
    *
-   */
+   
   async tryout(IP: string): Promise<{
     accessToken: string;
     user: Partial<Users>;
@@ -443,5 +436,5 @@ export class AuthService {
       userData,
       redirect: project._id,
     };
-  }
+  }*/
 }
