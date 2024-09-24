@@ -28,7 +28,7 @@ export const authApi = api.injectEndpoints({
     }),
     loginGuest: builder.mutation<{ accessToken: string; user: Partial<User> }, void>({
       query: () => ({
-        url: '/auth/guest',
+        url: 'guest/login',
         method: 'POST',
         credentials: 'include',
       }),
@@ -42,11 +42,11 @@ export const authApi = api.injectEndpoints({
         }
       },
     }),
-    tryout: builder.mutation<{ redirect: string }, { IP: string }>({
-      query: (body) => ({
-        url: 'guest/tryout',
-        method: 'POST',
-        body,
+    getGuestProject: builder.query<{ redirect: string }, { IP: string }>({
+      query: ({ IP }) => ({
+        url: 'guest/project',
+        method: 'GET',
+        params: { IP },
         credentials: 'include',
       }),
     }),
@@ -136,5 +136,5 @@ export const {
   useValidateResetTokenMutation,
   useSignoutQuery,
   useGetGuestIPQuery,
-  useTryoutMutation,
+  useLazyGetGuestProjectQuery,
 } = authApi;

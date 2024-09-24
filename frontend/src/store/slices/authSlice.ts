@@ -98,13 +98,6 @@ const authSlice = createSlice({
           state.accessToken = action.payload.accessToken;
           setAccessToken(action.payload.accessToken);
         },
-      )
-      .addMatcher(
-        authApi.endpoints.tryout.matchFulfilled,
-        (state, action) => {
-          state.accessToken = action.payload.accessToken;
-          setAccessToken(action.payload.accessToken);
-        },
       );
   },
 });

@@ -40,21 +40,27 @@ export class GuestController {
   ): Promise<any> {
   }
 
-  /**
-   * triggered when guest clicks on try it out button
-   * creates a guest user if it doesnt exist
-   * returns the guest user and the accessToken
-   */
   @Public()
-  @Post('tryout')
+  @Post('login')
   async tryout(
     @Request() req: any,
     @Response() res: any,
   ): Promise<any> {
     //const { _id } = await this.guestService.createOrGetProject(IP);
-    const { user, userData, accessToken, redirect } = await this.guestService.tryout(req.body.IP);
+    const { user, userData, accessToken } = await this.guestService.login();
     req.user = userData; // set user on the request to satisfy the local strategy
 
-    res.cookie('accessToken', accessToken).status(200).send({ user, accessToken, redirect });
+    res.cookie('accessToken', accessToken).status(200).send({ user, accessToken });
+  }
+
+  @Public()
+  @Get('project')
+  async getGuestProject(
+    @Query('IP') IP: string,
+    @Response() res: any,
+  ): Promise<any> {
+    const project = await this.guestService.createOrGetProject(IP);
+
+    res.status(200).send({ redirect: project._id });
   }
 }

@@ -49,16 +49,13 @@ export class GuestService {
 
   /**
    * create a guest user if it doesn't exist
-   * @param {string} IP - IP address of the guest user
    * @returns accessToken valid for 24h(no refresh) and guest user details
    */
-  async tryout(IP: string): Promise<{
+  async login(): Promise<{
     accessToken: string;
     user: Partial<Users>;
     userData: Partial<Users>;
-    redirect: string;
   }> {
-    console.log('0x00===========================>', { IP });
     const user = await this.createOrGetGuest();
     const payload = {
       username: user.username,
@@ -85,13 +82,11 @@ export class GuestService {
       roles: user.roles,
       jti: payload.jti,
     };
-    const project = await this.createOrGetProject(IP);
 
     return {
       accessToken,
       user: userinfo,
       userData,
-      redirect: project._id,
     };
   }
 
