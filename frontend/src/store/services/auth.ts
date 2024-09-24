@@ -42,6 +42,14 @@ export const authApi = api.injectEndpoints({
         }
       },
     }),
+    tryout: builder.mutation<{ redirect: string }, { IP: string }>({
+      query: ({ IP }) => ({
+        url: 'auth/tryout',
+        method: 'POST',
+        params: { IP },
+        credentials: 'include',
+      }),
+    }),
     refreshToken: builder.mutation<{ user: Partial<User>, accessToken: string }, void>({
       query: () => ({
         url: '/auth/refresh',
@@ -105,6 +113,13 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ['User'],
     }),
+    getGuestIP: builder.query<{ ip: string }, void>({
+      query: () => ({
+        url: 'https://api.ipify.org/',
+        method: 'GET',
+        params: { format: 'json' },
+      }),
+    }),
   }),
 });
 // TODO: this is missing a logout endpoint
@@ -120,4 +135,6 @@ export const {
   useVerifyEmailMutation,
   useValidateResetTokenMutation,
   useSignoutQuery,
+  useGetGuestIPQuery,
+  useTryoutMutation,
 } = authApi;

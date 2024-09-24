@@ -38,38 +38,5 @@ export class GuestController {
     @Body() body: any,
     @Request() req: any,
   ): Promise<any> {
-    // body will carry the credentials of the user to be invited
-    // if username or email is present, then invite the user
-    // if username or email is not present, then invite the guest
-    // creates a projectShare for the user if invitee is different from inviter
-    // no need for projectShare if invitee is the inviter i.e. guest to guest
-    // if the user is already a member of the project, then update ttl of the projectShare
-    // if invitee is a guest, return accessToken
-    // return this.guestService.invite(body, req.user);
-  }
-
-  /**
-   * triggered when guest clicks on try it out button
-   * creates a guest user if it doesnt exist
-   * returns the guest user and the accessToken
-   */
-  @Public()
-  @Get('tryout')
-  async tryout(
-    @Request() req: any,
-    @Response() res: any,
-  ): Promise<any> {
-    // if guest user doesnt exist, create a guest user
-    // if guest user exists, return the guest user and the accessToken
-    // create a project with the name project-${new Date().getTime()}
-    const { user, accessToken, userData } = await this.guestService.tryout();
-    req.user = userData; // set user on the request to satisfy the local strategy
-    const project = await this.guestService.createOrGetProject(user.user_id);
-    user['project'] = project;
-
-    res
-      .cookie('accessToken', accessToken, { httpOnly: true, secure: true })
-      .status(200)
-      .send({ accessToken, user });
   }
 }

@@ -105,7 +105,7 @@ const authSlice = createSlice({
 export const { setCredentials, unsetCredentials } = authSlice.actions;
 
 export const performLogout = () => async (dispatch: AppDispatch) => {
- try {
+  try {
     // Trigger the signout query to perform the server-side logout
     await dispatch(authApi.endpoints.signout.initiate()).unwrap();
 

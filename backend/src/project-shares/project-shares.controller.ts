@@ -135,7 +135,7 @@ export class ProjectSharesController {
   })
   @Get('/user/')
   async findByUser(@Request() req): Promise<ProjectSharesOutDto[]> {
-    console.log(req.user);
+    //console.log(req.user);
     return await this.projectSharesService.findByUser({
       username: req.user.username,
     });

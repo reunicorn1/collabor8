@@ -39,7 +39,7 @@ export class ProjectsService {
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => ProjectSharesService))
     private readonly projectSharesService: ProjectSharesService,
-  ) { }
+  ) {}
 
   // Create a new project
   // TODO: TODAY modify env to be obtained from user object

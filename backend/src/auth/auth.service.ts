@@ -23,6 +23,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Role } from './enums/role.enum';
+import { GUEST_USER } from '@constants';
+import { GuestService } from '@guest/guest.service';
 
 export interface Payload {
   username: string,
@@ -38,6 +40,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private jwtService: JwtService,
     private redisService: RedisService,
+    private guestService: GuestService,
     @InjectQueue('mailer') private mailerQueue: Queue,
   ) { }
 
@@ -55,7 +58,7 @@ export class AuthService {
     };
     const {
       user_id,
-      roles,
+      //roles,
       email,
       environment_id,
       created_at,
@@ -373,5 +376,72 @@ export class AuthService {
 
   async isRefreshTokenRevoked(refreshToken: string): Promise<boolean> {
     return !!(await this.redisService.get(`revoked:${refreshToken}`));
+  }
+  /**
+   * create a guest user if it doesn't exist
+   * @returns accessToken valid for 24h(no refresh) and guest user details
+   *
+   */
+  async tryout(IP: string): Promise<{
+    accessToken: string;
+    user: Partial<Users>;
+    userData: Partial<Users>;
+    redirect: string;
+  }> {
+    let user: Partial<Users> = null;
+
+    try {
+      user = await this.usersService.findOneBy({ username: 'guest' });
+    } catch (err) {
+      // If guest doesn't exist create one and only one guest
+      const createGuestDto: CreateUserDto = {
+        username: 'guest',
+        email: 'guest.co11abor8@gmail.com',
+        first_name: 'Guest',
+        last_name: 'User',
+        password: 'guest',
+        favorite_languages: [],
+      };
+      user = await this.signUp(createGuestDto);
+      //console.log('=====================>', user);
+      if (!user) {
+        throw new InternalServerErrorException('Guest user not created');
+      }
+    }
+    //console.log('=====================>', user);
+    const payload = {
+      username: user.username,
+      sub: user.user_id,
+      roles: user.roles,
+      timestamp: new Date().getTime(),
+      jti: uuidv4(),
+    };
+    const accessToken = await this.jwtService.signAsync(payload, { expiresIn: '1d' });
+    const {
+      user_id,
+      email,
+      //roles,
+      environment_id,
+      created_at,
+      updated_at,
+      password_hash,
+      is_verified,
+      ...userinfo
+    } = user;
+    const userData = {
+      userId: user_id,
+      username: GUEST_USER,
+      roles: user.roles,
+      jti: payload.jti,
+    };
+    const project = await this.guestService.createOrGetProject(IP);
+    console.log('0x00=====================>', {project});
+
+    return {
+      accessToken,
+      user: userinfo,
+      userData,
+      redirect: project._id,
+    };
   }
 }

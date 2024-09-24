@@ -18,7 +18,7 @@ const useLogOut = () => {
       navigate('/');
     }
     if (userAuthenticated && location.pathname === '/') {
-      navigate('/dashboard');
+      //navigate('/dashboard');
     }
   }, [location.pathname, navigate, userAuthenticated]);
 

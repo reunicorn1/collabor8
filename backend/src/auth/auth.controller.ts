@@ -2,13 +2,16 @@ import {
   Body,
   Controller,
   Delete,
+  forwardRef,
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Logger,
   Param,
   Patch,
   Post,
+  Query,
   Request,
   Response,
   UseGuards,
@@ -29,6 +32,7 @@ import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import docs from './auth-docs.decorator';
 import { v4 as uuidv4 } from 'uuid';
+import { GuestService } from '@guest/guest.service';
 
 // TODO: Add guards and roles where necessary
 // TODO: replace all endpoints that contain username with @Req() req
@@ -37,7 +41,11 @@ import { v4 as uuidv4 } from 'uuid';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    @Inject(forwardRef(() => GuestService))
+    private readonly guestService: GuestService,
+  ) { }
 
   @docs.ApiSignIn()
   @Public()
@@ -61,9 +69,30 @@ export class AuthController {
       .send({ accessToken, user });
   }
 
+  /**
+   * triggered when guest clicks on try it out button
+   * creates a guest user if it doesnt exist
+   * returns the guest user and the accessToken
+   */
+  @Public()
+  @Post('tryout')
+  async tryout(
+    @Request() req: any,
+    @Query('IP') IP: string,
+    @Response() res: any,
+  ): Promise<any> {
+    const { _id } = await this.guestService.createOrGetProject(IP);
+    //req.user = userData; // set user on the request to satisfy the local strategy
+
+    res
+      //.cookie('accessToken', accessToken)
+      .status(200)
+      .send({ redirect: _id });
+  }
+
   @Public()
   @Post('guest')
-  async guestSignIn(@Response() res, @Request() req){
+  async guestSignIn(@Response() res, @Request() req) {
     const { user, accessToken, userData } = await this.authService.guestSignIn();
     req.user = userData; // this set the user on the rquest object
     // cuz local strategy expects the user to be on the request object

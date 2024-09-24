@@ -37,20 +37,21 @@ export default function Editor() {
     { refetchOnReconnect: true },
   );
 
-  useEffect(() => {
-    if (error && 'status' in error && error.status === 404) {
-      toast({
-        title: 'Project Not Found',
-        description:
-          '👨‍💻 The project you are looking for is missing. Redirecting you to the dashboard...',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        position: 'top-right',
-      });
-      setTimeout(() => navigate('/dashboard'), 5000);
-    }
-  }, [error, navigate, toast]);
+  console.log('0x01=============>:', {projectId})
+  //useEffect(() => {
+  //  if (error && 'status' in error && error.status === 404) {
+  //    toast({
+  //      title: 'Project Not Found',
+  //      description:
+  //        '👨‍💻 The project you are looking for is missing. Redirecting you to the dashboard...',
+  //      status: 'error',
+  //      duration: 5000,
+  //      isClosable: true,
+  //      position: 'top-right',
+  //    });
+  //    setTimeout(() => navigate('/dashboard'), 5000);
+  //  }
+  //}, [error, navigate, toast]);
 
   if (error) {
     return <NotFoundPage />;

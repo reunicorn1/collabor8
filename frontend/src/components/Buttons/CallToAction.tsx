@@ -1,4 +1,4 @@
-import { useLoginGuestMutation } from '@store/services/auth';
+import { useGetGuestIPQuery, useLazyTryoutQuery, useLoginGuestMutation, useTryoutMutation } from '@store/services/auth';
 import { useCreateProjectMutation } from '@store/services/project';
 import {
   Box,
@@ -7,8 +7,13 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '@hooks/useApp';
+import { setUserDetails } from '@store/slices/userSlice';
 
 export default function CallToAction() {
+  const dispatch = useAppDispatch();
+  const { data } = useGetGuestIPQuery();
+  const [tryout] = useTryoutMutation();
   const [loginGuest] = useLoginGuestMutation();
   const [createProject] = useCreateProjectMutation();
   const [id, setId] = useState('');
@@ -16,10 +21,11 @@ export default function CallToAction() {
 
   const handleTryItOut = async () => {
     console.log('Trying it out');
+
     loginGuest().then(async (res) => {
-      const project = await createProject({ project_name: 'Untitled1', description: '' }).unwrap();
-      console.log('Project created for guest:', project);
-      navigate(`/editor/${project._id}`);
+      const { redirect } = await tryout({ IP: data?.ip }).unwrap();
+      //console.log('Project created for guest:', project);
+      navigate(`/editor/${redirect}`);
     }
     );
   }
