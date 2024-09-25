@@ -8,7 +8,6 @@ import {
   Box,
   HStack,
   useToast,
-  Slide,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -49,22 +48,46 @@ export default function MenuBar({
   const navigate = useNavigate();
   const { mode } = useSettings()!;
   const panelVisiblity = useAppSelector(selectPanelVisiblity);
-  const [showAdBlockerNotification, setShowAdBlockerNotification] =
-    useState(false);
+  const [isAdBlockerDetected, setIsAdBlockerDetected] = useState(false);
   const user = useAppSelector(selectUserDetails);
   const toast = useToast();
 
   useEffect(() => {
     fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js')
-      .then(() => setShowAdBlockerNotification(false))
-      .catch(() => setShowAdBlockerNotification(true));
-  }, []);
+      .then(() => setIsAdBlockerDetected(false))
+      .catch(() => {
+        setIsAdBlockerDetected(true);
+        toast({
+          title: 'AdBlocker Detected',
+          description:
+            'Please disable your AdBlocker to use the voice chat feature.',
+          status: 'warning',
+          duration: 5000,
+          isClosable: true,
+          position: 'top-right',
+          variant: 'subtle',
+        });
+      });
+  }, [toast]);
 
   const goHome = () => {
     navigate('/dashboard');
   };
 
   const handleVoiceChat = () => {
+    if (isAdBlockerDetected) {
+      toast({
+        title: '🎙️ Mic Check Failed',
+        description:
+          'AdBlocker must be disabled to use the voice chat feature.',
+        status: 'warning',
+        duration: 3000,
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'subtle',
+      });
+      return;
+    }
     // Check if the user is a guest
     if (
       user.username === 'guest' &&
@@ -160,36 +183,6 @@ export default function MenuBar({
           />
         )}
       </Flex>
-
-      {/* AdBlocker Notification Bar */}
-      <Slide
-        direction="top"
-        in={showAdBlockerNotification}
-        style={{
-          zIndex: 10,
-          width: '100%',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        <Box
-          p="4"
-          bg="yellow.400"
-          shadow="md"
-          borderBottom="2px solid yellow.600"
-          maxW="600px"
-          borderRadius="md"
-          mt="10px"
-        >
-          <Text fontSize="md" color="gray.800" textAlign="center">
-            🚫 <strong>AdBlocker Detected:</strong> Please disable your
-            AdBlocker to use the voice chat feature.
-          </Text>
-        </Box>
-      </Slide>
 
       {/* DRAWERS */}
       {isLessThan768 && (
