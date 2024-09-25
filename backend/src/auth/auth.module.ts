@@ -5,7 +5,6 @@ import { UsersModule } from '../users/users.module';
 import { EnvironmentMongoModule } from '@environment-mongo/environment-mongo.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from '../constants';
-// import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from '@auth/strategies/local.strategy';
 import { JwtStrategy } from '@auth/strategies/jwt.strategy';
@@ -14,8 +13,6 @@ import { RefreshStrategy } from '@auth/strategies/refresh.strategy';
 import { MailModule } from '@mail/mail.module';
 import { RedisModule } from '@redis/redis.module';
 import { BullModule } from '@nestjs/bullmq';
-import { GuestModule } from '@guest/guest.module';
-
 @Module({
   imports: [
     UsersModule,
@@ -23,13 +20,7 @@ import { GuestModule } from '@guest/guest.module';
     MailModule,
     RedisModule,
     //GuestModule,
-    PassportModule.register({ session: true,
-                            cookie: {
-                              secure: process.env.NODE_ENV === 'production',
-                              sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax',
-                              httpOnly: true,
-                            },
-    }),
+    PassportModule.register({ session: true }),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1d' },

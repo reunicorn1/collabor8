@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
-import { corsConfig } from '@config/configuration';
+import { corsConfig, cookieConfig } from '@config/configuration';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
@@ -31,9 +31,9 @@ async function bootstrap() {
   app.use(
     session({
       secret: jwtConstants.secret,
-      resave: false,
+      resave: true,
       saveUninitialized: false,
-      cookie: { maxAge: 3600000 },
+      cookie: cookieConfig,
     }),
   );
   app.use(cookieParser());
