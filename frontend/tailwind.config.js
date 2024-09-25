@@ -2,6 +2,9 @@ module.exports = {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      backgroundImage: {
+        brand: "linear-gradient(rgb(0, 24, 69), rgb(82, 65, 117))",
+      },
       colors: {
         brand: {
           900: '#001845',
@@ -19,4 +22,5 @@ module.exports = {
     },
   },
   plugins: [],
+
 };

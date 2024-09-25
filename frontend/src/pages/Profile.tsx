@@ -105,7 +105,7 @@ export default function Profile() {
         {/* End of Sidebar content */}
 
         {/* Main Content */}
-        <div className={'p-5 md:p-10 pb-5 flex flex-col w-full min-h-screen bg-brand-100'}
+        <Box className={'p-5 md:p-10 pb-5 flex flex-col w-full min-h-screen bg-brand-100'}
         >
           <Box
             bg="brand.900"
@@ -115,7 +115,7 @@ export default function Profile() {
           >
             {clicked === 'Edit' ? <EditProfile /> : <Password />}
           </Box>
-        </div>
+        </Box>
 
         {/* Delete Account Modal */}
         <DeleteAccount isOpen={isOpen} onClose={onClose} />

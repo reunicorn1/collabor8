@@ -30,6 +30,7 @@ const setAccessToken = (token: string | null) => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('userDetails');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('project_id');
   }
 };
 
@@ -105,15 +106,17 @@ const authSlice = createSlice({
 export const { setCredentials, unsetCredentials } = authSlice.actions;
 
 export const performLogout = () => async (dispatch: AppDispatch) => {
- try {
+  try {
     // Trigger the signout query to perform the server-side logout
     await dispatch(authApi.endpoints.signout.initiate()).unwrap();
+    // setTimeout(() => {
 
     // If signout is successful, clear local credentials and other related state
     dispatch(unsetCredentials());
     dispatch(clearRoom());
     dispatch(clearAllProjects());
     dispatch(clearUser());
+    // },5000);
   } catch (error) {
     console.error('Logout failed:', error);
     // Even if logout fails, clear the local credentials and state

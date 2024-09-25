@@ -34,7 +34,7 @@ export class ProjectSharesService {
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => RedisService))
     private readonly redisService: RedisService,
-  ) {}
+  ) { }
 
   async memberCount(project_id: string): Promise<number> {
     return await this.projectSharesRepository
@@ -194,16 +194,6 @@ export class ProjectSharesService {
         throw new NotFoundException('User not found');
       }
       parsedDto.username = user.username;
-    }
-    if (ObjectId.isValid(parsedDto.project_id)) {
-      try {
-        const { project_id } = await this.projectsService.getMongoProject(
-          parsedDto.project_id,
-        );
-        parsedDto.project_id = project_id;
-      } catch (err) {
-        throw new NotFoundException('Project not found!');
-      }
     }
     const project = await this.projectsService.findOne(parsedDto.project_id);
     if (!project) {
@@ -407,6 +397,11 @@ export class ProjectSharesService {
     await this.projectSharesRepository.delete({ project_id });
   }
 
+  /**
+   * check if invitee has an account
+   * @param {string} email - email of the invitee
+   * @returns {Promise<Partial<Users | null>>} user details or null if not found
+   */
   async inviteeHasAccount(email: string): Promise<Partial<Users | null>> {
     return await this.usersService.findByEmail({ email });
   }

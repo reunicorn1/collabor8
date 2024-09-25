@@ -38,7 +38,7 @@ export default function MenuBar({
   ...rest
 }: MenuBarProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLessThan640] = useMediaQuery('(max-width: 640px)');
+  const [isLessThan768] = useMediaQuery('(max-width: 768px)');
   const dispatch = useAppDispatch();
   const {
     isOpen: isOpenV,
@@ -79,8 +79,14 @@ export default function MenuBar({
 
   return (
     <Box className={className} {...rest}>
-      <Flex alignItems="center" justifyContent="space-between" gap="4" p="4">
-        <HStack me={`${!isLessThan640 ? 'auto' : ''}`}>
+      <Flex
+        alignItems="center"
+        justifyContent="space-between"
+        gap='4'
+        p='4'
+      >
+        <HStack me={`${!isLessThan768 ? 'auto' : ''}`}>
+
           <IconButton
             isRound={true}
             color="white"
@@ -93,7 +99,7 @@ export default function MenuBar({
             onClick={goHome}
             ml={2}
           />
-          {!isLessThan640 && (
+          {!isLessThan768 && (
             <>
               <ThemeSelector />
               <LanguageSelector />
@@ -133,7 +139,7 @@ export default function MenuBar({
           onClick={handleVoiceChat}
           ml={2}
         />
-        {isLessThan640 && (
+        {isLessThan768 && (
           <IconButton
             isRound={true}
             color="white"
@@ -153,7 +159,7 @@ export default function MenuBar({
       </Flex>
 
       {/* DRAWERS */}
-      {isLessThan640 && (
+      {isLessThan768 && (
         <ComingSoon
           project={project}
           isOpen={isOpen}

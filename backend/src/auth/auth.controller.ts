@@ -5,8 +5,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Logger,
-  Param,
   Patch,
   Post,
   Request,
@@ -14,21 +12,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '@auth/auth.service';
-// import { AuthGuard } from '@auth/guards/auth.guard';
 import { Public } from '@auth/decorators/isPublic.decorator';
 import { ApiTags } from '@nestjs/swagger';
-// import { RolesGuard } from '@auth/guards/roles.guard';
 import {
   CreateUserDto,
-  LoginUserDto,
-  parseLoginDto,
   ResetPasswordDto,
 } from '@users/dto/create-user.dto';
-import { Users } from '@users/user.entity';
 import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import docs from './auth-docs.decorator';
 import { v4 as uuidv4 } from 'uuid';
+import { cookieConfig, accessTokenCookieConfig } from '@config/configuration';
 
 // TODO: Add guards and roles where necessary
 // TODO: replace all endpoints that contain username with @Req() req
@@ -37,7 +31,11 @@ import { v4 as uuidv4 } from 'uuid';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    //@Inject(forwardRef(() => GuestService))
+    //private readonly guestService: GuestService,
+  ) { }
 
   @docs.ApiSignIn()
   @Public()
@@ -56,23 +54,28 @@ export class AuthController {
     });
     console.log('user', req.user);
     res
-      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
-      .cookie('accessToken', accessToken)
+      .cookie('refreshToken', refreshToken, cookieConfig)
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .send({ accessToken, user });
   }
 
+  /**
+   * triggered when guest clicks on try it out button
+   * creates a guest user if it doesnt exist
+   * returns the guest user and the accessToken
+   */
   @Public()
   @Post('guest')
-  async guestSignIn(@Response() res, @Request() req){
+  async guestSignIn(@Response() res, @Request() req) {
     const { user, accessToken, userData } = await this.authService.guestSignIn();
-    req.user = userData;
+    req.user = userData; // this set the user on the rquest object
+    // cuz local strategy expects the user to be on the request object
     res
-      .cookie('accessToken', accessToken)
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .send({ accessToken, user });
   }
 
   @docs.ApiSignUp()
-  //@UseGuards(LocalAuthGuard)
   @Public()
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')
@@ -100,16 +103,14 @@ export class AuthController {
         const { accessToken, refreshToken } =
           await this.authService.generateTokens(payload);
         return res
-          .cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: true,
-          })
-          .cookie('accessToken', accessToken)
+          .cookie('refreshToken', refreshToken, cookieConfig)
+          .cookie('accessToken', accessToken, accessTokenCookieConfig)
           .send({ accessToken, user });
       } else {
         res.send(user);
       }
     } catch (error) {
+      console.log('------------SIGNUP---------------->', error);
       throw error;
     }
   }
@@ -119,19 +120,23 @@ export class AuthController {
   @Delete('signout')
   async signOut(@Request() req, @Response() res) {
     // revoke session
-
-    await this.authService.revokeAccessToken(req.user.jti);
-    await this.authService.revokeRefreshToken(req.cookies.refreshToken);
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).send({ message: 'Error signing out' });
-      }
-    });
-    res
-      .clearCookie('refreshToken')
-      .clearCookie('accessToken')
-      .clearCookie('connect.sid')
-      .send({ message: 'Signed out' });
+    try {
+      await this.authService.revokeAccessToken(req.user.jti);
+      await this.authService.revokeRefreshToken(req.cookies.refreshToken);
+      req.session.destroy((err) => {
+        if (err) {
+          return res.status(500).send({ message: 'Error signing out' });
+        }
+      });
+      res
+        .clearCookie('refreshToken', cookieConfig)
+        .clearCookie('accessToken', accessTokenCookieConfig)
+        .clearCookie('connect.sid', cookieConfig)
+        .send({ message: 'Signed out' });
+    } catch (error) {
+      console.log('------------SIGNOUT---------------->', error);
+      return res.status(500).send({ message: 'Error during signout process' });
+    }
   }
   // password change
   // add avatar
@@ -158,8 +163,7 @@ export class AuthController {
     }
     const { user, accessToken } = await this.authService.refreshToken(refreshToken);
     res
-      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
-      .cookie('accessToken', accessToken)
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .send({ accessToken, user });
   }
 
@@ -170,8 +174,8 @@ export class AuthController {
     const { refreshToken, accessToken, user } =
       await this.authService.verifyUser(req.query.token);
     res
-      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
-      .cookie('accessToken', accessToken)
+      .cookie('refreshToken', refreshToken, cookieConfig)
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .send({ accessToken, user });
   }
 

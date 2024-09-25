@@ -13,6 +13,7 @@ node_modules
 dist
 dist-ssr
 *.local
+*.txt
 
 *migration*
 # Editor directories and files

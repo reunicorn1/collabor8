@@ -65,9 +65,7 @@ export class ProjectsService {
         parsedDto as any,
       );
       parsedDto['_id'] = newProjectMongo._id.toString();
-      const newProject = this.projectsRepository.create({
-        ...parsedDto,
-      });
+      const newProject = this.projectsRepository.create(parsedDto);
       await this.projectsRepository.save(newProject);
       newProjectMongo.project_id = newProject.project_id;
       await this.projectMongoService.save(newProjectMongo);
@@ -141,18 +139,28 @@ export class ProjectsService {
 
 
   async findProject(id: string, project_type: string, username: string): Promise<Projects | ProjectSharesOutDto> {
-    const project_id = uuidValidate(id) ? id : null;
-    const _id = uuidValidate(id) ? null : id;
-    const project = project_type === 'share'
-      ? await this.projectSharesService.findOneByQuery({ project_id, _id: _id, username })
-      : await this.projectsRepository.findOneBy({ project_id, _id: _id, username });
-    console.log('project', project);
+    if (!id) throw new BadRequestException('Project ID is required');
+
+    const isShare = project_type === 'share';
+    const query = { username };
+
+    if (uuidValidate(id)) { query['project_id'] = id; }
+    else { query['_id'] = id; }
+
+    const project = isShare
+      ? await this.projectSharesService.findOneByQuery(query)
+      : await this.projectsRepository.findOneBy(query);
     if (!project) {
-      const projectShare = await this.projectSharesService.findOneByQuery({ project_id, _id: _id, username });
-      if (!projectShare) {
-        throw new NotFoundException('Project not found');
+      //throw new NotFoundException(`${isShare ? 'Project shared': 'Project'} not found`);
+      try {
+        const projectShare = await this.projectSharesService.findOneByQuery(query);
+        console.log('projectShare', projectShare);
+        return projectShare;
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          throw new NotFoundException(`${isShare ? 'Project shared' : 'Project'} not found`);
+        }
       }
-      return projectShare;
     }
 
     return project;
@@ -243,26 +251,6 @@ export class ProjectsService {
 
   async findMyProject(id: string, username: string): Promise<Projects | ProjectSharesOutDto> {
     return await this.findProject(id, 'project', username);
-    // const IDS = await this.getIds(id);
-    // if (!IDS.project_id) {
-    //   const project = await this.projectsRepository.findOneBy({ _id: IDS._id, username: username });
-    //   if (!project) {
-    //     const projectShare = await this.projectSharesService.findOneByQuery({ _id: IDS._id, username: username });
-    //     if (!projectShare) {
-    //       throw new NotFoundException('Project not found');
-    //     }
-    //     return projectShare;
-    //   }
-    //   return await this.wrapProject(project);
-    // }
-    // const project = await this.projectsRepository.findOneBy({ project_id: IDS.project_id, username: username });
-
-    // if (!project) {
-    //   const projectShare = await this.projectSharesService.findOneByQuery({ project_id: IDS.project_id, username: username });
-    //   if (!projectShare) {
-    //     throw new NotFoundException('Project not found');
-    //   }
-    // }
   }
 
 
@@ -350,8 +338,8 @@ export class ProjectsService {
       Logger.log("deleting ProjectShares");
       const projectShares = await this.projectSharesService.findByProject(IDS.project_id);
       if (projectShares.length > 0) {
-        await this.projectSharesService
-        .removeMany(IDS.project_id);
+        console.log(await this.projectSharesService
+          .removeMany(IDS.project_id));
       }
 
       Logger.log("deleting ProjectMongo");

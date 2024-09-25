@@ -1,29 +1,37 @@
-import { useLoginGuestMutation } from '@store/services/auth';
-import { useCreateProjectMutation } from '@store/services/project';
 import {
-  Box,
+  useGetGuestIPQuery,
+  useLazyGetGuestProjectQuery,
+  useLoginGuestMutation,
+} from '@store/services/auth';
+//import { useCreateProjectMutation } from '@store/services/project';
+import {
   Flex,
   Button,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+//import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+//import { useAppDispatch } from '@hooks/useApp';
+//import { setUserDetails } from '@store/slices/userSlice';
 
 export default function CallToAction() {
+  const { data } = useGetGuestIPQuery();
+  //const dispatch = useAppDispatch();
+  const [getProject] = useLazyGetGuestProjectQuery();
   const [loginGuest] = useLoginGuestMutation();
-  const [createProject] = useCreateProjectMutation();
-  const [id, setId] = useState('');
+  //const [createProject] = useCreateProjectMutation();
+  //const [id, setId] = useState('');
   const navigate = useNavigate();
 
   const handleTryItOut = async () => {
     console.log('Trying it out');
-    loginGuest().then(async (res) => {
-      const project = await createProject({ project_name: 'Untitled1', description: '' }).unwrap();
-      console.log('Project created for guest:', project);
-      navigate(`/editor/${project._id}`);
-    }
-    );
-  }
 
+    loginGuest().then(async (res) => {
+      const { redirect } = await getProject({ IP: data?.ip }).unwrap();
+      localStorage.setItem('project_id', redirect);
+      //console.log('Project created for guest:', project);
+      navigate(`/editor/${redirect}`);
+    });
+  };
 
   return (
     <>

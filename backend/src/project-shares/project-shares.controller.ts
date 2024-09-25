@@ -32,7 +32,7 @@ export class ProjectSharesController {
   constructor(
     private readonly projectSharesService: ProjectSharesService,
     @InjectQueue('mailer') private mailerQueue: Queue,
-  ) {}
+  ) { }
 
   // Create a new project share
   @ApiOperation({
@@ -72,6 +72,7 @@ export class ProjectSharesController {
   @Post('invite/:project_id')
   async inviteUser(
     @Param('project_id') project_id: string,
+    @Query('_id') _id: string,
     @Query('access_level') access_level: 'write' | 'read',
     @Body()
     {
@@ -80,16 +81,20 @@ export class ProjectSharesController {
     }: { inviter_email: string; invitee_email: string },
     @Response() res,
   ) {
-    /**
-     * TODO:
-     * swagger docs
-     */
     let has_account = null;
     const user =
       await this.projectSharesService.inviteeHasAccount(invitee_email);
-    if (user) has_account = user.username;
+    if (user) {
+      has_account = user.username;
+      await this.projectSharesService.create({
+        project_id,
+        username: user.username,
+        access_level,
+      });
+    }
 
     await this.mailerQueue.add('invitation', {
+      _id,
       invitee_email,
       project_id,
       inviter_email,
@@ -98,29 +103,6 @@ export class ProjectSharesController {
     });
 
     res.send({ message: 'Email sent successfully!' });
-  }
-
-  @Public()
-  @Get('/invite/:project_id')
-  async verifyInvitation(
-    @Query('invitee_email') invitee_email: string,
-    @Query('has_account') has_account: string,
-    @Query('access_level') access_level: 'write' | 'read',
-    @Param('project_id') project_id: string,
-    @Response() res,
-  ): Promise<any> {
-    //const user = await this.projectSharesService.inviteeHasAccount(invitee_email)
-    //let has_account = false;
-    if (has_account) {
-      // already has an account
-      const ps = await this.projectSharesService.create({
-        project_id,
-        username: has_account,
-        access_level,
-      });
-    }
-    // new account
-    res.send({ message: 'success', has_account });
   }
 
   // Retrieve project shares by project ID
@@ -153,7 +135,7 @@ export class ProjectSharesController {
   })
   @Get('/user/')
   async findByUser(@Request() req): Promise<ProjectSharesOutDto[]> {
-    console.log(req.user);
+    //console.log(req.user);
     return await this.projectSharesService.findByUser({
       username: req.user.username,
     });

@@ -47,7 +47,7 @@ export class UsersService {
 
   async removePasswordHash(user: Users): Promise<Users> {
     delete user.password_hash;
-    delete user.roles;
+    //delete user.roles;
     return user;
   }
 

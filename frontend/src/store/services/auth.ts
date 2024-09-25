@@ -28,7 +28,7 @@ export const authApi = api.injectEndpoints({
     }),
     loginGuest: builder.mutation<{ accessToken: string; user: Partial<User> }, void>({
       query: () => ({
-        url: '/auth/guest',
+        url: 'guest/login',
         method: 'POST',
         credentials: 'include',
       }),
@@ -41,6 +41,14 @@ export const authApi = api.injectEndpoints({
           console.error(error);
         }
       },
+    }),
+    getGuestProject: builder.query<{ redirect: string }, { IP: string }>({
+      query: ({ IP }) => ({
+        url: 'guest/project',
+        method: 'GET',
+        params: { IP },
+        credentials: 'include',
+      }),
     }),
     refreshToken: builder.mutation<{ user: Partial<User>, accessToken: string }, void>({
       query: () => ({
@@ -72,11 +80,13 @@ export const authApi = api.injectEndpoints({
         body: email,
       }),
     }),
-    signout: builder.query<void, void>({
+    signout: builder.mutation<{message: string}, void>({
       query: () => ({
         url: '/auth/signout',
         method: 'DELETE',
-      })
+        credentials: 'include',
+      }),
+      // invalidatesTags: ['Profile', 'User', 'Environment', 'Project', 'ProjectShare'],
     }),
 
     // Validate reset token and update password
@@ -105,6 +115,13 @@ export const authApi = api.injectEndpoints({
       }),
       invalidatesTags: ['User'],
     }),
+    getGuestIP: builder.query<{ ip: string }, void>({
+      query: () => ({
+        url: 'https://api.ipify.org/',
+        method: 'GET',
+        params: { format: 'json' },
+      }),
+    }),
   }),
 });
 // TODO: this is missing a logout endpoint
@@ -119,5 +136,7 @@ export const {
   useResetPasswordMutation,
   useVerifyEmailMutation,
   useValidateResetTokenMutation,
-  useSignoutQuery,
+  useSignoutMutation,
+  useGetGuestIPQuery,
+  useLazyGetGuestProjectQuery,
 } = authApi;

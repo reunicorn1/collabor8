@@ -1,6 +1,14 @@
 import { api } from './api';
 import { ProjectShares, ProjectSharesOutDto } from '@types';
 
+type InvitePayload = {
+  _id?: string;
+  project_id: string;
+  inviter_email: string;
+  invitee_email: string;
+  access_level: string;
+};
+
 export const projectShareApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // Create a new project share
@@ -93,31 +101,21 @@ export const projectShareApi = api.injectEndpoints({
       invalidatesTags: ['ProjectShare'],
     }),
     // Invite a user to collaborate on a project
-    inviteUser: builder.mutation<
-      void,
-      {
-        project_id: string;
-        inviter_email: string;
-        invitee_email: string;
-        access_level: string;
-      }
-    >({
-      query: ({ project_id, inviter_email, invitee_email, access_level }) => ({
-        url: `/project-shares/invite/${project_id}?access_level=${access_level}`,
+    inviteUser: builder.mutation<void, InvitePayload>({
+      query: ({
+        _id,
+        project_id,
+        inviter_email,
+        invitee_email,
+        access_level,
+      }) => ({
+        url: `/project-shares/invite/${project_id}`,
         method: 'POST',
         body: {
           inviter_email,
           invitee_email,
         },
-      }),
-    }),
-    inviteGuest: builder.query<
-      { has_account: boolean } & { [k: string]: string },
-      { project_id: string; invitee_email: string; access_level: string }
-    >({
-      query: ({ project_id, invitee_email, access_level }) => ({
-        url: `/project-shares/invite/${project_id}`,
-        params: { invitee_email, access_level },
+        params: { _id, access_level },
       }),
     }),
   }),
@@ -135,7 +133,6 @@ export const {
   useGetUserProjectSharesQuery,
   useInviteUserMutation,
   useGetRoomTokenQuery,
-  useLazyInviteGuestQuery,
   useToggleShareFavoriteMutation,
   useFindMyShareQuery,
   useUpdateStatusMutation,

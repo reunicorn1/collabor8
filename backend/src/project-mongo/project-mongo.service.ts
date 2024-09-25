@@ -12,13 +12,14 @@ import {
   parseUpdateProjectMongoDto,
   UpdateProjectMongoDto,
 } from './dto/create-project-mongo.dto';
+import { MONGO_CONN } from '@constants';
 
 // TODO: refactor to move helper functions to relevant service providers
 // to avoid code duplication and make code more modular
 @Injectable()
 export class ProjectMongoService {
   constructor(
-    @InjectRepository(ProjectMongo, 'mongoConnection')
+    @InjectRepository(ProjectMongo, MONGO_CONN)
     private projectMongoRepository: Repository<ProjectMongo>,
     @Inject(forwardRef(() => DirectoryMongoService))
     private readonly directoryService: DirectoryMongoService,

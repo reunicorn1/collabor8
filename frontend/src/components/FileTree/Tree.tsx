@@ -8,7 +8,7 @@ import {
   useMediaQuery,
 } from '@chakra-ui/react';
 import { VscNewFile, VscNewFolder } from 'react-icons/vsc';
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 //import * as Y from 'yjs';
 import NewfileDir from '../Modals/NewfileDir';
 import { useYMap } from 'zustand-yjs';
@@ -21,13 +21,13 @@ interface TreeProps {
   //ydoc: Y.Doc;
   name: string;
   className?: string;
-  [k: string]: any
+  [k: string]: any;
 }
 
 const Tree: React.FC<TreeProps> = ({ className = '', name }) => {
   // The buttons of this component creates new files and direcoties in y.map (root) of the project
   // When a new file is created it becomes selected by default
-  const [isLessThan640] = useMediaQuery('(max-width: 640px)');
+  const [isLessThan768] = useMediaQuery('(max-width: 768px)');
   const { projectId = '' } = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [filedir, setFileDir] = useState('');
@@ -49,15 +49,23 @@ const Tree: React.FC<TreeProps> = ({ className = '', name }) => {
       <Flex
         h="40px"
         display="flex"
-        background="brand.900"
         color="white"
         alignItems="center"
         justifyItems="center"
         borderBottom="2px solid #524175"
+        py="20px"
       >
-        <Text me='auto' fontSize="xs" ml={4} fontFamily="mono">
-          {name}
-        </Text>
+        <Tooltip text={name} className="me-auto">
+          <Text
+            me="auto"
+            fontSize="xs"
+            ml={4}
+            fontFamily="mono"
+            className="md:max-w-24 md:overflow-hidden md:whitespace-nowrap md:text-ellipsis lg:max-w-none"
+          >
+            {name}
+          </Text>
+        </Tooltip>
         <IconButton
           m={1}
           mr={0}
@@ -94,13 +102,27 @@ const Tree: React.FC<TreeProps> = ({ className = '', name }) => {
         parent={projectId}
       />
       <FileTreeView data={data} />
-      {!isLessThan640 && (
-        <Box className='mt-auto p-4 opacity-50'>
-          <Image src="/logo-bb.png" w='100%' />
+      {!isLessThan768 && (
+        <Box className="mt-auto p-4 opacity-50">
+          <Image src="/logo-bb.png" w="100%" />
         </Box>
       )}
     </Box>
   );
 };
 
+const Tooltip: React.FC<{
+  text: string;
+  children: ReactNode;
+  className: string;
+}> = ({ className = '', text, children }) => {
+  return (
+    <Box className={`relative group ${className}`}>
+      <Box className="hidden group-hover:block group-focus:block absolute z-10 bg-black text-white p-1 rounded-md">
+        {text}
+      </Box>
+      {children}
+    </Box>
+  );
+};
 export default Tree;

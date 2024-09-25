@@ -20,6 +20,7 @@ function InviteGuest() {
   const params = new URLSearchParams(window.location.search);
   const inviteeEmail = params.get('invitee_email');
   const accessLevel = params.get('access_level') as AccessLevel;
+  const _id = params.get('_id');
   const projectId = params.get('project_id');
   const hasAccount = params.get('has_account'); // this could be 'username', 'guest' or null
 
@@ -41,12 +42,12 @@ function InviteGuest() {
     dispatch(setUserDetails(data.user));
     try {
       await createShareProj({
-        project_id: projectId!,
+        project_id: projectId,
         username: data.user.username,
         access_level: accessLevel,
       }).unwrap();
 
-      navigate(`/editor/${projectId}`);
+      navigate(`/editor/${_id}`);
       setIsRegisterOpen(false);
     } catch (err) {
       console.error('Error creating project share:', err);
@@ -54,7 +55,7 @@ function InviteGuest() {
   };
 
   const handleSignInSuccess = () => {
-    navigate(`/editor/${projectId}`);
+    navigate(`/editor/${_id}`);
     setIsSignOpen(false);
   };
 

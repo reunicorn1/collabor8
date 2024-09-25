@@ -47,6 +47,20 @@ export class MailService extends WorkerHost {
       }
       case 'invitation': {
         // { invitee_email, project_id }
+        const project_id = job.data.project_id;
+        const invitee_email = job.data.invitee_email;
+        const inviter_email = job.data.inviter_email;
+        const access_level = job.data.access_level;
+        const has_account = job.data.has_account;
+        const _id = job.data._id;
+        const url = `${env[process.env.NODE_ENV]}/invite?`.concat(
+          `project_id=${project_id}&`,
+          `access_level=${access_level}&`,
+          `invitee_email=${invitee_email}&`,
+          `inviter_email=${inviter_email}&`,
+          `has_account=${has_account}&`,
+          `_id=${_id}`,
+        );
         return await this.mailerService.sendMail({
           to: job.data.invitee_email,
           from: '"Support Team" <support@collabor8.com>', // override default from
@@ -56,7 +70,7 @@ export class MailService extends WorkerHost {
             project_id: job.data.project_id,
             invitee_email: job.data.invitee_email,
             inviter_email: job.data.inviter_email,
-            url: `${env[process.env.NODE_ENV]}/invite?project_id=${job.data.project_id}&access_level=${job.data.access_level}&invitee_email=${job.data.invitee_email}&has_account=${job.data.has_account}`,
+            url,
           },
         });
       }

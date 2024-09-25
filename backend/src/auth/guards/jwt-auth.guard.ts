@@ -39,7 +39,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
       context.getClass(),
     ]);
     const isGuest = await this.checkGuest(context);
-    if (isPublic || isGuest) {
+    if (isPublic) {
       return true;
     }
 

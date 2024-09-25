@@ -29,7 +29,7 @@ import { useCreateProjectMutation } from '@store/services/project';
 
 export default function NavigationBar() {
   const navigate = useNavigate();
-  const [isLessThan640] = useMediaQuery('(max-width: 640px)');
+  const [isLessThan768] = useMediaQuery('(max-width: 768px)');
   const [id, setId] = useState('');
   const [createProject] = useCreateProjectMutation();
   const {
@@ -52,7 +52,7 @@ export default function NavigationBar() {
   return (
     <>
       {
-        isLessThan640
+        isLessThan768
           ? (
             <MenuDrawer
               renderFooter={(onClose) => {
