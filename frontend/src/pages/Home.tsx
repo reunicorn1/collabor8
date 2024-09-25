@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Heading, Text, Center, Image, SimpleGrid } from '@chakra-ui/react';
+import { Box, Heading, Text, Center, Image, SimpleGrid, Stack } from '@chakra-ui/react';
 import SignUp from '@components/Modals/SignUp';
 import ResetPasswordModal from '@components/Modals/ResetPassword';
 import useTypingEffect from '../hooks/useTypingEffect';
@@ -7,7 +7,6 @@ import { useLocation } from 'react-router-dom';
 import Slogan from '@components/Slogan';
 import { TEXT, AVATARS, FEATURES } from '../constants.ts';
 import NavigationBar from '@components/Bars/NavigationBar.tsx';
-
 
 const Home = () => {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -34,9 +33,11 @@ const Home = () => {
 
   return (
     <>
-      <NavigationBar />
-      {/* SLOGAN */}
-      <Slogan />
+      <Stack className='h-screen bg-brand'>
+        <NavigationBar />
+        {/* SLOGAN */}
+        <Slogan className='my-auto' />
+      </Stack>
 
       {/* TYPING */}
       <Box bg='white' px={4} className='py-10 lg:py-20'>

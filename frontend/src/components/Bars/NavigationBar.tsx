@@ -23,15 +23,16 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
-} from '@chakra-ui/react'
-import { useRef, useState } from 'react';
-import { useCreateProjectMutation } from '@store/services/project';
+} from '@chakra-ui/react';
+import { useRef } from 'react';
+import CallToAction from '@components/Buttons/CallToAction';
+//import { useCreateProjectMutation } from '@store/services/project';
 
 export default function NavigationBar() {
   const navigate = useNavigate();
-  const [isLessThan768] = useMediaQuery('(max-width: 768px)');
-  const [id, setId] = useState('');
-  const [createProject] = useCreateProjectMutation();
+  const [isLessThan900] = useMediaQuery('(max-width: 900px)');
+  //const [id, setId] = useState('');
+  //const [createProject] = useCreateProjectMutation();
   const {
     isOpen: isSignUpOpen,
     onOpen: openSignUp,
@@ -52,7 +53,7 @@ export default function NavigationBar() {
   return (
     <>
       {
-        isLessThan768
+        isLessThan900
           ? (
             <MenuDrawer
               renderFooter={(onClose) => {
@@ -93,39 +94,31 @@ export default function NavigationBar() {
           : (
             <Flex
               alignItems="center"
-              bg="black"
-              p={3}
-              borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
+              px={3}
+              pt={4}
             >
               <Image src="/logo-bb.png" h="25px" ml={3} />
-              <Divider
-                ml={10}
-                mr={10}
-                orientation="vertical"
-                borderColor="white"
-                borderWidth="1px"
-                h="23px"
-              />
-              <Box display="flex">
-                <Heading color="white" fontFamily="mono" mr={5} size="xs">
+              <List className='flex items-center gap-10 ms-auto text-white font-semibold font-mono'>
+                <ListItem>
                   <a href="#home">Home</a>
-                </Heading>
-                <Heading color="white" fontFamily="mono" ml={5} mr={5} size="xs">
+                </ListItem>
+                <ListItem>
                   <a href="#features">Features</a>
-                </Heading>
-                <Heading color="white" fontFamily="mono" ml={5} mr={5} size="xs">
+                </ListItem>
+                <ListItem>
                   <a href="#about-us">About us</a>
-                </Heading>
-                <Link to="/mission">
-                  <Heading color="white" fontFamily="mono" ml={5} size="xs">
+                </ListItem>
+                <ListItem>
+                  <Link to="/mission">
                     Mission
-                  </Heading>
-                </Link>
-                
-                
-              </Box>
-              <Spacer />
+                  </Link>
+                </ListItem>
+                <ListItem>
+                <CallToAction />
+                </ListItem>
+              </List>
               <Button
+                ms="auto"
                 color="white"
                 colorScheme="gray"
                 variant="ghost"
@@ -171,14 +164,14 @@ export default function NavigationBar() {
 
 type Props = {
   renderFooter: (onClose: () => void) => JSX.Element
-}
+};
 
 function MenuDrawer({ renderFooter }: Props) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const btnRef = useRef()
 
   return (
-    <Box className='sticky -top-1 z-10 flex justify-between items-center py-4 px-4 bg-black'>
+    <Box className='sticky -top-1 z-10 flex justify-between items-center py-4 px-4'>
       <Box w='120px'>
         <Image src="/logo-bb.png" w='100%' />
       </Box>

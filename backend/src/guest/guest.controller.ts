@@ -3,12 +3,8 @@ import {
   Get,
   Post,
   Body,
-  Param,
-  Delete,
   Request,
   Query,
-  BadRequestException,
-  Patch,
   Response,
 } from '@nestjs/common';
 import { GuestService } from '@guest/guest.service';
@@ -51,7 +47,8 @@ export class GuestController {
 
     res
       .cookie('accessToken', accessToken)
-      .status(200).send({ user, accessToken });
+      .status(200)
+      .send({ user, accessToken });
   }
 
   @Public()

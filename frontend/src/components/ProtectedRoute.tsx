@@ -11,11 +11,9 @@ const ProtectedRoute: React.FC<RouteProps> = ({
   const { isAuthenticated } = useAuth();
   const userDetails = useAppSelector(selectUserDetails);
   const location = useLocation();
+  const isGuest = userDetails?.roles === 'guest';
 
-  if (
-    userDetails?.roles === 'guest' &&
-    !location.pathname.startsWith('/editor')
-  ) {
+  if (isGuest && !location.pathname.startsWith('/editor')) {
     return (
       <Navigate
         replace

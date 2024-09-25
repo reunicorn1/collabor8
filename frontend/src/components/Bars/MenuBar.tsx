@@ -7,6 +7,7 @@ import {
   useMediaQuery,
   Box,
   HStack,
+  Icon,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 //import { PiGithubLogo } from 'react-icons/pi';
@@ -19,11 +20,13 @@ import VoiceDrawer from '@components/CodeEditor/VoiceDrawer';
 import { useAppDispatch, useAppSelector } from '@hooks/useApp';
 import { togglePanelVisibility } from '@store/slices/fileSlice';
 import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
-import { HamburgerIcon } from '@chakra-ui/icons';
+import { ChevronDownIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
 import ThemeSelector from './ThemeSelector';
 import LanguageSelector from './LanguageSelector';
 import { Project } from '@types';
+import DBMenu from '@components/Dashboard/DBMenu';
+import { selectUserDetails } from '@store/selectors';
 
 type MenuBarProps = {
   project: Project;
@@ -42,6 +45,7 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
   const navigate = useNavigate();
   const { mode } = useSettings()!;
   const panelVisiblity = useAppSelector(selectPanelVisiblity);
+  const userDetails = useAppSelector(selectUserDetails);
 
   const goHome = () => {
     navigate('/dashboard');
@@ -124,6 +128,9 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
             icon={<HamburgerIcon className='pointer-events-none' />}
           />
         )}
+        <DBMenu isGuest={userDetails?.roles === 'guest'}>
+          <Icon color="white" as={ChevronDownIcon} />
+        </DBMenu>
       </Flex>
 
       {/* DRAWERS */}

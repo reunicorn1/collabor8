@@ -3,23 +3,18 @@ import {
   useLazyGetGuestProjectQuery,
   useLoginGuestMutation,
 } from '@store/services/auth';
-//import { useCreateProjectMutation } from '@store/services/project';
-import {
-  Flex,
-  Button,
-} from '@chakra-ui/react';
-//import { useState } from 'react';
+import { Button } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-//import { useAppDispatch } from '@hooks/useApp';
-//import { setUserDetails } from '@store/slices/userSlice';
+import { ChevronRightIcon } from '@chakra-ui/icons';
 
-export default function CallToAction() {
+type Props = {
+  className?: string;
+  [k: string]: any;
+};
+export default function CallToAction({ className = '', ...rest }: Props) {
   const { data } = useGetGuestIPQuery();
-  //const dispatch = useAppDispatch();
   const [getProject] = useLazyGetGuestProjectQuery();
   const [loginGuest] = useLoginGuestMutation();
-  //const [createProject] = useCreateProjectMutation();
-  //const [id, setId] = useState('');
   const navigate = useNavigate();
 
   const handleTryItOut = async () => {
@@ -34,40 +29,32 @@ export default function CallToAction() {
   };
 
   return (
-    <>
-      <Flex
-        justifyContent='center'
-      >
-        <Button
-          onClick={handleTryItOut}
-          colorScheme='white'
-          variant='solid'
-          size='lg'
-          color='black'
-          shadow='md'
-          bgColor={'brand.400'}
-        >
-          Try it out!
-        </Button>
-      </Flex>
-    </>
+    <Button
+      onClick={handleTryItOut}
+      color='brand.400'
+      bgColor='transparent'
+      className={className}
+      rightIcon={
+        <ChevronRightIcon
+          className='animate-bounce_r'
+          boxSize={10}
+        />
+      }
+      {...rest}
+      _hover={{
+        bg: 'transparent',
+        color: 'white',
+        textDecoration: 'underline',
+        transform: 'scale(0.95)',
+      }}
+      _active={{
+        bg: 'transparent',
+        color: 'white',
+        textDecoration: 'underline',
+        transform: 'scale(0.95)',
+      }}
+    >
+      Try it out!
+    </Button>
   );
-
-  /*
-   <Link
-                    onClick={() => {
-                      loginGuest().then(async (res) => {
-                        const project = await createProject({ project_name: 'Untitled', description: '' }).unwrap();
-                        setId(project._id);
-                      }
-                      );
-                    }}
-                    to={`/editor/${id}`}
-                  >
-  
-                    <Heading color="white" fontFamily="mono" ml={5} size="xs">
-                      Try it out
-                    </Heading>
-                  </Link>
-  */
 }
