@@ -132,9 +132,6 @@ export class AuthController {
         .clearCookie('refreshToken', cookieConfig)
         .clearCookie('accessToken')
         .clearCookie('connect.sid')
-        .cookie.delete('refreshToken')
-        .cookie.delete('accessToken')
-        .cookie.delete('connect.sid')
         .send({ message: 'Signed out' });
     } catch (error) {
       console.log('------------SIGNOUT---------------->', error);
