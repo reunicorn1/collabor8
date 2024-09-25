@@ -46,10 +46,10 @@ export const appConfig = {
 };
 
 export const cookieConfig = {
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax',
+  // secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
   maxAge: 1000 * 60 * 60 * 24 * 7,
-  httpOnly: true,
+  // httpOnly: true,
   domain: process.env.NODE_ENV === 'production' ? 'co11abor8.netlify.app' : 'localhost',
   path: '/',
 };
