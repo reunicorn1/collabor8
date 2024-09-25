@@ -82,19 +82,7 @@ export default function MenuBar({
         variant: 'subtle',
       });
     } else {
-      if (showAdBlockerNotification) {
-        toast({
-          title: 'AdBlocker Detected',
-          description:
-            'Please disable your AdBlocker to use the voice chat feature.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-          position: 'top',
-        });
-      } else {
-        onOpenV();
-      }
+      onOpenV();
     }
   };
 
