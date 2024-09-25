@@ -84,6 +84,7 @@ export const authApi = api.injectEndpoints({
       query: () => ({
         url: '/auth/signout',
         method: 'DELETE',
+        credentials: 'include',
       }),
       // invalidatesTags: ['Profile', 'User', 'Environment', 'Project', 'ProjectShare'],
     }),
