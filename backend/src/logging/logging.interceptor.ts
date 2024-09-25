@@ -15,6 +15,7 @@ export class LoggingInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
+    let respFlag = false;
 
     const { method, url, params, query, body } = request;
 
@@ -26,16 +27,20 @@ export class LoggingInterceptor implements NestInterceptor {
     // Intercept the response
     const originalSend = response.send.bind(response);
     response.send = (body: any) => {
-      if (body)
+      if (body) {
+        respFlag = true;
         this.logger.log(`Response: ${JSON.stringify(body)}`);
+
+      }
       return originalSend(body);
     };
 
     const now = Date.now();
     return next.handle().pipe(
       tap((response) => {
-        if (response)
+        if (response && !respFlag) {
           this.logger.log(`Response: ${JSON.stringify(response)}`);
+        }
         const responseTime = Date.now() - now;
         this.logger.verbose(`Response Time: ${responseTime}ms`);
       }),

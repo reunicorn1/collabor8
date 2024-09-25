@@ -15,8 +15,7 @@ export const corsConfig = {
       'http://localhost:3001',
       'http://localhost:1234',
       'https://collabor8-socket.abdallah.tech',
-      'https://co11abor8.netlify.app/',
-      'https://co11abor8.netlify.app',
+      'https://co11abor8.netlify.app/'
     ];
 
     if (!origin || allowedOrigins.includes(origin)) {
@@ -47,9 +46,9 @@ export const appConfig = {
 
 export const cookieConfig = {
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'None',
+  sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax',
   maxAge: 1000 * 60 * 60 * 24 * 7,
   httpOnly: true,
-  domain: process.env.NODE_ENV === 'production' ? 'https://co11abor8.netlify.app' : 'localhost:3001',
+  domain: process.env.NODE_ENV === 'production' ? 'co11abor8.netlify.app' : 'localhost',
   path: '/',
 };

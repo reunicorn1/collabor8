@@ -63,23 +63,7 @@ export class AuthController {
    * triggered when guest clicks on try it out button
    * creates a guest user if it doesnt exist
    * returns the guest user and the accessToken
-
-  @Public()
-  @Post('tryout')
-  async tryout(
-    @Request() req: any,
-    @Query('IP') IP: string,
-    @Response() res: any,
-  ): Promise<any> {
-    const { _id } = await this.guestService.createOrGetProject(IP);
-    //req.user = userData; // set user on the request to satisfy the local strategy
-
-    res
-      //.cookie('accessToken', accessToken)
-      .status(200)
-      .send({ redirect: _id });
-  }*/
-
+   */
   @Public()
   @Post('guest')
   async guestSignIn(@Response() res, @Request() req) {
@@ -148,6 +132,9 @@ export class AuthController {
         .clearCookie('refreshToken', cookieConfig)
         .clearCookie('accessToken')
         .clearCookie('connect.sid')
+        .cookie.delete('refreshToken')
+        .cookie.delete('accessToken')
+        .cookie.delete('connect.sid')
         .send({ message: 'Signed out' });
     } catch (error) {
       console.log('------------SIGNOUT---------------->', error);
