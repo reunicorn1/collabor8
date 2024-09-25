@@ -67,7 +67,7 @@ export class GuestService {
       timestamp: new Date().getTime(),
       jti: uuidv4(),
     };
-    const accessToken = await this.jwtService.signAsync(payload, { expiresIn: '1d' });
+    const accessToken = await this.jwtService.signAsync(payload);
     const {
       user_id,
       email,
