@@ -2,37 +2,27 @@ import {
   Body,
   Controller,
   Delete,
-  forwardRef,
   Get,
   HttpCode,
   HttpStatus,
-  Inject,
-  Logger,
-  Param,
   Patch,
   Post,
-  Query,
   Request,
   Response,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '@auth/auth.service';
-// import { AuthGuard } from '@auth/guards/auth.guard';
 import { Public } from '@auth/decorators/isPublic.decorator';
 import { ApiTags } from '@nestjs/swagger';
-// import { RolesGuard } from '@auth/guards/roles.guard';
 import {
   CreateUserDto,
-  LoginUserDto,
-  parseLoginDto,
   ResetPasswordDto,
 } from '@users/dto/create-user.dto';
-import { Users } from '@users/user.entity';
 import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import docs from './auth-docs.decorator';
 import { v4 as uuidv4 } from 'uuid';
-import { GuestService } from '@guest/guest.service';
+import { cookieConfig } from '@config/configuration';
 
 // TODO: Add guards and roles where necessary
 // TODO: replace all endpoints that contain username with @Req() req
@@ -64,11 +54,7 @@ export class AuthController {
     });
     console.log('user', req.user);
     res
-      .cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        path: '/',
-      })
+      .cookie('refreshToken', refreshToken, cookieConfig)
       .cookie('accessToken', accessToken)
       .send({ accessToken, user });
   }
@@ -133,11 +119,7 @@ export class AuthController {
         const { accessToken, refreshToken } =
           await this.authService.generateTokens(payload);
         return res
-          .cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            path: '/',
-          })
+          .cookie('refreshToken', refreshToken, cookieConfig)
           .cookie('accessToken', accessToken)
           .send({ accessToken, user });
       } else {
@@ -155,22 +137,18 @@ export class AuthController {
   async signOut(@Request() req, @Response() res) {
     // revoke session
     try {
-    await this.authService.revokeAccessToken(req.user.jti);
-    await this.authService.revokeRefreshToken(req.cookies.refreshToken);
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).send({ message: 'Error signing out' });
-      }
-    });
-    res
-      .clearCookie('refreshToken', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        path: '/',
-      })
-      .clearCookie('accessToken')
-      .clearCookie('connect.sid')
-      .send({ message: 'Signed out' });
+      await this.authService.revokeAccessToken(req.user.jti);
+      await this.authService.revokeRefreshToken(req.cookies.refreshToken);
+      req.session.destroy((err) => {
+        if (err) {
+          return res.status(500).send({ message: 'Error signing out' });
+        }
+      });
+      res
+        .clearCookie('refreshToken', cookieConfig)
+        .clearCookie('accessToken')
+        .clearCookie('connect.sid')
+        .send({ message: 'Signed out' });
     } catch (error) {
       console.log('------------SIGNOUT---------------->', error);
       return res.status(500).send({ message: 'Error during signout process' });
@@ -201,10 +179,6 @@ export class AuthController {
     }
     const { user, accessToken } = await this.authService.refreshToken(refreshToken);
     res
-      .cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        path: '/' })
       .cookie('accessToken', accessToken)
       .send({ accessToken, user });
   }
@@ -216,10 +190,7 @@ export class AuthController {
     const { refreshToken, accessToken, user } =
       await this.authService.verifyUser(req.query.token);
     res
-      .cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        path: '/' })
+      .cookie('refreshToken', refreshToken, cookieConfig)
       .cookie('accessToken', accessToken)
       .send({ accessToken, user });
   }
