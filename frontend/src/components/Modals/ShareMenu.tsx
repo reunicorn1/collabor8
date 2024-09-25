@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { SetStateAction, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useToast } from '@chakra-ui/react';
@@ -46,7 +46,8 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
    * 2- Display people who have access: if they are pending we display pending, if not we display their access mode
    * 3- Be able to toggle the menu button is enough to make a request to update the project share entity access level
    */
-  const [createProjectShare, { isLoading: projectShareLoading }] = useCreateProjectShareMutation();
+  const [createProjectShare, { isLoading: projectShareLoading }] =
+    useCreateProjectShareMutation();
   const [inviteUser, { isLoading }] = useInviteUserMutation();
   const [updateShares] = useUpdateProjectShareMutation();
   const { data: shares, refetch } = useGetProjectSharesByProjectIdQuery(
@@ -59,7 +60,9 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
   const [inviteeType, setInviteeType] = useState<'' | 'email' | 'username'>('');
   const [inviteeValue, setInviteeValue] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [accessPermission, setAccessPermission] = useState<'read' | 'write'>('read');
+  const [accessPermission, setAccessPermission] = useState<'read' | 'write'>(
+    'read',
+  );
   const toast = useToast();
 
   //console.log({ project })
@@ -217,7 +220,7 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
         <ModalBody>
           <ShareTypeSelector
             inviteeType={inviteeType}
-            onChange={(e) => setInviteeType(e.target.value)}
+            onChange={(e) => setInviteeType(e.target.value as any)}
           />
           {inviteeType && (
             <InviteBy
@@ -225,7 +228,7 @@ const ShareMenu: React.FC<ModalProps> = ({ isOpen, onClose, project }) => {
               value={inviteeValue}
               permission={accessPermission}
               handlePermission={setAccessPermission}
-              handleInputChange={(e) => setInviteeValue(e.target.value)}
+              handleInputChange={(e) => setInviteeValue(e.target.value as any)}
               handleInvitation={handleInvite}
               isLoading={isLoading || projectShareLoading}
             />

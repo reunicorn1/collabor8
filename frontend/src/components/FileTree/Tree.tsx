@@ -8,7 +8,7 @@ import {
   useMediaQuery,
 } from '@chakra-ui/react';
 import { VscNewFile, VscNewFolder } from 'react-icons/vsc';
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 //import * as Y from 'yjs';
 import NewfileDir from '../Modals/NewfileDir';
 import { useYMap } from 'zustand-yjs';
@@ -21,7 +21,7 @@ interface TreeProps {
   //ydoc: Y.Doc;
   name: string;
   className?: string;
-  [k: string]: any
+  [k: string]: any;
 }
 
 const Tree: React.FC<TreeProps> = ({ className = '', name }) => {
@@ -53,11 +53,11 @@ const Tree: React.FC<TreeProps> = ({ className = '', name }) => {
         alignItems="center"
         justifyItems="center"
         borderBottom="2px solid #524175"
-        py='20px'
+        py="20px"
       >
-        <Tooltip text={name} className='me-auto'>
+        <Tooltip text={name} className="me-auto">
           <Text
-            me='auto'
+            me="auto"
             fontSize="xs"
             ml={4}
             fontFamily="mono"
@@ -103,15 +103,19 @@ const Tree: React.FC<TreeProps> = ({ className = '', name }) => {
       />
       <FileTreeView data={data} />
       {!isLessThan768 && (
-        <Box className='mt-auto p-4 opacity-50'>
-          <Image src="/logo-bb.png" w='100%' />
+        <Box className="mt-auto p-4 opacity-50">
+          <Image src="/logo-bb.png" w="100%" />
         </Box>
       )}
     </Box>
   );
 };
 
-const Tooltip: React.FC<{ text: string, children: ReactNode }> = ({ className = '', text, children }) => {
+const Tooltip: React.FC<{
+  text: string;
+  children: ReactNode;
+  className: string;
+}> = ({ className = '', text, children }) => {
   return (
     <Box className={`relative group ${className}`}>
       <Box className="hidden group-hover:block group-focus:block absolute z-10 bg-black text-white p-1 rounded-md">
