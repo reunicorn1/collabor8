@@ -15,7 +15,8 @@ export const corsConfig = {
       'http://localhost:3001',
       'http://localhost:1234',
       'https://collabor8-socket.abdallah.tech',
-      'https://co11abor8.netlify.app/'
+      'https://co11abor8.netlify.app/',
+      'https://co11abor8.netlify.app',
     ];
 
     if (!origin || allowedOrigins.includes(origin)) {

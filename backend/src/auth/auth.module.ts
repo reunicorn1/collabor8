@@ -23,7 +23,15 @@ import { GuestModule } from '@guest/guest.module';
     MailModule,
     RedisModule,
     //GuestModule,
-    PassportModule.register({ session: true }),
+    PassportModule.register({ session: true,
+                            cookie: {
+                              secure: process.env.NODE_ENV === 'production',
+                              sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax',
+                              maxAge: 1000 * 60 * 60 * 24 * 7,
+                              httpOnly: true,
+                              domain: process.env.NODE_ENV === 'production' ? 'co11abor8.netlify.app' : 'localhost',
+                            },
+    }),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1d' },
