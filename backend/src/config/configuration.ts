@@ -55,6 +55,7 @@ export const cookieConfig = {
 };
 
 export const accessTokenCookieConfig = {
-  ...cookieConfig,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
   httpOnly: false,
 };
