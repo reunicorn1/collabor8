@@ -23,7 +23,7 @@ import { BullModule } from '@nestjs/bullmq';
     PassportModule.register({ session: true }),
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1d' },
+      signOptions: { expiresIn: '1h' },
     }),
     BullModule.registerQueue({
       name: 'mailer',

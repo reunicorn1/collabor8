@@ -15,10 +15,16 @@ import { AuthService } from '@auth/auth.service';
 import { Public } from '@auth/decorators/isPublic.decorator';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDto, ResetPasswordDto } from '@users/dto/create-user.dto';
+import {
+  CreateUserDto,
+  ResetPasswordDto,
+} from '@users/dto/create-user.dto';
 import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import docs from './auth-docs.decorator';
 import { v4 as uuidv4 } from 'uuid';
+import { cookieConfig, accessTokenCookieConfig } from '@config/configuration';
+import { RefreshAuthGuard } from './guards/refresh-jwt-auth.guard';
 
 // TODO: Add guards and roles where necessary
 // TODO: replace all endpoints that contain username with @Req() req
@@ -48,8 +54,24 @@ export class AuthController {
     });
     console.log('user', req.user);
     res
-      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
-      .cookie('accessToken', accessToken)
+      .cookie('refreshToken', refreshToken, cookieConfig)
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
+      .send({ accessToken, user });
+  }
+
+  /**
+   * triggered when guest clicks on try it out button
+   * creates a guest user if it doesnt exist
+   * returns the guest user and the accessToken
+   */
+  @Public()
+  @Post('guest')
+  async guestSignIn(@Response() res, @Request() req) {
+    const { user, accessToken, userData } = await this.authService.guestSignIn();
+    req.user = userData; // this set the user on the rquest object
+    // cuz local strategy expects the user to be on the request object
+    res
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .send({ accessToken, user });
   }
 
@@ -81,11 +103,8 @@ export class AuthController {
         const { accessToken, refreshToken } =
           await this.authService.generateTokens(payload);
         return res
-          .cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: true,
-          })
-          .cookie('accessToken', accessToken)
+          .cookie('refreshToken', refreshToken, cookieConfig)
+          .cookie('accessToken', accessToken, accessTokenCookieConfig)
           .send({ accessToken, user });
       } else {
         res.send(user);
@@ -101,19 +120,23 @@ export class AuthController {
   @Delete('signout')
   async signOut(@Request() req, @Response() res) {
     // revoke session
-
-    await this.authService.revokeAccessToken(req.user.jti);
-    await this.authService.revokeRefreshToken(req.cookies.refreshToken);
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).send({ message: 'Error signing out' });
-      }
-    });
-    res
-      .clearCookie('refreshToken')
-      .clearCookie('accessToken')
-      .clearCookie('connect.sid')
-      .send({ message: 'Signed out' });
+    try {
+      await this.authService.revokeAccessToken(req.user.jti);
+      await this.authService.revokeRefreshToken(req.cookies.refreshToken);
+      req.session.destroy((err) => {
+        if (err) {
+          return res.status(500).send({ message: 'Error signing out' });
+        }
+      });
+      res
+        .clearCookie('refreshToken', cookieConfig)
+        .clearCookie('accessToken', accessTokenCookieConfig)
+        .clearCookie('connect.sid', cookieConfig)
+        .send({ message: 'Signed out' });
+    } catch (error) {
+      console.log('------------SIGNOUT---------------->', error);
+      return res.status(500).send({ message: 'Error during signout process' });
+    }
   }
   // password change
   // add avatar
@@ -131,17 +154,18 @@ export class AuthController {
 
   @docs.ApiRefreshToken()
   @Public()
-  // @UseGuards(RefreshAuthGuard)
+  @UseGuards(RefreshAuthGuard)
   @Post('refresh')
   async refreshToken(@Request() req, @Response() res) {
     const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
       return res.status(401).send({ message: 'Unauthorized' });
     }
+    if (req?.user?.jti)
+      await this.authService.revokeAccessToken(req.user.jti);
     const { user, accessToken } = await this.authService.refreshToken(refreshToken);
     res
-      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
-      .cookie('accessToken', accessToken)
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .send({ accessToken, user });
   }
 
@@ -152,8 +176,8 @@ export class AuthController {
     const { refreshToken, accessToken, user } =
       await this.authService.verifyUser(req.query.token);
     res
-      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
-      .cookie('accessToken', accessToken)
+      .cookie('refreshToken', refreshToken, cookieConfig)
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .send({ accessToken, user });
   }
 

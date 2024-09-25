@@ -15,10 +15,7 @@ const ProtectedRoute: React.FC<RouteProps> = ({
 
   if (isGuest && !location.pathname.startsWith('/editor')) {
     return (
-      <Navigate
-        replace
-        to={`/editor/${localStorage.getItem('project_id')}`}
-      />
+      <Navigate replace to={`/editor/${localStorage.getItem('project_id')}`} />
     );
   }
   if (!isAuthenticated) {

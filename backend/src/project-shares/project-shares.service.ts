@@ -40,7 +40,7 @@ export class ProjectSharesService {
     return await this.projectSharesRepository
       .createQueryBuilder('project_shares')
       .where('project_shares.project_id = :project_id', { project_id })
-      .getCount();
+      .getCount() + 1;
   }
 
   async findMyShare(
@@ -142,7 +142,7 @@ export class ProjectSharesService {
       role,
       privilegeExpiredTs,
     );
-    await this.cacheToken(token, `${channelName}${user_id}`, delta);
+    await this.cacheToken(token, `${channelName}${user_id}`, delta/1000);
 
     return { token, uid: user_id, channel: channelName };
   }

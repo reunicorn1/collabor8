@@ -80,11 +80,13 @@ export const authApi = api.injectEndpoints({
         body: email,
       }),
     }),
-    signout: builder.query<void, void>({
+    signout: builder.mutation<{message: string}, void>({
       query: () => ({
         url: '/auth/signout',
         method: 'DELETE',
+        credentials: 'include',
       }),
+      // invalidatesTags: ['Profile', 'User', 'Environment', 'Project', 'ProjectShare'],
     }),
 
     // Validate reset token and update password
@@ -134,7 +136,7 @@ export const {
   useResetPasswordMutation,
   useVerifyEmailMutation,
   useValidateResetTokenMutation,
-  useSignoutQuery,
+  useSignoutMutation,
   useGetGuestIPQuery,
   useLazyGetGuestProjectQuery,
 } = authApi;

@@ -20,7 +20,7 @@ export class GuestService {
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
     private readonly projectManagerService: ProjectManagerService,
-  ) {}
+  ) { }
 
   /**
    * create a guest user if it doesn't exist
@@ -55,6 +55,7 @@ export class GuestService {
    */
   async login(): Promise<{
     accessToken: string;
+    refreshToken: string;
     user: Partial<Users>;
     userData: Partial<Users>;
   }> {
@@ -66,7 +67,7 @@ export class GuestService {
       timestamp: new Date().getTime(),
       jti: uuidv4(),
     };
-    const accessToken = await this.jwtService.signAsync(payload, { expiresIn: '1d' });
+    const accessToken = await this.jwtService.signAsync(payload);
     const {
       user_id,
       email,
@@ -84,9 +85,10 @@ export class GuestService {
       roles: user.roles,
       jti: payload.jti,
     };
-
+    const refreshToken = await this.jwtService.signAsync(payload, { expiresIn: '1d' });
     return {
       accessToken,
+      refreshToken,
       user: userinfo,
       userData,
     };
@@ -102,18 +104,22 @@ export class GuestService {
     // when clicking on try it out button
     const project_id = await this.redisService.get(IP);
     if (project_id) {
-      console.log('0x01==========cached===========>', { project_id });
-      return (await this.projectService.findMyProject(
-        project_id,
-        GUEST_USER,
-      )) as Projects;
+      try {
+        const project = await this.projectService.findMyProject(
+          project_id,
+          GUEST_USER,
+        ) as Projects;
+        return project;
+      } catch (err) {
+        await this.redisService.del(IP);
+      }
     }
     const project = await this.projectService.create({
       project_name: `project-${new Date().getTime()}`,
       username: GUEST_USER,
       description: 'Guest project',
     });
-    this.projectManagerService.scheduleProjectDeletion(project.project_id, 1/60);
+    this.projectManagerService.scheduleProjectDeletion(project.project_id, 24);
 
     console.log('0x01=========not cached yet============>');
     // persist project on redis for 24h

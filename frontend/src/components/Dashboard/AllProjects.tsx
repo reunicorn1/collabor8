@@ -144,7 +144,7 @@ export default function AllProjects() {
                     onClick={() => handleGoToProject(project)}
                   >
                     <Td>{project.project_name}</Td>
-                    <Td>3 Members TBD</Td>
+                    <Td>{project.member_count} Member(s)</Td>
                     <Td>{date.toDateString()}</Td>
                     <Td>
                       <MenuProject project={project} type={'personal'}>

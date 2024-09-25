@@ -150,14 +150,17 @@ export class ProjectsService {
     const project = isShare
       ? await this.projectSharesService.findOneByQuery(query)
       : await this.projectsRepository.findOneBy(query);
-
     if (!project) {
       //throw new NotFoundException(`${isShare ? 'Project shared': 'Project'} not found`);
-      const projectShare = await this.projectSharesService.findOneByQuery(query);
-      if (!projectShare) {
-        throw new NotFoundException('Project not found');
+      try {
+        const projectShare = await this.projectSharesService.findOneByQuery(query);
+        console.log('projectShare', projectShare);
+        return projectShare;
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          throw new NotFoundException(`${isShare ? 'Project shared' : 'Project'} not found`);
+        }
       }
-      return projectShare;
     }
 
     return project;
@@ -328,6 +331,7 @@ export class ProjectsService {
 
   // Delete a project
   async remove(id: string): Promise<void> {
+    let error_message = '';
     Logger.log("deleting Project Stack");
     try {
       const IDS = await this.getIds(id);
@@ -335,8 +339,8 @@ export class ProjectsService {
       Logger.log("deleting ProjectShares");
       const projectShares = await this.projectSharesService.findByProject(IDS.project_id);
       if (projectShares.length > 0) {
-        await this.projectSharesService
-          .removeMany(IDS.project_id);
+        console.log(await this.projectSharesService
+          .removeMany(IDS.project_id));
       }
 
       Logger.log("deleting ProjectMongo");
@@ -346,12 +350,14 @@ export class ProjectsService {
         console.log('projectMongo deleted');
       }
       else {
-        throw new NotFoundException('Project Mongo not found!!!!!');
+        error_message += 'Project Mongo not found!!!!!\n';
+        // throw new NotFoundException('Project Mongo not found!!!!!');
       }
       Logger.log("deleting Project");
       await this.projectsRepository.delete(IDS.project_id);
     } catch (error) {
-      throw new BadRequestException(error.message);
+      error_message += error.message;
+      throw new BadRequestException(error_message);
     }
   }
 
