@@ -13,6 +13,7 @@ export const corsConfig = {
   origin: (origin, callback) => {
     const allowedOrigins = [
       'http://localhost:3001',
+      'http://localhost:3001/',
       'http://localhost:1234',
       'https://collabor8-socket.abdallah.tech',
       'https://co11abor8.netlify.app/',
