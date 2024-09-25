@@ -87,7 +87,7 @@ export default function OptionsMenu({
         variant="ghost"
         aria-label="Done"
         fontSize="12px"
-        color='white'
+        // color='white'
         size="xs"
         icon={<RxDotsVertical />}
         onClick={(e) => {

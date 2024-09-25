@@ -12,17 +12,17 @@ const ProtectedRoute: React.FC<RouteProps> = ({
   const userDetails = useAppSelector(selectUserDetails);
   const location = useLocation();
 
-  if (
-    userDetails?.roles === 'guest' &&
-    !location.pathname.startsWith('/editor')
-  ) {
-    return (
-      <Navigate
-        replace
-        to={`/editor/${localStorage.getItem('project_id')}`}
-      />
-    );
-  }
+  // if (
+  //   userDetails?.roles === 'guest' &&
+  //   !location.pathname.startsWith('/editor')
+  // ) {
+  //   return (
+  //     <Navigate
+  //       replace
+  //       to={`/editor/${localStorage.getItem('project_id')}`}
+  //     />
+  //   );
+  // }
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }

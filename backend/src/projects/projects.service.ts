@@ -150,14 +150,17 @@ export class ProjectsService {
     const project = isShare
       ? await this.projectSharesService.findOneByQuery(query)
       : await this.projectsRepository.findOneBy(query);
-
     if (!project) {
       //throw new NotFoundException(`${isShare ? 'Project shared': 'Project'} not found`);
-      const projectShare = await this.projectSharesService.findOneByQuery(query);
-      if (!projectShare) {
-        throw new NotFoundException('Project not found');
+      try {
+        const projectShare = await this.projectSharesService.findOneByQuery(query);
+        console.log('projectShare', projectShare);
+        return projectShare;
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          throw new NotFoundException(`${isShare ? 'Project shared' : 'Project'} not found`);
+        }
       }
-      return projectShare;
     }
 
     return project;
@@ -335,8 +338,8 @@ export class ProjectsService {
       Logger.log("deleting ProjectShares");
       const projectShares = await this.projectSharesService.findByProject(IDS.project_id);
       if (projectShares.length > 0) {
-        await this.projectSharesService
-          .removeMany(IDS.project_id);
+        console.log(await this.projectSharesService
+          .removeMany(IDS.project_id));
       }
 
       Logger.log("deleting ProjectMongo");

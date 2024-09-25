@@ -4,14 +4,31 @@ import { Queue } from 'bullmq';
 import { ProjectsService } from '@projects/projects.service';
 import { ProjectSharesService } from '@project-shares/project-shares.service';
 import { RedisService } from '@redis/redis.service';
+import { Processor, WorkerHost } from '@nestjs/bullmq';
+
+@Processor('project-manager')
 @Injectable()
-export class ProjectManagerService {
+export class ProjectManagerService extends WorkerHost {
   constructor(
     @InjectQueue('project-manager') private readonly projectManagerQueue: Queue,
     private readonly projectsService: ProjectsService,
     private readonly projectSharesService: ProjectSharesService,
     private readonly redisService: RedisService,
-  ) {}
+  ) {
+    super();
+  }
+
+  async process(job: any) {
+    console.log('processing job:', job);
+    switch (job.name) {
+      case 'delete-project':
+        return this.processDeleteProject(job);
+      case 'delete-project-shares':
+        return this.processDeleteProjectShares(job);
+      default:
+        throw new Error(`Unknown job name: ${job.name}`);
+    }
+  }
 
   async scheduleProjectDeletion(project_id: string, hours: number) {
     const delay = hours * 60 * 60 * 1000;

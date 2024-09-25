@@ -24,6 +24,8 @@ import { useState } from 'react';
 import ThemeSelector from './ThemeSelector';
 import LanguageSelector from './LanguageSelector';
 import { Project } from '@types';
+import { selectUserDetails } from '@store/selectors';
+import { performLogout } from '@store/slices/authSlice';
 
 type MenuBarProps = {
   project: Project;
@@ -42,8 +44,13 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
   const navigate = useNavigate();
   const { mode } = useSettings()!;
   const panelVisiblity = useAppSelector(selectPanelVisiblity);
+  const userDetail = useAppSelector(selectUserDetails);
 
   const goHome = () => {
+    if (userDetail?.roles === 'guest') {
+      dispatch(performLogout());
+    }
+  
     navigate('/dashboard');
   };
 

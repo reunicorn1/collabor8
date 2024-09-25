@@ -64,7 +64,11 @@ export class AuthController {
     });
     console.log('user', req.user);
     res
-      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
+      .cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        path: '/',
+      })
       .cookie('accessToken', accessToken)
       .send({ accessToken, user });
   }
@@ -73,7 +77,7 @@ export class AuthController {
    * triggered when guest clicks on try it out button
    * creates a guest user if it doesnt exist
    * returns the guest user and the accessToken
-   
+
   @Public()
   @Post('tryout')
   async tryout(
@@ -131,7 +135,8 @@ export class AuthController {
         return res
           .cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === "production",
+            path: '/',
           })
           .cookie('accessToken', accessToken)
           .send({ accessToken, user });
@@ -149,7 +154,7 @@ export class AuthController {
   @Delete('signout')
   async signOut(@Request() req, @Response() res) {
     // revoke session
-
+    try {
     await this.authService.revokeAccessToken(req.user.jti);
     await this.authService.revokeRefreshToken(req.cookies.refreshToken);
     req.session.destroy((err) => {
@@ -158,10 +163,17 @@ export class AuthController {
       }
     });
     res
-      .clearCookie('refreshToken')
+      .clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        path: '/',
+      })
       .clearCookie('accessToken')
-      .clearCookie('connect.sid')
       .send({ message: 'Signed out' });
+    } catch (error) {
+      console.log('------------SIGNOUT---------------->', error);
+      return res.status(500).send({ message: 'Error during signout process' });
+    }
   }
   // password change
   // add avatar
@@ -188,7 +200,10 @@ export class AuthController {
     }
     const { user, accessToken } = await this.authService.refreshToken(refreshToken);
     res
-      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
+      .cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        path: '/' })
       .cookie('accessToken', accessToken)
       .send({ accessToken, user });
   }
@@ -200,7 +215,10 @@ export class AuthController {
     const { refreshToken, accessToken, user } =
       await this.authService.verifyUser(req.query.token);
     res
-      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: true })
+      .cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        path: '/' })
       .cookie('accessToken', accessToken)
       .send({ accessToken, user });
   }
