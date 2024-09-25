@@ -12,13 +12,10 @@ export class RefreshAuthGuard extends AuthGuard('jwt-refresh') {
   //checks if refresh token is valid
   async checkRefresh(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
-    console.info('request', request);
     const token = request.cookies['refreshToken'];
-    console.info('token', token);
     if (token) {
       try {
         const checkToken = await this.jwtService.verifyAsync(token);
-        console.info('checkToken', checkToken);
         if (checkToken) {
           return true;
         }
