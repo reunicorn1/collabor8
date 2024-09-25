@@ -331,6 +331,7 @@ export class ProjectsService {
 
   // Delete a project
   async remove(id: string): Promise<void> {
+    let error_message = '';
     Logger.log("deleting Project Stack");
     try {
       const IDS = await this.getIds(id);
@@ -349,12 +350,14 @@ export class ProjectsService {
         console.log('projectMongo deleted');
       }
       else {
-        throw new NotFoundException('Project Mongo not found!!!!!');
+        error_message += 'Project Mongo not found!!!!!\n';
+        // throw new NotFoundException('Project Mongo not found!!!!!');
       }
       Logger.log("deleting Project");
       await this.projectsRepository.delete(IDS.project_id);
     } catch (error) {
-      throw new BadRequestException(error.message);
+      error_message += error.message;
+      throw new BadRequestException(error_message);
     }
   }
 
