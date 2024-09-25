@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { GuestService } from '@guest/guest.service';
 import { Public } from '@auth/decorators/isPublic.decorator';
+import { accessTokenCookieConfig } from '@config/configuration';
 
 @Controller('guest')
 export class GuestController {
@@ -50,7 +51,7 @@ export class GuestController {
     req.user = userData; // set user on the request to satisfy the local strategy
 
     res
-      .cookie('accessToken', accessToken)
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .status(200).send({ user, accessToken });
   }
 
