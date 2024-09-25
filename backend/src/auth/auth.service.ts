@@ -352,7 +352,7 @@ export class AuthService {
   }
 
   async revokeAccessToken(jti: string) {
-    await this.redisService.set(`revoked:${jti}`, 'true', 3600); // Token revocation expires after an hour
+    await this.redisService.set(`revoked:${jti}`, 'true', 3600 * 24); // Token revocation expires after an hour
   }
 
   async revokeRefreshToken(refreshToken: string) {
@@ -374,7 +374,7 @@ export class AuthService {
    * create a guest user if it doesn't exist
    * @returns accessToken valid for 24h(no refresh) and guest user details
    *
-   
+
   async tryout(IP: string): Promise<{
     accessToken: string;
     user: Partial<Users>;

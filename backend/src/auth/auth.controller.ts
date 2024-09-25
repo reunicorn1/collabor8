@@ -23,6 +23,7 @@ import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import docs from './auth-docs.decorator';
 import { v4 as uuidv4 } from 'uuid';
 import { cookieConfig, accessTokenCookieConfig } from '@config/configuration';
+import { RefreshAuthGuard } from './guards/refresh-jwt-auth.guard';
 
 // TODO: Add guards and roles where necessary
 // TODO: replace all endpoints that contain username with @Req() req
@@ -154,13 +155,15 @@ export class AuthController {
 
   @docs.ApiRefreshToken()
   @Public()
-  // @UseGuards(RefreshAuthGuard)
+  @UseGuards(RefreshAuthGuard)
   @Post('refresh')
   async refreshToken(@Request() req, @Response() res) {
     const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
       return res.status(401).send({ message: 'Unauthorized' });
     }
+    if (req?.user?.jti)
+      await this.authService.revokeAccessToken(req.user.jti);
     const { user, accessToken } = await this.authService.refreshToken(refreshToken);
     res
       .cookie('accessToken', accessToken, accessTokenCookieConfig)

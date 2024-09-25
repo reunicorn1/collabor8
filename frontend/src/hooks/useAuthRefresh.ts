@@ -16,6 +16,10 @@ const useAuthRefresh = () => {
     useRefreshTokenMutation();
 
   useEffect(() => {
+    if (localStorage.getItem('accessToken')) {
+      console.log('No need to refresh token');
+      return;
+    }
     const fetchToken = async () => {
       try {
         await refreshToken().unwrap();
