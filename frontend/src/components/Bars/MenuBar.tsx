@@ -26,6 +26,7 @@ import ThemeSelector from './ThemeSelector';
 import LanguageSelector from './LanguageSelector';
 import { Project } from '@types';
 import { selectUserDetails } from '@store/selectors/userSelectors';
+import { performLogout } from '@store/slices/authSlice';
 
 type MenuBarProps = {
   project: Project;
@@ -71,6 +72,10 @@ export default function MenuBar({
   }, [toast]);
 
   const goHome = () => {
+    if (user.roles.includes('guest')) {
+      dispatch(performLogout());
+      return;
+    }
     navigate('/dashboard');
   };
 
