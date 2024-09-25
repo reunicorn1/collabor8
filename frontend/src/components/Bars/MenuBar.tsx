@@ -7,6 +7,7 @@ import {
   useMediaQuery,
   Box,
   HStack,
+  useToast,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 //import { PiGithubLogo } from 'react-icons/pi';
@@ -24,15 +25,18 @@ import { useState } from 'react';
 import ThemeSelector from './ThemeSelector';
 import LanguageSelector from './LanguageSelector';
 import { Project } from '@types';
-import { selectUserDetails } from '@store/selectors';
-import { performLogout } from '@store/slices/authSlice';
+import { selectUserDetails } from '@store/selectors/userSelectors';
 
 type MenuBarProps = {
   project: Project;
   className?: string;
 } & { [k: string]: any };
 
-export default function MenuBar({ className = '', project, ...rest }: MenuBarProps) {
+export default function MenuBar({
+  className = '',
+  project,
+  ...rest
+}: MenuBarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLessThan768] = useMediaQuery('(max-width: 768px)');
   const dispatch = useAppDispatch();
@@ -44,10 +48,33 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
   const navigate = useNavigate();
   const { mode } = useSettings()!;
   const panelVisiblity = useAppSelector(selectPanelVisiblity);
-  const userDetail = useAppSelector(selectUserDetails);
+  const user = useAppSelector(selectUserDetails);
+  const toast = useToast();
 
   const goHome = () => {
     navigate('/dashboard');
+  };
+
+  const handleVoiceChat = () => {
+    // Check if the user is a guest
+    if (
+      user.username === 'guest' &&
+      user.first_name === 'Guest' &&
+      user.last_name === 'User'
+    ) {
+      toast({
+        title: '🎙️ Mic Check Failed',
+        description:
+          'Login required to talk the talk. Let’s get you signed in 💬',
+        status: 'warning',
+        duration: 3000,
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'subtle',
+      });
+    } else {
+      onOpenV();
+    }
   };
 
   return (
@@ -59,6 +86,7 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
         p='4'
       >
         <HStack me={`${!isLessThan768 ? 'auto' : ''}`}>
+
           <IconButton
             isRound={true}
             color="white"
@@ -80,7 +108,8 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
         </HStack>
         <Text
           color="white"
-          fontSize="xs" ml={2}
+          fontSize="xs"
+          ml={2}
           className={`before:inline-block before:size-2 before:rounded-full
             ${!mode ? 'before:bg-green-500' : 'before:bg-red-500'} before:me-2`}
         >
@@ -88,13 +117,13 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
         </Text>
         <Button
           className="!text-sm !text-slate-200 !bg-transparent capitalize"
-          p='0'
-          h='max-content'
+          p="0"
+          h="max-content"
           onClick={() => dispatch(togglePanelVisibility())}
-          fontWeight='normal'
+          fontWeight="normal"
         >
           toggle panel
-          <span className='block w-3 text-lg ms-2'>
+          <span className="block w-3 text-lg ms-2">
             {panelVisiblity ? '-' : '+'}
           </span>
         </Button>
@@ -107,7 +136,7 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
           fontSize="18px"
           size="xs"
           icon={<MdOutlineKeyboardVoice />}
-          onClick={onOpenV}
+          onClick={handleVoiceChat}
           ml={2}
         />
         {isLessThan768 && (
@@ -124,7 +153,7 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
             onClick={() => {
               setIsOpen(true);
             }}
-            icon={<HamburgerIcon className='pointer-events-none' />}
+            icon={<HamburgerIcon className="pointer-events-none" />}
           />
         )}
       </Flex>
