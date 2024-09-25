@@ -22,7 +22,7 @@ import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import docs from './auth-docs.decorator';
 import { v4 as uuidv4 } from 'uuid';
-import { cookieConfig } from '@config/configuration';
+import { cookieConfig, accessTokenCookieConfig } from '@config/configuration';
 
 // TODO: Add guards and roles where necessary
 // TODO: replace all endpoints that contain username with @Req() req
@@ -55,7 +55,7 @@ export class AuthController {
     console.log('user', req.user);
     res
       .cookie('refreshToken', refreshToken, cookieConfig)
-      .cookie('accessToken', accessToken)
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .send({ accessToken, user });
   }
 
@@ -71,7 +71,7 @@ export class AuthController {
     req.user = userData; // this set the user on the rquest object
     // cuz local strategy expects the user to be on the request object
     res
-      .cookie('accessToken', accessToken)
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .send({ accessToken, user });
   }
 
@@ -104,7 +104,7 @@ export class AuthController {
           await this.authService.generateTokens(payload);
         return res
           .cookie('refreshToken', refreshToken, cookieConfig)
-          .cookie('accessToken', accessToken)
+          .cookie('accessToken', accessToken, accessTokenCookieConfig)
           .send({ accessToken, user });
       } else {
         res.send(user);
@@ -130,8 +130,8 @@ export class AuthController {
       });
       res
         .clearCookie('refreshToken', cookieConfig)
-        .clearCookie('accessToken')
-        .clearCookie('connect.sid')
+        .clearCookie('accessToken', accessTokenCookieConfig)
+        .clearCookie('connect.sid', cookieConfig)
         .send({ message: 'Signed out' });
     } catch (error) {
       console.log('------------SIGNOUT---------------->', error);
@@ -163,7 +163,7 @@ export class AuthController {
     }
     const { user, accessToken } = await this.authService.refreshToken(refreshToken);
     res
-      .cookie('accessToken', accessToken)
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .send({ accessToken, user });
   }
 
@@ -175,7 +175,7 @@ export class AuthController {
       await this.authService.verifyUser(req.query.token);
     res
       .cookie('refreshToken', refreshToken, cookieConfig)
-      .cookie('accessToken', accessToken)
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .send({ accessToken, user });
   }
 

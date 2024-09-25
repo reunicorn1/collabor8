@@ -53,3 +53,8 @@ export const cookieConfig = {
   // domain: process.env.NODE_ENV === 'production' ? '.co11abor8.netlify.app' : 'localhost',
   // path: '/',
 };
+
+export const accessTokenCookieConfig = {
+  ...cookieConfig,
+  httpOnly: false,
+};
