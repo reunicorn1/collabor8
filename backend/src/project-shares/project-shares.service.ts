@@ -142,7 +142,7 @@ export class ProjectSharesService {
       role,
       privilegeExpiredTs,
     );
-    await this.cacheToken(token, `${channelName}${user_id}`, delta);
+    await this.cacheToken(token, `${channelName}${user_id}`, delta/1000);
 
     return { token, uid: user_id, channel: channelName };
   }

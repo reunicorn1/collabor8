@@ -97,6 +97,7 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       user.audioTrack.play();
     }
     rtc.remoteTracks[user.uid] = user;
+    // logic adding user avatar to the list for local user
   };
 
   const handleLeaveButtonClick = async () => {
@@ -120,6 +121,7 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
         user.audioTrack.stop();
       }
     }
+    // logic removing user avatar from the list for local user
 
     rtc.client = null;
     rtc.audioTrackMuted = false;
@@ -138,6 +140,7 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
     if (user.audioTrack) {
       user.audioTrack.play();
     }
+    // logic adding user avatar to the list for remote user
     rtc.remoteTracks[user.uid] = user;
   };
 
@@ -150,6 +153,7 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       }
       delete rtc.remoteTracks[user.uid];
     }
+    // logic removing user avatar from the list for remote user
     if (rtc.client) {
       rtc.client.unsubscribe(user);
     }
