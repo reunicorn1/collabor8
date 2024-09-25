@@ -47,10 +47,6 @@ export default function MenuBar({ className = '', project, ...rest }: MenuBarPro
   const userDetail = useAppSelector(selectUserDetails);
 
   const goHome = () => {
-    if (userDetail?.roles === 'guest') {
-      dispatch(performLogout());
-    }
-  
     navigate('/dashboard');
   };
 

@@ -169,6 +169,7 @@ export class AuthController {
         path: '/',
       })
       .clearCookie('accessToken')
+      .clearCookie('connect.sid')
       .send({ message: 'Signed out' });
     } catch (error) {
       console.log('------------SIGNOUT---------------->', error);

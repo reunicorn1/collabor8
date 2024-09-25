@@ -117,7 +117,7 @@ export class GuestService {
       username: GUEST_USER,
       description: 'Guest project',
     });
-    this.projectManagerService.scheduleProjectDeletion(project.project_id, 1 / 60);
+    this.projectManagerService.scheduleProjectDeletion(project.project_id, 24);
 
     console.log('0x01=========not cached yet============>');
     // persist project on redis for 24h
