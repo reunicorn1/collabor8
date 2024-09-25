@@ -55,7 +55,6 @@ export const cookieConfig = {
 };
 
 export const accessTokenCookieConfig = {
-  secure: false,
-  sameSite: 'Lax',
+  ...cookieConfig,
   httpOnly: false,
 };
