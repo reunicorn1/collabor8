@@ -40,7 +40,7 @@ export class ProjectSharesService {
     return await this.projectSharesRepository
       .createQueryBuilder('project_shares')
       .where('project_shares.project_id = :project_id', { project_id })
-      .getCount();
+      .getCount() + 1;
   }
 
   async findMyShare(

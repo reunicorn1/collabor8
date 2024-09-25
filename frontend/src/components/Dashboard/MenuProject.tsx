@@ -16,7 +16,7 @@ import {
   useDeleteProjectMutation,
   useUpdateProjectMutation,
 } from '@store/services/project';
-import { useToggleShareFavoriteMutation } from '@store/services/projectShare';
+import { useDeleteProjectShareMutation, useToggleShareFavoriteMutation, useUpdateProjectShareMutation } from '@store/services/projectShare';
 import { useToggleFavoriteMutation } from '@store/services/project';
 import { RenamePopover } from './RenamePopover';
 
@@ -30,16 +30,23 @@ type DBMenuProps = {
 
 export default function MenuProject({ children, project, type }: DBMenuProps) {
   const toast = useToast();
-  const [favoriteProject] = useToggleFavoriteMutation();
-  const [favoriteSharedProject] = useToggleShareFavoriteMutation();
-  const [updateProject] = useUpdateProjectMutation();
-  const [deleteProject] = useDeleteProjectMutation();
+  const isShared = type === 'shared';
+  const [favoriteProject] = isShared 
+  ? useToggleShareFavoriteMutation()
+  : useToggleFavoriteMutation();
+  const [updateProject] = isShared 
+  ? useUpdateProjectShareMutation() 
+  : useUpdateProjectMutation();
+  const [deleteProject] = isShared
+  ? useDeleteProjectShareMutation()
+  : useDeleteProjectMutation();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const project_id = isShared ? project.share_id : project.project_id;
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
     console.log('delete project: ', project.project_name);
-    await deleteProject(project.project_id)
+    await deleteProject(project_id)
       .unwrap()
       .then((data) => {
         console.log('deleted project', data);
@@ -51,7 +58,7 @@ export default function MenuProject({ children, project, type }: DBMenuProps) {
 
   const onSave = async (project_name: string) => {
     console.log(project_name);
-    await updateProject({ id: project.project_id, data: { project_name } })
+    await updateProject({ id: project_id, data: { project_name } })
       .unwrap()
       .then((_) => {
         console.log('renamed project to: ', project_name);
@@ -65,10 +72,9 @@ export default function MenuProject({ children, project, type }: DBMenuProps) {
   const handleFavorites = async (e: React.MouseEvent) => {
     // This function sends a request to add a project to the user's favorites
     e.stopPropagation();
-    const id = type === 'personal' ? project.project_id : project.share_id;
     // const favoriteToggle =
     //   type === 'personal' ? favoriteProject : favoriteSharedProject;
-    await favoriteProject(id)
+    await favoriteProject(project_id)
       .unwrap()
       .then((_) => {
         console.log('Changed the value of favorite to', !project.favorite);
@@ -89,6 +95,8 @@ export default function MenuProject({ children, project, type }: DBMenuProps) {
     <Menu>
       <MenuButton onClick={(e) => e.stopPropagation()}>{children}</MenuButton>
       <MenuList bg="gray">
+      {!isShared && (
+      <>
         <MenuItem
           fontSize={['xx-small', 'xs']}
           icon={<MdOutlineEdit fontSize="12px" />}
@@ -105,6 +113,8 @@ export default function MenuProject({ children, project, type }: DBMenuProps) {
           project_name={project.project_name}
           onSave={onSave}
         />
+      </>
+      )}
         <MenuItem
           fontSize={['xx-small', 'xs']}
           icon={<MdDeleteOutline fontSize="12px" />}
