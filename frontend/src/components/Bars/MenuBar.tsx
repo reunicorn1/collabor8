@@ -8,7 +8,9 @@ import {
   Box,
   HStack,
   useToast,
+  Slide,
 } from '@chakra-ui/react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 //import { PiGithubLogo } from 'react-icons/pi';
 import { MdOutlineKeyboardVoice } from 'react-icons/md';
@@ -21,7 +23,6 @@ import { useAppDispatch, useAppSelector } from '@hooks/useApp';
 import { togglePanelVisibility } from '@store/slices/fileSlice';
 import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
 import { HamburgerIcon } from '@chakra-ui/icons';
-import { useState } from 'react';
 import ThemeSelector from './ThemeSelector';
 import LanguageSelector from './LanguageSelector';
 import { Project } from '@types';
@@ -48,8 +49,16 @@ export default function MenuBar({
   const navigate = useNavigate();
   const { mode } = useSettings()!;
   const panelVisiblity = useAppSelector(selectPanelVisiblity);
+  const [showAdBlockerNotification, setShowAdBlockerNotification] =
+    useState(false);
   const user = useAppSelector(selectUserDetails);
   const toast = useToast();
+
+  useEffect(() => {
+    fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js')
+      .then(() => setShowAdBlockerNotification(false))
+      .catch(() => setShowAdBlockerNotification(true));
+  }, []);
 
   const goHome = () => {
     navigate('/dashboard');
@@ -73,20 +82,26 @@ export default function MenuBar({
         variant: 'subtle',
       });
     } else {
-      onOpenV();
+      if (showAdBlockerNotification) {
+        toast({
+          title: 'AdBlocker Detected',
+          description:
+            'Please disable your AdBlocker to use the voice chat feature.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+          position: 'top',
+        });
+      } else {
+        onOpenV();
+      }
     }
   };
 
   return (
     <Box className={className} {...rest}>
-      <Flex
-        alignItems="center"
-        justifyContent="space-between"
-        gap='4'
-        p='4'
-      >
+      <Flex alignItems="center" justifyContent="space-between" gap="4" p="4">
         <HStack me={`${!isLessThan768 ? 'auto' : ''}`}>
-
           <IconButton
             isRound={true}
             color="white"
@@ -157,6 +172,36 @@ export default function MenuBar({
           />
         )}
       </Flex>
+
+      {/* AdBlocker Notification Bar */}
+      <Slide
+        direction="top"
+        in={showAdBlockerNotification}
+        style={{
+          zIndex: 10,
+          width: '100%',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
+        <Box
+          p="4"
+          bg="yellow.400"
+          shadow="md"
+          borderBottom="2px solid yellow.600"
+          maxW="600px"
+          borderRadius="md"
+          mt="10px"
+        >
+          <Text fontSize="md" color="gray.800" textAlign="center">
+            🚫 <strong>AdBlocker Detected:</strong> Please disable your
+            AdBlocker to use the voice chat feature.
+          </Text>
+        </Box>
+      </Slide>
 
       {/* DRAWERS */}
       {isLessThan768 && (
