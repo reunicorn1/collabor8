@@ -22,6 +22,7 @@ import {
   DrawerCloseButton,
 } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
+import CallToAction from '@components/Buttons/CallToAction';
 //import { useCreateProjectMutation } from '@store/services/project';
 
 export default function NavigationBar() {
@@ -125,6 +126,9 @@ export default function NavigationBar() {
             </ListItem>
             <ListItem>
               <Link to="/mission">Mission</Link>
+            </ListItem>
+            <ListItem>
+              <CallToAction />
             </ListItem>
           </List>
           <Button
