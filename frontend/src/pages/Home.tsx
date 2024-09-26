@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Box, Heading, Text, Center, Image, SimpleGrid, Stack } from '@chakra-ui/react';
 import SignUp from '@components/Modals/SignUp';
 import ResetPasswordModal from '@components/Modals/ResetPassword';
@@ -13,6 +13,7 @@ const Home = () => {
   const [animationStarted, setAnimationStarted] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const location = useLocation();
+  const typedText = useTypingEffect(TEXT, 50, animationStarted);
 
   const handleCloseSignUp = () => setIsSignUpOpen(false);
 
@@ -29,11 +30,9 @@ const Home = () => {
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
-  const typedText = useTypingEffect(TEXT, 50, animationStarted);
-
   return (
     <>
-      <Stack className='h-screen bg-brand'>
+      <Stack className='h-screen bg-brand overflow-hidden'>
         <NavigationBar />
         {/* SLOGAN */}
         <Slogan className='my-auto' />

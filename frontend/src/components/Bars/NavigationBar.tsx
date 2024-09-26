@@ -2,10 +2,7 @@ import {
   Box,
   Image,
   Flex,
-  Spacer,
-  Divider,
   Button,
-  Heading,
   useDisclosure,
   useMediaQuery,
   List,
@@ -24,13 +21,14 @@ import {
   DrawerContent,
   DrawerCloseButton,
 } from '@chakra-ui/react';
-import { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CallToAction from '@components/Buttons/CallToAction';
 //import { useCreateProjectMutation } from '@store/services/project';
 
 export default function NavigationBar() {
   const navigate = useNavigate();
   const [isLessThan900] = useMediaQuery('(max-width: 900px)');
+  const menuBarRef = useRef<HTMLDivElement>();
   //const [id, setId] = useState('');
   //const [createProject] = useCreateProjectMutation();
   const {
@@ -50,6 +48,16 @@ export default function NavigationBar() {
     openSignIn();
   };
 
+  // effects to add background color to menu bar on scroll
+  useEffect(() => {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        menuBarRef.current.classList.add('bg-brand');
+      } else {
+        menuBarRef.current.classList.remove('bg-brand');
+      }
+    }, { passive: true });
+  }, []);
   return (
     <>
       {
@@ -93,14 +101,20 @@ export default function NavigationBar() {
           )
           : (
             <Flex
+              ref={menuBarRef}
+              zIndex={100}
+              position="fixed"
+              top={0}
+              left={0}
+              w="100%"
               alignItems="center"
               px={3}
-              pt={4}
+              p={4}
             >
               <Image src="/logo-bb.png" h="25px" ml={3} />
               <List className='flex items-center gap-10 ms-auto text-white font-semibold font-mono'>
                 <ListItem>
-                  <a href="#home">Home</a>
+                  <a href="#home" onClick={() => window.scrollTo({ top: 0 })}>Home</a>
                 </ListItem>
                 <ListItem>
                   <a href="#features">Features</a>
@@ -114,7 +128,7 @@ export default function NavigationBar() {
                   </Link>
                 </ListItem>
                 <ListItem>
-                <CallToAction />
+                  <CallToAction className='!text-black !bg-white' size='sm' />
                 </ListItem>
               </List>
               <Button
@@ -163,15 +177,31 @@ export default function NavigationBar() {
 }
 
 type Props = {
-  renderFooter: (onClose: () => void) => JSX.Element
+  renderFooter: (onClose: () => void) => React.ReactNode;
 };
 
 function MenuDrawer({ renderFooter }: Props) {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const btnRef = useRef()
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const btnRef = useRef();
+  const menuBarRef = useRef<HTMLDivElement>();
+
+  // effects to add background color to menu bar on scroll
+  useEffect(() => {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        menuBarRef.current.classList.add('bg-brand');
+      } else {
+        menuBarRef.current.classList.remove('bg-brand');
+      }
+    }, { passive: true });
+  }, []);
+
 
   return (
-    <Box className='sticky -top-1 z-10 flex justify-between items-center py-4 px-4'>
+    <Box
+      ref={menuBarRef}
+      className='trasnition fixed left-0 top-0 w-full z-10 flex justify-between items-center p-4'
+    >
       <Box w='120px'>
         <Image src="/logo-bb.png" w='100%' />
       </Box>
@@ -202,7 +232,7 @@ function MenuDrawer({ renderFooter }: Props) {
           <DrawerBody className='text-lg font-mono bg-slate-100'>
             <List className='flex flex-col gap-4 mt-8'>
               <ListItem>
-                <a href='#home'>Home</a>
+                <a href='#home' onClick={() => window.scrollTo({ top: 0 })}>Home</a>
               </ListItem>
               <ListItem>
                 <a href='#features'>features</a>

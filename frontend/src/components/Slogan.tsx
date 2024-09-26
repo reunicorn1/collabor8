@@ -27,15 +27,16 @@ export default function Slogan({ className = '' }: SloganProps) {
               create together.
             </span>
           </p>
-          <CallToAction
-            className='w-auto px-0 capitalize sm:!hidden hover:!scale-95 active:scale-95'
-          />
         </Box>
         <Box className="flex items-center gap-2  before:w-[30%] before:h-6 md:before:h-14 before:bg-[#F16145]">
           <p className="text-white font-bold">faster</p>
           <span className="text-[#6699CC]">^</span>
           <span className="text-slate-300">*</span>
         </Box>
+        <CallToAction
+          className='mt-4 w-max !text-black !bg-white px-0 capitalize sm:!hidden hover:!scale-95 active:scale-95'
+        />
+
       </Box>
     </Box>
   );

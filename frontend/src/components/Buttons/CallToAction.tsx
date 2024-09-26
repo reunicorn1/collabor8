@@ -13,8 +13,8 @@ type Props = {
 };
 export default function CallToAction({ className = '', ...rest }: Props) {
   const { data } = useGetGuestIPQuery();
-  const [getProject] = useLazyGetGuestProjectQuery();
-  const [loginGuest] = useLoginGuestMutation();
+  const [getProject, { isLoading: projectLoading }] = useLazyGetGuestProjectQuery();
+  const [loginGuest, { isLoading: loginLoading }] = useLoginGuestMutation();
   const navigate = useNavigate();
 
   const handleTryItOut = async () => {
@@ -30,9 +30,9 @@ export default function CallToAction({ className = '', ...rest }: Props) {
 
   return (
     <Button
+      isLoading={projectLoading || loginLoading}
       onClick={handleTryItOut}
-      color='brand.400'
-      bgColor='transparent'
+      textTransform='uppercase'
       className={className}
       rightIcon={
         <ChevronRightIcon
@@ -44,13 +44,11 @@ export default function CallToAction({ className = '', ...rest }: Props) {
       _hover={{
         bg: 'transparent',
         color: 'white',
-        textDecoration: 'underline',
         transform: 'scale(0.95)',
       }}
       _active={{
         bg: 'transparent',
         color: 'white',
-        textDecoration: 'underline',
         transform: 'scale(0.95)',
       }}
     >
