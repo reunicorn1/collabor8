@@ -1,5 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import { Box, Heading, Text, Center, Image, SimpleGrid, Stack } from '@chakra-ui/react';
+import { FaGithub } from 'react-icons/fa6';
+import { FaLinkedin } from 'react-icons/fa';
+
+import {
+  Box,
+  Heading,
+  Text,
+  Center,
+  Image,
+  SimpleGrid,
+  Stack,
+  Flex,
+} from '@chakra-ui/react';
 import SignUp from '@components/Modals/SignUp';
 import ResetPasswordModal from '@components/Modals/ResetPassword';
 import useTypingEffect from '../hooks/useTypingEffect';
@@ -32,76 +44,93 @@ const Home = () => {
 
   return (
     <>
-      <Stack className='h-screen bg-brand overflow-hidden'>
+      <Stack className="h-screen bg-brand h-max">
         <NavigationBar />
         {/* SLOGAN */}
-        <Slogan className='my-auto' />
+        <Slogan />
       </Stack>
+      <Image src="gradient.png" h="200px" w="100%" />
+      <Center>
+        <Image
+          src="/converted.gif"
+          maxW={{ base: '90%', md: '700px', lg: '1000px' }}
+          mt={10}
+        />
+      </Center>
 
       {/* TYPING */}
-      <Box bg='white' px={4} className='py-10 lg:py-20'>
-        <p className='lg:max-w-[50%] mx-auto font-mono !leading-loose lg:text-4xl'>
+      <Box bg="white" p={{ base: 10, md: 20 }}>
+        <p className="max-w-[90%] lg:max-w-[65%] mx-auto font-mono !leading-loose text-sm md:text-2xl">
           {typedText}
         </p>
       </Box>
 
       {/* FEATURES */}
       <Box
-        bg='black'
+        bg="black"
         backgroundImage={`url('/loop.png')`}
         backgroundSize="cover"
         backgroundPosition="center"
-        py={10}
+        pt={20}
+        pb={20}
+        p={7}
       >
         <Text
           fontFamily="mono"
-          fontSize="35px"
-
+          fontSize={{ base: '25px', md: '35px' }}
+          mt={'40px'}
+          mb={'20px'}
           color="white"
           className="w-[min(90%,700px)] mx-auto text-center"
         >
-          Why Collabor8 is the Ultimate Tool for Team Collaboration
+          Why Collabor8 is the <span className="bg-orange-600">Ultimate</span>{' '}
+          Tool for Team Collaboration
         </Text>
         <Box
-          className={`container mx-auto py-10 px-4 grid grid-cols-1 md:grid-cols-9 justify-center gap-8 lg:px-24`}
+          className={`container mx-auto py-10 px-4 grid  justify-center gap-8`}
           id="features"
         >
           {FEATURES.map((f, idx) => (
             <Box
               key={idx}
-              className={`flex flex-col gap-3 justify-start glass p-4 bg-[rgba(179,74,18,0.25)] border-4 
-              ${(idx) % 2 === 0 ? 'md:col-start-1 md:col-end-5' : 'md:col-start-6 md:col-end-10'}`}
+              className={`flex flex-col gap-3 justify-center items-center glass p-7 bg-[rgba(179, 255, 255, 0.313)] border-4 
+      ${idx % 2 === 0 ? 'md:col-start-1 md:col-end-5' : 'md:col-start-6 md:col-end-10'} 
+      max-w-[400px] mx-auto`}
               borderColor={f.borderColor}
+              maxW="400px"
             >
-              <f.Icon fontSize='90px' color={f.borderColor} />
+              <f.Icon fontSize="90px" color={f.borderColor} />
               <Heading
                 fontFamily="mono"
+                textAlign="center"
                 size="lg"
                 color="white"
                 mb={2}
               >
                 {f.title}
               </Heading>
-              <Text className='text-white text-lg'>
+              <Text className="text-white text-lg text-center" textAlign="left">
                 {f.description}
               </Text>
             </Box>
-          ))
-          }
+          ))}
         </Box>
       </Box>
 
       {/* LOOOPING MOUSE */}
-      <Box className='relative py-10 bg-[#F6D277] lg:py-24'>
-        <Box className='mx-auto max-w-[700px] items-center flex flex-col gap-4 px-4 overflow-hidden'>
-          <Heading className='text-center !font-mono font-bold lg:!text-7xl'>
+      <Box className="relative py-20 px-20 bg-[#F6D277] lg:py-24">
+        <Box className="mx-auto max-w-[700px] items-center flex flex-col gap-4 px-5 overflow-hidden">
+          <Heading className="text-center !font-mono font-bold !text-4xl md:!text-5xl lg:!text-7xl p-1">
             Meet a Text Editor that makes an impact
           </Heading>
           <Image
             src="giphy.gif"
-            className='h-full absolute top-0 left-1/2 -translate-x-1/2 lg:w-[30%]'
+            className="h-full absolute top-0 left-1/2 -translate-x-1/2 lg:w-[30%]"
           />
-          <Text className='text-xl leading-8 font-mono lg:mt-4 lg:text-3xl'>
+          <Text
+            className="text-xl leading-8 lg:mt-4 !text-xl lg:!text-2xl"
+            textAlign="center"
+          >
             Accelerate your workflow and shorten your cycle with all-in one
             platform for efficent code reviews
           </Text>
@@ -109,36 +138,44 @@ const Home = () => {
       </Box>
 
       {/* ABOUT US */}
-      <Box
-        id="about-us"
-        className="container mx-auto my-8"
-      >
-        <h1 className='py-4 text-center font-mono text-5xl font-bold'>
+      <Box id="about-us" className="container mx-auto my-8">
+        <h1 className="py-4 text-center font-mono text-5xl font-bold">
           Our Team
         </h1>
-        <SimpleGrid px={{ base: '20px', md: '0' }} minChildWidth='250px' spacing='40px'>
-          {AVATARS.map(avatar => (
-            <Box
-              key={avatar.name}
-              justifyContent="center"
-              alignItems="center"
-              textAlign="center"
-              borderBottom={`10px solid ${avatar.borderColor}`}
-              p={2}
-              m={4}
-            >
-              <Center>
-                <Image src={avatar.img} h="250px" />
-              </Center>
-              <Heading fontSize="25px" fontFamily="mono">
-                {avatar.name}
-              </Heading>
+        <SimpleGrid
+          px={{ base: '20px', md: '0' }}
+          spacing="40px"
+          columns={{ base: 1, md: 2, xl: 4 }} // 2 columns for small screens, 4 columns for large screens
+        >
+          {AVATARS.map((avatar) => (
+            <Box>
+              <Box
+                key={avatar.name}
+                justifyContent="center"
+                alignItems="center"
+                textAlign="center"
+                p={2}
+                m={4}
+                borderBottom={`10px solid ${avatar.borderColor}`}
+              >
+                <Center>
+                  <Image src={avatar.img} h="250px" />
+                </Center>
+                <Heading fontSize="25px" fontFamily="mono">
+                  {avatar.name}
+                </Heading>
+              </Box>
+              <Flex justifyContent="center">
+                <FaGithub fontSize={20} className="mr-2" />
+                <FaLinkedin fontSize={20} />
+              </Flex>
             </Box>
           ))}
         </SimpleGrid>
       </Box>
-
-      <Image className='h-8 w-full' src="banner3.png" />
+      <Center>
+        <Image w="1500px" src="banner3.png" />
+      </Center>
 
       {/* Footer Section */}
       <Box bg="brand.800" p={5} color="white" textAlign="center" pt={10}>

@@ -7,7 +7,7 @@ import * as Y from 'yjs';
 const TEXT = '\r\r\rCollabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.';
 const AVATARS = [
   { name: 'Abdallah Abdelrahman', img: '/aa.png', borderColor: '#52A0D8' },
-  { name: 'Mohamed Elfadil Abdalla', img: '/mea.png', borderColor: '#F16145' },
+  { name: 'Mohamed Elfadil', img: '/mea.png', borderColor: '#F16145' },
   { name: 'Mohannad Babiker', img: '/mab.png', borderColor: '#76449A' },
   { name: 'Reem Osama', img: '/ro.png', borderColor: '#F6D277' },
 ];

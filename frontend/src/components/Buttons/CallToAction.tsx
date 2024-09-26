@@ -34,12 +34,7 @@ export default function CallToAction({ className = '', ...rest }: Props) {
       onClick={handleTryItOut}
       textTransform='uppercase'
       className={className}
-      rightIcon={
-        <ChevronRightIcon
-          className='animate-bounce_r'
-          boxSize={10}
-        />
-      }
+      rightIcon={<ChevronRightIcon className="animate-bounce_r" boxSize={8} />}
       {...rest}
       _hover={{
         bg: 'transparent',
