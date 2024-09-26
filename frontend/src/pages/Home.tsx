@@ -41,7 +41,7 @@ const Home = () => {
   }, [location.pathname]);
 
   return (
-    <>
+    <Box className='home-padding'>
       <Stack className='h-screen bg-brand overflow-hidden'>
         <NavigationBar />
         {/* SLOGAN */}
@@ -50,6 +50,9 @@ const Home = () => {
 
       {/* TYPING */}
       <Box bg='white' px={4} className='py-10 lg:py-20'>
+        <Box className='mb-4 container bg-red-100 mx-auto'>
+          <Image src="converted.gif" className='w-full' />
+        </Box>
         <p className='lg:max-w-[50%] mx-auto font-mono !leading-loose lg:text-4xl'>
           {typedText}
         </p>
@@ -64,13 +67,13 @@ const Home = () => {
         py={10}
       >
         <Text
-          fontFamily="mono"
-          fontSize="35px"
-
-          color="white"
-          className="w-[min(90%,700px)] mx-auto text-center"
+          className="my-4 text-[25px] md:my-8 md:text-[40px] w-[min(90%,800px)] mx-auto text-center font-mono text-white"
         >
-          Why Collabor8 is the Ultimate Tool for Team Collaboration
+          Why Collabor8 is the
+          <span className='bg-orange-600 mx-2'>
+            Ultimate
+          </span>
+          Tool for Team Collaboration
         </Text>
         <Box
           className={`container mx-auto py-10 px-4 grid grid-cols-1 md:grid-cols-9 justify-center gap-8 lg:px-24`}
@@ -79,20 +82,20 @@ const Home = () => {
           {FEATURES.map((f, idx) => (
             <Box
               key={idx}
-              className={`flex flex-col gap-3 justify-start glass p-4 bg-[rgba(179,74,18,0.25)] border-4 
+              className={`flex flex-col gap-3 items-center justify-start glass p-4 bg-[rgba(179, 255, 255, 0.313)] border-4 
               ${(idx) % 2 === 0 ? 'md:col-start-1 md:col-end-5' : 'md:col-start-6 md:col-end-10'}`}
               borderColor={f.borderColor}
             >
               <f.Icon fontSize='90px' color={f.borderColor} />
               <Heading
                 fontFamily="mono"
-                size="lg"
                 color="white"
                 mb={2}
+                className='!text-2xl md:!text-3xl text-center'
               >
                 {f.title}
               </Heading>
-              <Text className='text-white text-lg'>
+              <Text className='text-[16px] md:text-lg text-white text-lg'>
                 {f.description}
               </Text>
             </Box>
@@ -111,7 +114,7 @@ const Home = () => {
             src="giphy.gif"
             className='h-full absolute top-0 left-1/2 -translate-x-1/2 lg:w-[30%]'
           />
-          <Text className='text-xl leading-8 font-mono lg:mt-4 lg:text-3xl'>
+          <Text className='text-lg text-center leading-8 lg:mt-4 lg:text-3xl'>
             Accelerate your workflow and shorten your cycle with all-in one
             platform for efficent code reviews
           </Text>
@@ -150,7 +153,7 @@ const Home = () => {
                 className='w-full gap-4 bg-slate-100 py-2 rounded-t-2xl h-[100px] transition translate-y-full mt-auto group-hover:flex group-hover:flex-col group-hover:translate-y-0'
               >
                 <h3
-                style={{ color: avatar.borderColor }}
+                  style={{ color: avatar.borderColor }}
                   className='text-slate-50 font-bold capitalize'>
                   reach out
                 </h3>
@@ -167,7 +170,7 @@ const Home = () => {
         </SimpleGrid>
       </Box>
 
-      <Image className='h-8 w-full' src="banner3.png" />
+      <Image className='custom-banner' src="banner3.png" />
 
       {/* Footer Section */}
       <Box bg="brand.800" p={5} color="white" textAlign="center" pt={10}>
@@ -202,7 +205,7 @@ const Home = () => {
           <ResetPasswordModal />
         </Box>
       )}
-    </>
+    </Box>
   );
 };
 

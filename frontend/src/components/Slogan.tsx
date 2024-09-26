@@ -20,9 +20,9 @@ export default function Slogan({ className = '' }: SloganProps) {
           </p>
         </Box>
 
-        <Box className={'items-center grid grid-cols-[auto_1fr] gap-4 md:grid-cols-1  md:align-middle  md:gap-6 '}>
-          <p className='grid grid-cols-[auto_1fr] text-white after:font-bold md:after:content-["innovate"]'>
-            <span className="self-center max-w-[200px] text-sm">
+        <Box className={'items-center grid grid-cols-[auto_1fr] gap-4 md:grid-cols-1  md:align-middle  md:gap-6'}>
+          <p className='grid grid-cols-[auto_1fr] text-white after:font-bold after:content-["innovate"]'>
+            <span className="hidden sm:block self-center max-w-[200px] text-sm">
               Collaborative coding made simple. Join developers worldwide and
               create together.
             </span>
