@@ -19,8 +19,20 @@ module.exports = {
           100: '#524175',
         },
       },
+      animation: {
+        bounce_r: 'bounce_r 1s infinite',
+      },
+      keyframes: {
+        bounce_r: {
+          '0%, 100%': {
+            transform: 'translateX(0)',
+          },
+          '50%': {
+            transform: 'translateX(10px)',
+          },
+        },
+      },
     },
   },
   plugins: [],
-
 };

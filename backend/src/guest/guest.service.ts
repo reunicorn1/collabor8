@@ -55,6 +55,7 @@ export class GuestService {
    */
   async login(): Promise<{
     accessToken: string;
+    refreshToken: string;
     user: Partial<Users>;
     userData: Partial<Users>;
   }> {
@@ -66,7 +67,7 @@ export class GuestService {
       timestamp: new Date().getTime(),
       jti: uuidv4(),
     };
-    const accessToken = await this.jwtService.signAsync(payload, { expiresIn: '1d' });
+    const accessToken = await this.jwtService.signAsync(payload);
     const {
       user_id,
       email,
@@ -84,9 +85,10 @@ export class GuestService {
       roles: user.roles,
       jti: payload.jti,
     };
-
+    const refreshToken = await this.jwtService.signAsync(payload, { expiresIn: '1d' });
     return {
       accessToken,
+      refreshToken,
       user: userinfo,
       userData,
     };

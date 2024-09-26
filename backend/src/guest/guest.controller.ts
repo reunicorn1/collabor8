@@ -3,16 +3,13 @@ import {
   Get,
   Post,
   Body,
-  Param,
-  Delete,
   Request,
   Query,
-  BadRequestException,
-  Patch,
   Response,
 } from '@nestjs/common';
 import { GuestService } from '@guest/guest.service';
 import { Public } from '@auth/decorators/isPublic.decorator';
+import { accessTokenCookieConfig, cookieConfig } from '@config/configuration';
 
 @Controller('guest')
 export class GuestController {
@@ -46,11 +43,12 @@ export class GuestController {
     @Request() req: any,
     @Response() res: any,
   ): Promise<any> {
-    const { user, userData, accessToken } = await this.guestService.login();
+    const { user, userData, accessToken, refreshToken } = await this.guestService.login();
     req.user = userData; // set user on the request to satisfy the local strategy
 
     res
-      .cookie('accessToken', accessToken)
+      .cookie('refreshToken', refreshToken, cookieConfig)
+      .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .status(200).send({ user, accessToken });
   }
 

@@ -13,6 +13,7 @@ export const corsConfig = {
   origin: (origin, callback) => {
     const allowedOrigins = [
       'http://localhost:3001',
+      'http://localhost:3001/',
       'http://localhost:1234',
       'https://collabor8-socket.abdallah.tech',
       'https://co11abor8.netlify.app/',
@@ -55,6 +56,7 @@ export const cookieConfig = {
 };
 
 export const accessTokenCookieConfig = {
-  ...cookieConfig,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
   httpOnly: false,
 };

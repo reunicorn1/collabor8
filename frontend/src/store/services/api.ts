@@ -46,15 +46,14 @@ const baseQueryWithReauth: BaseQueryFn<
 
   if (result.error && result.error?.status === 401) {
 
-    if (localStorage.getItem('accessToken')) {
-      api.dispatch(
-        setCredentials({
-          accessToken: localStorage.getItem('accessToken'),
-        }),
-      );
-      result = await baseQuery(args, api, extraOptions);
-      return result;
-    }
+    // if (localStorage.getItem('accessToken')) {
+    //   api.dispatch(
+    //     setCredentials({
+    //       accessToken: localStorage.getItem('accessToken'),
+    //     }),
+    //   );
+    //   return result;
+    // }
     const refreshResult = await baseQuery(
       {
         url: 'auth/refresh',

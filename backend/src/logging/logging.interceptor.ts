@@ -27,7 +27,7 @@ export class LoggingInterceptor implements NestInterceptor {
     // Intercept the response
     const originalSend = response.send.bind(response);
     response.send = (body: any) => {
-      if (body) {
+      if (body && !respFlag) {
         respFlag = true;
         this.logger.log(`Response: ${JSON.stringify(body)}`);
 
@@ -39,6 +39,7 @@ export class LoggingInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap((response) => {
         if (response && !respFlag) {
+          respFlag = true;
           this.logger.log(`Response: ${JSON.stringify(response)}`);
         }
         const responseTime = Date.now() - now;
