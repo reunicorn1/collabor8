@@ -45,9 +45,9 @@ const AVATARS = [
     img: '/ro.png',
     borderColor: '#F6D277',
     socials: [
-      { link: '#', Icon: LinkedIn },
-      { link: '#', Icon: Twitter },
-      { link: '#', Icon: Github },
+      { link: 'https://www.linkedin.com/in/reosama/', Icon: LinkedIn },
+      { link: 'https://x.com/iReOsama', Icon: Twitter },
+      { link: 'https://github.com/reunicorn1', Icon: Github },
     ],
   },
 ];
