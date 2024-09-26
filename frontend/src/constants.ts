@@ -19,13 +19,13 @@ const AVATARS = [
   },
 
   {
-    name: 'Mohamed Elfadil Abdalla',
+    name: 'Mohamed Elfadil',
     img: '/mea.png',
     borderColor: '#F16145',
     socials: [
-      { link: 'https://www.linkedin.com/in/abdallah-alkaser/', Icon: LinkedIn },
-      { link: 'https://x.com/foola_sust', Icon: Twitter },
-      { link: 'https://github.com/Abdallah-Abdelrahman', Icon: Github },
+      { link: 'https://www.linkedin.com/in/mohamedelfadil/', Icon: LinkedIn },
+      { link: 'https://x.com/mo_elfadil', Icon: Twitter },
+      { link: 'https://github.com/mo7amedElfadil', Icon: Github },
     ],
   },
 
@@ -34,9 +34,9 @@ const AVATARS = [
     img: '/mab.png',
     borderColor: '#76449A',
     socials: [
-      { link: 'https://www.linkedin.com/in/abdallah-alkaser/', Icon: LinkedIn },
-      { link: 'https://x.com/foola_sust', Icon: Twitter },
-      { link: 'https://github.com/Abdallah-Abdelrahman', Icon: Github },
+      { link: 'https://www.linkedin.com/in/mohannad-abdul-aziz-babeker/', Icon: LinkedIn },
+      { link: 'https://x.com/mohanad_abdo21', Icon: Twitter },
+      { link: 'https://github.com/Mohabdo21', Icon: Github },
     ],
   },
 
@@ -45,12 +45,11 @@ const AVATARS = [
     img: '/ro.png',
     borderColor: '#F6D277',
     socials: [
-      { link: 'https://www.linkedin.com/in/abdallah-alkaser/', Icon: LinkedIn },
-      { link: 'https://x.com/foola_sust', Icon: Twitter },
-      { link: 'https://github.com/Abdallah-Abdelrahman', Icon: Github },
+      { link: '#', Icon: LinkedIn },
+      { link: '#', Icon: Twitter },
+      { link: '#', Icon: Github },
     ],
   },
-
 ];
 const FEATURES = [
   {
