@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
@@ -13,13 +13,13 @@ import { RefreshStrategy } from '@auth/strategies/refresh.strategy';
 import { MailModule } from '@mail/mail.module';
 import { RedisModule } from '@redis/redis.module';
 import { BullModule } from '@nestjs/bullmq';
+
 @Module({
   imports: [
     UsersModule,
     EnvironmentMongoModule,
     MailModule,
     RedisModule,
-    //GuestModule,
     PassportModule.register({ session: true }),
     JwtModule.register({
       secret: jwtConstants.secret,

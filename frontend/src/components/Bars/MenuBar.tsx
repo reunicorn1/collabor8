@@ -7,9 +7,9 @@ import {
   useMediaQuery,
   Box,
   HStack,
+  Icon,
   useToast,
 } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 //import { PiGithubLogo } from 'react-icons/pi';
 import { MdOutlineKeyboardVoice } from 'react-icons/md';
@@ -21,6 +21,9 @@ import VoiceDrawer from '@components/CodeEditor/VoiceDrawer';
 import { useAppDispatch, useAppSelector } from '@hooks/useApp';
 import { togglePanelVisibility } from '@store/slices/fileSlice';
 import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
+import { ChevronDownIcon } from '@chakra-ui/icons';
+import { useState, useEffect } from 'react';
+import DBMenu from '@components/Dashboard/DBMenu';
 import { HamburgerIcon } from '@chakra-ui/icons';
 import ThemeSelector from './ThemeSelector';
 import LanguageSelector from './LanguageSelector';
@@ -49,9 +52,11 @@ export default function MenuBar({
   const navigate = useNavigate();
   const { mode } = useSettings()!;
   const panelVisiblity = useAppSelector(selectPanelVisiblity);
+  const userDetails = useAppSelector(selectUserDetails);
   const [isAdBlockerDetected, setIsAdBlockerDetected] = useState(false);
   const user = useAppSelector(selectUserDetails);
   const toast = useToast();
+  const isGuest = user?.roles.includes('guest');
 
   useEffect(() => {
     fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js')
@@ -72,11 +77,19 @@ export default function MenuBar({
   }, [toast]);
 
   const goHome = () => {
-    if (user.roles.includes('guest')) {
-      dispatch(performLogout());
-      return;
+    if (isGuest) {
+      toast({
+        title: '🏠 Home',
+        description: 'Guest users cannot access the dashboard.',
+        status: 'warning',
+        duration: 3000,
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'subtle',
+      });
+    } else {
+      navigate('/dashboard');
     }
-    navigate('/dashboard');
   };
 
   const handleVoiceChat = () => {
@@ -116,7 +129,7 @@ export default function MenuBar({
 
   return (
     <Box className={className} {...rest}>
-      <Flex alignItems="center" justifyContent="space-between" gap="4" p="4">
+      <Box className='flex items-center justify-between p-4 gap-4'>
         <HStack me={`${!isLessThan768 ? 'auto' : ''}`}>
           <IconButton
             isRound={true}
@@ -141,10 +154,14 @@ export default function MenuBar({
           color="white"
           fontSize="xs"
           ml={2}
-          className={`before:inline-block before:size-2 before:rounded-full
-            ${!mode ? 'before:bg-green-500' : 'before:bg-red-500'} before:me-2`}
+          className={`
+            flex items-center gap-2 capitalize
+            before:inline-block before:size-2 before:rounded-full
+            ${!mode ? 'before:bg-green-500' : 'before:bg-red-500'}
+            sm:after:content-['mode']
+            `}
         >
-          {mode ? `Read Mode` : `Write Mode`}
+          {`${mode ? 'read' : 'write'}`}
         </Text>
         <Button
           className="!text-sm !text-slate-200 !bg-transparent capitalize"
@@ -187,7 +204,10 @@ export default function MenuBar({
             icon={<HamburgerIcon className="pointer-events-none" />}
           />
         )}
-      </Flex>
+        <DBMenu isGuest={userDetails?.roles === 'guest'}>
+          <Icon color="white" as={ChevronDownIcon} />
+        </DBMenu>
+      </Box>
 
       {/* DRAWERS */}
       {isLessThan768 && (

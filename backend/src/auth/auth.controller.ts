@@ -14,10 +14,7 @@ import {
 import { AuthService } from '@auth/auth.service';
 import { Public } from '@auth/decorators/isPublic.decorator';
 import { ApiTags } from '@nestjs/swagger';
-import {
-  CreateUserDto,
-  ResetPasswordDto,
-} from '@users/dto/create-user.dto';
+import { CreateUserDto, ResetPasswordDto } from '@users/dto/create-user.dto';
 import { LocalAuthGuard } from '@auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import docs from './auth-docs.decorator';
@@ -34,8 +31,6 @@ import { RefreshAuthGuard } from './guards/refresh-jwt-auth.guard';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    //@Inject(forwardRef(() => GuestService))
-    //private readonly guestService: GuestService,
   ) { }
 
   @docs.ApiSignIn()
@@ -56,22 +51,6 @@ export class AuthController {
     console.log('user', req.user);
     res
       .cookie('refreshToken', refreshToken, cookieConfig)
-      .cookie('accessToken', accessToken, accessTokenCookieConfig)
-      .send({ accessToken, user });
-  }
-
-  /**
-   * triggered when guest clicks on try it out button
-   * creates a guest user if it doesnt exist
-   * returns the guest user and the accessToken
-   */
-  @Public()
-  @Post('guest')
-  async guestSignIn(@Response() res, @Request() req) {
-    const { user, accessToken, userData } = await this.authService.guestSignIn();
-    req.user = userData; // this set the user on the rquest object
-    // cuz local strategy expects the user to be on the request object
-    res
       .cookie('accessToken', accessToken, accessTokenCookieConfig)
       .send({ accessToken, user });
   }

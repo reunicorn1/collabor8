@@ -68,7 +68,11 @@ export default function Editor() {
       <Box
         bg="brand.900"
         borderBottom="0.5px solid rgba(128, 128, 128, 0.5)"
-        className="relative md:grid md:grid-cols-[auto_30%_1fr] lg:grid-cols-[auto_25%_1fr] md:grid-rows-[auto_auto_1fr] overflow-hidden"
+        className={`
+        relative overflow-hidden
+        md:grid md:grid-cols-[auto_30%_1fr] md:grid-rows-[auto_auto_1fr]
+        lg:grid-cols-[auto_25%_1fr]
+        `}
       >
         {!isLessThan768 && (
           <>
