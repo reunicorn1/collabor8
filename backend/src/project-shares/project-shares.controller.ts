@@ -32,7 +32,7 @@ export class ProjectSharesController {
   constructor(
     private readonly projectSharesService: ProjectSharesService,
     @InjectQueue('mailer') private mailerQueue: Queue,
-  ) { }
+  ) {}
 
   // Create a new project share
   @ApiOperation({
