@@ -44,7 +44,7 @@ export default function DashboardBar() {
     userDetails?.last_name === 'User';
 
   // Fetch user project shares only if the user is not a guest
-  const { data: userProjectShares, refetch } = useGetUserProjectSharesQuery(
+  const { data: userProjectShares } = useGetUserProjectSharesQuery(
     isGuest ? null : userId,
     {
       pollingInterval: 7000,
@@ -167,6 +167,7 @@ export default function DashboardBar() {
       alignItems="center"
       borderBottom="2px solid #524175"
       p={[2, 3, 4]}
+      py='4'
       w="auto"
       flexDirection={'row'}
     >
@@ -174,10 +175,10 @@ export default function DashboardBar() {
         src="/logo-bb.png"
         h={['20px', '23px']}
         ml={[2, 3]}
+        me='auto'
         cursor="pointer"
         onClick={() => navigate('/dashboard')}
       />
-      <Spacer />
       <ButtonGroup
         size="xs"
         isAttached
@@ -205,19 +206,16 @@ export default function DashboardBar() {
         onApprove={handleApproval}
         onDecline={handleDecline}
       />
-
-      <Box display="flex" alignItems="center" mt={[2, 0]}>
-        <DBMenu>
-          <Avatar
-            src={userDetails?.profile_picture}
-            boxSize={['20px', '22px']}
-            bg="purple.400"
-            ml={[2, 4]}
-            mr={2}
-          />
-          <Icon color="white" as={ChevronDownIcon} />
-        </DBMenu>
-      </Box>
+      <DBMenu>
+        <Avatar
+          src={userDetails?.profile_picture}
+          boxSize={['20px', '22px']}
+          bg="purple.400"
+          ml={[2, 4]}
+          mr={2}
+        />
+        <Icon color="white" as={ChevronDownIcon} />
+      </DBMenu>
       <NewProject isOpen={isOpen} onClose={onClose} />
     </Flex>
   );
