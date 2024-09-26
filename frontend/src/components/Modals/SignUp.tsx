@@ -1,9 +1,8 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
   ModalFooter,
   ModalBody,
   ModalCloseButton,
@@ -13,7 +12,6 @@ import {
   Button,
   Checkbox,
   useToast,
-  HStack,
   Flex,
   Heading,
   Center,
@@ -58,8 +56,7 @@ export default function SignUp({
   const [favoriteLanguages, setFavoriteLanguages] = useState<string[]>([]);
   const [emailError, setEmailError] = useState('');
   const [passwordMismatch, setPasswordMismatch] = useState(false);
-  const [createUser] = useCreateUserMutation();
-  const [isLoading, setIsLoading] = useState(false);
+  const [createUser, { isLoading }] = useCreateUserMutation();
   const toast = useToast();
 
   // Handles checkbox state changes
@@ -73,6 +70,16 @@ export default function SignUp({
 
   // Handles the user creation process.
   const handleCreate = () => {
+    if (/guest/.test(username.trim().toLowerCase())) {
+      toast({
+        title: 'Invalid Username',
+        description: 'guest as username is reserved. 🔑',
+        status: 'warning',
+        isClosable: true,
+        variant: 'subtle',
+      });
+      return;
+    }
     if (password !== confirmPassword) {
       setPasswordMismatch(true);
       return;
@@ -81,8 +88,6 @@ export default function SignUp({
       setEmailError('Invalid email format.');
       return;
     }
-
-    setIsLoading(true);
 
     createUser({
       username,
@@ -134,7 +139,7 @@ export default function SignUp({
           isClosable: true,
         });
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => () => { });
   };
 
   // Resets the input fields
