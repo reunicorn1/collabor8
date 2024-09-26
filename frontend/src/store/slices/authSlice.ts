@@ -12,6 +12,7 @@ import { clearAllProjects } from './projectSlice';
 import { AppDispatch } from '@store/store';
 
 
+type CB = () => void;
 // Define the authentication state interface
 interface AuthState {
   accessToken: string | null;
@@ -105,7 +106,8 @@ const authSlice = createSlice({
 
 export const { setCredentials, unsetCredentials } = authSlice.actions;
 
-export const performLogout = () => async (dispatch: AppDispatch) => {
+
+export const performLogout = (cb: CB = () => { }) => async (dispatch: AppDispatch) => {
   try {
     // Trigger the signout query to perform the server-side logout
     await dispatch(authApi.endpoints.signout.initiate()).unwrap();
@@ -116,6 +118,7 @@ export const performLogout = () => async (dispatch: AppDispatch) => {
     dispatch(clearRoom());
     dispatch(clearAllProjects());
     dispatch(clearUser());
+    cb();
     // },5000);
   } catch (error) {
     console.error('Logout failed:', error);
@@ -124,6 +127,7 @@ export const performLogout = () => async (dispatch: AppDispatch) => {
     dispatch(clearRoom());
     dispatch(clearAllProjects());
     dispatch(clearUser());
+    cb();
   }
 
 
