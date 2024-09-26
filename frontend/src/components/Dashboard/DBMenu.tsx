@@ -19,9 +19,10 @@ import { useAppDispatch, useAppSelector } from '@hooks/useApp';
 type DBMenuProps = {
   children: ReactNode;
   isGuest?: boolean;
+  className?: string;
 };
 
-export default function DBMenu({ isGuest = false, children }: DBMenuProps) {
+export default function DBMenu({ isGuest = false, className = '', children }: DBMenuProps) {
   const navigate = useNavigate();
   const toast = useToast();
   const userDetails: any = useAppSelector(selectUserDetails) || 'username';
@@ -48,7 +49,7 @@ export default function DBMenu({ isGuest = false, children }: DBMenuProps) {
   return (
     <Menu>
       <MenuButton>{children}</MenuButton>
-      <MenuList bg="purple.700">
+      <MenuList className={`!bg-brand-850 ${className}`}>
         <MenuGroup>
           <MenuItem onClick={handleProfile}>
             <Avatar
