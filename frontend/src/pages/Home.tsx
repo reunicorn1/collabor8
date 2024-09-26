@@ -19,6 +19,7 @@ import { useLocation } from 'react-router-dom';
 import Slogan from '@components/Slogan';
 import { TEXT, AVATARS, FEATURES } from '../constants.ts';
 import NavigationBar from '@components/Bars/NavigationBar.tsx';
+import { LinkedIn, Twitter, Github } from '../common/icons';
 
 const Home = () => {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
