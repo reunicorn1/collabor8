@@ -1,5 +1,4 @@
 import {
-  Flex,
   IconButton,
   Text,
   useDisclosure,
@@ -11,10 +10,8 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-//import { PiGithubLogo } from 'react-icons/pi';
 import { MdOutlineKeyboardVoice } from 'react-icons/md';
 import { GoHome } from 'react-icons/go';
-//import { LanguageSelector, ThemeSelector } from '../CodeEditor';
 import { useSettings } from '../../context/EditorContext';
 import ComingSoon from '@components/CodeEditor/ComingSoon';
 import VoiceDrawer from '@components/CodeEditor/VoiceDrawer';
@@ -29,7 +26,6 @@ import ThemeSelector from './ThemeSelector';
 import LanguageSelector from './LanguageSelector';
 import { Project } from '@types';
 import { selectUserDetails } from '@store/selectors/userSelectors';
-import { performLogout } from '@store/slices/authSlice';
 
 type MenuBarProps = {
   project: Project;
@@ -129,7 +125,7 @@ export default function MenuBar({
 
   return (
     <Box className={className} {...rest}>
-      <Box className='flex items-center justify-between p-4 gap-4'>
+      <Box className="flex items-center justify-between p-4 gap-4">
         <HStack me={`${!isLessThan768 ? 'auto' : ''}`}>
           <IconButton
             isRound={true}

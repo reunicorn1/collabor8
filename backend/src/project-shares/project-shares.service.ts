@@ -34,13 +34,15 @@ export class ProjectSharesService {
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => RedisService))
     private readonly redisService: RedisService,
-  ) { }
+  ) {}
 
   async memberCount(project_id: string): Promise<number> {
-    return await this.projectSharesRepository
-      .createQueryBuilder('project_shares')
-      .where('project_shares.project_id = :project_id', { project_id })
-      .getCount() + 1;
+    return (
+      (await this.projectSharesRepository
+        .createQueryBuilder('project_shares')
+        .where('project_shares.project_id = :project_id', { project_id })
+        .getCount()) + 1
+    );
   }
 
   async findMyShare(
@@ -142,7 +144,7 @@ export class ProjectSharesService {
       role,
       privilegeExpiredTs,
     );
-    await this.cacheToken(token, `${channelName}${user_id}`, delta/1000);
+    await this.cacheToken(token, `${channelName}${user_id}`, delta / 1000);
 
     return { token, uid: user_id, channel: channelName };
   }
@@ -351,7 +353,6 @@ export class ProjectSharesService {
       .take(limit)
       .orderBy(`project_shares.${sortField}`, sortDirection)
       .getMany();
-
 
     const mappedProjects = await Promise.all(
       projects.map(async (project) => {
