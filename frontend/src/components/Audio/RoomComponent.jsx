@@ -14,6 +14,8 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
   const [rtc, setRtc] = useState(null);
   const [rtcInitialized, setRtcInitialized] = useState(false);
   const [_, setToggle] = useState(false);
+  const [connectedUsers, setConnectedUsers] = useState([]);
+  let AgoraRTC;
 
   const forceUpdate = () => {
     setToggle((prev) => !prev); // Toggle state to trigger re-render
@@ -64,17 +66,13 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
     agoraClient.on('user-unpublished', handleUserUnpublished);
     agoraClient.enableAudioVolumeIndicator();
 
-    [config.uid, rtc.audioTrack] = await Promise.all([
-      agoraClient.join(
-        config.appid,
-        config.channel,
-        config.token || null,
-        config.uid || null,
-      ),
-      (rtc.audioTrack = AgoraRTC.createMicrophoneAudioTrack()),
-    ]).catch((err) => {
-      console.error(err);
-    });
+    await agoraClient.join(
+      config.appid,
+      config.channel,
+      config.token || null,
+      config.uid || null,
+    );
+    rtcRef.current.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
 
     setJoined(true);
     document.getElementById('foot').style.display = 'flex';
@@ -155,8 +153,8 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
     } else {
       console.warn('No audio track found for the user');
     }
-
-    // Update remote tracks
+    // logic adding user avatar to the list for remote user
+    setConnectedUsers((prevUsers) => [...prevUsers, user.uid]);
     rtc.remoteTracks[user.uid] = user;
   };
 
@@ -170,7 +168,10 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
 
       delete rtc.remoteTracks[user.uid];
     }
-    // Unsubscribe from the user
+    // logic removing user avatar from the list for remote user
+    setConnectedUsers((prevUsers) =>
+      prevUsers.filter((uid) => uid !== user.uid),
+    );
     if (rtc.client) {
       rtc.client.unsubscribe(user);
     }
@@ -233,6 +234,18 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
           onClick={handleLeaveButtonClick}
         />
       </Flex>
+
+      {/* Display Connected Users */}
+      {connectedUsers.length > 0 && (
+        <Flex direction="column" mt={4}>
+          <strong>Connected Users:</strong>
+          <ul>
+            {connectedUsers.map((uid) => (
+              <li key={uid}>User {uid}</li>
+            ))}
+          </ul>
+        </Flex>
+      )}
     </Flex>
   );
 };

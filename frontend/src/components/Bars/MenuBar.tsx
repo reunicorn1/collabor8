@@ -1,5 +1,4 @@
 import {
-  Flex,
   IconButton,
   Text,
   useDisclosure,
@@ -7,21 +6,21 @@ import {
   useMediaQuery,
   Box,
   HStack,
+  Icon,
   useToast,
-  Slide,
 } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-//import { PiGithubLogo } from 'react-icons/pi';
 import { MdOutlineKeyboardVoice } from 'react-icons/md';
 import { GoHome } from 'react-icons/go';
-//import { LanguageSelector, ThemeSelector } from '../CodeEditor';
 import { useSettings } from '../../context/EditorContext';
 import ComingSoon from '@components/CodeEditor/ComingSoon';
 import VoiceDrawer from '@components/CodeEditor/VoiceDrawer';
 import { useAppDispatch, useAppSelector } from '@hooks/useApp';
 import { togglePanelVisibility } from '@store/slices/fileSlice';
 import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
+import { ChevronDownIcon } from '@chakra-ui/icons';
+import { useState, useEffect } from 'react';
+import DBMenu from '@components/Dashboard/DBMenu';
 import { HamburgerIcon } from '@chakra-ui/icons';
 import ThemeSelector from './ThemeSelector';
 import LanguageSelector from './LanguageSelector';
@@ -49,22 +48,60 @@ export default function MenuBar({
   const navigate = useNavigate();
   const { mode } = useSettings()!;
   const panelVisiblity = useAppSelector(selectPanelVisiblity);
-  const [showAdBlockerNotification, setShowAdBlockerNotification] =
-    useState(false);
+  const userDetails = useAppSelector(selectUserDetails);
+  const [isAdBlockerDetected, setIsAdBlockerDetected] = useState(false);
   const user = useAppSelector(selectUserDetails);
   const toast = useToast();
+  const isGuest = user?.roles.includes('guest');
 
   useEffect(() => {
     fetch('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js')
-      .then(() => setShowAdBlockerNotification(false))
-      .catch(() => setShowAdBlockerNotification(true));
-  }, []);
+      .then(() => setIsAdBlockerDetected(false))
+      .catch(() => {
+        setIsAdBlockerDetected(true);
+        toast({
+          title: 'AdBlocker Detected',
+          description:
+            'Please disable your AdBlocker to use the voice chat feature.',
+          status: 'warning',
+          duration: 5000,
+          isClosable: true,
+          position: 'top-right',
+          variant: 'subtle',
+        });
+      });
+  }, [toast]);
 
   const goHome = () => {
-    navigate('/dashboard');
+    if (isGuest) {
+      toast({
+        title: '🏠 Home',
+        description: 'Guest users cannot access the dashboard.',
+        status: 'warning',
+        duration: 3000,
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'subtle',
+      });
+    } else {
+      navigate('/dashboard');
+    }
   };
 
   const handleVoiceChat = () => {
+    if (isAdBlockerDetected) {
+      toast({
+        title: '🎙️ Mic Check Failed',
+        description:
+          'AdBlocker must be disabled to use the voice chat feature.',
+        status: 'warning',
+        duration: 3000,
+        isClosable: true,
+        position: 'bottom-left',
+        variant: 'subtle',
+      });
+      return;
+    }
     // Check if the user is a guest
     if (
       user.username === 'guest' &&
@@ -88,7 +125,7 @@ export default function MenuBar({
 
   return (
     <Box className={className} {...rest}>
-      <Flex alignItems="center" justifyContent="space-between" gap="4" p="4">
+      <Box className="flex items-center justify-between p-4 gap-4">
         <HStack me={`${!isLessThan768 ? 'auto' : ''}`}>
           <IconButton
             isRound={true}
@@ -113,10 +150,14 @@ export default function MenuBar({
           color="white"
           fontSize="xs"
           ml={2}
-          className={`before:inline-block before:size-2 before:rounded-full
-            ${!mode ? 'before:bg-green-500' : 'before:bg-red-500'} before:me-2`}
+          className={`
+            flex items-center gap-2 capitalize
+            before:inline-block before:size-2 before:rounded-full
+            ${!mode ? 'before:bg-green-500' : 'before:bg-red-500'}
+            sm:after:content-['mode']
+            `}
         >
-          {mode ? `Read Mode` : `Write Mode`}
+          {`${mode ? 'read' : 'write'}`}
         </Text>
         <Button
           className="!text-sm !text-slate-200 !bg-transparent capitalize"
@@ -159,37 +200,10 @@ export default function MenuBar({
             icon={<HamburgerIcon className="pointer-events-none" />}
           />
         )}
-      </Flex>
-
-      {/* AdBlocker Notification Bar */}
-      <Slide
-        direction="top"
-        in={showAdBlockerNotification}
-        style={{
-          zIndex: 10,
-          width: '100%',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        <Box
-          p="4"
-          bg="yellow.400"
-          shadow="md"
-          borderBottom="2px solid yellow.600"
-          maxW="600px"
-          borderRadius="md"
-          mt="10px"
-        >
-          <Text fontSize="md" color="gray.800" textAlign="center">
-            🚫 <strong>AdBlocker Detected:</strong> Please disable your
-            AdBlocker to use the voice chat feature.
-          </Text>
-        </Box>
-      </Slide>
+        <DBMenu isGuest={userDetails?.roles === 'guest'}>
+          <Icon color="white" as={ChevronDownIcon} />
+        </DBMenu>
+      </Box>
 
       {/* DRAWERS */}
       {isLessThan768 && (
