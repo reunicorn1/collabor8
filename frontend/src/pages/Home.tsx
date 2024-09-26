@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { FaGithub } from 'react-icons/fa6';
 import { FaLinkedin } from 'react-icons/fa';
+import { FaSquareXTwitter } from 'react-icons/fa6';
 
 import {
   Box,
@@ -11,6 +12,7 @@ import {
   SimpleGrid,
   Stack,
   Flex,
+  Link,
 } from '@chakra-ui/react';
 import SignUp from '@components/Modals/SignUp';
 import ResetPasswordModal from '@components/Modals/ResetPassword';
@@ -19,7 +21,6 @@ import { useLocation } from 'react-router-dom';
 import Slogan from '@components/Slogan';
 import { TEXT, AVATARS, FEATURES } from '../constants.ts';
 import NavigationBar from '@components/Bars/NavigationBar.tsx';
-import { LinkedIn, Twitter, Github } from '../common/icons';
 
 const Home = () => {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -166,9 +167,17 @@ const Home = () => {
                   {avatar.name}
                 </Heading>
               </Box>
-              <Flex justifyContent="center">
-                <FaGithub fontSize={20} className="mr-2" />
-                <FaLinkedin fontSize={20} />
+              {/* Social Icons */}
+              <Flex justifyContent="center" mt={4} gap="4">
+                {avatar.socials.map((social, index) => (
+                  <Link key={index} href={social.link} isExternal>
+                    <Box as="span" _hover={{ color: 'blue.500' }}>
+                      {' '}
+                      {/* Hover color can be customized */}
+                      <social.Icon fontSize={24} />
+                    </Box>
+                  </Link>
+                ))}
               </Flex>
             </Box>
           ))}
