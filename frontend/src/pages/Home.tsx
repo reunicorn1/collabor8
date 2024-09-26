@@ -1,8 +1,4 @@
 import { useState, useEffect } from 'react';
-import { FaGithub } from 'react-icons/fa6';
-import { FaLinkedin } from 'react-icons/fa';
-import { FaSquareXTwitter } from 'react-icons/fa6';
-
 import {
   Box,
   Heading,
@@ -11,8 +7,8 @@ import {
   Image,
   SimpleGrid,
   Stack,
-  Flex,
-  Link,
+  List,
+  ListItem,
 } from '@chakra-ui/react';
 import SignUp from '@components/Modals/SignUp';
 import ResetPasswordModal from '@components/Modals/ResetPassword';
@@ -45,94 +41,80 @@ const Home = () => {
   }, [location.pathname]);
 
   return (
-    <>
-      <Stack className="h-screen bg-brand h-max">
+    <Box className='home-padding'>
+      <Stack className='h-screen bg-brand overflow-hidden'>
         <NavigationBar />
         {/* SLOGAN */}
-        <Slogan />
+        <Slogan className='my-auto' />
       </Stack>
-      <Image src="gradient.png" h="200px" w="100%" />
-      <Center>
-        <Image
-          src="/converted.gif"
-          maxW={{ base: '90%', md: '700px', lg: '1000px' }}
-          mt={10}
-        />
-      </Center>
 
       {/* TYPING */}
-      <Box bg="white" p={{ base: 10, md: 20 }}>
-        <p className="max-w-[90%] lg:max-w-[65%] mx-auto font-mono !leading-loose text-sm md:text-2xl">
+      <Box bg='white' px={4} className='py-10 lg:py-20'>
+        <Box className='mb-4 container bg-red-100 mx-auto'>
+          <Image src="converted.gif" className='w-full' />
+        </Box>
+        <p className='lg:max-w-[50%] mx-auto font-mono !leading-loose lg:text-4xl'>
           {typedText}
         </p>
       </Box>
 
       {/* FEATURES */}
       <Box
-        bg="black"
+        bg='black'
         backgroundImage={`url('/loop.png')`}
         backgroundSize="cover"
         backgroundPosition="center"
-        pt={20}
-        pb={20}
-        p={7}
+        py={10}
       >
         <Text
-          fontFamily="mono"
-          fontSize={{ base: '25px', md: '35px' }}
-          mt={'40px'}
-          mb={'20px'}
-          color="white"
-          className="w-[min(90%,700px)] mx-auto text-center"
+          className="my-4 text-[25px] md:my-8 md:text-[40px] w-[min(90%,800px)] mx-auto text-center font-mono text-white"
         >
-          Why Collabor8 is the <span className="bg-orange-600">Ultimate</span>{' '}
+          Why Collabor8 is the
+          <span className='bg-orange-600 mx-2'>
+            Ultimate
+          </span>
           Tool for Team Collaboration
         </Text>
         <Box
-          className={`container mx-auto py-10 px-4 grid  justify-center gap-8`}
+          className={`container mx-auto py-10 px-4 grid grid-cols-1 md:grid-cols-9 justify-center gap-8 lg:px-24`}
           id="features"
         >
           {FEATURES.map((f, idx) => (
             <Box
               key={idx}
-              className={`flex flex-col gap-3 justify-center items-center glass p-7 bg-[rgba(179, 255, 255, 0.313)] border-4 
-      ${idx % 2 === 0 ? 'md:col-start-1 md:col-end-5' : 'md:col-start-6 md:col-end-10'} 
-      max-w-[400px] mx-auto`}
+              className={`flex flex-col gap-3 items-center justify-start glass p-4 bg-[rgba(179, 255, 255, 0.313)] border-4 
+              ${(idx) % 2 === 0 ? 'md:col-start-1 md:col-end-5' : 'md:col-start-6 md:col-end-10'}`}
               borderColor={f.borderColor}
-              maxW="400px"
             >
-              <f.Icon fontSize="90px" color={f.borderColor} />
+              <f.Icon fontSize='90px' color={f.borderColor} />
               <Heading
                 fontFamily="mono"
-                textAlign="center"
-                size="lg"
                 color="white"
                 mb={2}
+                className='!text-2xl md:!text-3xl text-center'
               >
                 {f.title}
               </Heading>
-              <Text className="text-white text-lg text-center" textAlign="left">
+              <Text className='text-[16px] md:text-lg text-white text-lg'>
                 {f.description}
               </Text>
             </Box>
-          ))}
+          ))
+          }
         </Box>
       </Box>
 
       {/* LOOOPING MOUSE */}
-      <Box className="relative py-20 px-20 bg-[#F6D277] lg:py-24">
-        <Box className="mx-auto max-w-[700px] items-center flex flex-col gap-4 px-5 overflow-hidden">
-          <Heading className="text-center !font-mono font-bold !text-4xl md:!text-5xl lg:!text-7xl p-1">
+      <Box className='relative py-10 bg-[#F6D277] lg:py-24'>
+        <Box className='mx-auto max-w-[700px] items-center flex flex-col gap-4 px-4 overflow-hidden'>
+          <Heading className='text-center !font-mono font-bold lg:!text-7xl'>
             Meet a Text Editor that makes an impact
           </Heading>
           <Image
             src="giphy.gif"
-            className="h-full absolute top-0 left-1/2 -translate-x-1/2 lg:w-[30%]"
+            className='h-full absolute top-0 left-1/2 -translate-x-1/2 lg:w-[30%]'
           />
-          <Text
-            className="text-xl leading-8 lg:mt-4 !text-xl lg:!text-2xl"
-            textAlign="center"
-          >
+          <Text className='text-lg text-center leading-8 lg:mt-4 lg:text-3xl'>
             Accelerate your workflow and shorten your cycle with all-in one
             platform for efficent code reviews
           </Text>
@@ -140,52 +122,55 @@ const Home = () => {
       </Box>
 
       {/* ABOUT US */}
-      <Box id="about-us" className="container mx-auto my-8">
-        <h1 className="py-4 text-center font-mono text-5xl font-bold">
+      <Box
+        id="about-us"
+        className="container mx-auto my-8"
+      >
+        <h1 className='py-4 text-center font-mono text-5xl font-bold'>
           Our Team
         </h1>
         <SimpleGrid
           px={{ base: '20px', md: '0' }}
-          spacing="40px"
-          columns={{ base: 1, md: 2, xl: 4 }} // 2 columns for small screens, 4 columns for large screens
+          minChildWidth='250px'
+          spacing='40px'
         >
-          {AVATARS.map((avatar) => (
-            <Box>
-              <Box
-                key={avatar.name}
-                justifyContent="center"
-                alignItems="center"
-                textAlign="center"
-                p={2}
-                m={4}
-                borderBottom={`10px solid ${avatar.borderColor}`}
-              >
-                <Center>
-                  <Image src={avatar.img} h="250px" />
-                </Center>
+          {AVATARS.map(avatar => (
+            <Box
+              key={avatar.name}
+              justifyContent="center"
+              alignItems="center"
+              textAlign="center"
+              borderBottom={`10px solid ${avatar.borderColor}`}
+              className='relative flex flex-col h-[300px] group origin-top overflow-hidden'
+            >
+              <Box className='absolute top-0 left-0 w-full h-full transition group-hover:scale-[0.6] group-hover:-translate-y-[20%]'>
+                <Image className='mx-auto' src={avatar.img} h="250px" />
                 <Heading fontSize="25px" fontFamily="mono">
                   {avatar.name}
                 </Heading>
               </Box>
-              {/* Social Icons */}
-              <Flex justifyContent="center" mt={4} gap="4">
-                {avatar.socials.map((social, index) => (
-                  <Link key={index} href={social.link} isExternal>
-                    <Box as="span" _hover={{ color: 'blue.500' }}>
-                      {' '}
-                      {/* Hover color can be customized */}
-                      <social.Icon fontSize={24} />
-                    </Box>
-                  </Link>
-                ))}
-              </Flex>
+              <Box
+                className='w-full gap-4 bg-slate-100 py-2 rounded-t-2xl h-[100px] transition translate-y-full mt-auto group-hover:flex group-hover:flex-col group-hover:translate-y-0'
+              >
+                <h3
+                  style={{ color: avatar.borderColor }}
+                  className='text-slate-50 font-bold capitalize'>
+                  reach out
+                </h3>
+                <List className='flex justify-center gap-3'>
+                  {avatar.socials.map((social) => (
+                    <ListItem key={social.link}>
+                      <a href={social.link}><social.Icon boxSize='8' /></a>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
             </Box>
           ))}
         </SimpleGrid>
       </Box>
-      <Center>
-        <Image w="1500px" src="banner3.png" />
-      </Center>
+
+      <Image className='custom-banner' src="banner3.png" />
 
       {/* Footer Section */}
       <Box bg="brand.800" p={5} color="white" textAlign="center" pt={10}>
@@ -193,7 +178,7 @@ const Home = () => {
           <Image h="90px" src="pattern-b.gif"></Image>
         </Center>
         <Text fontSize="sm" fontFamily="mono">
-          © 2024 Collabor8. All rights reserved.
+          Â© 2024 Collabor8. All rights reserved.
         </Text>
       </Box>
 
@@ -220,7 +205,7 @@ const Home = () => {
           <ResetPasswordModal />
         </Box>
       )}
-    </>
+    </Box>
   );
 };
 

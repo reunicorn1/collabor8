@@ -1,20 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button, Flex, IconButton } from '@chakra-ui/react';
 import { FaMicrophone, FaMicrophoneSlash, FaSignOutAlt } from 'react-icons/fa';
 import { useGetRoomTokenQuery } from '@store/services/projectShare';
 import apiConfig from '@config/apiConfig';
+import { useSelector } from 'react-redux';
+import { selectUserDetails } from '@store/selectors/userSelectors';
+import { useLazyGetFriendByIdQuery } from '@store/services/user';
+
 
 const RoomComponent = ({ autoJoin = false, onClose }) => {
   const { projectId } = useParams();
-  // console.log('data', data);
-  const { data, refetch, isFetching, isSuccess } =
-    useGetRoomTokenQuery(projectId);
-  const [joined, setJoined] = React.useState(autoJoin);
-  const [rtc, setRtc] = useState(null);
+  const { data, refetch, isSuccess } = useGetRoomTokenQuery(projectId);
+  const [joined, setJoined] = useState(autoJoin);
+  const rtcRef = useRef(null); // Use useRef for rtc
   const [rtcInitialized, setRtcInitialized] = useState(false);
+  const [audioTrackMuted, setAudioTrackMuted] = useState(false);
   const [_, setToggle] = useState(false);
-  const [connectedUsers, setConnectedUsers] = useState([]);
+  const userDetails = useSelector(selectUserDetails);
+  const [userCount, setUserCount] = useState(0);
+  const [getFriendById] = useLazyGetFriendByIdQuery();
   let AgoraRTC;
 
   const forceUpdate = () => {
@@ -25,30 +30,26 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
     if (!isSuccess || !data) {
       await refetch();
     }
-    console.log('data', data);
     return data;
   };
 
   const initializeRtc = async () => {
-    const AgoraRTC = (await import('agora-rtc-sdk-ng')).default; // Dynamically import Agora SDK
+    AgoraRTC = (await import('agora-rtc-sdk-ng')).default;
     return {
       client: AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' }),
       audioTrack: null,
       audioTrackMuted: false,
-      remoteUsers: {},
-      remoteAudioTracks: {},
-      localUid: null,
-      remoteUid: null,
       remoteTracks: {},
+      users: {},
     };
   };
 
   const joinRoom = async () => {
     const data = await getToken();
     const { token, uid, channel } = data;
+
     if (!rtcInitialized) {
-      const rtcInstance = await initializeRtc();
-      setRtc(rtcInstance);
+      rtcRef.current = await initializeRtc(); // Store RTC in ref
       setRtcInitialized(true);
     }
 
@@ -59,70 +60,159 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       uid: uid,
     };
 
-    const agoraClient = rtc.client;
+    const agoraClient = rtcRef.current.client;
     agoraClient.on('user-published', handleUserPublished);
-    agoraClient.on('user-joined', handleUserJoined);
+    // agoraClient.on('user-joined', handleUserJoined);
     agoraClient.on('user-left', handleUserLeft);
     agoraClient.on('user-unpublished', handleUserUnpublished);
     agoraClient.enableAudioVolumeIndicator();
-
-    await agoraClient.join(
-      config.appid,
-      config.channel,
-      config.token || null,
-      config.uid || null,
-    );
+    await agoraClient.join(config.appid, config.channel, config.token || null, config.uid || null);
     rtcRef.current.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+    rtcRef.current.users[uid] = {
+      username: userDetails.username,
+      profile_picture: userDetails.profile_picture,
+    };
 
     setJoined(true);
+    await agoraClient.publish([rtcRef.current.audioTrack]);
+    addAvatar(rtcRef.current.client.uid);
     document.getElementById('foot').style.display = 'flex';
   };
 
+
+
+
+  const addAvatar = (uid, isMuted = false) => {
+    const rtc = rtcRef.current;
+    // check if wrapper already exists
+    if (document.getElementById(`user-avatar-wrapper-${uid}`)) {
+      handleAvatarToggle(uid, isMuted);
+      return;
+    }
+    const userAvatarWrapper = document.createElement('div');
+    userAvatarWrapper.id = `user-avatar-wrapper-${uid}`;
+
+    const userAvatar = document.createElement('div');
+    userAvatar.id = `user-avatar-${uid}`;
+    const user = rtc.users[uid];
+
+    const numUsers = Object.keys(rtc.remoteTracks).length + 1;
+    const hasAvatar = !!user.profile_picture;
+    const avatarSrc = hasAvatar
+      ? user.profile_picture
+      : `../public/avatar-${(numUsers % 4)}.png`;
+
+    userAvatarWrapper.className = `relative flex flex-start user-avatar-wrapper flex-shrink-0 w-10 h-10 rounded-full ${isMuted ? 'border-red-500' : 'border-green-500'} border-2 items-center justify-center bg-gray-100 overflow-hidden`;
+    userAvatar.className = 'user-avatar flex-shrink-0 w-8 h-8 rounded-full overflow-hidden';
+    userAvatar.innerHTML = `<img src="${avatarSrc}" alt="User Avatar" class="w-full h-full object-cover"/>`;
+
+    userAvatarWrapper.appendChild(userAvatar);
+
+    if (isMuted) {
+      const muteLine = document.createElement('div');
+      muteLine.className = 'absolute top-0 left-0 w-full h-full bg-red-500 opacity-50 transform rotate-45';
+      userAvatarWrapper.appendChild(muteLine);
+    }
+    document.getElementById('users-avatars').appendChild(userAvatarWrapper);
+  }
+
+  const removeAvatar = (uid) => {
+    const userAvatarWrapper = document.getElementById(`user-avatar-wrapper-${uid}`);
+    if (userAvatarWrapper) {
+      userAvatarWrapper.remove();
+    }
+  };
+
+  const handleAvatarToggle = (uid, isMuted) => {
+    const userAvatarWrapper = document.getElementById(`user-avatar-wrapper-${uid}`);
+
+    if (userAvatarWrapper) {
+      userAvatarWrapper.classList.toggle('border-green-500', !isMuted);
+      userAvatarWrapper.classList.toggle('border-red-500', isMuted);
+
+      // Handle the diagonal mute line
+      const existingMuteLine = userAvatarWrapper.querySelector('.mute-line');
+      if (isMuted) {
+        if (!existingMuteLine) {
+          const muteLine = document.createElement('div');
+          muteLine.className = 'mute-line absolute top-0 left-0 w-full h-full bg-red-500 opacity-50 transform rotate-45';
+          userAvatarWrapper.appendChild(muteLine);
+        }
+      } else if (existingMuteLine) {
+        existingMuteLine.remove();
+      }
+    }
+  }
+
   const handleMicClick = async () => {
+    const rtc = rtcRef.current;
+
     if (rtc.audioTrack) {
       const newMutedStatus = !rtc.audioTrackMuted;
       await rtc.audioTrack.setMuted(newMutedStatus);
       rtc.audioTrackMuted = newMutedStatus;
-    }
-  };
 
-  const handleUserUnpublished = (user) => {
-    if (rtc.remoteTracks[user.uid]) {
-      const audioTrack = rtc.remoteTracks[user.uid].audioTrack;
-      if (audioTrack) {
-        audioTrack.stop();
-      }
-      delete rtc.remoteTracks[user.uid];
+      const uid = rtc.client.uid; // Local user's UID
+      handleAvatarToggle(uid, newMutedStatus);
+      setAudioTrackMuted(newMutedStatus);
     }
-    rtc.client.publish([rtc.audioTrack]);
   };
 
   const handleUserPublished = async (user, mediaType) => {
+    const rtc = rtcRef.current; // Get current rtc from ref
+    const  data = await getFriendById(user.uid).unwrap();
+    console.log('User Published: ', data);
+
     if (!rtc.client || mediaType !== 'audio') return;
-    await rtc.client.subscribe(user, mediaType);
+
+    await rtc.client.subscribe(user, 'audio');
+
     if (user.audioTrack) {
       user.audioTrack.play();
-    } else {
-      console.warn('No audio track found for the user');
     }
+
     rtc.remoteTracks[user.uid] = user;
+    rtc.users[user.uid] = {
+      username: data.username,
+      profile_picture: data.profile_picture,
+    };
+
+    console.log('Number of Remote Tracks: ', Object.keys(rtc.remoteTracks).length);
+    // logic adding user avatar to the list for local user
+    const isMuted = user.audioTrack.isMuted || false;
+    addAvatar(user.uid, isMuted);
+  };
+
+  const handleUserUnpublished = async (user) => {
+    const rtc = rtcRef.current; // Get current rtc from ref
+    if (rtc.remoteTracks[user.uid]) {
+      const audioTrack = rtc.remoteTracks[user.uid].audioTrack;     
+      const isMuted = audioTrack?.isMuted || true;
+      handleAvatarToggle(user.uid, isMuted);
+      if (audioTrack) {
+        audioTrack.stop();
+      }
+
+      // delete rtc.remoteTracks[user.uid];
+    }
+    // removeAvatar(user.uid);
+
   };
 
   const handleLeaveButtonClick = async () => {
+    const rtc = rtcRef.current; // Get current rtc from ref
     setJoined(false);
+    setRtcInitialized(false);
     document.getElementById('foot').style.display = 'none';
-    if (rtc.audioTrack) {
+    if (rtc?.audioTrack) {
       rtc.audioTrack.stop();
       rtc.audioTrack.close();
       rtc.audioTrack = null;
     }
+    removeAvatar(rtc.client.uid);
 
-    if (rtc.client) {
-      console.log('Leaving the room');
+    if (rtc?.client) {
       await rtc.client.leave();
-      console.log('Successfully left the room');
-    } else {
-      console.warn('client is null');
     }
 
     for (const uid in rtc.remoteTracks) {
@@ -131,47 +221,30 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
         user.audioTrack.stop();
       }
     }
-
+    // logic removing user avatar from the list for local user
+    for (const uid in rtc.remoteTracks) {
+      removeAvatar(uid);
+    }
     rtc.client = null;
     rtc.audioTrackMuted = false;
     rtc.remoteTracks = {};
-    rtc.localUid = null;
-    rtc.remoteUid = null;
 
     onClose();
     forceUpdate();
   };
 
-  const handleUserJoined = async (user, mediaType) => {
-    // Handle audio only
-    if (!rtc.client || mediaType !== 'audio') return;
-    if (rtc.client) {
-      await rtc.client.subscribe(user, mediaType);
-    }
-    if (user.audioTrack) {
-      user.audioTrack.play();
-    } else {
-      console.warn('No audio track found for the user');
-    }
-    // logic adding user avatar to the list for remote user
-    setConnectedUsers((prevUsers) => [...prevUsers, user.uid]);
-    rtc.remoteTracks[user.uid] = user;
-  };
 
   const handleUserLeft = (user) => {
-    // Remove user from remote tracks
+    const rtc = rtcRef.current; // Get current rtc from ref
     if (rtc.remoteTracks[user.uid]) {
       const audioTrack = rtc.remoteTracks[user.uid].audioTrack;
       if (audioTrack) {
         audioTrack.stop();
       }
-
       delete rtc.remoteTracks[user.uid];
     }
     // logic removing user avatar from the list for remote user
-    setConnectedUsers((prevUsers) =>
-      prevUsers.filter((uid) => uid !== user.uid),
-    );
+    removeAvatar(user.uid);
     if (rtc.client) {
       rtc.client.unsubscribe(user);
     }
@@ -182,18 +255,16 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       joinRoom();
     }
     return () => {
-      // Cleanup function to leave the room and stop tracks
+      const rtc = rtcRef.current; // Get current rtc from ref
       if (rtc && rtc.client) {
-        rtc.client
-          .leave()
-          .catch((error) => console.error('Error leaving room:', error));
+        rtc.client.leave().catch((error) => console.error('Error leaving room:', error));
       }
       if (rtc && rtc.audioTrack) {
         rtc.audioTrack.stop();
         rtc.audioTrack.close();
       }
     };
-  }, [autoJoin, rtc, rtcInitialized]);
+  }, [autoJoin]);
 
   return (
     <Flex direction="column" align="center">
@@ -215,7 +286,7 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       <Flex
         id="foot"
         display={joined ? 'flex' : 'none'}
-        direction="row"
+        direction="column"
         align="center"
         justify="center"
         p={4}
@@ -223,30 +294,25 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
         pb={0}
         gap={4}
       >
-        <IconButton
-          icon={rtc?.audioTrackMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
-          aria-label="Toggle Mic"
-          onClick={handleMicClick}
-        />
-        <IconButton
-          icon={<FaSignOutAlt />}
-          aria-label="Leave Room"
-          onClick={handleLeaveButtonClick}
-        />
-      </Flex>
-
-      {/* Display Connected Users */}
-      {connectedUsers.length > 0 && (
-        <Flex direction="column" mt={4}>
-          <strong>Connected Users:</strong>
-          <ul>
-            {connectedUsers.map((uid) => (
-              <li key={uid}>User {uid}</li>
-            ))}
-          </ul>
+        <Flex id="users-avatars" className='flex space-x-2'>
         </Flex>
-      )}
+        <Flex
+          className="flex flex-row items-center justify-center p-4 gap-4"
+        >
+          <IconButton
+            icon={audioTrackMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
+            aria-label="Toggle Mic"
+            onClick={handleMicClick}
+          />
+          <IconButton
+            icon={<FaSignOutAlt />}
+            aria-label="Leave Room"
+            onClick={handleLeaveButtonClick}
+          />
+        </Flex>
+      </Flex>
     </Flex>
   );
 };
+
 export default RoomComponent;

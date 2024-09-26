@@ -66,6 +66,37 @@ export class ProjectSharesService {
     throw new NotFoundException('Project not found');
   }
 
+  // async createGuestShare(
+  //   _id: string,
+  // ): Promise<ProjectShares | { message: string }> {
+  //   const project = await this.projectsService.findOne(_id);
+  //   if (!project) {
+  //     throw new NotFoundException('Project not found');
+  //   }
+  //   const user = await this.usersService.findOneBy({ username: 'guest' });
+  //   if (!user) {
+  //     throw new NotFoundException('Guest user not found');
+  //   }
+  //   const projectShare = await this.projectSharesRepository.findOneBy({
+  //     project_id: project._id,
+  //     username: 'guest',
+  //   });
+  //   if (projectShare) {
+  //     return { message: 'Project share already exists' };
+  //   }
+  //   const newProjectShare = this.projectSharesRepository.create({
+  //     project_id: project._id,
+  //     _id: project._id,
+  //     username: 'guest',
+  //     user_id: user.user_id,
+  //     access_level: 'read',
+  //     favorite: false,
+  //   });
+  //   await this.projectSharesRepository.save(newProjectShare);
+  //   return newProjectShare;
+  // }
+
+
   async mapProjectShareData(
     projectShare: ProjectShares,
   ): Promise<ProjectSharesOutDto> {
@@ -197,11 +228,13 @@ export class ProjectSharesService {
       }
       parsedDto.username = user.username;
     }
+
     const project = await this.projectsService.findOne(parsedDto.project_id);
     if (!project) {
       throw new NotFoundException('Project not found');
     }
     parsedDto._id = project._id;
+    parsedDto.project_id = project.project_id; // reasign here to get the real project_id of mysql
     if (await this.getProjectShares(parsedDto.project_id, parsedDto.username)) {
       throw new ConflictException('Project share already exists');
     }

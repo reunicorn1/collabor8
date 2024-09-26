@@ -23,24 +23,23 @@ const Console: React.FC = () => {
   const [executeFile, { data = intialOutput, isLoading }] =
     useExecuteFileMutation();
   const { output } = data;
+  const isGuest = user?.username === 'guest';
 
   const handleExecute = async () => {
-    if (
-      user.username === 'guest' &&
-      user.first_name === 'Guest' &&
-      user.last_name === 'User'
-    ) {
-      toast({
-        title: 'Whoa! 🚀 Code Without a License?',
-        description: 'Time to suit up! Log in to unlock full coding powers. 🔑',
-        status: 'warning',
-        duration: 5000,
-        isClosable: true,
-        position: 'bottom-left',
-        variant: 'subtle',
-      });
-      return;
-    }
+    //TODO: uncomment after the session
+    //if (isGuest)
+    // {
+    //  toast({
+    //    title: 'Whoa! 🚀 Code Without a License?',
+    //    description: 'Time to suit up! Log in to unlock full coding powers. 🔑',
+    //    status: 'warning',
+    //    duration: 5000,
+    //    isClosable: true,
+    //    position: 'bottom-left',
+    //    variant: 'subtle',
+    //  });
+    //  return;
+    //}
 
     let file = fileSelector;
     //console.log('Execute', file);

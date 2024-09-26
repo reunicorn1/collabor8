@@ -15,7 +15,8 @@ export default function VoiceDrawer({ isOpen, onClose }: ModalProps) {
         position="fixed"
         bottom={isOpen ? '0' : `-${150}`}
         width="290px"
-        height="110px"
+        minH="110px"
+        height="max-content"
         maxHeight="90vh"
         bg="gray.800"
         borderRadius="20px 20px 0 0"

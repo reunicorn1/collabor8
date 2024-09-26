@@ -12,7 +12,7 @@ const useLogOut = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const protectedRoutes = ['/dashboard', '/profile', '/editor/'];
+    const protectedRoutes = ['/dashboard', '/profile'];
     console.log('User is authenticated', userAuthenticated);
     if (
       !userAuthenticated &&
