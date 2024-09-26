@@ -234,6 +234,7 @@ export class ProjectSharesService {
       throw new NotFoundException('Project not found');
     }
     parsedDto._id = project._id;
+    parsedDto.project_id = project.project_id; // reasign here to get the real project_id of mysql
     if (await this.getProjectShares(parsedDto.project_id, parsedDto.username)) {
       throw new ConflictException('Project share already exists');
     }
