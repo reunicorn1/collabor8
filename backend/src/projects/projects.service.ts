@@ -57,7 +57,7 @@ export class ProjectsService {
         username: parsedDto.username,
       });
       if (conflict) {
-        throw new Error('Project name already exists');
+        throw new ConflictException('Project name already exists');
       }
       parsedDto['environment_id'] = user.environment_id;
       parsedDto['owner_id'] = user.user_id;
