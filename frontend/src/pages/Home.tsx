@@ -72,7 +72,7 @@ const Home = () => {
           Tool for Team Collaboration
         </Text>
         <Box
-          className={`container py-10 px-4 grid grid-cols-1 md:grid-cols-9 justify-center gap-8 lg:px-24`}
+          className={`container mx-auto py-10 px-4 grid grid-cols-1 md:grid-cols-9 justify-center gap-8 lg:px-24`}
           id="features"
         >
           {FEATURES.map((f, idx) => (
@@ -137,7 +137,7 @@ const Home = () => {
             >
               <Box className="flex flex-col h-full justify-between absolute top-0 left-0 w-full transition group-hover:scale-[0.6] group-hover:-translate-y-[20%]">
                 <Box className="h-3/4 w-full">
-                  <Image className="mx-auto w-full h-full" src={avatar.img} />
+                  <Image className="mx-auto h-full" src={avatar.img} />
                 </Box>
                 <Heading fontSize="25px" fontFamily="mono">
                   {' '}
