@@ -26,6 +26,7 @@ export default defineConfig(({ mode }) => ({
       '@utils': path.resolve(__dirname, 'src/utils'),
       '@pages': path.resolve(__dirname, 'src/pages'),
       '@hooks': path.resolve(__dirname, 'src/hooks'),
+      '@public': path.resolve(__dirname, 'public'),
     },
   },
   build: {

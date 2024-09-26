@@ -45,7 +45,10 @@
 			],
 			"@hooks/*": [
 				"hooks/*"
-			]
+			],
+			"@public/*": [
+				"../public/*"
+			],
 		}
 	},
 	"include": [

@@ -46,6 +46,9 @@ export class AuthService {
     refreshToken: string;
     user: Partial<Users>;
   }> {
+    if (user.username === 'guest') {
+      throw new UnauthorizedException('Guest user cannot sign in');
+    }
     const payload = {
       username: user.username,
       sub: user.user_id,
