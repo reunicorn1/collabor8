@@ -57,7 +57,7 @@ export default function DashboardPage() {
   return (
     <>
       <DashboardBar />
-      <Flex h="100%" flexDirection={['column', 'row']}>
+      <Flex minH="100%" flexDirection={['column', 'row']}>
         <Box
           bg="brand.900"
           w={['100%', '230px']}
@@ -167,7 +167,7 @@ export default function DashboardPage() {
             )}
           </>
         </Box>
-        <Box flex="1" bg="brand.900" h="100%" color="white" width="100%">
+        <Box bg="brand.900" minH="100%" color="white" width="100%">
           {clicked === 'Home' ? (
             <Home />
           ) : clicked === 'Project' ? (

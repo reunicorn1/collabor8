@@ -38,9 +38,8 @@ export default function SignIn({
   const finalRef = useRef(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [login] = useLoginUserMutation();
+  const [login, { isLoading }] = useLoginUserMutation();
   const [isResetPasswordOpen, setResetPasswordOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
   // Handles the login process
@@ -58,7 +57,16 @@ export default function SignIn({
       return;
     }
 
-    setIsLoading(true);
+    if (/guest/.test(username.trim().toLowerCase())) {
+      toast({
+        title: 'Invalid Username',
+        description: 'guest as username is reserved. 🔑',
+        status: 'warning',
+        isClosable: true,
+        variant: 'subtle',
+      });
+      return;
+    }
 
     login({ username, password, is_invited })
       .unwrap()
@@ -109,7 +117,6 @@ export default function SignIn({
         });
       })
       .finally(() => {
-        setIsLoading(false);
       });
   };
 
