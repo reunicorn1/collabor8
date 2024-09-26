@@ -29,6 +29,7 @@ export default function DBMenu({ isGuest = false, className = '', children }: DB
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
+    navigate(location.pathname.concat('?logout=true'));
     dispatch(performLogout());
     // dispatch(unsetCredentials());
     toast({

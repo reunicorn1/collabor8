@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Navigate, RouteProps, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, RouteProps, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useAppSelector } from '@hooks/useApp';
-import { selectIsAuthenticated, selectUserDetails } from '@store/selectors';
+import { selectUserDetails } from '@store/selectors';
 import {
   Modal,
   ModalBody,
@@ -23,11 +23,12 @@ const ProtectedRoute: React.FC<RouteProps> = ({
   const { isAuthenticated } = useAuth();
   const userDetails = useAppSelector(selectUserDetails);
   const location = useLocation();
+  const [searchParam] = useSearchParams();
   const isGuest = userDetails?.roles === 'guest';
-  const mongoIdRegex = new RegExp(('(?<=editor/)[^/]+'));
+  const mongoIdRegex = new RegExp(('(?<=editor/)[^/?]+'));
   const redirect = location.pathname.match(mongoIdRegex);
 
-  if (!isAuthenticated && location.pathname.startsWith('/editor')) {
+  if (!isAuthenticated && location.pathname.startsWith('/editor') && !searchParam.has('logout')) {
     return <TryoutModal isOpen={true} redirect={redirect ? redirect[0] : ''} />;
   }
 
