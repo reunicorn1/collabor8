@@ -153,7 +153,7 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       rtc.audioTrackMuted = newMutedStatus;
 
       const uid = rtc.client.uid; // Local user's UID
-      // handleAvatarToggle(uid, newMuted);
+      handleAvatarToggle(uid, newMutedStatus);
       setAudioTrackMuted(newMutedStatus);
     }
   };
