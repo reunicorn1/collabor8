@@ -2,6 +2,10 @@
 import { Box, Center } from '@chakra-ui/react';
 import CallToAction from './Buttons/CallToAction';
 
+type SloganProps = {
+  className?: string;
+};
+
 export default function Slogan({ className = '' }: SloganProps) {
   return (
     <Box className={`flex justify-center items-center ${className}`}>
