@@ -3,13 +3,54 @@ import { PiCursorClickFill } from 'react-icons/pi';
 import { ImDatabase } from 'react-icons/im';
 import { TbLayoutDashboardFilled } from 'react-icons/tb';
 import * as Y from 'yjs';
+import { Github, LinkedIn, Twitter } from './common/icons';
 
 const TEXT = '\r\r\rCollabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.';
 const AVATARS = [
-  { name: 'Abdallah Abdelrahman', img: '/aa.png', borderColor: '#52A0D8' },
-  { name: 'Mohamed Elfadil Abdalla', img: '/mea.png', borderColor: '#F16145' },
-  { name: 'Mohannad Babiker', img: '/mab.png', borderColor: '#76449A' },
-  { name: 'Reem Osama', img: '/ro.png', borderColor: '#F6D277' },
+  {
+    name: 'Abdallah Abdelrahman',
+    img: '/aa.png',
+    borderColor: '#52A0D8',
+    socials: [
+      { link: 'https://www.linkedin.com/in/abdallah-alkaser/', Icon: LinkedIn },
+      { link: 'https://x.com/foola_sust', Icon: Twitter },
+      { link: 'https://github.com/Abdallah-Abdelrahman', Icon: Github },
+    ],
+  },
+
+  {
+    name: 'Mohamed Elfadil Abdalla',
+    img: '/mea.png',
+    borderColor: '#F16145',
+    socials: [
+      { link: 'https://www.linkedin.com/in/abdallah-alkaser/', Icon: LinkedIn },
+      { link: 'https://x.com/foola_sust', Icon: Twitter },
+      { link: 'https://github.com/Abdallah-Abdelrahman', Icon: Github },
+    ],
+  },
+
+  {
+    name: 'Mohannad Babiker',
+    img: '/mab.png',
+    borderColor: '#76449A',
+    socials: [
+      { link: 'https://www.linkedin.com/in/abdallah-alkaser/', Icon: LinkedIn },
+      { link: 'https://x.com/foola_sust', Icon: Twitter },
+      { link: 'https://github.com/Abdallah-Abdelrahman', Icon: Github },
+    ],
+  },
+
+  {
+    name: 'Reem Osama',
+    img: '/ro.png',
+    borderColor: '#F6D277',
+    socials: [
+      { link: 'https://www.linkedin.com/in/abdallah-alkaser/', Icon: LinkedIn },
+      { link: 'https://x.com/foola_sust', Icon: Twitter },
+      { link: 'https://github.com/Abdallah-Abdelrahman', Icon: Github },
+    ],
+  },
+
 ];
 const FEATURES = [
   {

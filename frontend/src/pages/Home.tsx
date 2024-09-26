@@ -1,5 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
-import { Box, Heading, Text, Center, Image, SimpleGrid, Stack } from '@chakra-ui/react';
+import { useState, useEffect } from 'react';
+import {
+  Box,
+  Heading,
+  Text,
+  Center,
+  Image,
+  SimpleGrid,
+  Stack,
+  List,
+  ListItem,
+} from '@chakra-ui/react';
 import SignUp from '@components/Modals/SignUp';
 import ResetPasswordModal from '@components/Modals/ResetPassword';
 import useTypingEffect from '../hooks/useTypingEffect';
@@ -7,6 +17,7 @@ import { useLocation } from 'react-router-dom';
 import Slogan from '@components/Slogan';
 import { TEXT, AVATARS, FEATURES } from '../constants.ts';
 import NavigationBar from '@components/Bars/NavigationBar.tsx';
+import { LinkedIn, Twitter, Github } from '../common/icons';
 
 const Home = () => {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -116,7 +127,11 @@ const Home = () => {
         <h1 className='py-4 text-center font-mono text-5xl font-bold'>
           Our Team
         </h1>
-        <SimpleGrid px={{ base: '20px', md: '0' }} minChildWidth='250px' spacing='40px'>
+        <SimpleGrid
+          px={{ base: '20px', md: '0' }}
+          minChildWidth='250px'
+          spacing='40px'
+        >
           {AVATARS.map(avatar => (
             <Box
               key={avatar.name}
@@ -124,15 +139,30 @@ const Home = () => {
               alignItems="center"
               textAlign="center"
               borderBottom={`10px solid ${avatar.borderColor}`}
-              p={2}
-              m={4}
+              className='relative flex flex-col h-[300px] group origin-top overflow-hidden'
             >
-              <Center>
-                <Image src={avatar.img} h="250px" />
-              </Center>
-              <Heading fontSize="25px" fontFamily="mono">
-                {avatar.name}
-              </Heading>
+              <Box className='absolute top-0 left-0 w-full h-full transition group-hover:scale-[0.6] group-hover:-translate-y-[20%]'>
+                <Image className='mx-auto' src={avatar.img} h="250px" />
+                <Heading fontSize="25px" fontFamily="mono">
+                  {avatar.name}
+                </Heading>
+              </Box>
+              <Box
+                className='w-full gap-4 bg-slate-100 py-2 rounded-t-2xl h-[100px] transition translate-y-full mt-auto group-hover:flex group-hover:flex-col group-hover:translate-y-0'
+              >
+                <h3
+                style={{ color: avatar.borderColor }}
+                  className='text-slate-50 font-bold capitalize'>
+                  reach out
+                </h3>
+                <List className='flex justify-center gap-3'>
+                  {avatar.socials.map((social) => (
+                    <ListItem key={social.link}>
+                      <a href={social.link}><social.Icon boxSize='8' /></a>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
             </Box>
           ))}
         </SimpleGrid>
