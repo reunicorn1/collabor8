@@ -35,7 +35,9 @@ export const userApi = api.injectEndpoints({
       query: (id) => `/users/${id}`,
       providesTags: ['User'],
     }),
-
+    getFriendById: builder.query<{ username: string; profile_picture: string }, string>({
+      query: (id) => `/users/friend/${id}`,
+    }),
     // Update user by ID
     updateUserById: builder.mutation<
       User,
@@ -72,4 +74,5 @@ export const {
   useUpdateUserByIdMutation,
   useDeleteUserByIdMutation,
   useGetUserByFavoritesQuery,
+  useLazyGetFriendByIdQuery
 } = userApi;

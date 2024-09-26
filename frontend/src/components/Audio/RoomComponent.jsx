@@ -6,6 +6,7 @@ import { useGetRoomTokenQuery } from '@store/services/projectShare';
 import apiConfig from '@config/apiConfig';
 import { useSelector } from 'react-redux';
 import { selectUserDetails } from '@store/selectors/userSelectors';
+import { useLazyGetFriendByIdQuery } from '@store/services/user';
 
 
 const RoomComponent = ({ autoJoin = false, onClose }) => {
@@ -16,8 +17,9 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
   const [rtcInitialized, setRtcInitialized] = useState(false);
   const [audioTrackMuted, setAudioTrackMuted] = useState(false);
   const [_, setToggle] = useState(false);
-  const user = useSelector(selectUserDetails);
+  const userDetails = useSelector(selectUserDetails);
   const [userCount, setUserCount] = useState(0);
+  const [getFriendById] = useLazyGetFriendByIdQuery();
   let AgoraRTC;
 
   const forceUpdate = () => {
@@ -61,16 +63,14 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
     const agoraClient = rtcRef.current.client;
     agoraClient.on('user-published', handleUserPublished);
     // agoraClient.on('user-joined', handleUserJoined);
-    agoraClient.on('message-received', handleMessageReceived);
     agoraClient.on('user-left', handleUserLeft);
     agoraClient.on('user-unpublished', handleUserUnpublished);
     agoraClient.enableAudioVolumeIndicator();
     await agoraClient.join(config.appid, config.channel, config.token || null, config.uid || null);
     rtcRef.current.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-
     rtcRef.current.users[uid] = {
-      username: user.username,
-      profile_picture: user.profile_picture,
+      username: userDetails.username,
+      profile_picture: userDetails.profile_picture,
     };
 
     setJoined(true);
@@ -84,11 +84,17 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
 
   const addAvatar = (uid, isMuted = false) => {
     const rtc = rtcRef.current;
+    // check if wrapper already exists
+    if (document.getElementById(`user-avatar-wrapper-${uid}`)) {
+      handleAvatarToggle(uid, isMuted);
+      return;
+    }
     const userAvatarWrapper = document.createElement('div');
     userAvatarWrapper.id = `user-avatar-wrapper-${uid}`;
-    const user = rtc.users[uid];
+
     const userAvatar = document.createElement('div');
     userAvatar.id = `user-avatar-${uid}`;
+    const user = rtc.users[uid];
 
     const numUsers = Object.keys(rtc.remoteTracks).length + 1;
     const hasAvatar = !!user.profile_picture;
@@ -96,7 +102,7 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       ? user.profile_picture
       : `../public/avatar-${(numUsers % 4)}.png`;
 
-    userAvatarWrapper.className = `relative user-avatar-wrapper flex-shrink-0 w-10 h-10 rounded-full p-1 ${isMuted ? 'border-red-500' : 'border-green-500'} border-2`;
+    userAvatarWrapper.className = `relative flex flex-start user-avatar-wrapper flex-shrink-0 w-10 h-10 rounded-full ${isMuted ? 'border-red-500' : 'border-green-500'} border-2 items-center justify-center bg-gray-100 overflow-hidden`;
     userAvatar.className = 'user-avatar flex-shrink-0 w-8 h-8 rounded-full overflow-hidden';
     userAvatar.innerHTML = `<img src="${avatarSrc}" alt="User Avatar" class="w-full h-full object-cover"/>`;
 
@@ -110,12 +116,34 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
     document.getElementById('users-avatars').appendChild(userAvatarWrapper);
   }
 
-const removeAvatar = (uid) => {
-  const userAvatarWrapper = document.getElementById(`user-avatar-wrapper-${uid}`);
-  if (userAvatarWrapper) {
-    userAvatarWrapper.remove();
+  const removeAvatar = (uid) => {
+    const userAvatarWrapper = document.getElementById(`user-avatar-wrapper-${uid}`);
+    if (userAvatarWrapper) {
+      userAvatarWrapper.remove();
+    }
+  };
+
+  const handleAvatarToggle = (uid, isMuted) => {
+    const userAvatarWrapper = document.getElementById(`user-avatar-wrapper-${uid}`);
+
+    if (userAvatarWrapper) {
+      userAvatarWrapper.classList.toggle('border-green-500', !isMuted);
+      userAvatarWrapper.classList.toggle('border-red-500', isMuted);
+
+      // Handle the diagonal mute line
+      const existingMuteLine = userAvatarWrapper.querySelector('.mute-line');
+      if (isMuted) {
+        if (!existingMuteLine) {
+          const muteLine = document.createElement('div');
+          muteLine.className = 'mute-line absolute top-0 left-0 w-full h-full bg-red-500 opacity-50 transform rotate-45';
+          userAvatarWrapper.appendChild(muteLine);
+        }
+      } else if (existingMuteLine) {
+        existingMuteLine.remove();
+      }
+    }
   }
-};
+
   const handleMicClick = async () => {
     const rtc = rtcRef.current;
 
@@ -125,74 +153,49 @@ const removeAvatar = (uid) => {
       rtc.audioTrackMuted = newMutedStatus;
 
       const uid = rtc.client.uid; // Local user's UID
-      const userAvatarWrapper = document.getElementById(`user-avatar-wrapper-${uid}`);
-
-      if (userAvatarWrapper) {
-        userAvatarWrapper.classList.toggle('border-green-500', !newMutedStatus);
-        userAvatarWrapper.classList.toggle('border-red-500', newMutedStatus);
-
-        // Handle the diagonal mute line
-        const existingMuteLine = userAvatarWrapper.querySelector('.mute-line');
-        if (newMutedStatus) {
-          if (!existingMuteLine) {
-            const muteLine = document.createElement('div');
-            muteLine.className = 'mute-line absolute top-0 left-0 w-full h-full bg-red-500 opacity-50 transform rotate-45';
-            userAvatarWrapper.appendChild(muteLine);
-          }
-        } else if (existingMuteLine) {
-          existingMuteLine.remove();
-        }
-      }
-
+      // handleAvatarToggle(uid, newMuted);
       setAudioTrackMuted(newMutedStatus);
     }
   };
 
   const handleUserPublished = async (user, mediaType) => {
     const rtc = rtcRef.current; // Get current rtc from ref
+    const  data = await getFriendById(user.uid).unwrap();
+    console.log('User Published: ', data);
+
     if (!rtc.client || mediaType !== 'audio') return;
+
     await rtc.client.subscribe(user, 'audio');
+
     if (user.audioTrack) {
       user.audioTrack.play();
     }
-    sendUserUpdate(user.uid, rtc.users[rtc.client.uid]);
+
     rtc.remoteTracks[user.uid] = user;
+    rtc.users[user.uid] = {
+      username: data.username,
+      profile_picture: data.profile_picture,
+    };
+
     console.log('Number of Remote Tracks: ', Object.keys(rtc.remoteTracks).length);
     // logic adding user avatar to the list for local user
     const isMuted = user.audioTrack.isMuted || false;
     addAvatar(user.uid, isMuted);
-    updateUserList(); // come back to this
   };
-  
-  const sendUserUpdate = (uid, user) => {
-  const rtcClient = rtcRef.current.client
-  rtcClient.sendMessage({
-    text: JSON.stringify({ uid, user }),
-  });
-};
-
-  const handleMessageReceived = (message, senderId) => {
-    const data = JSON.parse(message.text);
-  if (data.uid && data.user) {
-    rtcRef.current.users[data.uid] = data.user;
-    addAvatar(data.uid);
-  }
-  };
-    
-  const updateUserList = () => {
-  }
 
   const handleUserUnpublished = async (user) => {
     const rtc = rtcRef.current; // Get current rtc from ref
     if (rtc.remoteTracks[user.uid]) {
-      const audioTrack = rtc.remoteTracks[user.uid].audioTrack;
+      const audioTrack = rtc.remoteTracks[user.uid].audioTrack;     
+      const isMuted = audioTrack?.isMuted || true;
+      handleAvatarToggle(user.uid, isMuted);
       if (audioTrack) {
         audioTrack.stop();
       }
 
-      delete rtc.remoteTracks[user.uid];
+      // delete rtc.remoteTracks[user.uid];
     }
-    removeAvatar(user.uid);
+    // removeAvatar(user.uid);
 
   };
 

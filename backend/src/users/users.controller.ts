@@ -66,6 +66,12 @@ export class UsersController {
     return this.usersService.findOneBy({ user_id });
   }
 
+  @Get('friend/:id')
+  async findFriend(@Param('id') user_id: string): Promise<Partial<Users>> {
+  const { username, profile_picture } = await this.usersService.findOneBy({ user_id });
+  return { username, profile_picture };
+  }
+
   @Docs.updateById()
   @Patch(':id')
   async updateById(
