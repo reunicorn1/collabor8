@@ -89,19 +89,29 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       const uid = volume.uid || rtc.client.uid; // local and remote users
       const level = volume.level; // volume level (0-100)
 
-      // set speaking threshold
-      const speakingThreshold = 40;
-
       const userAvatarWrapper = document.getElementById(
         `user-avatar-wrapper-${uid}`,
       );
 
       if (userAvatarWrapper) {
-        // add or remove 'speaking' class based on volume level
+        // the intensity of the glow
+        const speakingThreshold = 40;
+        let glowIntensity = 0;
+
         if (level > speakingThreshold) {
-          userAvatarWrapper.classList.add('speaking');
+          // calculate the glow intensity based on the level
+          glowIntensity =
+            (level - speakingThreshold) / (100 - speakingThreshold);
+          glowIntensity = Math.min(glowIntensity, 1);
+        }
+
+        // set the glow effect dynamically
+        if (glowIntensity > 0) {
+          userAvatarWrapper.style.borderColor = '#00ff00';
+          userAvatarWrapper.style.boxShadow = `0 0 ${glowIntensity * 20}px #00ff00`;
         } else {
-          userAvatarWrapper.classList.remove('speaking');
+          userAvatarWrapper.style.borderColor = 'transparent';
+          userAvatarWrapper.style.boxShadow = 'none';
         }
       }
     });
