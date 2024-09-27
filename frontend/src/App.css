@@ -1,6 +1,6 @@
 #root {
-    --menubar-height: 60px;
-    --tabbar-height: 40px;
+  --menubar-height: 60px;
+  --tabbar-height: 40px;
   /*@apply max-w-screen-lg mx-auto p-8 text-left;*/
 }
 
@@ -24,7 +24,7 @@
 }
 
 .home-padding > *:not(.custom-banner) {
-    @apply px-8 sm:px-0;
+  @apply px-8 sm:px-0;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -62,7 +62,6 @@ body {
   padding-right: 0.5rem;
 }
 
-
 .selectors {
   flex: 0 0 12rem;
   display: flex;
@@ -74,7 +73,11 @@ body {
   overflow: auto;
 }
 
-
+/* speech-bubble */
+.speaking {
+  border: 2px solid #00ff00;
+  box-shadow: 0 0 10px #00ff00;
+}
 
 /* HTML: <div class="loader"></div> */
 .loader {
@@ -83,30 +86,44 @@ body {
   aspect-ratio: 1;
   border-radius: 50%;
   padding: 1px;
-  background: conic-gradient(#0000 10%,#f03355) content-box;
-  -webkit-mask:
-    repeating-conic-gradient(#0000 0deg,#000 1deg 20deg,#0000 21deg 36deg),
-    radial-gradient(farthest-side,#0000 calc(100% - var(--b) - 1px),#000 calc(100% - var(--b)));
+  background: conic-gradient(#0000 10%, #f03355) content-box;
+  -webkit-mask: repeating-conic-gradient(
+      #0000 0deg,
+      #000 1deg 20deg,
+      #0000 21deg 36deg
+    ),
+    radial-gradient(
+      farthest-side,
+      #0000 calc(100% - var(--b) - 1px),
+      #000 calc(100% - var(--b))
+    );
   -webkit-mask-composite: destination-in;
-          mask-composite: intersect;
-  animation:l4 1s infinite steps(10);
+  mask-composite: intersect;
+  animation: l4 1s infinite steps(10);
 }
-@keyframes l4 {to{transform: rotate(1turn)}}
+@keyframes l4 {
+  to {
+    transform: rotate(1turn);
+  }
+}
 
 .fade {
   opacity: 1;
   animation: fade 2s linear;
 }
 
-
 @keyframes fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .ultimate {
-  background-color: #F16145;
-  color: white
+  background-color: #f16145;
+  color: white;
 }
 
 .glass {
@@ -120,7 +137,6 @@ body {
 html {
   scroll-behavior: smooth;
 }
-
 
 .line-numbered-text {
   display: flex;
@@ -166,4 +182,3 @@ html {
   white-space: pre-wrap;
   word-break: break-word;
 }
-
