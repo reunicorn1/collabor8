@@ -1,73 +1,145 @@
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
   Button,
   useToast,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
 } from '@chakra-ui/react';
 import { useDeleteCurrentUserProfileMutation } from '@store/services/user';
-import { useDispatch } from 'react-redux';
-import { unsetCredentials } from '@store/slices/authSlice';
+import { useAppDispatch } from '@hooks/useApp';
+import { performLogout } from '@store/slices/authSlice';
+import React, { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function DeleteAccount({ isOpen, onClose }: ModalProps) {
-  const dispatch = useDispatch();
+const DeleteAccount: React.FC<ModalProps> = ({ isOpen, onClose }) => {
+  const dispatch = useAppDispatch();
   const toast = useToast();
-  const [deleteUser] = useDeleteCurrentUserProfileMutation();
+  const navigate = useNavigate();
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const [deleteUser, { isLoading }] = useDeleteCurrentUserProfileMutation();
+  const [isConfirming, setIsConfirming] = useState(false);
+
+  const showToast = (
+    title: string,
+    description: string,
+    status: 'success' | 'error',
+  ) => {
+    toast({
+      title,
+      description,
+      variant: 'subtle',
+      position: 'bottom-left',
+      status,
+      isClosable: true,
+      duration: 5000,
+    });
+  };
 
   const handleDelete = async () => {
     try {
       await deleteUser().unwrap();
-      toast({
-        title: `Data has been updated successfully!`,
-        variant: 'subtle',
-        position: 'bottom-right',
-        status: 'success',
-        isClosable: true,
-      });
-      dispatch(unsetCredentials());
+      showToast(
+        'Account deleted successfully.',
+        'Your account has been permanently deleted.',
+        'success',
+      );
+      navigate(location.pathname.concat('?logout=true'));
+      dispatch(performLogout());
     } catch (err) {
-      console.log('An Error occured during deletion of this account', err);
+      showToast(
+        'Error deleting account.',
+        'An error occurred while deleting your account. Please try again.',
+        'error',
+      );
+      console.error('Error during account deletion:', err);
+    } finally {
+      onClose();
+      dispatch(performLogout(() => navigate('/')));
     }
   };
 
+  const confirmDelete = () => {
+    setIsConfirming(true);
+  };
+
   return (
-    <>
-      <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent bg="brand.900">
-          <ModalHeader color="white" fontFamily="mono" fontSize="sm">
-            Delete account
-          </ModalHeader>
-          <ModalCloseButton color="white" />
-          <ModalBody
-            pb={6}
-            color="white"
-            fontFamily="mono"
-            fontSize="sm"
-            opacity="0.8"
-          >
-            Once you delete your account, there is no going back. Please be
-            certain.
-          </ModalBody>
-          <ModalFooter mb={4}>
-            <Button size="sm" colorScheme="red" mr={3} onClick={handleDelete}>
-              Delete your account
-            </Button>
-            <Button size="sm" onClick={onClose}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+    <AlertDialog
+      isOpen={isOpen}
+      leastDestructiveRef={cancelRef}
+      onClose={onClose}
+      isCentered
+      motionPreset="scale"
+    >
+      <AlertDialogOverlay>
+        <AlertDialogContent bg="brand.900" fontFamily="mono" borderRadius="md">
+          <AlertDialogHeader fontSize="lg" color="white">
+            Delete Account
+          </AlertDialogHeader>
+          <AlertDialogBody color="white" fontSize="md" opacity="0.85">
+            {isConfirming
+              ? 'Are you sure? This action is irreversible.'
+              : 'Once you delete your account, there is no going back. Please be certain.'}
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            {isConfirming ? (
+              <>
+                <Button
+                  colorScheme="red"
+                  size="sm"
+                  isLoading={isLoading}
+                  onClick={handleDelete}
+                  isDisabled={isLoading}
+                  aria-label="Confirm account deletion"
+                >
+                  Yes, delete my account
+                </Button>
+                <Button
+                  ref={cancelRef}
+                  size="sm"
+                  ml={3}
+                  onClick={onClose}
+                  aria-label="Cancel account deletion"
+                  isDisabled={isLoading}
+                >
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  colorScheme="red"
+                  size="sm"
+                  onClick={confirmDelete}
+                  isDisabled={isLoading}
+                  aria-label="Proceed to account deletion confirmation"
+                >
+                  Delete your account
+                </Button>
+                <Button
+                  ref={cancelRef}
+                  size="sm"
+                  ml={3}
+                  onClick={onClose}
+                  aria-label="Cancel account deletion"
+                  isDisabled={isLoading}
+                >
+                  Cancel
+                </Button>
+              </>
+            )}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialogOverlay>
+    </AlertDialog>
   );
-}
+};
+
+export default DeleteAccount;
