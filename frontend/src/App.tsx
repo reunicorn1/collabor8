@@ -25,11 +25,11 @@ const App: React.FC = () => {
   useEffect(() => {
     // Google Analytics Initialization
     window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag('js', new Date());
-    gtag('config', import.meta.env.VITE_GA_ID); // Use your G- tag here
+    window.gtag = function () {
+      window.dataLayer.push(arguments);
+    };
+    window.gtag('js', new Date());
+    window.gtag('config', import.meta.env.VITE_GA_ID);
   }, []);
 
   return (
