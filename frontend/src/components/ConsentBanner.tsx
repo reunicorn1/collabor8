@@ -23,7 +23,7 @@ const CookieConsentBanner = () => {
   const initGoogleAnalytics = () => {
     window.dataLayer = window.dataLayer || [];
     window.gtag = function () {
-      dataLayer.push(arguments);
+      window.dataLayer.push(arguments);
     };
     window.gtag('js', new Date());
     window.gtag('config', import.meta.env.VITE_GTM_ID);
