@@ -1,4 +1,4 @@
-import React,  { useEffect, Suspense, lazy } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import useAuthRefresh from './hooks/useAuthRefresh';
 import useLogOut from './hooks/useLogOut';
@@ -23,14 +23,20 @@ const App: React.FC = () => {
   useLogOut();
 
   useEffect(() => {
-    TagManager.initialize({ gtmId: import.meta.env.VITE_GTM_ID });
+    // Google Analytics Initialization
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', import.meta.env.VITE_GA_ID); // Use your G- tag here
   }, []);
 
   return (
     <AuthProvider>
       <Suspense fallback={<ThemedLoader />}>
         <Routes>
-          <Route path="/mission" element={<About />}/>
+          <Route path="/mission" element={<About />} />
           <Route path="/" element={<Home />} />
           <Route
             path="/dashboard"
