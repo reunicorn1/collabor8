@@ -22,15 +22,15 @@ const App: React.FC = () => {
   useAuthRefresh();
   useLogOut();
 
-  useEffect(() => {
-    // Google Analytics Initialization
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function () {
-      window.dataLayer.push(arguments);
-    };
-    window.gtag('js', new Date());
-    window.gtag('config', import.meta.env.VITE_GA_ID);
-  }, []);
+  //   useEffect(() => {
+  //     // Google Analytics Initialization
+  //     window.dataLayer = window.dataLayer || [];
+  //     window.gtag = function () {
+  //       window.dataLayer.push(arguments);
+  //     };
+  //     window.gtag('js', new Date());
+  //     window.gtag('config', import.meta.env.VITE_GA_ID);
+  //   }, []);
 
   return (
     <AuthProvider>

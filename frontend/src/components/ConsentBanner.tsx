@@ -21,12 +21,12 @@ const CookieConsentBanner = () => {
   }, []);
 
   const initGoogleAnalytics = () => {
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function () {
-      window.dataLayer.push(arguments);
-    };
-    window.gtag('js', new Date());
-    window.gtag('config', import.meta.env.VITE_GTM_ID);
+    // window.dataLayer = window.dataLayer || [];
+    // window.gtag = function () {
+    //   window.dataLayer.push(arguments);
+    // };
+    // window.gtag('js', new Date());
+    // window.gtag('config', import.meta.env.VITE_GTM_ID);
   };
 
   const handleAcceptAll = () => {
@@ -39,6 +39,7 @@ const CookieConsentBanner = () => {
     setConsentMode(consent);
     hideBanner();
     initGoogleAnalytics();
+    console.log(window.dataLayer);
   };
 
   const handleAcceptSome = () => {
@@ -62,6 +63,7 @@ const CookieConsentBanner = () => {
     };
     setConsentMode(consent);
     hideBanner();
+    console.log(window.dataLayer);
   };
 
   const handleChange = (e) => {
@@ -78,6 +80,11 @@ const CookieConsentBanner = () => {
       personalization_storage: consent.preferences ? 'granted' : 'denied',
     };
     localStorage.setItem('consentMode', JSON.stringify(consentMode));
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'consentUpdate',
+      consent: consentMode,
+    });
   };
 
   const hideBanner = () => {
