@@ -15,19 +15,9 @@ const CookieConsentBanner = () => {
     } else {
       const consent = JSON.parse(storedConsent);
       if (consent.analytics_storage === 'granted') {
-        initGoogleAnalytics();
       }
     }
   }, []);
-
-  const initGoogleAnalytics = () => {
-    // window.dataLayer = window.dataLayer || [];
-    // window.gtag = function () {
-    //   window.dataLayer.push(arguments);
-    // };
-    // window.gtag('js', new Date());
-    // window.gtag('config', import.meta.env.VITE_GTM_ID);
-  };
 
   const handleAcceptAll = () => {
     const consent = {
@@ -38,7 +28,6 @@ const CookieConsentBanner = () => {
     };
     setConsentMode(consent);
     hideBanner();
-    initGoogleAnalytics();
     console.log(window.dataLayer);
   };
 
@@ -46,20 +35,15 @@ const CookieConsentBanner = () => {
     const consent = {
       necessary: true,
       analytics: consentOptions.analytics,
-      preferences: consentOptions.preferences,
-      marketing: consentOptions.marketing,
     };
     setConsentMode(consent);
     hideBanner();
-    if (consent.analytics) initGoogleAnalytics();
   };
 
   const handleRejectAll = () => {
     const consent = {
       necessary: false,
       analytics: false,
-      preferences: false,
-      marketing: false,
     };
     setConsentMode(consent);
     hideBanner();
@@ -75,9 +59,7 @@ const CookieConsentBanner = () => {
     const consentMode = {
       functionality_storage: consent.necessary ? 'granted' : 'denied',
       security_storage: consent.necessary ? 'granted' : 'denied',
-      ad_storage: consent.marketing ? 'granted' : 'denied',
       analytics_storage: consent.analytics ? 'granted' : 'denied',
-      personalization_storage: consent.preferences ? 'granted' : 'denied',
     };
     localStorage.setItem('consentMode', JSON.stringify(consentMode));
     window.dataLayer = window.dataLayer || [];
@@ -143,26 +125,6 @@ const CookieConsentBanner = () => {
             onChange={handleChange}
           />
           Analytics
-        </label>
-        <label className="flex items-center">
-          <input
-            id="preferences"
-            type="checkbox"
-            className="mr-2"
-            checked={consentOptions.preferences}
-            onChange={handleChange}
-          />
-          Preferences
-        </label>
-        <label className="flex items-center">
-          <input
-            id="marketing"
-            type="checkbox"
-            className="mr-2"
-            checked={consentOptions.marketing}
-            onChange={handleChange}
-          />
-          Marketing
         </label>
       </div>
     </div>
