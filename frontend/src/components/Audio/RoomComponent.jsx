@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 import { selectUserDetails } from '@store/selectors/userSelectors';
 import { useLazyGetFriendByIdQuery } from '@store/services/user';
 
-
 const RoomComponent = ({ autoJoin = false, onClose }) => {
   const { projectId } = useParams();
   const { data, refetch, isSuccess } = useGetRoomTokenQuery(projectId);
@@ -18,7 +17,6 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
   const [audioTrackMuted, setAudioTrackMuted] = useState(false);
   const [_, setToggle] = useState(false);
   const userDetails = useSelector(selectUserDetails);
-  const [userCount, setUserCount] = useState(0);
   const [getFriendById] = useLazyGetFriendByIdQuery();
   let AgoraRTC;
 
@@ -62,11 +60,16 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
 
     const agoraClient = rtcRef.current.client;
     agoraClient.on('user-published', handleUserPublished);
-    // agoraClient.on('user-joined', handleUserJoined);
     agoraClient.on('user-left', handleUserLeft);
     agoraClient.on('user-unpublished', handleUserUnpublished);
     agoraClient.enableAudioVolumeIndicator();
-    await agoraClient.join(config.appid, config.channel, config.token || null, config.uid || null);
+    agoraClient.on('volume-indicator', handleVolumeIndicator);
+    await agoraClient.join(
+      config.appid,
+      config.channel,
+      config.token || null,
+      config.uid || null,
+    );
     rtcRef.current.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
     rtcRef.current.users[uid] = {
       username: userDetails.username,
@@ -79,8 +82,40 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
     document.getElementById('foot').style.display = 'flex';
   };
 
+  const handleVolumeIndicator = (volumes) => {
+    const rtc = rtcRef.current;
 
+    volumes.forEach((volume) => {
+      const uid = volume.uid || rtc.client.uid; // local and remote users
+      const level = volume.level; // volume level (0-100)
 
+      const userAvatarWrapper = document.getElementById(
+        `user-avatar-wrapper-${uid}`,
+      );
+
+      if (userAvatarWrapper) {
+        // the intensity of the glow
+        const speakingThreshold = 40;
+        let glowIntensity = 0;
+
+        if (level > speakingThreshold) {
+          // calculate the glow intensity based on the level
+          glowIntensity =
+            (level - speakingThreshold) / (100 - speakingThreshold);
+          glowIntensity = Math.min(glowIntensity, 1);
+        }
+
+        // set the glow effect dynamically
+        if (glowIntensity > 0) {
+          userAvatarWrapper.style.borderColor = '#00ff00';
+          userAvatarWrapper.style.boxShadow = `0 0 ${glowIntensity * 20}px #00ff00`;
+        } else {
+          userAvatarWrapper.style.borderColor = 'transparent';
+          userAvatarWrapper.style.boxShadow = 'none';
+        }
+      }
+    });
+  };
 
   const addAvatar = (uid, isMuted = false) => {
     const rtc = rtcRef.current;
@@ -100,31 +135,37 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
     const hasAvatar = !!user.profile_picture;
     const avatarSrc = hasAvatar
       ? user.profile_picture
-      : `../public/avatar-${(numUsers % 4)}.png`;
+      : `../public/avatar-${numUsers % 4}.png`;
 
     userAvatarWrapper.className = `relative flex flex-start user-avatar-wrapper flex-shrink-0 w-10 h-10 rounded-full ${isMuted ? 'border-red-500' : 'border-green-500'} border-2 items-center justify-center bg-gray-100 overflow-hidden`;
-    userAvatar.className = 'user-avatar flex-shrink-0 w-8 h-8 rounded-full overflow-hidden';
+    userAvatar.className =
+      'user-avatar flex-shrink-0 w-8 h-8 rounded-full overflow-hidden';
     userAvatar.innerHTML = `<img src="${avatarSrc}" alt="User Avatar" class="w-full h-full object-cover"/>`;
 
     userAvatarWrapper.appendChild(userAvatar);
 
     if (isMuted) {
       const muteLine = document.createElement('div');
-      muteLine.className = 'absolute top-0 left-0 w-full h-full bg-red-500 opacity-50 transform rotate-45';
+      muteLine.className =
+        'absolute top-0 left-0 w-full h-full bg-red-500 opacity-50 transform rotate-45';
       userAvatarWrapper.appendChild(muteLine);
     }
     document.getElementById('users-avatars').appendChild(userAvatarWrapper);
-  }
+  };
 
   const removeAvatar = (uid) => {
-    const userAvatarWrapper = document.getElementById(`user-avatar-wrapper-${uid}`);
+    const userAvatarWrapper = document.getElementById(
+      `user-avatar-wrapper-${uid}`,
+    );
     if (userAvatarWrapper) {
       userAvatarWrapper.remove();
     }
   };
 
   const handleAvatarToggle = (uid, isMuted) => {
-    const userAvatarWrapper = document.getElementById(`user-avatar-wrapper-${uid}`);
+    const userAvatarWrapper = document.getElementById(
+      `user-avatar-wrapper-${uid}`,
+    );
 
     if (userAvatarWrapper) {
       userAvatarWrapper.classList.toggle('border-green-500', !isMuted);
@@ -135,14 +176,15 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       if (isMuted) {
         if (!existingMuteLine) {
           const muteLine = document.createElement('div');
-          muteLine.className = 'mute-line absolute top-0 left-0 w-full h-full bg-red-500 opacity-50 transform rotate-45';
+          muteLine.className =
+            'mute-line absolute top-0 left-0 w-full h-full bg-red-500 opacity-50 transform rotate-45';
           userAvatarWrapper.appendChild(muteLine);
         }
       } else if (existingMuteLine) {
         existingMuteLine.remove();
       }
     }
-  }
+  };
 
   const handleMicClick = async () => {
     const rtc = rtcRef.current;
@@ -160,7 +202,7 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
 
   const handleUserPublished = async (user, mediaType) => {
     const rtc = rtcRef.current; // Get current rtc from ref
-    const  data = await getFriendById(user.uid).unwrap();
+    const data = await getFriendById(user.uid).unwrap();
     console.log('User Published: ', data);
 
     if (!rtc.client || mediaType !== 'audio') return;
@@ -177,7 +219,10 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
       profile_picture: data.profile_picture,
     };
 
-    console.log('Number of Remote Tracks: ', Object.keys(rtc.remoteTracks).length);
+    console.log(
+      'Number of Remote Tracks: ',
+      Object.keys(rtc.remoteTracks).length,
+    );
     // logic adding user avatar to the list for local user
     const isMuted = user.audioTrack.isMuted || false;
     addAvatar(user.uid, isMuted);
@@ -186,17 +231,13 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
   const handleUserUnpublished = async (user) => {
     const rtc = rtcRef.current; // Get current rtc from ref
     if (rtc.remoteTracks[user.uid]) {
-      const audioTrack = rtc.remoteTracks[user.uid].audioTrack;     
+      const audioTrack = rtc.remoteTracks[user.uid].audioTrack;
       const isMuted = audioTrack?.isMuted || true;
       handleAvatarToggle(user.uid, isMuted);
       if (audioTrack) {
         audioTrack.stop();
       }
-
-      // delete rtc.remoteTracks[user.uid];
     }
-    // removeAvatar(user.uid);
-
   };
 
   const handleLeaveButtonClick = async () => {
@@ -233,7 +274,6 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
     forceUpdate();
   };
 
-
   const handleUserLeft = (user) => {
     const rtc = rtcRef.current; // Get current rtc from ref
     if (rtc.remoteTracks[user.uid]) {
@@ -257,7 +297,9 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
     return () => {
       const rtc = rtcRef.current; // Get current rtc from ref
       if (rtc && rtc.client) {
-        rtc.client.leave().catch((error) => console.error('Error leaving room:', error));
+        rtc.client
+          .leave()
+          .catch((error) => console.error('Error leaving room:', error));
       }
       if (rtc && rtc.audioTrack) {
         rtc.audioTrack.stop();
@@ -294,11 +336,8 @@ const RoomComponent = ({ autoJoin = false, onClose }) => {
         pb={0}
         gap={4}
       >
-        <Flex id="users-avatars" className='flex space-x-2'>
-        </Flex>
-        <Flex
-          className="flex flex-row items-center justify-center p-4 gap-4"
-        >
+        <Flex id="users-avatars" className="flex space-x-2"></Flex>
+        <Flex className="flex flex-row items-center justify-center p-4 gap-4">
           <IconButton
             icon={audioTrackMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
             aria-label="Toggle Mic"

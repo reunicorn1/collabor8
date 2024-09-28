@@ -82,7 +82,6 @@ export default function Home() {
     refetch();
   }, [recentProjectsPagination]);
 
-
   if (recentProjects.status === 'loading') {
     return <div>Loading...</div>;
   }
@@ -104,7 +103,6 @@ export default function Home() {
 
   return (
     <Flex justifyContent="center" minH="100vh" flex={1} p={[4, 8, 12]}>
-
       <Box maxW="container.lg" w="100%">
         <Image src="/banner3.png" maxW="100%" />
         <Center>

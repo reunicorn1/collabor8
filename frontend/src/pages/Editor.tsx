@@ -27,12 +27,7 @@ export default function Editor() {
   const panelVisiblity = useAppSelector(selectPanelVisiblity);
 
   // Fetch the project data based on the ID
-  const {
-    data,
-    isUninitialized,
-    isLoading,
-    error,
-  } = useGetProjectByIdQuery(
+  const { data, isUninitialized, isLoading, error } = useGetProjectByIdQuery(
     projectId! && typeof projectId == 'string' ? projectId : '',
     { refetchOnReconnect: true },
   );
@@ -50,7 +45,7 @@ export default function Editor() {
         position: 'top-right',
       });
       setTimeout(() => {
-        navigate('/dashboard')
+        navigate('/dashboard');
       }, 5000);
     }
   }, [error, navigate, toast]);
@@ -84,17 +79,17 @@ export default function Editor() {
               project={data}
             />
             <Tree
-              className='flex flex-col row-span-full border-r border-t border-purple-900 md:row-start-2'
+              className="flex flex-col row-span-full border-r border-t border-purple-900 md:row-start-2"
               name={data.project_name}
             />
           </>
         )}
         <MenuBar
-          className='md:col-start-2 md:-col-end-1 md:row-start-1 md:row-end-2'
+          className="md:col-start-2 md:-col-end-1 md:row-start-1 md:row-end-2"
           project={data}
         />
-        <CodeEditor className='overflow-auto' project={data} />
-        <Box className='absolute w-full bottom-0 col-start-3 col-end-4'>
+        <CodeEditor className="overflow-auto" project={data} />
+        <Box className="absolute w-full bottom-0 col-start-3 col-end-4">
           {panelVisiblity && <Console />}
         </Box>
       </Box>
