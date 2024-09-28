@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
+// TODO: statae management needs to be refactored to useReducer
 const CookieConsentBanner = () => {
+  const [showCookieConsent, setShowCookieConsent] = useState(false);
   const [consentOptions, setConsentOptions] = useState({
     necessary: true,
     analytics: true,
@@ -11,10 +13,12 @@ const CookieConsentBanner = () => {
   useEffect(() => {
     const storedConsent = localStorage.getItem('consentMode');
     if (!storedConsent) {
-      document.getElementById('cookie-consent-banner').style.display = 'block';
+      setShowCookieConsent(true);
+      //document.getElementById('cookie-consent-banner').style.display = '';
     } else {
       const consent = JSON.parse(storedConsent);
       if (consent.analytics_storage === 'granted') {
+        // do smth
       }
     }
   }, []);
@@ -70,19 +74,22 @@ const CookieConsentBanner = () => {
   };
 
   const hideBanner = () => {
-    document.getElementById('cookie-consent-banner').style.display = 'none';
+    setShowCookieConsent(false);
+    //document.getElementById('cookie-consent-banner').style.display = 'none';
   };
+
+  if (!showCookieConsent) return null;
+
   return (
-    <div
-      id="cookie-consent-banner"
-      className="fixed bottom-0 w-full bg-gray-800 text-white p-4 text-center z-50 hidden"
-    >
-      <h3 className="text-xl font-bold mb-2">Cookie settings</h3>
-      <p className="mb-4">
+    <div className="fixed left-0 bottom-0 flex flex-col gap-4 py-7 w-full bg-gray-800 text-white text-center z-50">
+      <h3 className="text-xl font-bold">Cookie settings</h3>
+      <p>
         We use cookies to provide you with the best possible experience. They
         also allow us to analyze user behavior to improve the website.
       </p>
-      <div className="mb-4 space-x-4">
+
+      {/* PERMISSIONS BUTTONS */}
+      <div className="flex justify-center gap-4 flex-wrap">
         <button
           id="btn-accept-all"
           className="bg-green-500 text-white px-4 py-2 rounded"
@@ -105,8 +112,10 @@ const CookieConsentBanner = () => {
           Reject All
         </button>
       </div>
-      <div className="cookie-consent-options flex justify-center space-x-8">
-        <label className="flex items-center">
+
+      {/* CHECK BOXES */}
+      <div className="flex justify-center gap-4">
+        <label>
           <input
             id="necessary"
             type="checkbox"
@@ -116,7 +125,7 @@ const CookieConsentBanner = () => {
           />
           Necessary
         </label>
-        <label className="flex items-center">
+        <label>
           <input
             id="analytics"
             type="checkbox"
