@@ -11,7 +11,7 @@ import { clearRoom } from './projectSharesSlice';
 import { clearAllProjects } from './projectSlice';
 import { AppDispatch } from '@store/store';
 
-
+type CB = () => void;
 // Define the authentication state interface
 interface AuthState {
   accessToken: string | null;
@@ -71,11 +71,14 @@ const authSlice = createSlice({
           setAccessToken(accessToken);
         },
       )
-      .addMatcher(authApi.endpoints.loginGuest.matchFulfilled, (state, action) => {
-        const { accessToken } = action.payload;
-        state.accessToken = accessToken;
-        setAccessToken(accessToken);
-      })
+      .addMatcher(
+        authApi.endpoints.loginGuest.matchFulfilled,
+        (state, action) => {
+          const { accessToken } = action.payload;
+          state.accessToken = accessToken;
+          setAccessToken(accessToken);
+        },
+      )
       .addMatcher(authApi.endpoints.loginGuest.matchRejected, (state) => {
         state.accessToken = null;
         setAccessToken(null);
@@ -105,28 +108,30 @@ const authSlice = createSlice({
 
 export const { setCredentials, unsetCredentials } = authSlice.actions;
 
-export const performLogout = () => async (dispatch: AppDispatch) => {
-  try {
-    // Trigger the signout query to perform the server-side logout
-    await dispatch(authApi.endpoints.signout.initiate()).unwrap();
-    // setTimeout(() => {
+export const performLogout =
+  (cb: CB = () => {}) =>
+  async (dispatch: AppDispatch) => {
+    try {
+      // Trigger the signout query to perform the server-side logout
+      await dispatch(authApi.endpoints.signout.initiate()).unwrap();
+      // setTimeout(() => {
 
-    // If signout is successful, clear local credentials and other related state
-    dispatch(unsetCredentials());
-    dispatch(clearRoom());
-    dispatch(clearAllProjects());
-    dispatch(clearUser());
-    // },5000);
-  } catch (error) {
-    console.error('Logout failed:', error);
-    // Even if logout fails, clear the local credentials and state
-    dispatch(unsetCredentials());
-    dispatch(clearRoom());
-    dispatch(clearAllProjects());
-    dispatch(clearUser());
-  }
-
-
-};
+      // If signout is successful, clear local credentials and other related state
+      dispatch(unsetCredentials());
+      dispatch(clearRoom());
+      dispatch(clearAllProjects());
+      dispatch(clearUser());
+      cb();
+      // },5000);
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Even if logout fails, clear the local credentials and state
+      dispatch(unsetCredentials());
+      dispatch(clearRoom());
+      dispatch(clearAllProjects());
+      dispatch(clearUser());
+      cb();
+    }
+  };
 
 export default authSlice.reducer;

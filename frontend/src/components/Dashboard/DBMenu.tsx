@@ -22,13 +22,18 @@ type DBMenuProps = {
   className?: string;
 };
 
-export default function DBMenu({ isGuest = false, className = '', children }: DBMenuProps) {
+export default function DBMenu({
+  isGuest = false,
+  className = '',
+  children,
+}: DBMenuProps) {
   const navigate = useNavigate();
   const toast = useToast();
   const userDetails: any = useAppSelector(selectUserDetails) || 'username';
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
+    navigate(location.pathname.concat('?logout=true'));
     dispatch(performLogout());
     // dispatch(unsetCredentials());
     toast({

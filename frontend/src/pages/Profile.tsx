@@ -1,13 +1,13 @@
 import {
   Box,
-  Flex,
   Text,
   Divider,
-  useBreakpointValue,
   useDisclosure,
+  Icon,
+  Flex,
 } from '@chakra-ui/react';
-import DashboardBar from '../components/Bars/DashboardBar';
-import { useState } from 'react';
+import DashboardBar from '@components/Bars/DashboardBar';
+import { useState, lazy, Suspense } from 'react';
 import {
   RiProfileFill,
   RiProfileLine,
@@ -16,22 +16,58 @@ import {
   RiDeleteBin5Line,
 } from 'react-icons/ri';
 import DeleteAccount from '@components/Profile/DeleteAccount';
-import EditProfile from '@components/Profile/EditProfile';
-import Password from '@components/Profile/Password';
+import ThemedLoader from '@utils/Spinner';
+
+// lazy load components
+const EditProfile = lazy(() => import('@components/Profile/EditProfile'));
+const Password = lazy(() => import('@components/Profile/Password'));
+
+enum ProfileTab {
+  Edit = 'Edit',
+  Password = 'Password',
+}
 
 export default function Profile() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [clicked, setClicked] = useState('Edit');
+  const [activeTab, setActiveTab] = useState<ProfileTab>(ProfileTab.Edit);
 
-  const isBanner = useBreakpointValue({ base: false, md: true });
+  const handleTabChange = (tab: ProfileTab) => setActiveTab(tab);
 
-  // Profile Component
+  // Reusable SidebarItem component
+  const SidebarItem = ({
+    isActive,
+    iconActive,
+    iconInactive,
+    label,
+    onClick,
+  }: {
+    isActive: boolean;
+    iconActive: any;
+    iconInactive: any;
+    label: string;
+    onClick: () => void;
+  }) => (
+    <Flex
+      p={2}
+      pl={4}
+      alignItems="center"
+      _hover={{ bg: '#524175' }}
+      bg={isActive ? '#524175' : 'transparent'}
+      cursor="pointer"
+      onClick={onClick}
+      role="tab"
+      aria-selected={isActive}
+    >
+      <Icon as={isActive ? iconActive : iconInactive} />
+      <Text pl={2} fontFamily="mono" fontSize="xs">
+        {label}
+      </Text>
+    </Flex>
+  );
+
   return (
     <>
-      {/* Dashboard Bar */}
       <DashboardBar />
-
-      {/* Flex container for the layout */}
       <Box
         display={{ base: 'block', md: 'flex' }}
         minHeight="100vh"
@@ -43,77 +79,57 @@ export default function Profile() {
           w={{ base: '100%', md: '230px' }}
           color="white"
           borderRight="2px solid #524175"
-          pt={10}
-          pb={2}
+          p={{ base: 3, md: 4 }}
         >
-          {/* Sidebar content */}
-          <Box
-            p={2}
-            pl={4}
-            display="flex"
-            alignItems="center"
-            _hover={{ bg: '#524175' }}
-            bg={clicked === 'Edit' ? '#524175' : 'transparent'}
-            onClick={() => setClicked('Edit')}
-            cursor="pointer"
-          >
-            {clicked === 'Edit' ? <RiProfileFill /> : <RiProfileLine />}
-            <Text pl={2} fontFamily="mono" fontSize="xs">
-              Edit Profile
-            </Text>
-          </Box>
+          {/* Sidebar Items */}
+          <SidebarItem
+            isActive={activeTab === ProfileTab.Edit}
+            iconActive={RiProfileFill}
+            iconInactive={RiProfileLine}
+            label="Edit Profile"
+            onClick={() => handleTabChange(ProfileTab.Edit)}
+          />
 
-          <Box
-            p={2}
-            pl={4}
-            display="flex"
-            alignItems="center"
-            _hover={{ bg: '#524175' }}
-            bg={clicked === 'Password' ? '#524175' : 'transparent'}
-            onClick={() => setClicked('Password')}
-            cursor="pointer"
-          >
-            {clicked === 'Password' ? (
-              <RiLockPasswordFill />
-            ) : (
-              <RiLockPasswordLine />
-            )}
-            <Text pl={2} fontFamily="mono" fontSize="xs">
-              Password
-            </Text>
-          </Box>
-          <Divider pb={5} />
+          <SidebarItem
+            isActive={activeTab === ProfileTab.Password}
+            iconActive={RiLockPasswordFill}
+            iconInactive={RiLockPasswordLine}
+            label="Password"
+            onClick={() => handleTabChange(ProfileTab.Password)}
+          />
 
-          <Box
+          <Divider pt={5} />
+
+          {/* Delete Account */}
+          <Flex
             p={2}
             pl={4}
             mt={5}
-            display="flex"
             alignItems="center"
             _hover={{ bg: 'red.600', color: 'white' }}
-            onClick={onOpen}
             cursor="pointer"
+            onClick={onOpen}
             color="red.300"
           >
-            <RiDeleteBin5Line />
+            <Icon as={RiDeleteBin5Line} />
             <Text pl={2} fontFamily="mono" fontSize="xs">
               Delete Account
             </Text>
-          </Box>
+          </Flex>
         </Box>
 
-        {/* End of Sidebar content */}
-
         {/* Main Content */}
-        <Box className={'p-5 md:p-10 pb-5 flex flex-col w-full min-h-screen bg-brand-100'}
-        >
+        <Box className="p-5 md:p-10 pb-5 flex flex-col w-full min-h-screen bg-brand-100">
           <Box
             bg="brand.900"
             color="white"
             minHeight="100vh"
             borderTopRadius="2xl"
+            p={{ base: 4, md: 6 }}
           >
-            {clicked === 'Edit' ? <EditProfile /> : <Password />}
+            <Suspense fallback={<ThemedLoader />}>
+              {activeTab === ProfileTab.Edit ? <EditProfile /> : <Password />}
+            </Suspense>
           </Box>
         </Box>
 

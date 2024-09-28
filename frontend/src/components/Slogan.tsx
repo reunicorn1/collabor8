@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Box, Center } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import CallToAction from './Buttons/CallToAction';
 
 type SloganProps = {
@@ -9,13 +9,13 @@ type SloganProps = {
 export default function Slogan({ className = '' }: SloganProps) {
   return (
     <Box className={`flex justify-center items-center ${className}`}>
-      <Box className="container px-4 flex flex-col text-5xl gap-4 tracking-wide md:gap-6 font-mono md:text-8xl md:w-max">
+      <Box className="container flex flex-col text-5xl gap-4 tracking-wide md:gap-6 font-mono md:text-8xl md:w-max">
         <Box>
           <p className='text-white font-bold before:content-["==>"] before:text-[#F16145] before:me-2'>
             code
           </p>
         </Box>
-        <Box className='flex gap-2 font-bold after:content-[".."] after:text-yellow-300'>
+        <Box className='flex font-bold after:content-[".."] after:text-yellow-300'>
           <p className='text-white after:ms-2 after:content-["}"] after:text-purple-800 '>
             together
           </p>
