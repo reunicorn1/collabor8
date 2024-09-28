@@ -17,6 +17,7 @@ import {
 } from 'react-icons/ri';
 import DeleteAccount from '@components/Profile/DeleteAccount';
 import ThemedLoader from '@utils/Spinner';
+import usePageTitle from '../hooks/useTitle';
 
 // lazy load components
 const EditProfile = lazy(() => import('@components/Profile/EditProfile'));
@@ -30,7 +31,7 @@ enum ProfileTab {
 export default function Profile() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [activeTab, setActiveTab] = useState<ProfileTab>(ProfileTab.Edit);
-
+  usePageTitle('Profile - Collabor8');
   const handleTabChange = (tab: ProfileTab) => setActiveTab(tab);
 
   // Reusable SidebarItem component

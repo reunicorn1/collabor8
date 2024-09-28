@@ -22,7 +22,6 @@ const App: React.FC = () => {
   useAuthRefresh();
   useLogOut();
 
-
   useEffect(() => {
     TagManager.initialize({ gtmId: import.meta.env.VITE_GTM_ID });
   }, []);
@@ -31,7 +30,7 @@ const App: React.FC = () => {
     <AuthProvider>
       <Suspense fallback={<ThemedLoader />}>
         <Routes>
-          <Route path="/mission" element={<About />} />
+          <Route path="/mission" element={<About />}/>
           <Route path="/" element={<Home />} />
           <Route
             path="/dashboard"

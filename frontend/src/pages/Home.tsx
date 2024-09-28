@@ -17,6 +17,7 @@ import { useLocation } from 'react-router-dom';
 import Slogan from '@components/Slogan';
 import { TEXT, AVATARS, FEATURES } from '../constants.ts';
 import NavigationBar from '@components/Bars/NavigationBar.tsx';
+import usePageTitle from '../hooks/useTitle';
 
 const Home = () => {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -24,6 +25,7 @@ const Home = () => {
   const [showModal, setShowModal] = useState(false);
   const location = useLocation();
   const typedText = useTypingEffect(TEXT, 50, animationStarted);
+  usePageTitle('Home - Collabor8');
 
   const handleCloseSignUp = () => setIsSignUpOpen(false);
 
