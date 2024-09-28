@@ -3,7 +3,7 @@
 # Set the project directory
 PROJECT_DIR="/home/ubuntu/collabor8/backend"
 
-# Define colors
+# Define colors for output messages
 RED='\e[31m'
 GREEN='\e[32m'
 YELLOW='\e[33m'
@@ -41,13 +41,14 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Restart the application using PM2 with updated environment variables
-echo -e "${BLUE}Restarting the application with PM2...${NC}"
-pm2 restart collabor8 --update-env
+# Use PM2 to start or restart the application using the ecosystem configuration
+echo -e "${BLUE}Starting or restarting the application with PM2 using ecosystem.config.js...${NC}"
+pm2 startOrRestart ecosystem.config.js --env production
 if [ $? -ne 0 ]; then
-  echo -e "${RED}Error encountered during PM2 restart. Exiting deployment.${NC}"
+  echo -e "${RED}Error encountered during PM2 start/restart. Exiting deployment.${NC}"
   exit 1
 fi
+
 
 # Install docker dependencies
 if ! [ -x "$(command -v docker)" ]; then
@@ -55,5 +56,6 @@ if ! [ -x "$(command -v docker)" ]; then
   ./docker/install.sh
 fi
 
-echo -e "${GREEN}Deployment completed successfully.${NC}"
 
+
+echo -e "${GREEN}Deployment completed successfully.${NC}"

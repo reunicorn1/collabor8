@@ -26,6 +26,7 @@ import { useSelector } from 'react-redux';
 import { selectUserDetails } from '@store/selectors';
 import { useNavigate } from 'react-router-dom';
 import { useGetUserByFavoritesQuery } from '@store/services/user';
+import usePageTitle from '../hooks/useTitle';
 
 export default function DashboardPage() {
   const userDetails = useSelector(selectUserDetails);
@@ -34,6 +35,7 @@ export default function DashboardPage() {
   const [clicked, setClicked] = useState('Home');
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
+  usePageTitle('Dashboard - Collabor8');
 
   const handleInputChange = (
     e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,

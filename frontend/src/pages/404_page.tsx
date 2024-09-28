@@ -7,10 +7,12 @@ import {
   usePrefersReducedMotion,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import usePageTitle from '../hooks/useTitle';
 
 export default function NotFoundPage() {
   const navigate = useNavigate();
   const prefersReducedMotion = usePrefersReducedMotion();
+  usePageTitle('404 - Page Not Found');
 
   // Keyframes for the scanning animation
   const scanAnimation = keyframes`

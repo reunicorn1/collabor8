@@ -5,6 +5,7 @@ import { useAppDispatch } from '../hooks/useApp';
 import { setCredentials } from '@store/slices/authSlice';
 import { Skeleton, useToast } from '@chakra-ui/react';
 import { setUserDetails } from '@store/slices/userSlice';
+import usePageTitle from '../hooks/useTitle';
 
 function Verify() {
   // extarct the query from url
@@ -12,6 +13,7 @@ function Verify() {
   const toast = useToast();
   const [verify, { isLoading, isUninitialized }] = useVerifyEmailMutation();
   const dispatch = useAppDispatch();
+  usePageTitle('Verify Email - Collabor8');
 
   useEffect(() => {
     const parmas = new URLSearchParams(window.location.search);

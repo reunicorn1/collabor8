@@ -18,6 +18,7 @@ import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
 //import { Singleton } from '../constants';
 import Shares from '@components/Bars/Shares';
 import Tree from '@components/FileTree/Tree';
+import usePageTitle from '../hooks/useTitle';
 
 export default function Editor() {
   const [isLessThan768] = useMediaQuery('(max-width: 768px)');
@@ -25,7 +26,7 @@ export default function Editor() {
   const { projectId } = useParams<{ projectId: string }>();
   const toast = useToast();
   const panelVisiblity = useAppSelector(selectPanelVisiblity);
-
+  usePageTitle('Editor - Collabor8');
   // Fetch the project data based on the ID
   const { data, isUninitialized, isLoading, error } = useGetProjectByIdQuery(
     projectId! && typeof projectId == 'string' ? projectId : '',
