@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React,  { useEffect, Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import useAuthRefresh from './hooks/useAuthRefresh';
 import useLogOut from './hooks/useLogOut';
@@ -6,6 +6,7 @@ import ResetPasswordModal from '@components/Modals/ResetPassword';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from '@components/ProtectedRoute';
 import ThemedLoader from '@utils/Spinner';
+import TagManager from 'react-gtm-module';
 import './App.css';
 
 const Verify = lazy(() => import('@pages/Verify'));
@@ -20,6 +21,11 @@ const InviteGuest = lazy(() => import('@components/Invite'));
 const App: React.FC = () => {
   useAuthRefresh();
   useLogOut();
+
+
+  useEffect(() => {
+    TagManager.initialize({ gtmId: import.meta.env.VITE_GTM_ID });
+  }, []);
 
   return (
     <AuthProvider>
