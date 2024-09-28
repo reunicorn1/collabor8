@@ -18,6 +18,7 @@ import Slogan from '@components/Slogan';
 import { TEXT, AVATARS, FEATURES } from '../constants.ts';
 import NavigationBar from '@components/Bars/NavigationBar.tsx';
 import usePageTitle from '../hooks/useTitle';
+import CookieConsentBanner from '@components/ConsentBanner';
 
 const Home = () => {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -44,6 +45,7 @@ const Home = () => {
 
   return (
     <Box className="home-padding">
+      <CookieConsentBanner />
       <Stack className="h-screen bg-brand overflow-hidden">
         <NavigationBar />
         {/* SLOGAN */}

@@ -4,3 +4,8 @@ declare var process: {
     [key: string]: string | undefined;
   };
 };
+
+interface Window {
+  dataLayer: any[];
+  gtag: (...args: any[]) => void;
+}
