@@ -11,12 +11,14 @@ import {
 } from '@chakra-ui/react';
 import { CheckCircleIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
+import usePageTitle from '../hooks/useTitle';
 
 const About = () => {
   const navigate = useNavigate();
   const handleGoHome = () => {
     navigate('/');
   };
+  usePageTitle('About - Collabor8');
   return (
     <Flex
       direction="column"
