@@ -51,8 +51,7 @@ const DeleteAccount: React.FC<ModalProps> = ({ isOpen, onClose }) => {
         'Your account has been permanently deleted.',
         'success',
       );
-      navigate(location.pathname.concat('?logout=true'));
-      dispatch(performLogout());
+      dispatch(performLogout(() => navigate('/')));
     } catch (err) {
       showToast(
         'Error deleting account.',
@@ -62,7 +61,6 @@ const DeleteAccount: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       console.error('Error during account deletion:', err);
     } finally {
       onClose();
-      dispatch(performLogout(() => navigate('/')));
     }
   };
 
