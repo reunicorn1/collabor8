@@ -9,8 +9,9 @@ const initialState = {
     necessary: true,
     analytics: true,
     preferences: true,
-    marketing: false,
+    marketing: true,
   },
+  userChangedConsent: false,
 };
 
 const reducer = (state, action) => {
@@ -20,7 +21,11 @@ const reducer = (state, action) => {
     case 'HIDE_BANNER':
       return { ...state, showCookieConsent: false };
     case 'SET_CONSENT_OPTIONS':
-      return { ...state, consentOptions: action.payload };
+      return {
+        ...state,
+        consentOptions: action.payload,
+        userChangedConsent: true,
+      };
     default:
       return state;
   }
@@ -40,9 +45,15 @@ const CookieConsentBanner = () => {
   const handleAcceptAll = () => {
     const consent = {
       necessary: true,
-      analytics: true,
-      preferences: true,
-      marketing: true,
+      analytics: state.userChangedConsent
+        ? state.consentOptions.analytics
+        : true,
+      preferences: state.userChangedConsent
+        ? state.consentOptions.preferences
+        : true,
+      marketing: state.userChangedConsent
+        ? state.consentOptions.marketing
+        : true,
     };
     setConsentMode(consent);
     dispatch({ type: 'HIDE_BANNER' });
@@ -195,7 +206,7 @@ const CookieConsentBanner = () => {
               fontWeight="bold"
               boxShadow="0 2px 10px rgba(0, 0, 0, 0.2)"
             >
-              Accept All
+              {state.userChangedConsent ? 'Save Changes' : 'Accept All'}
             </Button>
             <Button
               bg="red.600"
