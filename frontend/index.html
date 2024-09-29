@@ -2,31 +2,85 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/icon.png" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Inconsolata"
-    />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- keyowrds for search engines -->
-    <meta name="keywords" content="Collaborative, collaborate, real-time">
-    <meta name="description" content="An innovative, web-based collaborative code editor designed for developers to work together seamlessly in real-time" />
-    <meta name="author" content="ALX C18 grads">
+    <!-- Preconnect to Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap"
+      as="style"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/icon.png" />
+
+    <!-- SEO -->
+    <meta
+      name="description"
+      content="An innovative, web-based collaborative code editor designed for developers to work together seamlessly in real-time"
+    />
+    <meta
+      name="keywords"
+      content="Collaborative, collaborate, real-time, code editor"
+    />
+    <meta name="author" content="ALX C18 grads" />
+    <meta name="theme-color" content="#001845" />
+
+    <!-- Open Graph data for social media sharing -->
+    <meta property="og:title" content="Collabor8" />
+    <meta
+      property="og:description"
+      content="Collaborate in real-time using our innovative web-based code editor."
+    />
+    <meta
+      property="og:image"
+      content="https://co11abor8.netlify.app/icon.png"
+    />
+    <meta property="og:url" content="https://co11abor8.netlify.app" />
+    <meta property="og:type" content="website" />
+
     <title>Collabor8</title>
-     <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QFNFLVQWC8"></script>
+
+    <!-- Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-QFNFLVQWC8"
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      function gtag() {
+        dataLayer.push(arguments);
+      }
       gtag('js', new Date());
-      gtag('config', 'G-QFNFLVQWC8', { 'anonymize_ip': true });
+      gtag('config', 'G-QFNFLVQWC8', { anonymize_ip: true });
     </script>
     <!-- End Google Analytics -->
+
+    <!-- Structured data (JSON-LD) for better SEO -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Collabor8",
+        "url": "https://co11abor8.netlify.app",
+        "description": "Collaborate in real-time using our innovative web-based code editor.",
+        "author": {
+          "@type": "Person",
+          "name": "ALX C18 grads"
+        }
+      }
+    </script>
   </head>
+
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-    <!-- <script src='https://meet.jit.si/external_api.js'></script> -->
+    <script type="module" src="/src/main.tsx" defer></script>
   </body>
 </html>
