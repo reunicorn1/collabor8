@@ -190,9 +190,9 @@ function MenuDrawer({ renderFooter }: Props) {
       'scroll',
       () => {
         if (window.scrollY > 50) {
-          menuBarRef.current.classList.add('bg-brand');
+          menuBarRef.current?.classList.add('bg-brand');
         } else {
-          menuBarRef.current.classList.remove('bg-brand');
+          menuBarRef.current?.classList.remove('bg-brand');
         }
       },
       { passive: true },
