@@ -16,6 +16,7 @@ const Editor = lazy(() => import('@pages/Editor'));
 const Home = lazy(() => import('@pages/Home'));
 const Dashboard = lazy(() => import('@pages/DashboardPage'));
 const InviteGuest = lazy(() => import('@components/Invite'));
+const CookiePolicy = lazy(() => import('@pages/CookiePolicy'));
 
 const App: React.FC = () => {
   useAuthRefresh();
@@ -26,6 +27,7 @@ const App: React.FC = () => {
       <Suspense fallback={<ThemedLoader />}>
         <Routes>
           <Route path="/mission" element={<About />} />
+          <Route path="/cookie-policy" element={<CookiePolicy />} />
           <Route path="/" element={<Home />} />
           <Route
             path="/dashboard"

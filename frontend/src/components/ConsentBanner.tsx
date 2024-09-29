@@ -1,25 +1,39 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useReducer } from 'react';
+import { Box, Button, Checkbox, Flex, Text } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
-// TODO: statae management needs to be refactored to useReducer
-const CookieConsentBanner = () => {
-  const [showCookieConsent, setShowCookieConsent] = useState(false);
-  const [consentOptions, setConsentOptions] = useState({
+// State management using useReducer
+const initialState = {
+  showCookieConsent: false,
+  consentOptions: {
     necessary: true,
     analytics: true,
     preferences: true,
     marketing: false,
-  });
+  },
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'SHOW_BANNER':
+      return { ...state, showCookieConsent: true };
+    case 'HIDE_BANNER':
+      return { ...state, showCookieConsent: false };
+    case 'SET_CONSENT_OPTIONS':
+      return { ...state, consentOptions: action.payload };
+    default:
+      return state;
+  }
+};
+
+const CookieConsentBanner = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedConsent = localStorage.getItem('consentMode');
     if (!storedConsent) {
-      setShowCookieConsent(true);
-      //document.getElementById('cookie-consent-banner').style.display = '';
-    } else {
-      const consent = JSON.parse(storedConsent);
-      if (consent.analytics_storage === 'granted') {
-        // do smth
-      }
+      dispatch({ type: 'SHOW_BANNER' });
     }
   }, []);
 
@@ -31,112 +45,180 @@ const CookieConsentBanner = () => {
       marketing: true,
     };
     setConsentMode(consent);
-    hideBanner();
-    console.log(window.dataLayer);
-  };
-
-  const handleAcceptSome = () => {
-    const consent = {
-      necessary: true,
-      analytics: consentOptions.analytics,
-    };
-    setConsentMode(consent);
-    hideBanner();
+    dispatch({ type: 'HIDE_BANNER' });
   };
 
   const handleRejectAll = () => {
     const consent = {
-      necessary: false,
+      necessary: true,
       analytics: false,
+      preferences: false,
+      marketing: false,
     };
     setConsentMode(consent);
-    hideBanner();
-    console.log(window.dataLayer);
+    dispatch({ type: 'HIDE_BANNER' });
   };
 
-  const handleChange = (e) => {
-    const { id, checked } = e.target;
-    setConsentOptions((prev) => ({ ...prev, [id]: checked }));
+  const handleConsentChange = (option) => {
+    dispatch({
+      type: 'SET_CONSENT_OPTIONS',
+      payload: {
+        ...state.consentOptions,
+        [option]: !state.consentOptions[option],
+      },
+    });
   };
 
   const setConsentMode = (consent) => {
     const consentMode = {
       functionality_storage: consent.necessary ? 'granted' : 'denied',
-      security_storage: consent.necessary ? 'granted' : 'denied',
       analytics_storage: consent.analytics ? 'granted' : 'denied',
+      preferences_storage: consent.preferences ? 'granted' : 'denied',
+      marketing_storage: consent.marketing ? 'granted' : 'denied',
     };
     localStorage.setItem('consentMode', JSON.stringify(consentMode));
     window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: 'consentUpdate',
-      consent: consentMode,
-    });
+    window.dataLayer.push({ event: 'consentUpdate', consent: consentMode });
   };
 
-  const hideBanner = () => {
-    setShowCookieConsent(false);
-    //document.getElementById('cookie-consent-banner').style.display = 'none';
-  };
+  if (!state.showCookieConsent) return null;
 
-  if (!showCookieConsent) return null;
+  const handleGoPolicy = () => {
+    navigate('/cookie-policy');
+  };
 
   return (
-    <div className="fixed left-0 bottom-0 flex flex-col gap-4 py-7 w-full bg-gray-800 text-white text-center z-50">
-      <h3 className="text-xl font-bold">Cookie settings</h3>
-      <p>
-        We use cookies to provide you with the best possible experience. They
-        also allow us to analyze user behavior to improve the website.
-      </p>
+    <Box
+      position="fixed"
+      left="0"
+      bottom="0"
+      width="100%"
+      bg="gray.900"
+      color="white"
+      py={6}
+      px={4}
+      zIndex={50}
+      fontFamily="mono"
+      boxShadow="0 4px 15px rgba(0, 0, 0, 0.3)"
+      borderTop="4px solid #E86044"
+    >
+      <Flex
+        direction={{ base: 'column', lg: 'row' }}
+        justify="space-between"
+        align="start"
+        className="p-4"
+      >
+        <Box mb={{ base: 4, lg: 0 }} textAlign={{ base: 'center', lg: 'left' }}>
+          <Text fontSize="2xl" fontWeight="bold" mb={1}>
+            Cookie Settings
+          </Text>
+          <Text fontSize="md" lineHeight="1.6">
+            We use cookies to enhance your experience, analyze traffic, and for
+            marketing purposes. You can choose your preferences. For more
+            details, see our{' '}
+            <Text
+              as="span"
+              textDecoration="underline"
+              color="orange.400"
+              _hover={{
+                textDecoration: 'none',
+                color: 'orange.300',
+                cursor: 'pointer',
+              }}
+              onClick={handleGoPolicy}
+            >
+              Cookie Policy
+            </Text>
+            .
+          </Text>
+        </Box>
 
-      {/* PERMISSIONS BUTTONS */}
-      <div className="flex justify-center gap-4 flex-wrap">
-        <button
-          id="btn-accept-all"
-          className="bg-green-500 text-white px-4 py-2 rounded"
-          onClick={handleAcceptAll}
+        <Flex
+          direction="column"
+          gap={4}
+          mt={{ base: 4, lg: 0 }}
+          alignItems={{ base: 'center', lg: 'flex-start' }}
         >
-          Accept All
-        </button>
-        <button
-          id="btn-accept-some"
-          className="border border-white text-white px-4 py-2 rounded"
-          onClick={handleAcceptSome}
-        >
-          Accept Selection
-        </button>
-        <button
-          id="btn-reject-all"
-          className="bg-gray-500 text-white px-4 py-2 rounded"
-          onClick={handleRejectAll}
-        >
-          Reject All
-        </button>
-      </div>
+          <Flex
+            direction={{ base: 'column', lg: 'row' }}
+            gap={2}
+            alignItems="left"
+          >
+            <Checkbox
+              isChecked={state.consentOptions.analytics}
+              onChange={() => handleConsentChange('analytics')}
+              fontFamily="mono"
+              colorScheme="orange"
+              size="lg"
+            >
+              Analytics
+            </Checkbox>
+            <Checkbox
+              isChecked={state.consentOptions.preferences}
+              onChange={() => handleConsentChange('preferences')}
+              fontFamily="mono"
+              colorScheme="orange"
+              size="lg"
+            >
+              Preferences
+            </Checkbox>
+            <Checkbox
+              isChecked={state.consentOptions.marketing}
+              onChange={() => handleConsentChange('marketing')}
+              fontFamily="mono"
+              colorScheme="orange"
+              size="lg"
+            >
+              Marketing
+            </Checkbox>
+          </Flex>
 
-      {/* CHECK BOXES */}
-      <div className="flex justify-center gap-4">
-        <label>
-          <input
-            id="necessary"
-            type="checkbox"
-            className="mr-2"
-            checked
-            disabled
-          />
-          Necessary
-        </label>
-        <label>
-          <input
-            id="analytics"
-            type="checkbox"
-            className="mr-2"
-            checked={consentOptions.analytics}
-            onChange={handleChange}
-          />
-          Analytics
-        </label>
-      </div>
-    </div>
+          <Flex
+            direction={{ base: 'column', lg: 'row' }}
+            gap={4}
+            mt={4}
+            alignItems="center"
+          >
+            <Button
+              bg="orange.600"
+              _hover={{
+                bg: 'orange.700',
+                transform: 'scale(1.05)',
+                transition: 'all 0.2s',
+              }}
+              color="white"
+              px={6}
+              py={2}
+              borderRadius="lg"
+              onClick={handleAcceptAll}
+              fontFamily="mono"
+              fontWeight="bold"
+              boxShadow="0 2px 10px rgba(0, 0, 0, 0.2)"
+            >
+              Accept All
+            </Button>
+            <Button
+              bg="red.600"
+              _hover={{
+                bg: 'red.700',
+                transform: 'scale(1.05)',
+                transition: 'all 0.2s',
+              }}
+              color="white"
+              px={6}
+              py={2}
+              borderRadius="lg"
+              onClick={handleRejectAll}
+              fontFamily="mono"
+              fontWeight="bold"
+              boxShadow="0 2px 10px rgba(0, 0, 0, 0.2)"
+            >
+              Reject All
+            </Button>
+          </Flex>
+        </Flex>
+      </Flex>
+    </Box>
   );
 };
 

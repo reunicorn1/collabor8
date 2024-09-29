@@ -87,6 +87,11 @@ body {
   box-shadow: 0 0 0px #00ff00;
 }
 
+/* use mono font */
+.mono-font {
+  font-family: 'mono', monospace;
+}
+
 /* HTML: <div class="loader"></div> */
 .loader {
   width: 50px;

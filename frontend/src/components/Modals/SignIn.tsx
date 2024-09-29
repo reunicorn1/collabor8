@@ -116,8 +116,7 @@ export default function SignIn({
           isClosable: true,
         });
       })
-      .finally(() => {
-      });
+      .finally(() => {});
   };
 
   // Opens the password reset modal
