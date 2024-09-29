@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+    .text-last-center {
+        text-align-last: center;
+    }
+}
+
 html, body, div#root {
     width: 100%;
     /*height: 100%;*/
