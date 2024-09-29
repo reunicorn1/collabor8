@@ -92,11 +92,11 @@ const CookieConsentBanner = () => {
     window.dataLayer.push({ event: 'consentUpdate', consent: consentMode });
   };
 
-  if (!state.showCookieConsent) return null;
-
   const handleGoPolicy = () => {
     navigate('/cookie-policy');
   };
+
+  if (!state.showCookieConsent) return null;
 
   return (
     <Box
@@ -107,23 +107,21 @@ const CookieConsentBanner = () => {
       bg="gray.900"
       color="white"
       py={6}
-      px={4}
       zIndex={50}
       fontFamily="mono"
       boxShadow="0 4px 15px rgba(0, 0, 0, 0.3)"
       borderTop="4px solid #E86044"
     >
-      <Flex
-        direction={{ base: 'column', lg: 'row' }}
-        justify="space-between"
-        align="start"
-        className="p-4"
-      >
-        <Box mb={{ base: 4, lg: 0 }} textAlign={{ base: 'center', lg: 'left' }}>
-          <Text fontSize="2xl" fontWeight="bold" mb={1}>
+      <Flex gap="4" direction="column">
+        <Flex alignItems="center" flexDir="column" gap="2">
+          <Text fontSize="2xl" fontWeight="bold">
             Cookie Settings
           </Text>
-          <Text fontSize="md" lineHeight="1.6">
+          <Text
+            w="min(700px,100%)"
+            textAlign="justify"
+            className="text-last-center"
+          >
             We use cookies to enhance your experience, analyze traffic, and for
             marketing purposes. You can choose your preferences. For more
             details, see our{' '}
@@ -142,91 +140,71 @@ const CookieConsentBanner = () => {
             </Text>
             .
           </Text>
-        </Box>
+        </Flex>
 
-        <Flex
-          direction="column"
-          gap={4}
-          mt={{ base: 4, lg: 0 }}
-          alignItems={{ base: 'center', lg: 'flex-start' }}
-        >
-          <Flex
-            direction={{ base: 'column', lg: 'row' }}
-            gap={2}
-            alignItems="left"
+        {/* CHECKBOXES */}
+        <Flex justifyContent="center" flexWrap="wrap" gap={3}>
+          <Checkbox
+            isChecked={state.consentOptions.analytics}
+            onChange={() => handleConsentChange('analytics')}
+            fontFamily="mono"
+            colorScheme="orange"
           >
-            <Checkbox
-              isChecked={state.consentOptions.analytics}
-              onChange={() => handleConsentChange('analytics')}
-              fontFamily="mono"
-              colorScheme="orange"
-              size="lg"
-            >
-              Analytics
-            </Checkbox>
-            <Checkbox
-              isChecked={state.consentOptions.preferences}
-              onChange={() => handleConsentChange('preferences')}
-              fontFamily="mono"
-              colorScheme="orange"
-              size="lg"
-            >
-              Preferences
-            </Checkbox>
-            <Checkbox
-              isChecked={state.consentOptions.marketing}
-              onChange={() => handleConsentChange('marketing')}
-              fontFamily="mono"
-              colorScheme="orange"
-              size="lg"
-            >
-              Marketing
-            </Checkbox>
-          </Flex>
+            Analytics
+          </Checkbox>
+          <Checkbox
+            isChecked={state.consentOptions.preferences}
+            onChange={() => handleConsentChange('preferences')}
+            fontFamily="mono"
+            colorScheme="orange"
+          >
+            Preferences
+          </Checkbox>
+          <Checkbox
+            isChecked={state.consentOptions.marketing}
+            onChange={() => handleConsentChange('marketing')}
+            fontFamily="mono"
+            colorScheme="orange"
+          >
+            Marketing
+          </Checkbox>
+        </Flex>
 
-          <Flex
-            direction={{ base: 'column', lg: 'row' }}
-            gap={4}
-            mt={4}
-            alignItems="center"
+        {/* ACTION BUTTONS */}
+        <Flex gap="3" justifyContent="center">
+          <Button
+            bg="orange.600"
+            _hover={{
+              bg: 'orange.700',
+              transform: 'scale(1.05)',
+              transition: 'all 0.2s',
+            }}
+            color="white"
+            onClick={handleAcceptAll}
+            fontFamily="mono"
+            fontWeight="bold"
+            boxShadow="0 2px 10px rgba(0, 0, 0, 0.2)"
           >
-            <Button
-              bg="orange.600"
-              _hover={{
-                bg: 'orange.700',
-                transform: 'scale(1.05)',
-                transition: 'all 0.2s',
-              }}
-              color="white"
-              px={6}
-              py={2}
-              borderRadius="lg"
-              onClick={handleAcceptAll}
-              fontFamily="mono"
-              fontWeight="bold"
-              boxShadow="0 2px 10px rgba(0, 0, 0, 0.2)"
-            >
-              {state.userChangedConsent ? 'Save Changes' : 'Accept All'}
-            </Button>
-            <Button
-              bg="red.600"
-              _hover={{
-                bg: 'red.700',
-                transform: 'scale(1.05)',
-                transition: 'all 0.2s',
-              }}
-              color="white"
-              px={6}
-              py={2}
-              borderRadius="lg"
-              onClick={handleRejectAll}
-              fontFamily="mono"
-              fontWeight="bold"
-              boxShadow="0 2px 10px rgba(0, 0, 0, 0.2)"
-            >
-              Reject All
-            </Button>
-          </Flex>
+            {state.userChangedConsent ? 'Save Changes' : 'Accept All'}
+          </Button>
+          <Button
+            bg="red.600"
+            _hover={{
+              bg: 'red.700',
+              transform: 'scale(1.05)',
+              transition: 'all 0.2s',
+            }}
+            color="white"
+            //px={6}
+            //py={2}
+            //borderRadius="lg"
+            onClick={handleRejectAll}
+            fontFamily="mono"
+            fontWeight="bold"
+            boxShadow="0 2px 10px rgba(0, 0, 0, 0.2)"
+          >
+            Reject All
+          </Button>
         </Flex>
       </Flex>
     </Box>
