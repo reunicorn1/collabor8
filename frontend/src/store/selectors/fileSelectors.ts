@@ -6,7 +6,7 @@ export const selectFile = createSelector(
   (file) => file,
 );
 
-export const selectPanelVisiblity = createSelector(
-  (state: RootState) => state.file.panelVisiblity,
-  (panelVisiblity) => panelVisiblity,
+export const selectPanelVisibility = createSelector(
+  (state: RootState) => state.file.panelVisibility,
+  (panelVisibility) => panelVisibility,
 );

@@ -17,7 +17,7 @@ import ComingSoon from '@components/CodeEditor/ComingSoon';
 import VoiceDrawer from '@components/CodeEditor/VoiceDrawer';
 import { useAppDispatch, useAppSelector } from '@hooks/useApp';
 import { togglePanelVisibility } from '@store/slices/fileSlice';
-import { selectPanelVisiblity } from '@store/selectors/fileSelectors';
+import { selectPanelVisibility } from '@store/selectors/fileSelectors';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { useState, useEffect } from 'react';
 import DBMenu from '@components/Dashboard/DBMenu';
@@ -47,7 +47,7 @@ export default function MenuBar({
   } = useDisclosure();
   const navigate = useNavigate();
   const { mode } = useSettings()!;
-  const panelVisiblity = useAppSelector(selectPanelVisiblity);
+  const panelVisibility = useAppSelector(selectPanelVisibility);
   const userDetails = useAppSelector(selectUserDetails);
   const [isAdBlockerDetected, setIsAdBlockerDetected] = useState(false);
   const user = useAppSelector(selectUserDetails);
@@ -168,7 +168,7 @@ export default function MenuBar({
         >
           toggle panel
           <span className="block w-3 text-lg ms-2">
-            {panelVisiblity ? '-' : '+'}
+            {panelVisibility ? '-' : '+'}
           </span>
         </Button>
         <IconButton

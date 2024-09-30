@@ -7,6 +7,7 @@ import { Github, LinkedIn, Twitter } from './common/icons';
 
 const TEXT =
   '\r\r\rCollabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.';
+
 const AVATARS = [
   {
     name: 'Abdallah Abdelrahman',
@@ -55,6 +56,7 @@ const AVATARS = [
     ],
   },
 ];
+
 const FEATURES = [
   {
     title: 'Instant Updates',

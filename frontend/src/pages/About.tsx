@@ -17,6 +17,7 @@ const About = () => {
   const navigate = useNavigate();
   const handleGoHome = () => {
     navigate('/');
+    window.scrollTo(0, 0);
   };
   usePageTitle('About - Collabor8');
   return (
