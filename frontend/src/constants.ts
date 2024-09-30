@@ -5,7 +5,8 @@ import { TbLayoutDashboardFilled } from 'react-icons/tb';
 import * as Y from 'yjs';
 import { Github, LinkedIn, Twitter } from './common/icons';
 
-const TEXT = '\r\r\rCollabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.';
+const TEXT =
+  '\r\r\rCollabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.';
 const AVATARS = [
   {
     name: 'Abdallah Abdelrahman',
@@ -34,7 +35,10 @@ const AVATARS = [
     img: '/mab.png',
     borderColor: '#76449A',
     socials: [
-      { link: 'https://www.linkedin.com/in/mohannad-abdul-aziz-babeker/', Icon: LinkedIn },
+      {
+        link: 'https://www.linkedin.com/in/mohannad-abdul-aziz-babeker/',
+        Icon: LinkedIn,
+      },
       { link: 'https://x.com/mohanad_abdo21', Icon: Twitter },
       { link: 'https://github.com/Mohabdo21', Icon: Github },
     ],
