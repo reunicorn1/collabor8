@@ -6,6 +6,14 @@
     .text-last-center {
         text-align-last: center;
     }
+    .inset-shadow {
+        box-shadow: inset -50px -60px 25px 20px theme('colors.brand.100'),
+         inset 50px 60px 25px 20px theme('colors.brand.100');
+    }
+    .shadow-cookie {
+        box-shadow: inset 0px 0px 15px 20px theme('colors.brand.100');
+        @apply lg:inset-shadow;
+    }
 }
 
 html, body, div#root {

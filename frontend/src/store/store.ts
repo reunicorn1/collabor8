@@ -5,6 +5,7 @@ import projectReducer from './slices/projectSlice';
 import projectSharesReducer from './slices/projectSharesSlice';
 import fileReducer from './slices/fileSlice';
 import loggerMiddleware from './middleware/loggerMiddleware';
+import cookieConsentReducer from './slices/cookieConsentSlice';
 import { api } from './services/api';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -25,6 +26,7 @@ const store = configureStore({
     project: projectReducer,
     sharedProjects: projectSharesReducer,
     file: fileReducer,
+    cookieConsent: cookieConsentReducer,
     [api.reducerPath]: api.reducer,
   },
   middleware: (getDefaultMiddleware) =>

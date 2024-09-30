@@ -25,25 +25,24 @@ const CookiePolicy: React.FC = () => {
     navigate('/');
     window.scrollTo(0, 0);
   };
+
   usePageTitle('Cookie Policy - Collabor8');
 
   return (
-    <Box bgColor="brand.100" className="p-8 mono-font">
+    <Box className="shadow-cookie lg:text-justify bg-brand-900 mono-font">
       <Box
-        className="p-8"
-        bgColor="brand.900"
+        w="min(100%,1000px)"
+        className="container mx-auto px-8 py-14"
         borderRadius="10px"
-        shadow="lg"
         transition="all 0.3s"
-        _hover={{ shadow: 'xl' }}
       >
         <Heading
           as="h1"
-          size="2xl"
-          mb={4}
+          size={{ base: 'xl', lg: '2xl' }}
+          mb={8}
           color="whitesmoke"
           fontFamily="mono"
-          textAlign="center"
+          textAlign={{ lg: 'center' }}
         >
           Cookie Policy 🍪
         </Heading>
@@ -316,13 +315,13 @@ const CookiePolicy: React.FC = () => {
         </Text>
 
         {/* Go home */}
-        <Flex justify={['center', 'right']} mt={6}>
+        <Flex justify="center" mt={6}>
           <Button
             onClick={handleGoHome}
             fontFamily="mono"
             colorScheme="orange"
             variant="solid"
-            size={['sm', 'md']}
+            size={['sm', 'lg']}
           >
             Back to Home
           </Button>

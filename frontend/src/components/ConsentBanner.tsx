@@ -1,62 +1,43 @@
-import { useEffect, useReducer } from 'react';
+import { useEffect } from 'react';
 import { Box, Button, Checkbox, Flex, Text } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-
-// State management using useReducer
-const initialState = {
-  showCookieConsent: false,
-  consentOptions: {
-    necessary: true,
-    analytics: true,
-    preferences: true,
-    marketing: true,
-  },
-  userChangedConsent: false,
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'SHOW_BANNER':
-      return { ...state, showCookieConsent: true };
-    case 'HIDE_BANNER':
-      return { ...state, showCookieConsent: false };
-    case 'SET_CONSENT_OPTIONS':
-      return {
-        ...state,
-        consentOptions: action.payload,
-        userChangedConsent: true,
-      };
-    default:
-      return state;
-  }
-};
+import { useAppDispatch, useAppSelector } from '@hooks/useApp';
+import {
+  showBanner,
+  hideBanner,
+  setConsentOptions,
+} from '@store/slices/cookieConsentSlice';
+import {
+  selectShowCookieConsent,
+  selectConsentOptions,
+  selectUserChangedConsent,
+} from '@store/selectors';
 
 const CookieConsentBanner = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const showCookieConsent = useAppSelector(selectShowCookieConsent);
+  const consentOptions = useAppSelector(selectConsentOptions);
+  const userChangedConsent = useAppSelector(selectUserChangedConsent);
 
   useEffect(() => {
     const storedConsent = localStorage.getItem('consentMode');
     if (!storedConsent) {
-      dispatch({ type: 'SHOW_BANNER' });
+      dispatch(showBanner());
     }
-  }, []);
+  }, [dispatch]);
 
   const handleAcceptAll = () => {
     const consent = {
       necessary: true,
-      analytics: state.userChangedConsent
-        ? state.consentOptions.analytics
-        : true,
-      preferences: state.userChangedConsent
-        ? state.consentOptions.preferences
-        : true,
-      marketing: state.userChangedConsent
-        ? state.consentOptions.marketing
-        : true,
+      analytics: consentOptions.analytics,
+      preferences: consentOptions.preferences,
+      marketing: consentOptions.marketing,
     };
     setConsentMode(consent);
-    dispatch({ type: 'HIDE_BANNER' });
+    dispatch(setConsentOptions(consent));
+    dispatch(hideBanner());
   };
 
   const handleRejectAll = () => {
@@ -67,17 +48,16 @@ const CookieConsentBanner = () => {
       marketing: false,
     };
     setConsentMode(consent);
-    dispatch({ type: 'HIDE_BANNER' });
+    dispatch(setConsentOptions(consent));
+    dispatch(hideBanner());
   };
 
-  const handleConsentChange = (option) => {
-    dispatch({
-      type: 'SET_CONSENT_OPTIONS',
-      payload: {
-        ...state.consentOptions,
-        [option]: !state.consentOptions[option],
-      },
-    });
+  const handleConsentChange = (option: keyof typeof consentOptions) => {
+    dispatch(
+      setConsentOptions({
+        [option]: !consentOptions[option],
+      }),
+    );
   };
 
   const setConsentMode = (consent) => {
@@ -96,7 +76,7 @@ const CookieConsentBanner = () => {
     navigate('/cookie-policy');
   };
 
-  if (!state.showCookieConsent) return null;
+  if (!showCookieConsent) return null;
 
   return (
     <Box
@@ -145,7 +125,7 @@ const CookieConsentBanner = () => {
         {/* CHECKBOXES */}
         <Flex justifyContent="center" flexWrap="wrap" gap={3}>
           <Checkbox
-            isChecked={state.consentOptions.analytics}
+            isChecked={consentOptions.analytics}
             onChange={() => handleConsentChange('analytics')}
             fontFamily="mono"
             colorScheme="orange"
@@ -153,7 +133,7 @@ const CookieConsentBanner = () => {
             Analytics
           </Checkbox>
           <Checkbox
-            isChecked={state.consentOptions.preferences}
+            isChecked={consentOptions.preferences}
             onChange={() => handleConsentChange('preferences')}
             fontFamily="mono"
             colorScheme="orange"
@@ -161,7 +141,7 @@ const CookieConsentBanner = () => {
             Preferences
           </Checkbox>
           <Checkbox
-            isChecked={state.consentOptions.marketing}
+            isChecked={consentOptions.marketing}
             onChange={() => handleConsentChange('marketing')}
             fontFamily="mono"
             colorScheme="orange"
@@ -185,7 +165,7 @@ const CookieConsentBanner = () => {
             fontWeight="bold"
             boxShadow="0 2px 10px rgba(0, 0, 0, 0.2)"
           >
-            {state.userChangedConsent ? 'Save Changes' : 'Accept All'}
+            {userChangedConsent ? 'Save Changes' : 'Accept All'}
           </Button>
           <Button
             bg="red.600"
