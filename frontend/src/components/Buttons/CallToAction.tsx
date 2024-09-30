@@ -14,41 +14,50 @@ type Props = {
   access_level?: 'write' | 'read';
   [k: string]: any;
 };
-export default function CallToAction({ _redirect = '', access_level = 'write', className = '', ...rest }: Props) {
+export default function CallToAction({
+  _redirect = '',
+  access_level = 'write',
+  className = '',
+  ...rest
+}: Props) {
   const { data } = useGetGuestIPQuery();
-  const [getProject, { isLoading: projectLoading }] = useLazyGetGuestProjectQuery();
-  const [createProjectShare, { isLoading: PSLoading }] = useCreateProjectShareMutation();
+  const [getProject, { isLoading: projectLoading }] =
+    useLazyGetGuestProjectQuery();
+  const [createProjectShare, { isLoading: PSLoading }] =
+    useCreateProjectShareMutation();
   const [loginGuest, { isLoading: loginLoading }] = useLoginGuestMutation();
   const navigate = useNavigate();
 
   const handleTryItOut = async () => {
     console.log('Trying it out');
 
-    loginGuest().then(async (res) => {
+    try {
+      await loginGuest().unwrap();
+
       const { redirect } = await getProject({ IP: data?.ip }).unwrap();
       localStorage.setItem('project_id', redirect);
 
       if (_redirect) {
-        createProjectShare({ project_id: _redirect, access_level, username: 'guest' })
-          .unwrap()
-          .then(() => {
-            navigate(`/editor/${_redirect}`);
-          })
-          .catch((err) => {
-            console.log({ err });
-          });
-        return;
+        await createProjectShare({
+          project_id: _redirect,
+          access_level,
+          username: 'guest',
+        }).unwrap();
+
+        navigate(`/editor/${_redirect}`);
+      } else {
+        navigate(`/editor/${redirect}`);
       }
-      //console.log('Project created for guest:', project);
-      navigate(`/editor/${redirect}`);
-    });
+    } catch (error) {
+      console.error('Error during Try It Out:', error);
+    }
   };
 
   return (
     <Button
       isLoading={projectLoading || loginLoading}
       onClick={handleTryItOut}
-      textTransform='uppercase'
+      textTransform="uppercase"
       className={className}
       rightIcon={<ChevronRightIcon className="animate-bounce_r" boxSize={8} />}
       {...rest}
