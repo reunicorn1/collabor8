@@ -13,7 +13,6 @@ import { selectPanelVisibility, selectUserDetails } from '@store/selectors';
 import Shares from '@components/Bars/Shares';
 import Tree from '@components/FileTree/Tree';
 import usePageTitle from '@hooks/useTitle';
-import { performLogout } from '@store/slices/authSlice';
 
 // params type for projectId
 type EditorParams = {
@@ -56,9 +55,7 @@ export default function Editor() {
         variant: 'subtle',
       });
       if (userDetails?.roles === 'guest') {
-        setTimeout(() => {
-          dispatch(performLogout(() => navigate('/')));
-        }, 4000);
+        setTimeout(() => navigate('/'), 4000);
       } else {
         setTimeout(() => navigate('/dashboard'), 4000);
       }
