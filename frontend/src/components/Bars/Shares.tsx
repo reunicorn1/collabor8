@@ -1,4 +1,10 @@
-import { Box, Avatar, IconButton, Tooltip, useMediaQuery } from '@chakra-ui/react';
+import {
+  Box,
+  Avatar,
+  IconButton,
+  Tooltip,
+  useMediaQuery,
+} from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { useFile } from '../../context/EditorContext';
 import { useDisclosure } from '@chakra-ui/react';
@@ -13,7 +19,11 @@ interface SharesProps {
   [k: string]: any;
 }
 
-export default function Shares({ className = '', project, ...rest }: SharesProps) {
+export default function Shares({
+  className = '',
+  project,
+  ...rest
+}: SharesProps) {
   const { awareness } = useFile()!; // why so excited?
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isLessThan768] = useMediaQuery('(max-width: 768px)');
@@ -21,10 +31,7 @@ export default function Shares({ className = '', project, ...rest }: SharesProps
 
   // TODO: The plus icon is displayed only for the project owner
   return (
-    <Box
-      className={className}
-      {...rest}
-    >
+    <Box className={className} {...rest}>
       <Box
         className="flex flex-wrap items-center gap-2 p-2 md:flex-col"
         key={crypto.randomUUID()}
@@ -40,27 +47,24 @@ export default function Shares({ className = '', project, ...rest }: SharesProps
             colorScheme="yellow"
             aria-label="add collabroator"
             onClick={onOpen}
-            icon={<AddIcon className='pointer-events-none' />}
+            icon={<AddIcon className="pointer-events-none" />}
           />
         )}
       </Box>
-      {!isLessThan768 && project.username === userDetails.username
-        ? (
-          <IconButton
-            mt={4}
-            mx="auto"
-            isRound={true}
-            variant="solid"
-            colorScheme="yellow"
-            aria-label="add collabroator"
-            fontSize="20px"
-            size="lg"
-            onClick={onOpen}
-            icon={<AddIcon className='pointer-events-none' />}
-          />
-        )
-        : null
-      }
+      {!isLessThan768 && project.username === userDetails.username ? (
+        <IconButton
+          mt={4}
+          mx="auto"
+          isRound={true}
+          variant="solid"
+          colorScheme="yellow"
+          aria-label="add collabroator"
+          fontSize="20px"
+          size="lg"
+          onClick={onOpen}
+          icon={<AddIcon className="pointer-events-none" />}
+        />
+      ) : null}
       <ShareMenu onClose={onClose} isOpen={isOpen} project={project} />
     </Box>
   );

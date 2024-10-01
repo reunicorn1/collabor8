@@ -420,7 +420,6 @@ export default function EditProfile() {
    
    */
 
-
   const fileSection = (
     <div className="p-10 md:p-20 flex justify-between md:justify-end items-center">
       <div className="flex items-start s-12">
@@ -444,7 +443,6 @@ export default function EditProfile() {
   );
 
   const personalInfoSection = (
-
     <div className="p-5 mx-10 md:mx-20 border rounded-2xl mb-10">
       <div className="flex items-center">
         <h2 className="font-mono text-md">Personal Info</h2>
@@ -586,7 +584,6 @@ export default function EditProfile() {
         />
       )}
     </div>
-
   );
   return (
     <>

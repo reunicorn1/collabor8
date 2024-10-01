@@ -1,4 +1,11 @@
-import { Box, Text, Image, Spacer, CloseButton, IconButton } from '@chakra-ui/react';
+import {
+  Box,
+  Text,
+  Image,
+  Spacer,
+  CloseButton,
+  IconButton,
+} from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import React, { useEffect, useRef, useState } from 'react';
 import { LanguageCode } from '../../utils/codeExamples';
@@ -6,7 +13,6 @@ import { useSettings, useFile } from '../../context/EditorContext';
 import { FileType } from '../../context/EditorContext';
 import { setFile, clearFile } from '@store/slices/fileSlice';
 import { useDispatch } from 'react-redux';
-
 
 export default function Tabs() {
   const tabRef = useRef<HTMLDivElement>(null);
@@ -89,14 +95,14 @@ export default function Tabs() {
       <Box
         bg="brand.900"
         borderBottom="2px solid #524175"
-        className='flex overflow-x-auto'
+        className="flex overflow-x-auto"
       >
         {tabslist.map((file) => (
           <Box
             ref={tabRef}
             key={file.id}
             bg="brand.900"
-            className='py-2 flex cursor-pointer shrink-0'
+            className="py-2 flex cursor-pointer shrink-0"
             onClick={() => handleClick(file)}
             borderTop={
               fileSelected && fileSelected.id === file.id

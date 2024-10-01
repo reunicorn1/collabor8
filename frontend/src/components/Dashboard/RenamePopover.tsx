@@ -68,7 +68,6 @@ const Form = ({ onCancel, project_name, onSave }) => {
         <Button size="sm" onClick={onCancel}>
           Cancel
         </Button>
-
       </ButtonGroup>
     </Stack>
   );

@@ -24,8 +24,10 @@ export const fileApi = api.injectEndpoints({
       }),
     }),
     // Execute a file by its ID
-    executeFile: builder.mutation<{ output: { stdout: string, stderr: string } },
-    { id: string, language: string }>({
+    executeFile: builder.mutation<
+      { output: { stdout: string; stderr: string } },
+      { id: string; language: string }
+    >({
       query: ({ id, language }) => ({
         url: `/files/execute/${id}`,
         method: 'POST',

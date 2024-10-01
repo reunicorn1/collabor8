@@ -167,7 +167,7 @@ export default function DashboardBar() {
       alignItems="center"
       borderBottom="2px solid #524175"
       p={[2, 3, 4]}
-      py='4'
+      py="4"
       w="auto"
       flexDirection={'row'}
     >
@@ -175,7 +175,7 @@ export default function DashboardBar() {
         src="/logo-bb.png"
         h={['20px', '23px']}
         ml={[2, 3]}
-        me='auto'
+        me="auto"
         cursor="pointer"
         onClick={() => navigate('/dashboard')}
       />

@@ -45,7 +45,6 @@ const baseQueryWithReauth: BaseQueryFn<
   console.log('result', result);
 
   if (result.error && result.error?.status === 401) {
-
     // if (localStorage.getItem('accessToken')) {
     //   api.dispatch(
     //     setCredentials({

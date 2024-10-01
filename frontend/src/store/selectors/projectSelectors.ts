@@ -57,7 +57,3 @@ export const selectAllProjectsPagination = createSelector(
   (state: RootState) => state.project.pagination.allProjects,
   (allProjectsPagination) => allProjectsPagination,
 );
-
-
-
-

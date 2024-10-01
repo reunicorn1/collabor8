@@ -20,7 +20,8 @@ function ComingSoon({ isOpen, onClose, project }: ModalProps) {
   useEffect(() => {
     const handleClose = (e: MouseEvent) => {
       const isMenuBtn =
-        (e.target as HTMLButtonElement).getAttribute('aria-label') === 'slide menu button';
+        (e.target as HTMLButtonElement).getAttribute('aria-label') ===
+        'slide menu button';
 
       if (
         ref.current &&
@@ -37,7 +38,7 @@ function ComingSoon({ isOpen, onClose, project }: ModalProps) {
     // cleanup
     return () => {
       window.document.removeEventListener('click', handleClose);
-    window.document.removeEventListener('touchstart', handleClose);
+      window.document.removeEventListener('touchstart', handleClose);
     };
   });
 
@@ -51,33 +52,39 @@ function ComingSoon({ isOpen, onClose, project }: ModalProps) {
     `}
     >
       <IconButton
-        aria-label='close menu'
+        aria-label="close menu"
         onClick={onClose}
         icon={<CloseIcon />}
-        variant='unstyled'
-        color='white'
-        className='absolute top-2 right-2 self-end'
+        variant="unstyled"
+        color="white"
+        className="absolute top-2 right-2 self-end"
       />
       <Stack>
-        <Heading color='brand.100' className='px-4 !text-2xl !font-mono capitalize'>
+        <Heading
+          color="brand.100"
+          className="px-4 !text-2xl !font-mono capitalize"
+        >
           file tree
         </Heading>
-        <Tree className='max-h-[500px] overflow-auto' name={project?.project_name} />
+        <Tree
+          className="max-h-[500px] overflow-auto"
+          name={project?.project_name}
+        />
       </Stack>
       <Stack>
         <Heading
-          color='brand.100'
-          className='flex items-center px-4 text-white !font-mono capitalize'
+          color="brand.100"
+          className="flex items-center px-4 text-white !font-mono capitalize"
         >
-          <span className='text-2xl'>collaborators</span>
-          <span className='flex justify-center items-center ms-auto size-6 border rounded-full text-sm text-yellow-700 bg-yellow-50 bg-opacity-80'>
+          <span className="text-2xl">collaborators</span>
+          <span className="flex justify-center items-center ms-auto size-6 border rounded-full text-sm text-yellow-700 bg-yellow-50 bg-opacity-80">
             {awareness?.length}
           </span>
         </Heading>
         <Shares project={project} />
       </Stack>
-      <Stack className='mt-auto p-4 opacity-50'>
-        <Image src="/logo-bb.png" w='100%' />
+      <Stack className="mt-auto p-4 opacity-50">
+        <Image src="/logo-bb.png" w="100%" />
       </Stack>
     </Box>
   );
