@@ -9,6 +9,7 @@ import {
   Query,
   BadRequestException,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { Projects } from './project.entity';
@@ -17,9 +18,12 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import Docs from './projects.docs';
 import { ProjectMongo } from '@project-mongo/project-mongo.entity';
 import { ProjectSharesOutDto } from '@project-shares/dto/create-project-shares.dto';
+import { AllowApiKey } from '@auth/decorators/isAPIKey.decorator';
+
 interface ProjectWithMembers extends Projects {
   member_count: number;
 }
+
 @ApiBearerAuth()
 @ApiTags('Projects')
 @Controller('projects')
@@ -60,7 +64,9 @@ export class ProjectsController {
     return this.projectsService.findAllByUsernameDepth(req.user.username, depth, id);
   }
 
+
   @Docs.findAllByUsernameDepth()
+  @AllowApiKey()
   @Get(':username/:id')
   findAllByUsernameDepth(
     @Param('username') username: string,

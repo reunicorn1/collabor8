@@ -65,7 +65,8 @@ class HocuspocusServer {
    */
   async onLoadDocument(context) {
     const projectId = context.document.name;
-    const token = context.requestParameters.get("token");
+    const token = process.env.API_KEY;
+    console.log(token);
     const username = context.requestParameters.get("username");
 
     try {
@@ -133,7 +134,7 @@ class HocuspocusServer {
    */
   async onStoreDocument(context) {
     const projectId = context.document.name;
-    const token = context.requestParameters.get("token");
+    const token = process.env.API_KEY;
     await handleOnStoreDocument({ token, projectId, context });
   }
 

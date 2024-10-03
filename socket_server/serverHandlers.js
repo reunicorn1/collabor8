@@ -52,7 +52,7 @@ export async function handleLoadDocument(context, { token, username }) {
       `${nestServerUrl}/projects/${username}/${projectId}?depth=0`,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
+          'x-api-key': `${token}`,
         },
       },
     );
@@ -128,7 +128,7 @@ async function updateFileInDb(fileId, yText, token) {
       `${nestServerUrl}/files/${fileId}`,
       { file_content: update },
       {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 'x-api-key': `${token}` },
       },
     );
     console.info(chalk.green(`File ${fileId} updated successfully`));
@@ -152,7 +152,7 @@ async function loadfileFromDb({ fileMeta, projectId, fileId, yText, token }) {
   try {
     const nestServerUrl = getNestServerUrl();
     const file = await axios.get(`${nestServerUrl}/files/${fileId}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 'x-api-key': `${token}` },
     });
 
     const content = file.data.file_content;

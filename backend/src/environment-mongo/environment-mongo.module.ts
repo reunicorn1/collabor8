@@ -4,7 +4,7 @@ import { EnvironmentMongoService } from './environment-mongo.service';
 import { EnvironmentMongoController } from './environment-mongo.controller';
 import { EnvironmentMongo } from './environment-mongo.entity';
 import { UsersModule } from '@users/users.module';
-import { MONGO_CONN, MYSQL_CONN } from '@constants';
+import { MONGO_CONN } from '@constants';
 import { ProjectsModule } from '@projects/projects.module';
 
 @Module({

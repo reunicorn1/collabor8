@@ -7,6 +7,7 @@ import {
   Patch,
   Body,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { FileMongoService } from './file-mongo.service';
 import { FileMongo } from './file-mongo.entity';
@@ -16,6 +17,7 @@ import {
   UpdateFileOutDto,
 } from './dto/create-file-mongo.dto';
 import FileDocs from './file-mongo.docs';
+import { AllowApiKey } from '@auth/decorators/isAPIKey.decorator';
 
 @ApiTags('FileMongo')
 @Controller('files')
@@ -29,6 +31,7 @@ export class FileMongoController {
   }
 
   @FileDocs.findOne()
+  @AllowApiKey()
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.fileService.findOne(id);
@@ -37,6 +40,7 @@ export class FileMongoController {
   // TODO: After testing deployement, integrate yjs updates with this method
 
   @FileDocs.update()
+  @AllowApiKey()
   @Patch(':id')
   async update(
     @Param('id') id: string,

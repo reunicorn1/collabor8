@@ -14,6 +14,7 @@ dist
 dist-ssr
 *.local
 *.txt
+.env
 
 *migration*
 # Editor directories and files

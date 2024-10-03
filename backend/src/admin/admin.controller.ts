@@ -7,7 +7,7 @@ import {
   Body,
   UseGuards,
 } from '@nestjs/common';
-import { AdminService } from './admin.service';
+// import { AdminService } from './admin.service';
 import { UsersService } from '@users/users.service';
 import { ProjectsService } from '@projects/projects.service';
 import { FileMongoService } from '@file-mongo/file-mongo.service';
@@ -22,7 +22,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 @Controller('admin')
 export class AdminController {
   constructor(
-    private readonly adminService: AdminService,
+    // private readonly adminService: AdminService,
     private readonly usersService: UsersService,
 
     private readonly projectsService: ProjectsService,
