@@ -38,7 +38,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    console.log('isApiKey:', isApiKey);
     if (
       isApiKey &&
       this.checkApiKey(

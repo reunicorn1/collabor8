@@ -6,7 +6,7 @@ import * as Y from 'yjs';
 import { Github, LinkedIn, Twitter } from './common/icons';
 
 const TEXT =
-  '\r\r\rCollabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.';
+  '\r\r\r\r\r\rCollabor8 is your ultimate code collaboration tool. Code with your team in real-time, and never miss a beat.';
 
 const AVATARS = [
   {
