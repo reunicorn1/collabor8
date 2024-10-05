@@ -21,16 +21,14 @@ import {
   DrawerContent,
   DrawerCloseButton,
 } from '@chakra-ui/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import CallToAction from '@components/Buttons/CallToAction';
-//import { useCreateProjectMutation } from '@store/services/project';
 
 export default function NavigationBar() {
   const navigate = useNavigate();
   const [isLessThan900] = useMediaQuery('(max-width: 900px)');
-  const menuBarRef = useRef<HTMLDivElement>();
-  //const [id, setId] = useState('');
-  //const [createProject] = useCreateProjectMutation();
+  const menuBarRef = useRef<HTMLDivElement | null>(null); // Updated to allow null
+
   const {
     isOpen: isSignUpOpen,
     onOpen: openSignUp,
@@ -48,56 +46,58 @@ export default function NavigationBar() {
     openSignIn();
   };
 
-  // effects to add background color to menu bar on scroll
   useEffect(() => {
-    window.addEventListener(
-      'scroll',
-      () => {
+    const handleScroll = () => {
+      if (menuBarRef.current) {
         if (window.scrollY > 50) {
           menuBarRef.current.classList.add('bg-brand');
         } else {
           menuBarRef.current.classList.remove('bg-brand');
         }
-      },
-      { passive: true },
-    );
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
+
   return (
     <>
       {isLessThan900 ? (
         <MenuDrawer
-          renderFooter={(onClose) => {
-            return (
-              <>
-                <Button
-                  color="white"
-                  colorScheme="gray"
-                  variant="ghost"
-                  _hover={{ bg: 'white', color: 'black' }}
-                  onClick={() => {
-                    onClose();
-                    openSignIn();
-                  }} // open login modal
-                >
-                  Log in
-                </Button>
-                <Button
-                  color="white"
-                  colorScheme="gray"
-                  variant="outline"
-                  _hover={{ bg: 'white', color: 'black' }}
-                  onClick={() => {
-                    onClose();
-                    openSignUp();
-                  }} // open sign up modal
-                  rounded="full"
-                  rightIcon={<ArrowForwardIcon />}
-                >
-                  Sign Up
-                </Button>
-              </>
-            );
-          }}
+          renderFooter={(onClose) => (
+            <>
+              <Button
+                color="white"
+                colorScheme="gray"
+                variant="ghost"
+                _hover={{ bg: 'white', color: 'black' }}
+                onClick={() => {
+                  onClose();
+                  openSignIn();
+                }}
+              >
+                Log in
+              </Button>
+              <Button
+                color="white"
+                colorScheme="gray"
+                variant="outline"
+                _hover={{ bg: 'white', color: 'black' }}
+                onClick={() => {
+                  onClose();
+                  openSignUp();
+                }}
+                rounded="full"
+                rightIcon={<ArrowForwardIcon />}
+              >
+                Sign Up
+              </Button>
+            </>
+          )}
         />
       ) : (
         <Flex
@@ -139,7 +139,7 @@ export default function NavigationBar() {
             size="sm"
             fontFamily="mono"
             _hover={{ bg: 'white', color: 'black' }}
-            onClick={openSignIn} // open login modal
+            onClick={openSignIn}
           >
             Log in
           </Button>
@@ -153,7 +153,7 @@ export default function NavigationBar() {
             size="sm"
             fontFamily="mono"
             _hover={{ bg: 'white', color: 'black' }}
-            onClick={openSignUp} // open sign up modal
+            onClick={openSignUp}
             rounded="full"
             rightIcon={<ArrowForwardIcon />}
           >
@@ -181,22 +181,25 @@ type Props = {
 
 function MenuDrawer({ renderFooter }: Props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const btnRef = useRef();
-  const menuBarRef = useRef<HTMLDivElement>();
+  const btnRef = useRef<HTMLButtonElement | null>(null); // updated to allow null
+  const menuBarRef = useRef<HTMLDivElement | null>(null); // updated to allow null
 
-  // effects to add background color to menu bar on scroll
   useEffect(() => {
-    window.addEventListener(
-      'scroll',
-      () => {
+    const handleScroll = () => {
+      if (menuBarRef.current) {
         if (window.scrollY > 50) {
-          menuBarRef.current?.classList.add('bg-brand');
+          menuBarRef.current.classList.add('bg-brand');
         } else {
-          menuBarRef.current?.classList.remove('bg-brand');
+          menuBarRef.current.classList.remove('bg-brand');
         }
-      },
-      { passive: true },
-    );
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   return (
