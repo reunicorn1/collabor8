@@ -53,13 +53,19 @@ const Home = () => {
       </Stack>
 
       {/* TYPING */}
-      <Box bg="white" px={4} className="py-10 lg:py-20">
-        <Box className="mb-4 container bg-red-100 mx-auto">
-          <Image src="converted.gif" className="w-full" />
-        </Box>
-        <p className="lg:max-w-[50%] mx-auto font-mono !leading-loose lg:text-4xl">
-          {typedText}
-        </p>
+      <Box bg="white" className="py-10 !px-0 lg:py-20">
+        <Heading className="mb-10 text-center !font-mono capitalize md:!text-5xl">
+          watch the demo
+        </Heading>
+        <div className="relative container mx-auto pt-[42.86%] bg-black">
+          <iframe
+            src="https://player.vimeo.com/video/1013381810?badge=0&autopause=0&player_id=0&app_id=58479"
+            frameBorder="0"
+            allow="autoplay; fullscreen; picture-in-picture; clipboard-write"
+            className="absolute top-0 left-0 w-full h-full"
+            title="Collabor8 Demo_1"
+          ></iframe>
+        </div>
       </Box>
 
       {/* FEATURES */}
