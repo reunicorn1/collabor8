@@ -26,7 +26,10 @@ export const authApi = api.injectEndpoints({
         }
       },
     }),
-    loginGuest: builder.mutation<{ accessToken: string; user: Partial<User> }, void>({
+    loginGuest: builder.mutation<
+      { accessToken: string; user: Partial<User> },
+      void
+    >({
       query: () => ({
         url: 'guest/login',
         method: 'POST',
@@ -50,7 +53,10 @@ export const authApi = api.injectEndpoints({
         credentials: 'include',
       }),
     }),
-    refreshToken: builder.mutation<{ user: Partial<User>, accessToken: string }, void>({
+    refreshToken: builder.mutation<
+      { user: Partial<User>; accessToken: string },
+      void
+    >({
       query: () => ({
         url: '/auth/refresh',
         method: 'POST',
@@ -80,7 +86,7 @@ export const authApi = api.injectEndpoints({
         body: email,
       }),
     }),
-    signout: builder.mutation<{message: string}, void>({
+    signout: builder.mutation<{ message: string }, void>({
       query: () => ({
         url: '/auth/signout',
         method: 'DELETE',

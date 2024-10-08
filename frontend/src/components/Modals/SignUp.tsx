@@ -139,7 +139,7 @@ export default function SignUp({
           isClosable: true,
         });
       })
-      .finally(() => () => { });
+      .finally(() => () => {});
   };
 
   // Resets the input fields

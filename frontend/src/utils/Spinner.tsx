@@ -14,13 +14,11 @@ const codeSnippets = [
   'import React from "react";',
 ];
 
-// Keyframes for the animation
+// Keyframes for fade animation
 const fadeAnimation = keyframes`
-  0% { opacity: 0; }
-  25% { opacity: 1; }
-  50% { opacity: 0; }
-  75% { opacity: 1; }
-  100% { opacity: 0; }
+  0% { opacity: 0; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.95); }
 `;
 
 // random code snippet excluding the current snippet
@@ -39,9 +37,9 @@ const CodeSnippetLoader: React.FC = () => {
     setSnippet((prevSnippet) => getRandomSnippet(prevSnippet));
   }, []);
 
-  // Update the snippet every 0.9 seconds
+  // Update the snippet every 1.5 seconds
   useEffect(() => {
-    const interval = setInterval(updateSnippet, 900);
+    const interval = setInterval(updateSnippet, 1500);
 
     return () => clearInterval(interval);
   }, [updateSnippet]);
@@ -51,23 +49,22 @@ const CodeSnippetLoader: React.FC = () => {
       h="100vh"
       bgGradient="linear(to-b, brand.800, brand.900)"
       flexDirection="column"
+      px={[4, 8]}
     >
       <Box display="flex" flexDirection="column" alignItems="center">
         <Box position="relative">
           <Text
             fontFamily="mono"
-            fontSize="5xl"
+            fontSize={['2xl', '4xl', '5xl']}
             color="brand.100"
-            animation={`${fadeAnimation} 0.9s infinite`}
-            whiteSpace="pre"
+            animation={`${fadeAnimation} 1.5s ease-in-out infinite`}
+            whiteSpace="pre-wrap"
             textAlign="center"
+            aria-live="polite"
           >
             {snippet}
           </Text>
         </Box>
-        <Text color="white" fontFamily="mono" mt={4} fontSize="xl">
-          Loading...
-        </Text>
       </Box>
     </Center>
   );

@@ -16,7 +16,11 @@ import {
   useDeleteProjectMutation,
   useUpdateProjectMutation,
 } from '@store/services/project';
-import { useDeleteProjectShareMutation, useToggleShareFavoriteMutation, useUpdateProjectShareMutation } from '@store/services/projectShare';
+import {
+  useDeleteProjectShareMutation,
+  useToggleShareFavoriteMutation,
+  useUpdateProjectShareMutation,
+} from '@store/services/projectShare';
 import { useToggleFavoriteMutation } from '@store/services/project';
 import { RenamePopover } from './RenamePopover';
 
@@ -31,15 +35,15 @@ type DBMenuProps = {
 export default function MenuProject({ children, project, type }: DBMenuProps) {
   const toast = useToast();
   const isShared = type === 'shared';
-  const [favoriteProject] = isShared 
-  ? useToggleShareFavoriteMutation()
-  : useToggleFavoriteMutation();
-  const [updateProject] = isShared 
-  ? useUpdateProjectShareMutation() 
-  : useUpdateProjectMutation();
+  const [favoriteProject] = isShared
+    ? useToggleShareFavoriteMutation()
+    : useToggleFavoriteMutation();
+  const [updateProject] = isShared
+    ? useUpdateProjectShareMutation()
+    : useUpdateProjectMutation();
   const [deleteProject] = isShared
-  ? useDeleteProjectShareMutation()
-  : useDeleteProjectMutation();
+    ? useDeleteProjectShareMutation()
+    : useDeleteProjectMutation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const project_id = isShared ? project.share_id : project.project_id;
 
@@ -95,26 +99,26 @@ export default function MenuProject({ children, project, type }: DBMenuProps) {
     <Menu>
       <MenuButton onClick={(e) => e.stopPropagation()}>{children}</MenuButton>
       <MenuList bg="gray">
-      {!isShared && (
-      <>
-        <MenuItem
-          fontSize={['xx-small', 'xs']}
-          icon={<MdOutlineEdit fontSize="12px" />}
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpen();
-          }}
-        >
-          Rename
-        </MenuItem>
-        <RenamePopover
-          isOpen={isOpen}
-          onClose={onClose}
-          project_name={project.project_name}
-          onSave={onSave}
-        />
-      </>
-      )}
+        {!isShared && (
+          <>
+            <MenuItem
+              fontSize={['xx-small', 'xs']}
+              icon={<MdOutlineEdit fontSize="12px" />}
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpen();
+              }}
+            >
+              Rename
+            </MenuItem>
+            <RenamePopover
+              isOpen={isOpen}
+              onClose={onClose}
+              project_name={project.project_name}
+              onSave={onSave}
+            />
+          </>
+        )}
         <MenuItem
           fontSize={['xx-small', 'xs']}
           icon={<MdDeleteOutline fontSize="12px" />}

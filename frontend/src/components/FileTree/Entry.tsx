@@ -118,7 +118,8 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
           ydoc={ydoc}
         />
       </Box>
-      {entry.type === 'directory' && isExpanded && (
+      {entry.type === 'directory' &&
+        isExpanded &&
         entry.children?.map((child) => (
           <Entry
             key={child.id}
@@ -127,8 +128,7 @@ const Entry: React.FC<EntryProps> = ({ entry, depth, onFileClick, ydoc }) => {
             onFileClick={onFileClick}
             ydoc={ydoc}
           />
-        ))
-      )}
+        ))}
     </>
   );
 };

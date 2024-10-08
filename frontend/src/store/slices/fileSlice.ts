@@ -7,7 +7,7 @@ interface fileInterface {
 
 interface IFileSlice {
   file: fileInterface;
-  panelVisiblity: boolean;
+  panelVisibility: boolean;
 }
 
 const initialState: IFileSlice = {
@@ -15,7 +15,7 @@ const initialState: IFileSlice = {
     file_id: '',
     language: '',
   },
-  panelVisiblity: false,
+  panelVisibility: false,
 };
 
 const fileSlice = createSlice({
@@ -30,13 +30,13 @@ const fileSlice = createSlice({
       state.file = initialState.file;
     },
     togglePanelVisibility(state) {
-      state.panelVisiblity = !state.panelVisiblity;
+      state.panelVisibility = !state.panelVisibility;
     },
     displayPanel(state) {
-      state.panelVisiblity = true;
+      state.panelVisibility = true;
     },
     removePanel(state) {
-      state.panelVisiblity = false;
+      state.panelVisibility = false;
     },
   },
 });

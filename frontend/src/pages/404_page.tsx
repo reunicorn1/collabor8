@@ -3,9 +3,9 @@ import {
   Heading,
   Text,
   Link,
-  keyframes,
   usePrefersReducedMotion,
 } from '@chakra-ui/react';
+import { keyframes } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 import usePageTitle from '../hooks/useTitle';
 

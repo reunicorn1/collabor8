@@ -5,7 +5,8 @@ import { useAppDispatch, useAppSelector } from '@hooks/useApp';
 import {
   showBanner,
   hideBanner,
-  setConsentOptions,
+  updateConsentOptions,
+  setConsentMode,
 } from '@store/slices/cookieConsentSlice';
 import {
   selectShowCookieConsent,
@@ -35,8 +36,7 @@ const CookieConsentBanner = () => {
       preferences: consentOptions.preferences,
       marketing: consentOptions.marketing,
     };
-    setConsentMode(consent);
-    dispatch(setConsentOptions(consent));
+    dispatch(setConsentMode(consent));
     dispatch(hideBanner());
   };
 
@@ -47,29 +47,16 @@ const CookieConsentBanner = () => {
       preferences: false,
       marketing: false,
     };
-    setConsentMode(consent);
-    dispatch(setConsentOptions(consent));
+    dispatch(setConsentMode(consent));
     dispatch(hideBanner());
   };
 
   const handleConsentChange = (option: keyof typeof consentOptions) => {
     dispatch(
-      setConsentOptions({
+      updateConsentOptions({
         [option]: !consentOptions[option],
       }),
     );
-  };
-
-  const setConsentMode = (consent) => {
-    const consentMode = {
-      functionality_storage: consent.necessary ? 'granted' : 'denied',
-      analytics_storage: consent.analytics ? 'granted' : 'denied',
-      preferences_storage: consent.preferences ? 'granted' : 'denied',
-      marketing_storage: consent.marketing ? 'granted' : 'denied',
-    };
-    localStorage.setItem('consentMode', JSON.stringify(consentMode));
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({ event: 'consentUpdate', consent: consentMode });
   };
 
   const handleGoPolicy = () => {
@@ -175,9 +162,6 @@ const CookieConsentBanner = () => {
               transition: 'all 0.2s',
             }}
             color="white"
-            //px={6}
-            //py={2}
-            //borderRadius="lg"
             onClick={handleRejectAll}
             fontFamily="mono"
             fontWeight="bold"

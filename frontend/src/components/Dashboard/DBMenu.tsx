@@ -35,7 +35,6 @@ export default function DBMenu({
   const handleLogout = () => {
     navigate(location.pathname.concat('?logout=true'));
     dispatch(performLogout());
-    // dispatch(unsetCredentials());
     toast({
       title: 'See you later, coder! 👋',
       description: 'You’re now logged out. Until next time!',

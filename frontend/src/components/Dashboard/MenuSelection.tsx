@@ -18,7 +18,6 @@ interface SortOrderProps {
 export default function MenuSelection({
   setPagination,
   selectPagination,
-
 }: SortOrderProps) {
   const dispatch = useDispatch();
   const pagination = useSelector(selectPagination);
@@ -34,7 +33,7 @@ export default function MenuSelection({
     'Z-A': '-',
     'Oldest first': '',
     'Newest first': '-',
-  }
+  };
   useEffect(() => {
     dispatch(
       setPagination({
@@ -42,9 +41,8 @@ export default function MenuSelection({
         page: 1,
         sort: `${orderMap[order]}${sortMap[sort]}`,
       }),
-    ); 
+    );
   }, [sort, order]);
-
 
   return (
     <Menu>

@@ -2,7 +2,7 @@
 
 **Collabor8** is an innovative, web-based collaborative code editor designed for developers to work together seamlessly in real-time. Built on modern, scalable technologies like **React**, **NestJS**, **Socket.io**, and **Yjs**, Collabor8 redefines collaborative coding by offering a powerful environment for real-time code sharing, editing, and communication. Whether you’re coding solo or in a team, Collabor8 brings synchronized coding experiences directly to your browser, fueling creativity and enhancing productivity.
 
-![Collabor8 Interface](https://i.ibb.co/7NfrJXS/Screenshot-2024-09-16-131545.png)
+![Collabor8 Interface](https://drive.google.com/uc?id=1D8tm3RzupiVAQ7T8w7KOzm7QlOKFQgho)
 
 ## 🚀 Key Features
 

@@ -14,7 +14,7 @@ import { getRandomUsername } from './names';
 import { YMapValueType } from '../../context/EditorContext';
 import Tabs from './Tabs';
 import { useAppSelector } from '../../hooks/useApp';
-import { selectAccessToken, selectUserDetails } from '@store/selectors';
+import { selectUserDetails } from '@store/selectors';
 import { useFindMyShareQuery } from '@store/services/projectShare';
 import { Project, ProjectShares } from '@types';
 import { useSelector } from 'react-redux';
@@ -41,7 +41,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ className = '', project }) => {
   const { data } = useFindMyShareQuery(project._id);
   console.log(data);
   const { theme, language, mode, setMode } = useSettings()!;
-  const token = useAppSelector(selectAccessToken);
   const user = useAppSelector(selectUserDetails);
   const { fileSelected, setAwareness, setFileTree } = useFile()!;
   const editorRef = useRef<Editor | null>(null);
@@ -71,17 +70,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ className = '', project }) => {
     if (!editorRef.current) return;
 
     // Creation of the connction with the websocket
-    /**
-     * token based on role=owner
-     *
-     */
     const provider = new WebsocketProvider(
       websocket,
       project._id,
       ydoc_.current,
       {
         params: {
-          token,
           username: project.username,
         },
       },

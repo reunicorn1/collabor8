@@ -26,6 +26,19 @@ const initialState: CookieConsentState = {
   userChangedConsent: false,
 };
 
+// Helper function to set consent mode in localStorage and push to dataLayer
+const setConsent = (consent) => {
+  const consentMode = {
+    functionality_storage: consent.necessary ? 'granted' : 'denied',
+    analytics_storage: consent.analytics ? 'granted' : 'denied',
+    preferences_storage: consent.preferences ? 'granted' : 'denied',
+    marketing_storage: consent.marketing ? 'granted' : 'denied',
+  };
+  localStorage.setItem('consentMode', JSON.stringify(consentMode));
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: 'consentUpdate', consent: consentMode });
+};
+
 const cookieConsentSlice = createSlice({
   name: 'cookieConsent',
   initialState,
@@ -36,7 +49,7 @@ const cookieConsentSlice = createSlice({
     hideBanner(state) {
       state.showCookieConsent = false;
     },
-    setConsentOptions(
+    updateConsentOptions(
       state,
       action: PayloadAction<Partial<CookieConsentState['consentOptions']>>,
     ) {
@@ -46,9 +59,19 @@ const cookieConsentSlice = createSlice({
       };
       state.userChangedConsent = true;
     },
+    setConsentMode(
+      state,
+      action: PayloadAction<Partial<CookieConsentState['consentOptions']>>,
+    ) {
+      state.consentOptions = {
+        ...state.consentOptions,
+        ...action.payload,
+      };
+      setConsent(state.consentOptions);
+    },
   },
 });
 
-export const { showBanner, hideBanner, setConsentOptions } =
+export const { showBanner, hideBanner, updateConsentOptions, setConsentMode } =
   cookieConsentSlice.actions;
 export default cookieConsentSlice.reducer;
