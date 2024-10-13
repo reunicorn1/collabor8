@@ -11,22 +11,20 @@ BLUE='\e[34m'
 NC='\e[0m' # No Color
 
 # Navigate to the project directory
-cd $PROJECT_DIR
+cd "$PROJECT_DIR" || exit
 
 # Pull the latest changes from the GitHub repository
 echo -e "${BLUE}Pulling latest changes from GitHub...${NC}"
-git pull origin main
-if [ $? -ne 0 ]; then
-  echo -e "${RED}Error encountered during git pull. Exiting deployment.${NC}"
-  exit 1
+if ! git pull origin main; then
+	echo -e "${RED}Error encountered during git pull. Exiting deployment.${NC}"
+	exit 1
 fi
 
 # Install any new dependencies
 echo -e "${BLUE}Installing dependencies...${NC}"
-npm install
-if [ $? -ne 0 ]; then
-  echo -e "${RED}Error encountered during npm install. Exiting deployment.${NC}"
-  exit 1
+if ! npm install; then
+	echo -e "${RED}Error encountered during npm install. Exiting deployment.${NC}"
+	exit 1
 fi
 
 # Fix vulnerabilities
@@ -35,27 +33,22 @@ npm audit fix
 
 # Build the NestJS project
 echo -e "${BLUE}Building the project...${NC}"
-npm run build
-if [ $? -ne 0 ]; then
-  echo -e "${RED}Error encountered during npm build. Exiting deployment.${NC}"
-  exit 1
+if ! npm run build; then
+	echo -e "${RED}Error encountered during npm build. Exiting deployment.${NC}"
+	exit 1
 fi
 
 # Use PM2 to start or restart the application using the ecosystem configuration
 echo -e "${BLUE}Starting or restarting the application with PM2 using ecosystem.config.js...${NC}"
-pm2 startOrRestart ecosystem.config.js --env production
-if [ $? -ne 0 ]; then
-  echo -e "${RED}Error encountered during PM2 start/restart. Exiting deployment.${NC}"
-  exit 1
+if ! pm2 startOrRestart ecosystem.config.js --env production; then
+	echo -e "${RED}Error encountered during PM2 start/restart. Exiting deployment.${NC}"
+	exit 1
 fi
 
-
-# Install docker dependencies
-if ! [ -x "$(command -v docker)" ]; then
-  echo -e "${BLUE}Installing docker dependencies...${NC}"
-  ./docker/install.sh
+# Install docker dependencies if Docker is not installed
+if ! command -v docker >/dev/null 2>&1; then
+	echo -e "${BLUE}Installing docker dependencies...${NC}"
+	./docker/install.sh
 fi
-
-
 
 echo -e "${GREEN}Deployment completed successfully.${NC}"
