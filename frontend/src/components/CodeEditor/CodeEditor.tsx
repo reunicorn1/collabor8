@@ -6,19 +6,18 @@ import * as Y from 'yjs';
 import { CodemirrorBinding } from 'y-codemirror';
 import RandomColor from 'randomcolor';
 import { WebsocketProvider } from 'y-websocket';
-import { LanguageCode } from '../../utils/codeExamples';
+import { LanguageCode } from '@utils/codeExamples';
 import { Editor } from 'codemirror';
-import { useFile, useSettings } from '../../context/EditorContext';
+import { useFile, useSettings, YMapValueType } from '@context/EditorContext';
 import { Awareness } from 'y-protocols/awareness.js';
 import { getRandomUsername } from './names';
-import { YMapValueType } from '../../context/EditorContext';
 import Tabs from './Tabs';
-import { useAppSelector } from '../../hooks/useApp';
+import { useAppSelector } from '@hooks/useApp';
 import { selectUserDetails } from '@store/selectors';
 import { useFindMyShareQuery } from '@store/services/projectShare';
 import { Project, ProjectShares } from '@types';
 import { useSelector } from 'react-redux';
-import { Singleton } from '../../constants';
+import { Singleton } from '@constants';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',
@@ -69,7 +68,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ className = '', project }) => {
     const websocket = import.meta.env.VITE_WS_SERVER;
     if (!editorRef.current) return;
 
-    // Creation of the connction with the websocket
+    // Creation of the connection with the websocket
     const provider = new WebsocketProvider(
       websocket,
       project._id,
@@ -114,7 +113,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ className = '', project }) => {
     };
     updateAwareness();
 
-    // Observations and changes to awarness are tracked using these observers
+    // Observations and changes to awareness are tracked using these observers
     awareness.current.on('update', ({ added, removed }) => {
       if (awareness.current) {
         // Log added users
@@ -164,10 +163,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ className = '', project }) => {
         binding.current?.destroy();
         binding.current = setupCodemirrorBinding(fileSelected.value);
       } catch (err) {
-        console.error('Error occured during binding, but this is serious', err);
+        console.error(
+          'Error occurred during binding, but this is serious',
+          err,
+        );
       }
     } else {
-      console.error('Error occured during binding of the file', fileSelected);
+      console.error('Error occurred during binding of the file', fileSelected);
     }
   }, [fileSelected]);
 

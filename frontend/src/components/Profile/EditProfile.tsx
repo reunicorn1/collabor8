@@ -1,26 +1,12 @@
-import {
-  Box,
-  Flex,
-  Avatar,
-  useBreakpointValue,
-  Button,
-  Heading,
-  Spacer,
-  ButtonGroup,
-  IconButton,
-  Input,
-  Textarea,
-  useToast,
-} from '@chakra-ui/react';
+import { Avatar, useBreakpointValue, Button, useToast } from '@chakra-ui/react';
 import { useRef, useState, useEffect, ChangeEvent } from 'react';
 import { FiEdit3 } from 'react-icons/fi';
-import { FaPen } from 'react-icons/fa';
 import { MdOutlineCancel } from 'react-icons/md';
 import {
   useGetCurrentUserProfileQuery,
   useUpdateCurrentUserProfileMutation,
 } from '@store/services/user';
-import { User } from '../../types';
+import { User } from '@types';
 import { uploadFile } from '@uploadcare/upload-client';
 
 export default function EditProfile() {

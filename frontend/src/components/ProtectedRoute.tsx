@@ -6,7 +6,7 @@ import {
   useNavigate,
   useSearchParams,
 } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '@hooks/useAuth';
 import { useAppSelector } from '@hooks/useApp';
 import { selectUserDetails } from '@store/selectors';
 import {

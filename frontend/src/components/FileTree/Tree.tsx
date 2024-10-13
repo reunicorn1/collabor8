@@ -9,13 +9,11 @@ import {
 } from '@chakra-ui/react';
 import { VscNewFile, VscNewFolder } from 'react-icons/vsc';
 import React, { ReactNode, useState } from 'react';
-//import * as Y from 'yjs';
 import NewfileDir from '../Modals/NewfileDir';
 import { useYMap } from 'zustand-yjs';
-//import { YMapValueType } from '../../context/EditorContext';
 import FileTreeView from '../FileTree/FileTreeView';
 import { useParams } from 'react-router-dom';
-import { Singleton } from '../../constants';
+import { Singleton } from '@constants';
 
 interface TreeProps {
   //ydoc: Y.Doc;

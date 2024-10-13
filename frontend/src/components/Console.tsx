@@ -1,12 +1,11 @@
 import React from 'react';
 import { Box, Flex, Text, Button, useToast } from '@chakra-ui/react';
-//import { CloseIcon } from '@chakra-ui/icons';
 import { selectFile } from '@store/selectors/fileSelectors';
 import { useExecuteFileMutation } from '@store/services/file';
 import { MdBuild } from 'react-icons/md';
 import { useAppSelector } from '@hooks/useApp';
 import { selectUserDetails } from '@store/selectors/userSelectors';
-import { EXECUTION_PANEL_FILLER_TEXT } from '../constants';
+import { EXECUTION_PANEL_FILLER_TEXT } from '@constants';
 import LineNumberedText from '@components/CodeEditor/LineNumber';
 
 const intialOutput = {

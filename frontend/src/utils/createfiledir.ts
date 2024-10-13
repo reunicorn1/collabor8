@@ -1,6 +1,6 @@
 import * as Y from 'yjs';
-import { YMapValueType } from '../context/EditorContext';
 import { DirectoryNode, FileNode } from './addleaf';
+
 type Node = DirectoryNode | FileNode;
 type P = {
   parent: string;
@@ -9,6 +9,7 @@ type P = {
   filedir: string;
   newName: string;
 };
+
 export function createDocuments({
   parent, //parent to b used for the metadata
   root, // I'm creating files and directories as direct children of the root in the model structure

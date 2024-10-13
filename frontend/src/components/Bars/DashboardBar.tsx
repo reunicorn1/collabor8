@@ -1,10 +1,8 @@
 import {
   Flex,
   Image,
-  Spacer,
   Icon,
   Avatar,
-  Box,
   Button,
   ButtonGroup,
   IconButton,

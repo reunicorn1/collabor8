@@ -14,7 +14,7 @@ import {
   Badge,
   useToast,
 } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import MenuSelection from './MenuSelection';
 import { ArrowForwardIcon, ArrowBackIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';

@@ -49,6 +49,12 @@
 			"@public/*": [
 				"../public/*"
 			],
+			"@context/*": [
+				"context/*"
+			],
+			"@constants": [
+				"constants.ts"
+			]
 		}
 	},
 	"include": [

@@ -7,7 +7,7 @@ import {
 } from '@chakra-ui/react';
 import { keyframes } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
-import usePageTitle from '../hooks/useTitle';
+import usePageTitle from '@hooks/useTitle';
 
 export default function NotFoundPage() {
   const navigate = useNavigate();

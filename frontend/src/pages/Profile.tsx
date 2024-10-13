@@ -17,7 +17,7 @@ import {
 } from 'react-icons/ri';
 import DeleteAccount from '@components/Profile/DeleteAccount';
 import ThemedLoader from '@utils/Spinner';
-import usePageTitle from '../hooks/useTitle';
+import usePageTitle from '@hooks/useTitle';
 
 // lazy load components
 const EditProfile = lazy(() => import('@components/Profile/EditProfile'));

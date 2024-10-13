@@ -12,7 +12,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { MdOutlineKeyboardVoice } from 'react-icons/md';
 import { GoHome } from 'react-icons/go';
-import { useSettings } from '../../context/EditorContext';
+import { useSettings } from '@context/EditorContext';
 import ComingSoon from '@components/CodeEditor/ComingSoon';
 import VoiceDrawer from '@components/CodeEditor/VoiceDrawer';
 import { useAppDispatch, useAppSelector } from '@hooks/useApp';

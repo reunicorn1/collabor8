@@ -1,6 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Project } from '@types';
-import { projectApi } from '@store/services/project';
 import * as projectUtils from '@utils/dashboard.utils';
 import { ProjectSharesOutDto } from '@types';
 interface projects {

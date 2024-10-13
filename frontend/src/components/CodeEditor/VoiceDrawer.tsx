@@ -1,4 +1,3 @@
-import React from 'react';
 import { VStack, Box, Flex, CloseButton } from '@chakra-ui/react';
 import Draggable from 'react-draggable';
 import RoomComponent from '@components/Audio/RoomComponent';

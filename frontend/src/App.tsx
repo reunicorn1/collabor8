@@ -1,9 +1,9 @@
 import React, { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import useAuthRefresh from './hooks/useAuthRefresh';
-import useLogOut from './hooks/useLogOut';
+import useAuthRefresh from '@hooks/useAuthRefresh';
+import useLogOut from '@hooks/useLogOut';
 import ResetPasswordModal from '@components/Modals/ResetPassword';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from '@context/AuthContext';
 import ProtectedRoute from '@components/ProtectedRoute';
 import ThemedLoader from '@utils/Spinner';
 import './App.css';

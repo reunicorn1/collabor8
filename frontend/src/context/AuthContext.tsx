@@ -1,11 +1,7 @@
 import React, { createContext, ReactNode } from 'react';
 import { useAppSelector, useAppDispatch } from '@hooks/useApp';
 import { selectIsAuthenticated } from '@store/selectors/authSelectors';
-import {
-  setCredentials,
-  unsetCredentials,
-  performLogout,
-} from '@store/slices/authSlice';
+import { setCredentials, performLogout } from '@store/slices/authSlice';
 
 interface AuthContextType {
   isAuthenticated: boolean;

@@ -15,18 +15,16 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useYMap } from 'zustand-yjs';
-import { useFile } from '../../context/EditorContext';
-import { createLeaf, addLeaf } from '../../utils/addleaf';
-//import { YMapValueType } from '../../context/EditorContext';
-//import { getPathFromId, createFileDir } from '../../utils/followtree';
-//import { v4 as uuidv4 } from 'uuid';
+import { useFile } from '@context/EditorContext';
+import { createLeaf, addLeaf } from '@utils/addleaf';
 import * as Y from 'yjs';
 import { useParams } from 'react-router-dom';
 import { useCreateFileMutation } from '@store/services/file';
 import { useCreateDirectoryMutation } from '@store/services/directory';
 import { createDocuments } from '@utils/createfiledir';
 import { LanguageCode } from '@utils/codeExamples';
-import { Singleton } from '../../constants';
+import { Singleton } from '@constants';
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
