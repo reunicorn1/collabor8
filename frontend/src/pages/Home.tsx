@@ -52,7 +52,7 @@ const Home = () => {
         <Slogan className="my-auto" />
       </Stack>
 
-      {/* TYPING */}
+      {/* WATCH DEMO */}
       <Box bg="white" className="py-10 !px-0 lg:py-20">
         <Heading className="mb-10 text-center !font-mono capitalize md:!text-5xl">
           watch the demo
