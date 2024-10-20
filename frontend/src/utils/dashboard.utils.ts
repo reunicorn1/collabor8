@@ -1,5 +1,4 @@
 import { formatDistanceToNow, parseISO } from 'date-fns';
-// import { useState } from 'react';
 
 // This function should compute the last edited time based on the updated_at field
 export function computeTimeDiff(time: string) {

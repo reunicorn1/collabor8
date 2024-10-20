@@ -18,12 +18,8 @@ import {
   selectRecentProjects,
   selectRecentProjectsPagination,
 } from '@store/selectors';
-import {
-  setRecentProjects,
-  setRecentProjectsPagination,
-} from '@store/slices/projectSlice';
+import { setRecentProjects } from '@store/slices/projectSlice';
 import { useGetAllProjectsPaginatedQuery } from '@store/services/project';
-// import * as projectUtils from '@utils/dashboard.utils';
 
 export default function Home() {
   const navigate = useNavigate();

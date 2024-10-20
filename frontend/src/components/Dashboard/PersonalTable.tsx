@@ -28,7 +28,6 @@ import {
   setUserProjectsPagination,
 } from '@store/slices/projectSlice';
 import { useGetAllProjectsPaginatedQuery } from '@store/services/project';
-// import * as projectUtils from '@utils/dashboard.utils';
 
 export default function PersonalTable() {
   // These two values can be used to customize the way data is retrived

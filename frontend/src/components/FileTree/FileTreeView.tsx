@@ -1,13 +1,10 @@
 import React from 'react';
 import Entry from './Entry';
-//import * as Y from 'yjs';
-//import { YMapValueType } from '../../context/EditorContext';
-//import { getPathFromId, createFileDir } from '../../utils/followtree';
 import { createDocuments } from '@utils/createfiledir';
-import { useFile } from '../../context/EditorContext';
+import { useFile } from '@context/EditorContext';
 import { Text } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
-import { Singleton } from '../../constants';
+import { Singleton } from '@constants';
 import { useAppDispatch } from '@hooks/useApp';
 import { displayPanel } from '@store/slices/fileSlice';
 

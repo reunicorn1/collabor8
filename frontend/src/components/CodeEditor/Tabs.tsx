@@ -1,24 +1,14 @@
-import {
-  Box,
-  Text,
-  Image,
-  Spacer,
-  CloseButton,
-  IconButton,
-} from '@chakra-ui/react';
-import { CheckIcon } from '@chakra-ui/icons';
+import { Box, Text, Image, Spacer, CloseButton } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
-import { LanguageCode } from '../../utils/codeExamples';
-import { useSettings, useFile } from '../../context/EditorContext';
-import { FileType } from '../../context/EditorContext';
+import { LanguageCode } from '@utils/codeExamples';
+import { useFile } from '@context/EditorContext';
+import { FileType } from '@context/EditorContext';
 import { setFile, clearFile } from '@store/slices/fileSlice';
 import { useDispatch } from 'react-redux';
 
 export default function Tabs() {
   const tabRef = useRef<HTMLDivElement>(null);
   const [tabslist, setTabsList] = useState<FileType[]>([]);
-  const [tabBarHeight, setTabBarHeight] = useState<null | number>(null);
-  const { language } = useSettings()!;
   const { fileSelected, setFileSelected } = useFile()!;
   const dispatch = useDispatch();
   const languageModes: Record<LanguageCode, string> = {

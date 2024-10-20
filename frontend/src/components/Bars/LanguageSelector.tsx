@@ -1,6 +1,6 @@
 import { Button, MenuButton, Menu, MenuList, MenuItem } from '@chakra-ui/react';
-import { LanguageCode } from '../../utils/codeExamples';
-import { useSettings } from '../../context/EditorContext';
+import { LanguageCode } from '@utils/codeExamples';
+import { useSettings } from '@context/EditorContext';
 
 const languageModes: Record<LanguageCode, string> = {
   javascript: 'javascript',

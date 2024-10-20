@@ -1,5 +1,5 @@
 import { Button, MenuButton, Menu, MenuList, MenuItem } from '@chakra-ui/react';
-import { useSettings } from '../../context/EditorContext';
+import { useSettings } from '@context/EditorContext';
 
 const themes: Record<string, string> = {
   dracula: 'Dracula',

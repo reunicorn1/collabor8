@@ -6,7 +6,7 @@ import {
   useMediaQuery,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
-import { useFile } from '../../context/EditorContext';
+import { useFile } from '@context/EditorContext';
 import { useDisclosure } from '@chakra-ui/react';
 import ShareMenu from '../Modals/ShareMenu';
 import { Project, ProjectShares } from '@types';

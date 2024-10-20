@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVerifyEmailMutation } from '@store/services/auth';
-import { useAppDispatch } from '../hooks/useApp';
+import { useAppDispatch } from '@hooks/useApp';
 import { setCredentials } from '@store/slices/authSlice';
 import { Skeleton, useToast } from '@chakra-ui/react';
 import { setUserDetails } from '@store/slices/userSlice';
-import usePageTitle from '../hooks/useTitle';
+import usePageTitle from '@hooks/useTitle';
 
 function Verify() {
   // extarct the query from url

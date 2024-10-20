@@ -1,4 +1,4 @@
-import React, { SetStateAction, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useToast } from '@chakra-ui/react';
@@ -21,7 +21,6 @@ import {
   Select,
   Divider,
 } from '@chakra-ui/react';
-//import { FaLink } from 'react-icons/fa6';
 import {
   useCreateProjectShareMutation,
   useGetProjectSharesByProjectIdQuery,

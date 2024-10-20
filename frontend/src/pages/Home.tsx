@@ -12,12 +12,12 @@ import {
 } from '@chakra-ui/react';
 import SignUp from '@components/Modals/SignUp';
 import ResetPasswordModal from '@components/Modals/ResetPassword';
-import useTypingEffect from '../hooks/useTypingEffect';
+import useTypingEffect from '@hooks/useTypingEffect';
 import { useLocation } from 'react-router-dom';
 import Slogan from '@components/Slogan';
-import { TEXT, AVATARS, FEATURES } from '../constants.ts';
+import { TEXT, AVATARS, FEATURES } from '@constants';
 import NavigationBar from '@components/Bars/NavigationBar.tsx';
-import usePageTitle from '../hooks/useTitle';
+import usePageTitle from '@hooks/useTitle';
 import CookieConsentBanner from '@components/ConsentBanner';
 
 const Home = () => {

@@ -1,5 +1,5 @@
 import * as Y from 'yjs';
-import { YMapValueType } from '../context/EditorContext';
+import { YMapValueType } from '@context/EditorContext';
 
 interface ProjectNode {
   type: 'directory';

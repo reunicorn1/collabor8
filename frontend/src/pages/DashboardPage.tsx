@@ -17,16 +17,16 @@ import {
   HiUserGroup,
   HiOutlineFolder,
 } from 'react-icons/hi2';
-import DashboardBar from '../components/Bars/DashboardBar';
+import DashboardBar from '@components/Bars/DashboardBar';
 import { useState, ChangeEvent } from 'react';
-import Home from '../components/Dashboard/Home';
-import SharedWithMe from '../components/Dashboard/SharedWithMe';
-import AllProjects from '../components/Dashboard/AllProjects';
+import Home from '@components/Dashboard/Home';
+import SharedWithMe from '@components/Dashboard/SharedWithMe';
+import AllProjects from '@components/Dashboard/AllProjects';
 import { useSelector } from 'react-redux';
 import { selectUserDetails } from '@store/selectors';
 import { useNavigate } from 'react-router-dom';
 import { useGetUserByFavoritesQuery } from '@store/services/user';
-import usePageTitle from '../hooks/useTitle';
+import usePageTitle from '@hooks/useTitle';
 
 export default function DashboardPage() {
   const userDetails = useSelector(selectUserDetails);

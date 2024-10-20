@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-// import { File, Directory } from '@types';
-import { FaFolder, FaFolderOpen, FaFileCode } from 'react-icons/fa';
+import { FaFolder, FaFolderOpen } from 'react-icons/fa';
 import { Box, Icon, Text, Spacer, Image } from '@chakra-ui/react';
-import { useFile } from '../../context/EditorContext';
+import { useFile } from '@context/EditorContext';
 import OptionsMenu from './OptionsMenu';
 import * as Y from 'yjs';
-import { LanguageCode } from '../../utils/codeExamples';
+import { LanguageCode } from '@utils/codeExamples';
 
 interface File {
   type: 'file';

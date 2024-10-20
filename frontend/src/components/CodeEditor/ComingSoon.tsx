@@ -4,7 +4,7 @@ import { CloseIcon } from '@chakra-ui/icons';
 import { useEffect, useRef } from 'react';
 import Shares from '@components/Bars/Shares';
 import { Project, ProjectShares } from '@types';
-import { useFile } from '../../context/EditorContext';
+import { useFile } from '@context/EditorContext';
 
 interface ModalProps {
   project?: Project | ProjectShares;

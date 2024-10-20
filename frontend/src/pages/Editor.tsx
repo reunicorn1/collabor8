@@ -1,7 +1,7 @@
 import { Box, useMediaQuery, useToast } from '@chakra-ui/react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { EditorProvider } from '../context/EditorContext';
+import { EditorProvider } from '@context/EditorContext';
 import CodeEditor from '@components/CodeEditor/CodeEditor';
 import MenuBar from '@components/Bars/MenuBar';
 import Console from '@components/Console';
